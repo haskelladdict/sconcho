@@ -1,0 +1,19 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>icons/down.png</file>
+  <file>icons/exit.png</file>
+  <file>icons/fileexport.png</file>
+  <file>icons/fileopen.png</file>
+  <file>icons/fileprint.png</file>
+  <file>icons/gohome.png</file>
+  <file>icons/histogram.png</file>
+  <file>icons/kcontrol.png</file>
+  <file>icons/labels.png</file>
+  <file>icons/left.png</file>
+  <file>icons/reload.png</file>
+  <file>icons/right.png</file>
+  <file>icons/up.png</file>
+  <file>icons/viewmag-.png</file>
+  <file>icons/viewmag+.png</file>
+</qresource>
+</RCC>
