@@ -35,6 +35,7 @@
 
 /* a few forward declarations */
 class GraphicsScene;
+class QGraphicsView;
 class QLabel;
 class QMenuBar;
 class QSplitter;
@@ -94,6 +95,8 @@ private:
   void create_menu_bar_();
   void create_file_menu_();
   void create_status_bar_();
+  void create_graphics_scene_();
+  void create_main_splitter_();
 
   /* general helper functions */
 
@@ -109,6 +112,7 @@ private:
 
   /* canvas on which the actual data is being displayed */
   GraphicsScene* canvas_;
+  QGraphicsView* canvasView_;
 };
 
 

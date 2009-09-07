@@ -1,7 +1,7 @@
 INCLUDE(${QT_USE_FILE})
 
 SET(SCONCHO_SRCS
-  # graph_canvas.h
+  graphicsScene.cxx
   mainWindow.cxx
   sconcho.cxx
 )

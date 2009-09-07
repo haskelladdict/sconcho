@@ -32,6 +32,7 @@
 /* local includes */
 
 /* a few forward declarations */
+class QGraphicsItemGroup;
 
 
 /***************************************************************
@@ -51,9 +52,8 @@ class GraphicsScene
     
 public:
 
-  explicit GraphicsScene(QObject* myParent) : 
-        QGraphicsScene(myParent) {};
-
+  explicit GraphicsScene(QObject* myParent);
+  bool Init();
 
 //signals:
 
@@ -62,7 +62,17 @@ public:
 
   
 //private slots:
+    
+private:
+
+  /* construction status variable */
+  int status_;
+
+  /* member data */
+  QGraphicsItemGroup* grid_;
   
+  /* helper functions */
+  void create_grid_item_();
 };
 
 

@@ -31,18 +31,22 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
+#include <QGraphicsView>
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QSplitter>
 #include <QStatusBar>
 
 
 /** local headers */
 #include "basicDefs.h"
+#include "graphicsScene.h"
 #include "mainWindow.h"
+
 
 /** pull in a few things from std namespace */
 using std::vector;
@@ -81,9 +85,11 @@ bool MainWindow::Init()
   create_menu_bar_();
   create_file_menu_();
   create_status_bar_();
+  create_graphics_scene_();
+  create_main_splitter_();
 
 
-//  setCentralWidget(mainSplitter_);
+  setCentralWidget(mainSplitter_);
   return true;
 }
 
@@ -255,4 +261,32 @@ void MainWindow::create_status_bar_()
 
   /* add to main window */
   setStatusBar(statusBar_);
+}
+
+
+//-------------------------------------------------------------
+// create the main GraphicsScene widget
+//-------------------------------------------------------------
+void MainWindow::create_graphics_scene_()
+{
+  canvas_ = new GraphicsScene(this);
+  if ( !canvas_->Init() )
+  {
+    qDebug() << "Failed to initialize canvas";
+  }
+
+  canvasView_ = new QGraphicsView(canvas_);
+}
+
+
+//-------------------------------------------------------------
+// create the main splitter
+// 
+// NOTE: all Widgets that belong to the splitter have to exist
+//       at this point
+//-------------------------------------------------------------
+void MainWindow::create_main_splitter_()
+{
+  mainSplitter_ = new QSplitter(this);
+  mainSplitter_->addWidget(canvasView_);
 }
