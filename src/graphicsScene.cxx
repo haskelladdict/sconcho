@@ -87,7 +87,7 @@ bool GraphicsScene::Init()
 //-------------------------------------------------------------
 void GraphicsScene::create_grid_item_()
 {
-  grid_ = new PatternGrid;
-  addItem(grid_);
+  grid_ = new PatternGrid(this);
+  grid_->Init();
 }
   

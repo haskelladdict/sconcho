@@ -21,6 +21,8 @@
 /** Qt headers */
 #include <QGraphicsItemGroup>
 #include <QGraphicsLineItem>
+#include <QGraphicsRectItem>
+#include <QGraphicsScene>
 #include <QPainter>
 
 
@@ -38,7 +40,9 @@
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-PatternGrid::PatternGrid()
+PatternGrid::PatternGrid(QGraphicsScene* myScene)
+  :
+  theScene_(myScene)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -54,6 +58,17 @@ bool PatternGrid::Init()
     return false;
   }
 
+  QPen thePen;
+  thePen.setWidth(2);
+  thePen.setJoinStyle(Qt::MiterJoin);
+  
+  QGraphicsRectItem* foo = new QGraphicsRectItem( 10, 10, 100, 100);
+  foo->setPen(thePen);
+  theScene_->addItem(foo);
+  QGraphicsRectItem* bar = new QGraphicsRectItem( 10, 10, 50, 50);
+  bar->setPen(thePen);
+  theScene_->addItem(bar);
+  
   return true;
 }
 
@@ -76,22 +91,22 @@ bool PatternGrid::Init()
 //-------------------------------------------------------------
 // function returning the bounding box of the object
 //-------------------------------------------------------------
-QRectF PatternGrid::boundingRect() const
+/*QRectF PatternGrid::boundingRect() const
 {
   return QRectF(10,10,20,20);
 }
-
+*/
 
 
 //--------------------------------------------------------------
 // function doing the actual painting
 //--------------------------------------------------------------
-void PatternGrid::paint(QPainter *painter,
-                          const QStyleOptionGraphicsItem *option,
-                          QWidget *widget)
+/*void PatternGrid::paint(QPainter *painter,
+                        const QStyleOptionGraphicsItem *option,
+                        QWidget *widget)
 {
-  painter->drawRoundedRect(-10, -10, 20, 20, 5, 5);
-}
+  //painter->drawRoundedRect(-10, -10, 20, 20, 5, 5);
+}*/
 
   
 

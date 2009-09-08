@@ -30,6 +30,7 @@
 /* local includes */
 
 /* a few forward declarations */
+class QGraphicsScene;
 class QPainter;
 class QStyleOptionGraphicsItem;
 
@@ -42,7 +43,6 @@ class QStyleOptionGraphicsItem;
  ***************************************************************/
 class PatternGrid
   : 
-    public QGraphicsItem,
     public boost::noncopyable
 {
   
@@ -51,13 +51,13 @@ class PatternGrid
     
 public:
 
-  explicit PatternGrid();
+  explicit PatternGrid(QGraphicsScene* aScene);
   bool Init();
 
-  QRectF boundingRect() const;
-  void paint(QPainter *painter,
-             const QStyleOptionGraphicsItem *option,
-             QWidget *widget);
+//  QRectF boundingRect() const;
+//  void paint(QPainter *painter,
+//             const QStyleOptionGraphicsItem *option,
+//             QWidget *widget);
   
 //signals:
 
@@ -72,6 +72,9 @@ private:
   /* construction status variable */
   int status_;
 
+  /* pointer to the main graphics scene */
+  QGraphicsScene* theScene_;
+  
   /* member data */
   //QGraphicsItemGroup* grid_;
   
