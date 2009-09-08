@@ -22,6 +22,7 @@
 #include <QGraphicsItemGroup>
 #include <QGraphicsLineItem>
 #include <QGraphicsRectItem>
+#include <QGraphicsSvgItem>
 #include <QGraphicsScene>
 #include <QPainter>
 
@@ -65,10 +66,18 @@ bool PatternGrid::Init()
   QGraphicsRectItem* foo = new QGraphicsRectItem( 10, 10, 100, 100);
   foo->setPen(thePen);
   theScene_->addItem(foo);
+
+ 
   QGraphicsRectItem* bar = new QGraphicsRectItem( 10, 10, 50, 50);
   bar->setPen(thePen);
   theScene_->addItem(bar);
   
+  QRectF bound = bar->boundingRect();
+  
+  QGraphicsSvgItem* idiot = new QGraphicsSvgItem("/tmp/drawing.svg");
+  idiot->setPos(bound.center());
+  idiot->scale(3,3);
+  idiot->setParentItem(bar);
   return true;
 }
 

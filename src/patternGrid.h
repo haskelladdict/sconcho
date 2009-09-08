@@ -54,11 +54,6 @@ public:
   explicit PatternGrid(QGraphicsScene* aScene);
   bool Init();
 
-//  QRectF boundingRect() const;
-//  void paint(QPainter *painter,
-//             const QStyleOptionGraphicsItem *option,
-//             QWidget *widget);
-  
 //signals:
 
 

@@ -13,7 +13,7 @@ endif(COMMAND cmake_policy)
 ####################################################################
 # check for QT4
 ####################################################################
-FIND_PACKAGE(Qt4 REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtSvg REQUIRED)
 
 ####################################################################
 # check for boost
