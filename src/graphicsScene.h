@@ -32,7 +32,8 @@
 /* local includes */
 
 /* a few forward declarations */
-class QGraphicsItemGroup;
+class PatternGrid;
+
 
 
 /***************************************************************
@@ -69,7 +70,7 @@ private:
   int status_;
 
   /* member data */
-  QGraphicsItemGroup* grid_;
+  PatternGrid* grid_;
   
   /* helper functions */
   void create_grid_item_();
