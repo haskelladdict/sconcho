@@ -75,7 +75,9 @@ public:
 //signals:
 
 
-//public slots:
+public slots:
+
+  void update_mouse_position_display(QPointF newPos);
 
   
 private slots:
@@ -109,6 +111,7 @@ private:
   /* status bar stuff */
   QStatusBar* statusBar_;
   QLabel* statusBarMessages_;
+  QLabel* currentMousePosWidget_;
 
   /* canvas on which the actual data is being displayed */
   GraphicsScene* canvas_;

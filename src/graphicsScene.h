@@ -21,8 +21,6 @@
 #ifndef GRAPHICS_SCENE_H 
 #define GRAPHICS_SCENE_H 
 
-/* STL includes */
-
 /* boost includes */
 #include <boost/utility.hpp>
 
@@ -33,6 +31,7 @@
 
 /* a few forward declarations */
 class PatternGrid;
+class QGraphicsSceneMouseEvent;
 
 
 
@@ -43,9 +42,9 @@ class PatternGrid;
  *
  ***************************************************************/
 class GraphicsScene
-  : 
-    public QGraphicsScene,
-    public boost::noncopyable
+  :
+  public QGraphicsScene,
+  public boost::noncopyable
 {
   
   Q_OBJECT
@@ -56,13 +55,22 @@ public:
   explicit GraphicsScene(QObject* myParent);
   bool Init();
 
-//signals:
+  
+signals:
 
+  void mouse_moved(QPointF position);
+  
 
 //public slots:
 
   
 //private slots:
+
+protected:
+
+  void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
+
+  
     
 private:
 
@@ -70,6 +78,7 @@ private:
   int status_;
 
   /* member data */
+  QObject* parent_;
   PatternGrid* grid_;
   
   /* helper functions */

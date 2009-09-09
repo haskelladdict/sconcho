@@ -18,14 +18,6 @@
 *
 ****************************************************************/
 
-/** boost headers */
-//#include <boost/filesystem/path.hpp>
-//#include <boost/scoped_ptr.hpp>
-
-/** STL headers */
-//#include <iostream>
-//#include <algorithm>
-
 /** Qt headers */
 #include <QAction>
 #include <QDebug>
@@ -100,6 +92,22 @@ bool MainWindow::Init()
  * PUBLIC SLOTS
  *
  *************************************************************/
+
+//-------------------------------------------------------------
+// update the display widget with the current mouse position
+//-------------------------------------------------------------
+void MainWindow::update_mouse_position_display(QPointF newPosition)
+{
+  QString xPos;
+  xPos.setNum(newPosition.x());
+  QString yPos;
+  yPos.setNum(newPosition.y());
+  
+  QString newLabel = "X : " + xPos + "   " + "Y : " + yPos;
+  currentMousePosWidget_->setText(newLabel);
+}
+
+
 
 /**************************************************************
  *
@@ -259,6 +267,13 @@ void MainWindow::create_status_bar_()
   statusBarMessages_ = new QLabel(message);
   statusBarMessages_->setMinimumWidth(200);
   statusBar_->addWidget(statusBarMessages_,1);
+
+  /* add widget to display the mouse position */
+  currentMousePosWidget_ = new QLabel;
+  currentMousePosWidget_->setMinimumWidth(200);
+  currentMousePosWidget_->setAlignment(Qt::AlignCenter);
+  statusBar_->addPermanentWidget(currentMousePosWidget_,0);
+  
 
   /* add to main window */
   setStatusBar(statusBar_);

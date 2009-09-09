@@ -19,9 +19,11 @@
 ****************************************************************/
 
 /** Qt headers */
+#include <QDebug>
 #include <QGraphicsItem>
 #include <QGraphicsItemGroup>
 #include <QGraphicsLineItem>
+#include <QGraphicsSceneMouseEvent>
 
 
 /** local headers */
@@ -41,7 +43,8 @@
 //-------------------------------------------------------------
 GraphicsScene::GraphicsScene(QObject* myParent)
   :
-  QGraphicsScene(myParent)
+  QGraphicsScene(myParent),
+  parent_(myParent)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -58,6 +61,12 @@ bool GraphicsScene::Init()
   }
 
   create_grid_item_();
+
+
+  /* install signal handlers */
+  connect(this,SIGNAL(mouse_moved(QPointF)),parent_,
+          SLOT(update_mouse_position_display(QPointF)));
+
   
   return true;
 }
@@ -74,6 +83,26 @@ bool GraphicsScene::Init()
  * PRIVATE SLOTS
  *
  *************************************************************/
+
+/**************************************************************
+ *
+ * PROTECTED SLOTS
+ *
+ *************************************************************/
+
+//---------------------------------------------------------------
+// event handler for mouse move events
+//---------------------------------------------------------------
+void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent)
+{
+  QPointF currentPos = mouseEvent->scenePos();
+
+  /* let our parent know that we moved */
+  emit mouse_moved(currentPos);
+}
+
+
+
 
 /*************************************************************
  *
