@@ -62,22 +62,26 @@ bool PatternGrid::Init()
   QPen thePen;
   thePen.setWidth(2);
   thePen.setJoinStyle(Qt::MiterJoin);
-  
-  QGraphicsRectItem* foo = new QGraphicsRectItem( 10, 10, 100, 100);
-  foo->setPen(thePen);
-  theScene_->addItem(foo);
 
- 
-  QGraphicsRectItem* bar = new QGraphicsRectItem( 10, 10, 50, 50);
-  bar->setPen(thePen);
-  theScene_->addItem(bar);
-  
-  QRectF bound = bar->boundingRect();
-  
-  QGraphicsSvgItem* idiot = new QGraphicsSvgItem("/tmp/drawing.svg");
-  idiot->setPos(bound.center());
-  idiot->scale(3,3);
-  idiot->setParentItem(bar);
+  int originX = 0;
+  int originY = 0;
+  int width = 50;
+  int height = 50;
+
+  for (int col=0; col < 3; ++col)
+  {
+    for (int row=0; row < 3; ++row)
+    {
+      QGraphicsRectItem* item = new QGraphicsRectItem( originX+(col*width),
+                                                       originY+(row*height),
+                                                       width, height);
+      item->setPen(thePen);
+
+      /* add it to our scene */
+      theScene_->addItem(item);
+    }
+  }
+      
   return true;
 }
 

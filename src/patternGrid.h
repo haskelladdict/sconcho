@@ -26,6 +26,7 @@
 
 /* QT includes */
 #include <QGraphicsItem>
+#include <QList>
 
 /* local includes */
 
@@ -71,11 +72,9 @@ private:
   QGraphicsScene* theScene_;
   
   /* member data */
-  //QGraphicsItemGroup* grid_;
-  
-  /* helper functions */
-  //void create_grid_item_();
+  QList<QGraphicsRectItem*> elements_;
 };
+
 
 
 #endif
