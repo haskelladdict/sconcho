@@ -29,7 +29,7 @@
 /** local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
-#include "patternGrid.h"
+#include "patternGridItem.h"
 
 
 /**************************************************************
@@ -103,7 +103,6 @@ void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent)
 
 
 
-
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -116,7 +115,25 @@ void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent)
 //-------------------------------------------------------------
 void GraphicsScene::create_grid_item_()
 {
-  grid_ = new PatternGrid(this);
-  grid_->Init();
+  int originX = 0;
+  int originY = 0;
+  int aWidth = 50;
+  int aHeight = 50;
+
+  for (int col=0; col < 3; ++col)
+  {
+    for (int row=0; row < 3; ++row)
+    {
+      PatternGridItem* item = 
+        new PatternGridItem(originX+(col*(aWidth+1)), 
+                            originY+(row*(aHeight+1)),
+                            aWidth, aHeight);
+
+      item->Init();
+
+      /* add it to our scene */
+      addItem(item);
+    }
+  }
 }
   

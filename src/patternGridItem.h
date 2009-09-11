@@ -31,7 +31,8 @@
 /* local includes */
 
 /* a few forward declarations */
-class QGraphicsScene;
+class QGraphicsSceneMouseEvent;
+class QGraphicsSvgItem;
 class QPainter;
 class QStyleOptionGraphicsItem;
 
@@ -42,8 +43,9 @@ class QStyleOptionGraphicsItem;
  * canvas 
  *
  ***************************************************************/
-class PatternGrid
+class PatternGridItem
   : 
+    public QGraphicsItem,
     public boost::noncopyable
 {
   
@@ -52,27 +54,58 @@ class PatternGrid
     
 public:
 
-  explicit PatternGrid(QGraphicsScene* aScene);
+  explicit PatternGridItem(qreal x, qreal y, qreal width, qreal 
+      height, QGraphicsItem* myParent = 0);
   bool Init();
+
+
+  /* reimplement pure virtual base class methods */
+  QRectF boundingRect() const;
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+    QWidget *widget);
+
 
 //signals:
 
 
 //public slots:
 
-  
+
+protected:
+
+  void mousePressEvent(QGraphicsSceneMouseEvent* event);
+
+ 
+
 //private slots:
     
 private:
 
-  /* construction status variable */
+  /* some tracking variables */
   int status_;
+  bool selected_;
 
-  /* pointer to the main graphics scene */
-  QGraphicsScene* theScene_;
-  
-  /* member data */
-  QList<QGraphicsRectItem*> elements_;
+  /* our parent */
+  QGraphicsItem* parent_;
+
+  /* our data symbol */
+  QGraphicsSvgItem* svgItem_;
+
+  /* our location and dimensions */
+  qreal x_;
+  qreal y_;
+  qreal width_;
+  qreal height_;
+
+  /* drawing related objects */
+  QPen unselectedPen_;
+  QPen hoveredPen_;
+  QPen selectedPen_;
+  QPen activePen_;
+
+
+  /* functions */
+  void set_up_pens_();
 };
 
 

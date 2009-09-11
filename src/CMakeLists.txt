@@ -3,7 +3,7 @@ INCLUDE(${QT_USE_FILE})
 SET(SCONCHO_SRCS
   graphicsScene.cxx
   mainWindow.cxx
-  patternGrid.cxx
+  patternGridItem.cxx
   sconcho.cxx
 )
 

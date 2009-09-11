@@ -30,7 +30,7 @@
 /* local includes */
 
 /* a few forward declarations */
-class PatternGrid;
+class PatternGridItem;
 class QGraphicsSceneMouseEvent;
 
 
@@ -79,7 +79,6 @@ private:
 
   /* member data */
   QObject* parent_;
-  PatternGrid* grid_;
   
   /* helper functions */
   void create_grid_item_();
