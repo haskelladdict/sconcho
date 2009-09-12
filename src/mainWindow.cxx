@@ -38,12 +38,7 @@
 #include "basicDefs.h"
 #include "graphicsScene.h"
 #include "mainWindow.h"
-
-
-/** pull in a few things from std namespace */
-using std::vector;
-using std::string;
-using std::map;
+#include "symbolSelectorWidget.h"
 
 
 /**************************************************************
@@ -79,6 +74,7 @@ bool MainWindow::Init()
   create_file_menu_();
   create_status_bar_();
   create_graphics_scene_();
+  create_symbols_widget_();
   create_main_splitter_();
 
 
@@ -296,6 +292,16 @@ void MainWindow::create_graphics_scene_()
 
 
 //-------------------------------------------------------------
+// create the widget showing the available symbols 
+//-------------------------------------------------------------
+void MainWindow::create_symbols_widget_()
+{
+  symbolSelector_ = new SymbolSelectorWidget(this);
+  symbolSelector_->Init();
+}
+
+
+//-------------------------------------------------------------
 // create the main splitter
 // 
 // NOTE: all Widgets that belong to the splitter have to exist
@@ -305,4 +311,5 @@ void MainWindow::create_main_splitter_()
 {
   mainSplitter_ = new QSplitter(this);
   mainSplitter_->addWidget(canvasView_);
+  mainSplitter_->addWidget(symbolSelector_);
 }

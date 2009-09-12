@@ -125,8 +125,8 @@ void GraphicsScene::create_grid_item_()
     for (int row=0; row < 3; ++row)
     {
       PatternGridItem* item = 
-        new PatternGridItem(originX+(col*(aWidth+1)), 
-                            originY+(row*(aHeight+1)),
+        new PatternGridItem(originX+(col*aWidth), 
+                            originY+(row*aHeight),
                             aWidth, aHeight);
 
       item->Init();

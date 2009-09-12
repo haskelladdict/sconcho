@@ -5,11 +5,13 @@ SET(SCONCHO_SRCS
   mainWindow.cxx
   patternGridItem.cxx
   sconcho.cxx
+  symbolSelectorWidget.cxx
 )
 
 SET(SCONCHO_MOC_HDRS
   graphicsScene.h
   mainWindow.h
+  symbolSelectorWidget.h
 )
 
 SET(SCONCHO_ICONS

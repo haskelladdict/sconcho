@@ -40,6 +40,9 @@ class QLabel;
 class QMenuBar;
 class QSplitter;
 class QStatusBar;
+class QTabWidget;
+class SymbolSelectorWidget;
+
 
 /* convenience typedefs */
 
@@ -99,6 +102,7 @@ private:
   void create_status_bar_();
   void create_graphics_scene_();
   void create_main_splitter_();
+  void create_symbols_widget_();
 
   /* general helper functions */
 
@@ -116,6 +120,9 @@ private:
   /* canvas on which the actual data is being displayed */
   GraphicsScene* canvas_;
   QGraphicsView* canvasView_;
+
+  /* our symbol selection */
+  SymbolSelectorWidget* symbolSelector_;
 };
 
 
