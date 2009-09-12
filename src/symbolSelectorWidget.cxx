@@ -19,6 +19,11 @@
 ****************************************************************/
 
 /** Qt headers */
+#include <QDebug>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QMouseEvent>
 #include <QSvgWidget>
 #include <QTabWidget>
 #include <QVBoxLayout>
@@ -97,15 +102,131 @@ bool SymbolSelectorWidget::Init()
  *************************************************************/
 
 //-------------------------------------------------------------
-// set up all the pens we use for drawing
+// add an SvgWidget representing an knitting pattern to the
+// list of available widgets 
+//-------------------------------------------------------------
+QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
+    const QString& fileName, const QString& symbolName) const
+{
+  SymbolSelectorItem* symbol = new SymbolSelectorItem(fileName);
+  symbol->Init();
+ 
+  QLabel* symbolLabel = new QLabel(symbolName);
+  QHBoxLayout* symbolLayout = new QHBoxLayout;
+  symbolLayout->addWidget(symbol);
+  symbolLayout->addWidget(symbolLabel);
+  symbolLayout->addStretch(1);
+
+  return symbolLayout;
+}
+
+
+//-------------------------------------------------------------
+// create all tabs
 //-------------------------------------------------------------
 void SymbolSelectorWidget::create_tabs_()
 {
-  /* pen used when unselected */
-  QSvgWidget* test = new QSvgWidget("/home/markus/programming/cpp/sconcho/svg/drawing.svg");
-  QVBoxLayout* testLayout = new QVBoxLayout(this);
-  testLayout->addWidget(test);
-  setLayout(testLayout);
+  QString path = "../trunk/symbols/";
+  QList<QString> symbols;
+  symbols.push_back("knit");
+  symbols.push_back("purl");
+  symbols.push_back("yo");
+
+  QVBoxLayout* mainLayout = new QVBoxLayout(this);
+  for (int i = 0; i < symbols.length(); ++i)
+  {
+     mainLayout->addLayout(create_symbol_layout_(path + symbols[i] + ".svg", 
+           symbols[i]));
+  }
+  mainLayout->addStretch(1);
+  setLayout(mainLayout);
 }
 
+
+
+SymbolSelectorItem::SymbolSelectorItem(const QString& name, QWidget* myParent)
+  :
+    QGroupBox(myParent),
+    name_(name),
+    symbolSvg_(new QSvgWidget(name))
+{
+  status_ = SUCCESSFULLY_CONSTRUCTED;
+}
+
+
+//--------------------------------------------------------------
+// main initialization routine
+//--------------------------------------------------------------
+bool SymbolSelectorItem::Init()
+{
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
+  {
+    return false;
+  }
+
+  /* define style sheets */
+  selectedStyleSheet_ = "border-width: 2px;"
+                        "border-style: solid;"
+                        "border-color: red;"
+                        "background-color: lightblue;";
+
+
+  unselectedStyleSheet_ = "border-width: 2px;"
+                          "border-style: solid;"
+                          "border-color: black;"
+                          "background-color: white;";
+
+
+
+  /* define the layout holding the pattern */ 
+  setStyleSheet(unselectedStyleSheet_);
+
+  /* adjust our QSvgWidget */
+  symbolSvg_->setFixedSize(QSize(20,20));
+
+  
+  QHBoxLayout* svgLayout = new QHBoxLayout;
+  svgLayout->addWidget(symbolSvg_);
+  setLayout(svgLayout);
+
+  return true;
+}
+
+
+/**************************************************************
+ *
+ * PUBLIC SLOTS
+ *
+ *************************************************************/
+
+/**************************************************************
+ *
+ * PRIVATE SLOTS
+ *
+ *************************************************************/
+
+/**************************************************************
+ *
+ * PROTECTED SLOTS
+ *
+ *************************************************************/
+
+//---------------------------------------------------------------
+// event handler for mouse move events
+//---------------------------------------------------------------
+void SymbolSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
+{
+  setStyleSheet(selectedStyleSheet_);
+  repaint();
+  /* let our parent know that we moved */
+  //emit mouse_moved(currentPos);
+  qDebug() << "clicked on " << name_;
+}
+
+
+/*************************************************************
+ *
+ * PRIVATE MEMBER FUNCTIONS
+ *
+ *************************************************************/
 

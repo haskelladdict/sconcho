@@ -25,11 +25,16 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
+#include <QGroupBox>
 #include <QTabWidget>
 
 /* local includes */
 
-/* a few forward declarations */
+/* forward declarations */
+class QHBoxLayout;
+class QMouseEvent;
+class QSvgWidget;
+
 
 
 /***************************************************************
@@ -72,8 +77,51 @@ private:
   QWidget* parent_;
 
   /* functions */
+  QHBoxLayout* create_symbol_layout_(const QString& fileName, 
+      const QString& symbolName) const;
   void create_tabs_();
 };
 
+
+class SymbolSelectorItem 
+  :
+    public QGroupBox,
+    public boost::noncopyable
+{
+  
+//  Q_OBJECT
+
+public:
+
+  explicit SymbolSelectorItem(const QString& name, QWidget* myParent = 0);
+  bool Init();
+
+
+//signals:
+
+
+//public slots:
+
+
+protected:
+
+  void mousePressEvent(QMouseEvent* mouseEvent);
+
+//private slots:
+    
+private:
+
+  
+  /* some tracking variables */
+  int status_;
+  QString selectedStyleSheet_;
+  QString unselectedStyleSheet_;
+
+  /* the pathname identifying us */
+  QString name_;
+
+  /* the QSvgWidget we own */
+  QSvgWidget* symbolSvg_;
+}; 
 
 #endif
