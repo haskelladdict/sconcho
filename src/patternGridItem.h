@@ -99,11 +99,7 @@ private:
   qreal height_;
 
   /* drawing related objects */
-  QPen unselectedPen_;
-  QPen hoveredPen_;
-  QPen selectedPen_;
-  QPen activePen_;
-
+  QPen pen_;
 
   /* functions */
   void set_up_pens_();

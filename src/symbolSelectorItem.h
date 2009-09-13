@@ -26,14 +26,17 @@
 
 /* QT includes */
 #include <QGroupBox>
+#include <QSize>
 #include <QString>
-
-/* local includes */
 
 /* forward declarations */
 class QHBoxLayout;
 class QMouseEvent;
 class QSvgWidget;
+
+
+/* convenience constants */
+const QSize SYMBOL_ITEM_SIZE(15,15);
 
 
 /***************************************************************

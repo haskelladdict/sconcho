@@ -28,6 +28,7 @@
 
 /* QT includes */
 #include <QMainWindow>
+#include <QSize>
 #include <QString>
 
 /* local includes */
@@ -44,7 +45,8 @@ class QTabWidget;
 class SymbolSelectorWidget;
 
 
-/* convenience typedefs */
+/* convenience typedefs and constants */
+const QSize initialSize(700,500);
 
 
 /* use anonymous namespace to define some constants */

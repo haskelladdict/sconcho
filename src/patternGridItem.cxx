@@ -112,7 +112,7 @@ QRectF PatternGridItem::boundingRect() const
 void PatternGridItem::paint(QPainter *painter, 
   const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-  painter->setPen(activePen_);
+  painter->setPen(pen_);
   painter->drawRect(x_, y_, width_, height_);
 }
 
@@ -169,22 +169,9 @@ void PatternGridItem::mousePressEvent(
 void PatternGridItem::set_up_pens_()
 {
   /* pen used when unselected */
-  unselectedPen_.setWidth(2);
-  unselectedPen_.setJoinStyle(Qt::MiterJoin);
-  unselectedPen_.setColor(Qt::black);
-
-  /* pen used when hovered on */
-  hoveredPen_.setWidth(2);
-  hoveredPen_.setJoinStyle(Qt::MiterJoin);
-  hoveredPen_.setColor(Qt::blue);
-
-  /* pen used when selected */
-  selectedPen_.setWidth(2);
-  selectedPen_.setJoinStyle(Qt::MiterJoin);
-  selectedPen_.setColor(Qt::red);
-
-  /* select active pen */
-  activePen_ = unselectedPen_;
+  pen_.setWidth(2);
+  pen_.setJoinStyle(Qt::MiterJoin);
+  pen_.setColor(Qt::black);
 }
 
 
@@ -207,17 +194,17 @@ void PatternGridItem::fit_svg_()
   double scaleX = 1.0;
   if ( svgRect.width() > DBL_EPSILON )
   {
-    scaleX = boxRect.width()/svgRect.width();
+    scaleX = (boxRect.width()-2*pen_.width())/svgRect.width();
   }
 
   double scaleY = 1.0;
   if ( svgRect.height() > DBL_EPSILON )
   {
-    scaleY = boxRect.height()/svgRect.height();
+    scaleY = (boxRect.height()-2*pen_.width())/svgRect.height();
   }
 
   svgItem_->scale(scaleX, scaleY);
 
   /* translate */
-  svgItem_->moveBy(boxRect.x(), boxRect.y());
+  svgItem_->moveBy(boxRect.x()+pen_.width(), boxRect.y()+pen_.width());
 }

@@ -67,7 +67,7 @@ bool MainWindow::Init()
   }
 
   setWindowTitle(tr("sconcho"));
-  setMinimumSize(400,300);
+  setMinimumSize(initialSize);
 
   /* populate the main interface */
   create_menu_bar_();

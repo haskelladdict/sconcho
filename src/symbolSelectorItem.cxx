@@ -63,15 +63,17 @@ bool SymbolSelectorItem::Init()
   }
 
   /* define style sheets */
-  selectedStyleSheet_ = "border-width: 2px;"
+  selectedStyleSheet_ = "border-width: 1px;"
                         "border-style: solid;"
                         "border-color: red;"
+                        "padding: -7px;"
                         "background-color: lightblue;";
 
 
-  unselectedStyleSheet_ = "border-width: 2px;"
+  unselectedStyleSheet_ = "border-width: 1px;"
                           "border-style: solid;"
                           "border-color: black;"
+                          "padding: -7px;"
                           "background-color: white;";
 
 
@@ -80,7 +82,7 @@ bool SymbolSelectorItem::Init()
   setStyleSheet(unselectedStyleSheet_);
 
   /* adjust our QSvgWidget */
-  symbolSvg_->setFixedSize(QSize(20,20));
+  symbolSvg_->setMaximumSize(SYMBOL_ITEM_SIZE);
 
   QHBoxLayout* svgLayout = new QHBoxLayout;
   svgLayout->addWidget(symbolSvg_);
@@ -104,6 +106,7 @@ void SymbolSelectorItem::select()
 {
   selected_ = true;
   setStyleSheet(selectedStyleSheet_);
+//  setContentsMargins(0,0,0,0);
 }
 
 
@@ -111,6 +114,7 @@ void SymbolSelectorItem::unselect()
 {
   selected_ = false;
   setStyleSheet(unselectedStyleSheet_);
+//  setContentsMargins(0,0,0,0);
 }
 
 
