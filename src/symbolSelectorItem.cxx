@@ -22,16 +22,12 @@
 #include <QDebug>
 #include <QGroupBox>
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QMouseEvent>
 #include <QSvgWidget>
-#include <QTabWidget>
-#include <QVBoxLayout>
 
 /** local headers */
 #include "basicDefs.h"
 #include "symbolSelectorItem.h"
-#include "symbolSelectorWidget.h"
 
 
 /**************************************************************
@@ -43,30 +39,80 @@
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-SymbolSelectorWidget::SymbolSelectorWidget(QWidget* myParent)
-    :
-      QTabWidget(myParent),
-      highlightedItem_(0)
+SymbolSelectorItem::SymbolSelectorItem(const QString& name, 
+    QWidget* myParent)
+  :
+    QGroupBox(myParent),
+    selected_(false),
+    name_(name),
+    symbolSvg_(new QSvgWidget(name))
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
 
 
+
 //--------------------------------------------------------------
 // main initialization routine
 //--------------------------------------------------------------
-bool SymbolSelectorWidget::Init()
+bool SymbolSelectorItem::Init()
 {
   if ( status_ != SUCCESSFULLY_CONSTRUCTED )
   {
     return false;
   }
 
-  /* call individual initialization routines */
-  create_tabs_();
+  /* define style sheets */
+  selectedStyleSheet_ = "border-width: 2px;"
+                        "border-style: solid;"
+                        "border-color: red;"
+                        "background-color: lightblue;";
+
+
+  unselectedStyleSheet_ = "border-width: 2px;"
+                          "border-style: solid;"
+                          "border-color: black;"
+                          "background-color: white;";
+
+
+
+  /* define the layout holding the pattern */ 
+  setStyleSheet(unselectedStyleSheet_);
+
+  /* adjust our QSvgWidget */
+  symbolSvg_->setFixedSize(QSize(20,20));
+
+  QHBoxLayout* svgLayout = new QHBoxLayout;
+  svgLayout->addWidget(symbolSvg_);
+  setLayout(svgLayout);
+
+  /* connect slots */
+  connect(this,
+          SIGNAL(highlight_me(SymbolSelectorItem*, bool)),
+          parent(),
+          SLOT(change_highlighted_item(SymbolSelectorItem*,bool))
+         );
 
   return true;
 }
+
+
+//------------------------------------------------------------
+// mark us as selected unselectd
+//------------------------------------------------------------
+void SymbolSelectorItem::select()
+{
+  selected_ = true;
+  setStyleSheet(selectedStyleSheet_);
+}
+
+
+void SymbolSelectorItem::unselect()
+{
+  selected_ = false;
+  setStyleSheet(unselectedStyleSheet_);
+}
+
 
 
 
@@ -76,31 +122,6 @@ bool SymbolSelectorWidget::Init()
  *
  *************************************************************/
 
-//-------------------------------------------------------------
-// switch the currently highlighted item
-// If state == true and item requests to be highlighted. In
-// this case we first unselect the currently selected item
-// if any and then select the new item.
-// If state == false we simply unselect.
-//-------------------------------------------------------------
-void SymbolSelectorWidget::change_highlighted_item(
-    SymbolSelectorItem* newItem, bool state)
-{
-  if (highlightedItem_ != 0)
-  {
-    highlightedItem_->unselect();
-    highlightedItem_ = 0;
-  }
-   
-  if (state)
-  {
-    highlightedItem_ = newItem;
-    highlightedItem_->select();
-  }
-} 
-
-
-
 
 /**************************************************************
  *
@@ -108,11 +129,32 @@ void SymbolSelectorWidget::change_highlighted_item(
  *
  *************************************************************/
 
+
 /**************************************************************
  *
  * PROTECTED MEMBER FUNCTIONS 
  *
  *************************************************************/
+
+//---------------------------------------------------------------
+// event handler for mouse move events
+//---------------------------------------------------------------
+void SymbolSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
+{
+  if (selected_)
+  {
+    emit highlight_me(this, false);
+  }
+  else
+  {
+    emit highlight_me(this, true);
+  }
+
+  repaint();
+}
+
+
+
 
 /**************************************************************
  *
@@ -125,48 +167,5 @@ void SymbolSelectorWidget::change_highlighted_item(
  * PRIVATE MEMBER FUNCTIONS
  *
  *************************************************************/
-
-//-------------------------------------------------------------
-// add an SvgWidget representing an knitting pattern to the
-// list of available widgets 
-//-------------------------------------------------------------
-QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
-    const QString& fileName, const QString& symbolName) 
-{
-  SymbolSelectorItem* symbol = new SymbolSelectorItem(fileName,
-      this);
-  symbol->Init();
- 
-  QLabel* symbolLabel = new QLabel(symbolName);
-  QHBoxLayout* symbolLayout = new QHBoxLayout;
-  symbolLayout->addWidget(symbol);
-  symbolLayout->addWidget(symbolLabel);
-  symbolLayout->addStretch(1);
-
-  return symbolLayout;
-}
-
-
-//-------------------------------------------------------------
-// create all tabs
-//-------------------------------------------------------------
-void SymbolSelectorWidget::create_tabs_()
-{
-  QString path = "../trunk/symbols/";
-  QList<QString> symbols;
-  symbols.push_back("knit");
-  symbols.push_back("purl");
-  symbols.push_back("yo");
-
-  QVBoxLayout* mainLayout = new QVBoxLayout(this);
-  for (int i = 0; i < symbols.length(); ++i)
-  {
-     mainLayout->addLayout(create_symbol_layout_(
-           path + symbols[i] + ".svg", 
-           symbols[i]));
-  }
-  mainLayout->addStretch(1);
-  setLayout(mainLayout);
-}
 
 

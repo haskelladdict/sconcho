@@ -18,15 +18,15 @@
 *
 ****************************************************************/
 
-#ifndef SYMBOL_SELECTOR_WIDGET_H 
-#define SYMBOL_SELECTOR_WIDGET_H 
+#ifndef SYMBOL_SELECTOR_ITEM_H 
+#define SYMBOL_SELECTOR_ITEM_H 
 
 /* boost includes */
 #include <boost/utility.hpp>
 
 /* QT includes */
 #include <QGroupBox>
-#include <QTabWidget>
+#include <QString>
 
 /* local includes */
 
@@ -34,42 +34,43 @@
 class QHBoxLayout;
 class QMouseEvent;
 class QSvgWidget;
-class SymbolSelectorItem;
-
 
 
 /***************************************************************
  * 
- * The GraphicsScene handles the sconcho's main drawing
- * canvas 
+ * SymbolSelectorItem manages a single symbol selector widget
  *
  ***************************************************************/
-class SymbolSelectorWidget
-  : 
-    public QTabWidget,
+class SymbolSelectorItem 
+  :
+    public QGroupBox,
     public boost::noncopyable
 {
   
   Q_OBJECT
 
-    
 public:
 
-  explicit SymbolSelectorWidget(QWidget* myParent = 0);
+  explicit SymbolSelectorItem(const QString& name, 
+      QWidget* myParent = 0);
   bool Init();
+
 
   void select();
   void unselect();
 
-//signals:
+
+signals:
+  
+  void highlight_me(SymbolSelectorItem* us, bool state);
 
 
-public slots:
-
-   void change_highlighted_item(SymbolSelectorItem*, bool state);
+//public slots:
 
 
-// protected:
+protected:
+
+  void mousePressEvent(QMouseEvent* mouseEvent);
 
 //private slots:
     
@@ -78,15 +79,14 @@ private:
   /* some tracking variables */
   int status_;
   bool selected_;
+  QString selectedStyleSheet_;
+  QString unselectedStyleSheet_;
 
-  /* the currently selected symbol */
-  SymbolSelectorItem* highlightedItem_;
+  /* the pathname identifying us */
+  QString name_;
 
-  /* functions */
-  QHBoxLayout* create_symbol_layout_(const QString& fileName, 
-      const QString& symbolName);
-  void create_tabs_();
-};
-
+  /* the QSvgWidget we own */
+  QSvgWidget* symbolSvg_;
+}; 
 
 #endif
