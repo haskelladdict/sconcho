@@ -44,7 +44,7 @@
 GraphicsScene::GraphicsScene(QObject* myParent)
   :
   QGraphicsScene(myParent),
-  parent_(myParent)
+  selectedSymbolName_("")
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -64,8 +64,11 @@ bool GraphicsScene::Init()
 
 
   /* install signal handlers */
-  connect(this,SIGNAL(mouse_moved(QPointF)),parent_,
-          SLOT(update_mouse_position_display(QPointF)));
+  connect(this,
+          SIGNAL(mouse_moved(QPointF)),
+          parent(),
+          SLOT(update_mouse_position_display(QPointF))
+         );
 
   
   return true;
@@ -74,9 +77,35 @@ bool GraphicsScene::Init()
 
 /**************************************************************
  *
+ * PUBLIC FUNCTIONS
+ *
+ *************************************************************/
+
+//-------------------------------------------------------------
+// accessor function to get at the symbol name 
+//-------------------------------------------------------------
+const QString& GraphicsScene::get_selected_symbol_name()
+{
+  return selectedSymbolName_;
+}
+
+
+ 
+/**************************************************************
+ *
  * PUBLIC SLOTS
  *
  *************************************************************/
+
+//-------------------------------------------------------------
+// update our local copy of the name of the currently selected
+// symbol
+//-------------------------------------------------------------
+void GraphicsScene::update_selected_symbol(QString newName)
+{
+  selectedSymbolName_ = newName;
+}
+
 
 /**************************************************************
  *
@@ -93,7 +122,8 @@ bool GraphicsScene::Init()
 //---------------------------------------------------------------
 // event handler for mouse move events
 //---------------------------------------------------------------
-void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent)
+void GraphicsScene::mouseMoveEvent(
+    QGraphicsSceneMouseEvent* mouseEvent)
 {
   QPointF currentPos = mouseEvent->scenePos();
 
@@ -127,7 +157,7 @@ void GraphicsScene::create_grid_item_()
       PatternGridItem* item = 
         new PatternGridItem(originX+(col*aWidth), 
                             originY+(row*aHeight),
-                            aWidth, aHeight);
+                            aWidth, aHeight,this);
 
       item->Init();
 

@@ -72,6 +72,12 @@ bool SymbolSelectorWidget::Init()
 
 /**************************************************************
  *
+ * PUBLIC FUNCTIONS
+ *
+ *************************************************************/
+
+/**************************************************************
+ *
  * PUBLIC SLOTS
  *
  *************************************************************/
@@ -89,13 +95,18 @@ void SymbolSelectorWidget::change_highlighted_item(
   if (highlightedItem_ != 0)
   {
     highlightedItem_->unselect();
-    highlightedItem_ = 0;
   }
-   
+
   if (state)
   {
     highlightedItem_ = newItem;
     highlightedItem_->select();
+    emit selected_symbol_changed(newItem->symbol_name());
+  }
+  else
+  {
+    highlightedItem_ = 0;
+    emit selected_symbol_changed("");
   }
 } 
 

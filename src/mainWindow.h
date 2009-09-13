@@ -104,8 +104,6 @@ private:
   void create_main_splitter_();
   void create_symbols_widget_();
 
-  /* general helper functions */
-
   /* widget data members */
   QSplitter* mainSplitter_;
 

@@ -18,6 +18,10 @@
 *
 ****************************************************************/
 
+/* C++ headers */
+#include <float.h>
+
+
 /** Qt headers */
 #include <QColor>
 #include <QDebug>
@@ -31,6 +35,7 @@
 
 /** local headers */
 #include "basicDefs.h"
+#include "graphicsScene.h"
 #include "patternGridItem.h"
 
 
@@ -44,11 +49,11 @@
 // constructor
 //-------------------------------------------------------------
 PatternGridItem::PatternGridItem(qreal aX, qreal aY, qreal aWidth,
-  qreal aHeight, QGraphicsItem* myParent)
+  qreal aHeight, GraphicsScene* myParent)
     :
-      QGraphicsItem(myParent),
       selected_(false),
       parent_(myParent),
+      svgItem_(0),
       x_(aX),
       y_(aY),
       width_(aWidth),
@@ -71,9 +76,10 @@ bool PatternGridItem::Init()
   /* call individual initialization routines */
   set_up_pens_();
 
-  svgItem_ = new QGraphicsSvgItem("../svg/susile.svg",this);
+  /*svgItem_ = new QGraphicsSvgItem("../svg/susile.svg",this);
   svgItem_->setVisible(false);
   svgItem_->moveBy(x_ + width_*0.25, y_ + height_*0.25);
+  */
 
   return true;
 }
@@ -129,17 +135,20 @@ void PatternGridItem::paint(QPainter *painter,
 void PatternGridItem::mousePressEvent(
   QGraphicsSceneMouseEvent* event)
 {
-  if (!selected_)
+  /* delete the previous svgItem if there was one */
+  if ( svgItem_ != 0 ) 
   {
-    //activePen_ = unselectedPen_;
-    svgItem_->setVisible(true);
-    selected_ = true;
+    delete svgItem_;
+    svgItem_ = 0;
   }
-  else
+
+  /* get name of currently selected symbol from our parent */
+  QString symbolName = parent_->get_selected_symbol_name();
+  if (symbolName != "")
   {
-    //activePen_ = selectedPen_;
-    svgItem_->setVisible(false);
-    selected_ = false;
+    svgItem_ = new QGraphicsSvgItem(symbolName,this);
+    fit_svg_();
+    svgItem_->setVisible(true);
   }
 
   /* repaint */
@@ -184,3 +193,36 @@ void PatternGridItem::set_up_pens_()
 }
 
 
+//---------------------------------------------------------------
+// scale and shift svg item so it fits into our bounding 
+// box
+//---------------------------------------------------------------
+void PatternGridItem::fit_svg_()
+{
+  if (svgItem_ == 0)
+  {
+    return;
+  }
+
+  /* get bounding boxes */
+  QRectF svgRect = svgItem_->sceneBoundingRect();
+  QRectF boxRect = sceneBoundingRect();
+
+  /* scale */
+  double scaleX = 1.0;
+  if ( svgRect.width() > DBL_EPSILON )
+  {
+    scaleX = boxRect.width()/svgRect.width();
+  }
+
+  double scaleY = 1.0;
+  if ( svgRect.height() > DBL_EPSILON )
+  {
+    scaleY = boxRect.height()/svgRect.height();
+  }
+
+  svgItem_->scale(scaleX, scaleY);
+
+  /* translate */
+  svgItem_->moveBy(boxRect.x(), boxRect.y());
+}

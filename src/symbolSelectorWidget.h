@@ -58,16 +58,15 @@ public:
   explicit SymbolSelectorWidget(QWidget* myParent = 0);
   bool Init();
 
-  void select();
-  void unselect();
 
-//signals:
+signals:
+
+  void selected_symbol_changed(const QString& name);
 
 
 public slots:
 
    void change_highlighted_item(SymbolSelectorItem*, bool state);
-
 
 // protected:
 
@@ -77,7 +76,6 @@ private:
 
   /* some tracking variables */
   int status_;
-  bool selected_;
 
   /* the currently selected symbol */
   SymbolSelectorItem* highlightedItem_;

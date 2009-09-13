@@ -31,6 +31,7 @@
 /* local includes */
 
 /* a few forward declarations */
+class GraphicsScene;
 class QGraphicsSceneMouseEvent;
 class QGraphicsSvgItem;
 class QPainter;
@@ -55,7 +56,7 @@ class PatternGridItem
 public:
 
   explicit PatternGridItem(qreal x, qreal y, qreal width, qreal 
-      height, QGraphicsItem* myParent = 0);
+      height, GraphicsScene* myParent = 0);
   bool Init();
 
 
@@ -85,8 +86,8 @@ private:
   int status_;
   bool selected_;
 
-  /* our parent */
-  QGraphicsItem* parent_;
+  /* our parent scene */
+  GraphicsScene* parent_;
 
   /* our data symbol */
   QGraphicsSvgItem* svgItem_;
@@ -106,6 +107,7 @@ private:
 
   /* functions */
   void set_up_pens_();
+  void fit_svg_();
 };
 
 

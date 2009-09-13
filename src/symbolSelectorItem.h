@@ -56,8 +56,10 @@ public:
   bool Init();
 
 
+  /* some basic accessors */
   void select();
   void unselect();
+  QString symbol_name();
 
 
 signals:
@@ -65,14 +67,10 @@ signals:
   void highlight_me(SymbolSelectorItem* us, bool state);
 
 
-//public slots:
-
-
 protected:
 
   void mousePressEvent(QMouseEvent* mouseEvent);
 
-//private slots:
     
 private:
 

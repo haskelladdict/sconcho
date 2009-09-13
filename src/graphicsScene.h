@@ -55,13 +55,18 @@ public:
   explicit GraphicsScene(QObject* myParent);
   bool Init();
 
-  
+  /* accessor function to get at the symbol name */
+  const QString& get_selected_symbol_name();
+ 
+
 signals:
 
   void mouse_moved(QPointF position);
-  
+ 
 
-//public slots:
+public slots:
+
+  void update_selected_symbol(QString newName);
 
   
 //private slots:
@@ -77,9 +82,9 @@ private:
   /* construction status variable */
   int status_;
 
-  /* member data */
-  QObject* parent_;
-  
+  /* name of currently selected symbol */
+  QString selectedSymbolName_;
+
   /* helper functions */
   void create_grid_item_();
 };

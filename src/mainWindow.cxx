@@ -77,6 +77,12 @@ bool MainWindow::Init()
   create_symbols_widget_();
   create_main_splitter_();
 
+  connect(symbolSelector_,
+          SIGNAL(selected_symbol_changed(const QString&)),
+          canvas_,
+          SLOT(update_selected_symbol(const QString&))
+         );
+
 
   setCentralWidget(mainSplitter_);
   return true;
@@ -102,8 +108,6 @@ void MainWindow::update_mouse_position_display(QPointF newPosition)
   QString newLabel = "X : " + xPos + "   " + "Y : " + yPos;
   currentMousePosWidget_->setText(newLabel);
 }
-
-
 
 /**************************************************************
  *
