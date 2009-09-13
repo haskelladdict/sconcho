@@ -76,11 +76,6 @@ bool PatternGridItem::Init()
   /* call individual initialization routines */
   set_up_pens_();
 
-  /*svgItem_ = new QGraphicsSvgItem("../svg/susile.svg",this);
-  svgItem_->setVisible(false);
-  svgItem_->moveBy(x_ + width_*0.25, y_ + height_*0.25);
-  */
-
   return true;
 }
 

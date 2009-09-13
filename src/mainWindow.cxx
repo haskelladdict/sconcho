@@ -136,7 +136,7 @@ void MainWindow::show_file_export_menu_()
   QString currentDirectory = QDir::currentPath();
   QString saveFileName = QFileDialog::getSaveFileName(this,
     tr("Export Canvas"), currentDirectory,
-    tr("Image Files (*.png *.jpg *.bmp *.ppm *.tif)"));
+    tr("Image Files (*.png *.tif)"));
 
   if ( saveFileName.isEmpty() )
   {
@@ -148,15 +148,21 @@ void MainWindow::show_file_export_menu_()
   QFileInfo saveFileInfo(saveFileName);
   QString extension = saveFileInfo.completeSuffix();
 
-  if ( extension != "png" && extension != "jpg"
-    && extension != "bmp" && extension != "ppm" 
-    && extension != "tif" )
+  if ( extension != "png" && extension != "tif" )
   {
     QMessageBox::warning(this, tr("Warning"),
       tr("Unknown file format ") + extension,
       QMessageBox::Ok);
     return;
   }
+
+  /* for now print the image in a fixed resolution */
+  QImage finalImage(600,600,QImage::Format_ARGB32_Premultiplied);
+  QPainter painter(&finalImage);
+  painter.setRenderHints(QPainter::Antialiasing);
+  canvas_->render(&painter);
+  painter.end();
+  finalImage.save(saveFileName); 
 }
 
 
@@ -167,11 +173,14 @@ void MainWindow::show_file_export_menu_()
 void MainWindow::show_print_menu_()
 {
   /* create printer and fire up print dialog */
-  QPrinter aPrinter;
+  QPrinter aPrinter(QPrinter::HighResolution);
   QPrintDialog printDialog(&aPrinter, this);
   if ( printDialog.exec() == QDialog::Accepted )
   {
     /* tell our canvas that we want to print its */
+    QPainter painter(&aPrinter);
+    canvasView_->render(&painter);
+    painter.end();
   }
 }
 
