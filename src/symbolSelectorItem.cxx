@@ -66,14 +66,14 @@ bool SymbolSelectorItem::Init()
   selectedStyleSheet_ = "border-width: 1px;"
                         "border-style: solid;"
                         "border-color: red;"
-                        "padding: -7px;"
+                        "padding: -4px;"
                         "background-color: lightblue;";
 
 
   unselectedStyleSheet_ = "border-width: 1px;"
                           "border-style: solid;"
                           "border-color: black;"
-                          "padding: -7px;"
+                          "padding: -4px;"
                           "background-color: white;";
 
 
