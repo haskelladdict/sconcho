@@ -44,6 +44,7 @@ SymbolSelectorItem::SymbolSelectorItem(KnittingSymbolPtr symbol,
   :
     QGroupBox(myParent),
     selected_(false),
+    unitSize_(15),
     symbol_(symbol),
     symbolSvg_(new QSvgWidget(symbol->path()))
 {
@@ -82,7 +83,8 @@ bool SymbolSelectorItem::Init()
   setStyleSheet(unselectedStyleSheet_);
 
   /* adjust our QSvgWidget */
-  symbolSvg_->setMaximumSize(SYMBOL_ITEM_SIZE);
+  QSize symbolSize = unitSize_ * symbol_->dim();
+  symbolSvg_->setMaximumSize(symbolSize);
 
   QHBoxLayout* svgLayout = new QHBoxLayout;
   svgLayout->addWidget(symbolSvg_);

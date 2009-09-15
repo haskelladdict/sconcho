@@ -87,7 +87,7 @@ private:
   KnittingSymbolPtr emptySymbol_;
 
   /* functions */
-  QHBoxLayout* create_symbol_layout_(const QString& name); 
+  QHBoxLayout* create_symbol_layout_(const QString& name, const QSize& size); 
   
   void create_tabs_();
 };

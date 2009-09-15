@@ -146,13 +146,13 @@ void SymbolSelectorWidget::change_highlighted_item(
 // list of available widgets 
 //-------------------------------------------------------------
 QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
-    const QString& symbolName)
+    const QString& symbolName, const QSize& aSize)
 {
   /* create a new knittingSymbol object */
   KnittingSymbolPtr sym = KnittingSymbolPtr(
       new KnittingSymbol(patternPath + symbolName + ".svg",
                          symbolName,
-                         QSize(1,1),
+                         aSize,
                          "",
                          ""));
 
@@ -182,8 +182,9 @@ void SymbolSelectorWidget::create_tabs_()
   QVBoxLayout* mainLayout = new QVBoxLayout(this);
   for (int i = 0; i < symbols.length(); ++i)
   {
-     mainLayout->addLayout(create_symbol_layout_(symbols[i]));
+     mainLayout->addLayout(create_symbol_layout_(symbols[i], QSize(1,1)));
   }
+  mainLayout->addLayout(create_symbol_layout_("cl1", QSize(2,1)));
   mainLayout->addStretch(1);
 
   QWidget* basicSymbols = new QWidget(this);

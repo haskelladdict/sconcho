@@ -39,10 +39,6 @@ class QMouseEvent;
 class QSvgWidget;
 
 
-/* convenience constants */
-const QSize SYMBOL_ITEM_SIZE(15,15);
-
-
 /***************************************************************
  * 
  * SymbolSelectorItem manages a single symbol selector widget
@@ -81,11 +77,14 @@ protected:
     
 private:
 
-  /* some tracking variables */
+  /* status variables */
   int status_;
   bool selected_;
   QString selectedStyleSheet_;
   QString unselectedStyleSheet_;
+
+  /* size (in px) for display purposes of a single symbol unit */
+  int unitSize_;  
 
   /* object holding all the info about the underlying 
    * knitting symbol */
