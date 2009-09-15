@@ -25,7 +25,9 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
+#include <QBrush>
 #include <QGraphicsItem>
+#include <QPen>
 #include <QList>
 
 /* local includes */
@@ -45,18 +47,19 @@ class QStyleOptionGraphicsItem;
  *
  ***************************************************************/
 class PatternGridItem
-  : 
+  :
+    public QObject,
     public QGraphicsItem,
     public boost::noncopyable
 {
   
-//  Q_OBJECT
+  Q_OBJECT
 
     
 public:
 
-  explicit PatternGridItem(qreal x, qreal y, qreal width, qreal 
-      height, GraphicsScene* myParent = 0);
+  explicit PatternGridItem(const QPoint& loc, const QSize& aDim, const int scale,
+      GraphicsScene* myParent = 0);
   bool Init();
 
 
@@ -66,7 +69,9 @@ public:
     QWidget *widget);
 
 
-//signals:
+signals:
+
+  void item_selected(PatternGridItem* us, bool status);
 
 
 //public slots:
@@ -77,7 +82,6 @@ protected:
   void mousePressEvent(QGraphicsSceneMouseEvent* event);
 
  
-
 //private slots:
     
 private:
@@ -93,16 +97,18 @@ private:
   QGraphicsSvgItem* svgItem_;
 
   /* our location and dimensions */
-  qreal x_;
-  qreal y_;
-  qreal width_;
-  qreal height_;
-
+  QPoint loc_;
+  QSize dim_;
+  int scaling_;
+ 
   /* drawing related objects */
   QPen pen_;
+  QBrush activeBrush_;
+  QBrush inactiveBrush_;
+  QBrush* currentBrush_;
 
   /* functions */
-  void set_up_pens_();
+  void set_up_pens_brushes_();
   void fit_svg_();
 };
 

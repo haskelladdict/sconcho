@@ -26,6 +26,7 @@
 
 /* QT includes */
 #include <QGraphicsScene>
+#include <QList>
 
 /* local includes */
 #include "knittingSymbol.h"
@@ -68,6 +69,7 @@ signals:
 public slots:
 
   void update_selected_symbol(const KnittingSymbolPtr symbol);
+  void grid_item_selected(PatternGridItem* item, bool status);
 
   
 //private slots:
@@ -77,13 +79,15 @@ protected:
   void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
 
   
-    
 private:
 
   /* construction status variable */
   int status_;
 
-  /* name of currently selected symbol */
+  /* list of currenly selected items */
+  QList<PatternGridItem*> activeItems_;
+
+  /* NAme of currently selected symbol */
   KnittingSymbolPtr selectedSymbol_;
 
   /* helper functions */

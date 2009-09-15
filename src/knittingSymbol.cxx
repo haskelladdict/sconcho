@@ -63,11 +63,3 @@ bool KnittingSymbol::Init()
 }
 
 
-
-
-
-
-/* define an empty knittingSymbol object for convenience */
-
-
-

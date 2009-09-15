@@ -110,6 +110,29 @@ void GraphicsScene::update_selected_symbol(
 }
 
 
+//-------------------------------------------------------------
+// update the present list of grid items; if the number of
+// selected items matches the number we need based on the
+// knitting symbol and they are adjacent we can place the
+// symbol
+//--------------------------------------------------------------
+void GraphicsScene::grid_item_selected(PatternGridItem* anItem, 
+    bool status)
+{
+  if (status)
+  {
+    activeItems_.append(anItem);
+  }
+  else
+  {
+    activeItems_.removeOne(anItem);
+  }
+
+  qDebug() << "*** " << activeItems_.size();
+}
+
+
+
 /**************************************************************
  *
  * PRIVATE SLOTS
@@ -157,11 +180,9 @@ void GraphicsScene::create_grid_item_()
   {
     for (int row=0; row < 10; ++row)
     {
+      QPoint origin(originX+(col*aWidth), originY+(row*aHeight));
       PatternGridItem* item = 
-        new PatternGridItem(originX+(col*aWidth), 
-                            originY+(row*aHeight),
-                            aWidth, aHeight,this);
-
+        new PatternGridItem(origin, QSize(1,1), 30, this);
       item->Init();
 
       /* add it to our scene */

@@ -33,6 +33,7 @@
 #include <QPainter>
 
 
+
 /** local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
@@ -49,16 +50,15 @@
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-PatternGridItem::PatternGridItem(qreal aX, qreal aY, qreal aWidth,
-  qreal aHeight, GraphicsScene* myParent)
+PatternGridItem::PatternGridItem(const QPoint& aLoc, 
+  const QSize& aDim, const int aScale, GraphicsScene* myParent)
     :
       selected_(false),
       parent_(myParent),
       svgItem_(0),
-      x_(aX),
-      y_(aY),
-      width_(aWidth),
-      height_(aHeight)
+      loc_(aLoc),
+      dim_(aDim),
+      scaling_(aScale)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -75,7 +75,13 @@ bool PatternGridItem::Init()
   }
 
   /* call individual initialization routines */
-  set_up_pens_();
+  set_up_pens_brushes_();
+
+  /* some signals and slots */
+  connect(this, 
+          SIGNAL(item_selected(PatternGridItem*, bool)), 
+          parent_, 
+          SLOT(grid_item_selected(PatternGridItem*, bool)));
 
   return true;
 }
@@ -102,7 +108,7 @@ bool PatternGridItem::Init()
 //------------------------------------------------------------
 QRectF PatternGridItem::boundingRect() const
 {
-  return QRectF(x_, y_, width_, height_);
+  return QRectF(loc_, scaling_*dim_);
 }
   
   
@@ -114,7 +120,8 @@ void PatternGridItem::paint(QPainter *painter,
   const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
   painter->setPen(pen_);
-  painter->drawRect(x_, y_, width_, height_);
+  painter->setBrush(*currentBrush_);
+  painter->drawRect(QRectF(loc_, scaling_*dim_));
 }
 
 
@@ -129,15 +136,15 @@ void PatternGridItem::paint(QPainter *painter,
 // handle mouse press events 
 //-------------------------------------------------------------
 void PatternGridItem::mousePressEvent(
-  QGraphicsSceneMouseEvent* event)
+  QGraphicsSceneMouseEvent* anEvent)
 {
   /* get the currently selected symbol */
-  KnittingSymbolPtr symbol = parent_->get_selected_symbol();
-  QString symbolName = symbol->path();
+  //KnittingSymbolPtr symbol = parent_->get_selected_symbol();
+  //QString symbolName = symbol->path();
 
   /* delete the previous svgItem if there was one */
-  if ( svgItem_ != 0 ) 
-  {
+  /*if ( svgItem_ != 0 ) 
+   {
     delete svgItem_;
     svgItem_ = 0;
   }
@@ -147,6 +154,20 @@ void PatternGridItem::mousePressEvent(
     svgItem_ = new QGraphicsSvgItem(symbolName,this);
     fit_svg_();
     svgItem_->setVisible(true);
+  }
+  */
+
+  if (selected_)
+  {
+    selected_ = false;
+    currentBrush_ = &inactiveBrush_;
+    emit item_selected(this, false);
+  }
+  else
+  {
+    selected_ = true;
+    currentBrush_ = &activeBrush_;
+    emit item_selected(this, true);
   }
 
   /* repaint */
@@ -169,12 +190,17 @@ void PatternGridItem::mousePressEvent(
 //-------------------------------------------------------------
 // set up all the pens we use for drawing
 //-------------------------------------------------------------
-void PatternGridItem::set_up_pens_()
+void PatternGridItem::set_up_pens_brushes_()
 {
-  /* pen used when unselected */
+  /* pen used */
   pen_.setWidth(2);
   pen_.setJoinStyle(Qt::MiterJoin);
   pen_.setColor(Qt::black);
+
+  /* brushes for active/inactive item */
+  activeBrush_ = QBrush(Qt::red);
+  inactiveBrush_ = QBrush(Qt::white);
+  currentBrush_ = &inactiveBrush_;
 }
 
 
