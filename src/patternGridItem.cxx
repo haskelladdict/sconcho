@@ -36,6 +36,7 @@
 /** local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
+#include "knittingSymbol.h"
 #include "patternGridItem.h"
 
 
@@ -130,6 +131,10 @@ void PatternGridItem::paint(QPainter *painter,
 void PatternGridItem::mousePressEvent(
   QGraphicsSceneMouseEvent* event)
 {
+  /* get the currently selected symbol */
+  KnittingSymbolPtr symbol = parent_->get_selected_symbol();
+  QString symbolName = symbol->path();
+
   /* delete the previous svgItem if there was one */
   if ( svgItem_ != 0 ) 
   {
@@ -137,8 +142,6 @@ void PatternGridItem::mousePressEvent(
     svgItem_ = 0;
   }
 
-  /* get name of currently selected symbol from our parent */
-  QString symbolName = parent_->get_selected_symbol_name();
   if (symbolName != "")
   {
     svgItem_ = new QGraphicsSvgItem(symbolName,this);

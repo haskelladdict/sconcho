@@ -57,7 +57,7 @@ public:
   bool Init();
 
   /* accessor function to get at the symbol name */
-  const QString& get_selected_symbol_name();
+  const KnittingSymbolPtr get_selected_symbol();
  
 
 signals:

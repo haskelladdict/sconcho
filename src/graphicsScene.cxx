@@ -86,9 +86,9 @@ bool GraphicsScene::Init()
 //-------------------------------------------------------------
 // accessor function to get at the symbol name 
 //-------------------------------------------------------------
-const QString& GraphicsScene::get_selected_symbol_name()
+const KnittingSymbolPtr GraphicsScene::get_selected_symbol()
 {
-  return selectedSymbol_->path();
+  return selectedSymbol_;
 }
 
 
