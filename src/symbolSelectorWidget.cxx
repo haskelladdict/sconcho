@@ -177,7 +177,10 @@ void SymbolSelectorWidget::create_tabs_()
            symbols[i]));
   }
   mainLayout->addStretch(1);
-  setLayout(mainLayout);
+
+  QWidget* basicSymbols = new QWidget(this);
+  basicSymbols->setLayout(mainLayout);
+  addTab(basicSymbols, QString("basic"));
 }
 
 
