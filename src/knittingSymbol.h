@@ -18,79 +18,59 @@
 *
 ****************************************************************/
 
-#ifndef SYMBOL_SELECTOR_WIDGET_H 
-#define SYMBOL_SELECTOR_WIDGET_H 
+#ifndef KNITTING_SYMBOL_H
+#define KNITTING_SYMBOL_H
 
 /* boost includes */
-#include <boost/utility.hpp>
+#include <boost/shared_ptr.hpp>
 
 /* QT includes */
-#include <QGroupBox>
-#include <QTabWidget>
-
-/* local includes */
-#include "knittingSymbol.h"
-
-/* forward declarations */
-class QHBoxLayout;
-class QMouseEvent;
-class QSvgWidget;
-class SymbolSelectorItem;
-
-
-/* path to pattern database */
-const QString patternPath = "../trunk/symbols/";
+#include <QString>
+#include <QSize>
 
 
 
 /***************************************************************
  * 
- * The GraphicsScene handles the sconcho's main drawing
- * canvas 
+ * KnittingSymbol manages a single knitting symbol
  *
  ***************************************************************/
-class SymbolSelectorWidget
-  : 
-    public QTabWidget,
-    public boost::noncopyable
+class KnittingSymbol 
 {
   
-  Q_OBJECT
-
-    
 public:
 
-  explicit SymbolSelectorWidget(QWidget* myParent = 0);
+  explicit KnittingSymbol(const QString& aPath,
+      const QString& aName, const QSize& aDimension,
+      const QString& aDescription, const QString& aInstruction);
   bool Init();
 
 
-signals:
+  /* some basic accessors */
+  const QString& path() { return svgPath_; }
+  const QString& name() { return name_; }
+  const QSize& dim() { return dimensions_; }
+  const QString& desc() { return description_; }
+  const QString& instructions() { return instructions_; }
 
-  void selected_symbol_changed(const KnittingSymbolPtr symbol);
 
 
-public slots:
-
-   void change_highlighted_item(SymbolSelectorItem*, bool state);
-
-    
 private:
 
   /* some tracking variables */
   int status_;
-
-  /* the currently selected symbol */
-  SymbolSelectorItem* highlightedItem_;
-
-  /* empty knitting symbol object indicating that none
-   * is currently selected */
-  KnittingSymbolPtr emptySymbol_;
-
-  /* functions */
-  QHBoxLayout* create_symbol_layout_(const QString& name); 
   
-  void create_tabs_();
-};
+  QString svgPath_;
+  QString name_;
+  QSize dimensions_;
+  QString description_;
+  QString instructions_;
+}; 
+
+
+/* convenience typedef */
+typedef boost::shared_ptr<KnittingSymbol> KnittingSymbolPtr;
+
 
 
 #endif

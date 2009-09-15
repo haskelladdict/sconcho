@@ -2,6 +2,7 @@ INCLUDE(${QT_USE_FILE})
 
 SET(SCONCHO_SRCS
   graphicsScene.cxx
+  knittingSymbol.cxx
   mainWindow.cxx
   patternGridItem.cxx
   sconcho.cxx

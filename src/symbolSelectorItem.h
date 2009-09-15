@@ -29,6 +29,10 @@
 #include <QSize>
 #include <QString>
 
+/* local includes */
+#include "knittingSymbol.h"
+
+
 /* forward declarations */
 class QHBoxLayout;
 class QMouseEvent;
@@ -54,15 +58,15 @@ class SymbolSelectorItem
 
 public:
 
-  explicit SymbolSelectorItem(const QString& name, 
-      QWidget* myParent = 0);
+  explicit SymbolSelectorItem(KnittingSymbolPtr name, 
+    QWidget* myParent = 0);
   bool Init();
 
 
   /* some basic accessors */
   void select();
   void unselect();
-  QString symbol_name();
+  const KnittingSymbolPtr symbol_info() const;
 
 
 signals:
@@ -83,8 +87,9 @@ private:
   QString selectedStyleSheet_;
   QString unselectedStyleSheet_;
 
-  /* the pathname identifying us */
-  QString name_;
+  /* object holding all the info about the underlying 
+   * knitting symbol */
+  KnittingSymbolPtr symbol_;
 
   /* the QSvgWidget we own */
   QSvgWidget* symbolSvg_;

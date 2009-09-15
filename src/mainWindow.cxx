@@ -37,6 +37,7 @@
 /** local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
+#include "knittingSymbol.h"
 #include "mainWindow.h"
 #include "symbolSelectorWidget.h"
 
@@ -78,9 +79,9 @@ bool MainWindow::Init()
   create_main_splitter_();
 
   connect(symbolSelector_,
-          SIGNAL(selected_symbol_changed(const QString&)),
+          SIGNAL(selected_symbol_changed(const KnittingSymbolPtr)),
           canvas_,
-          SLOT(update_selected_symbol(const QString&))
+          SLOT(update_selected_symbol(const KnittingSymbolPtr))
          );
 
 

@@ -29,6 +29,7 @@
 /** local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
+#include "knittingSymbol.h"
 #include "patternGridItem.h"
 
 
@@ -44,7 +45,8 @@
 GraphicsScene::GraphicsScene(QObject* myParent)
   :
   QGraphicsScene(myParent),
-  selectedSymbolName_("")
+  selectedSymbol_(
+      KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"","")))
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -86,7 +88,7 @@ bool GraphicsScene::Init()
 //-------------------------------------------------------------
 const QString& GraphicsScene::get_selected_symbol_name()
 {
-  return selectedSymbolName_;
+  return selectedSymbol_->path();
 }
 
 
@@ -101,9 +103,10 @@ const QString& GraphicsScene::get_selected_symbol_name()
 // update our local copy of the name of the currently selected
 // symbol
 //-------------------------------------------------------------
-void GraphicsScene::update_selected_symbol(QString newName)
+void GraphicsScene::update_selected_symbol(
+    const KnittingSymbolPtr symbol)
 {
-  selectedSymbolName_ = newName;
+  selectedSymbol_ = symbol;
 }
 
 

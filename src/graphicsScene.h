@@ -28,6 +28,7 @@
 #include <QGraphicsScene>
 
 /* local includes */
+#include "knittingSymbol.h"
 
 /* a few forward declarations */
 class PatternGridItem;
@@ -66,7 +67,7 @@ signals:
 
 public slots:
 
-  void update_selected_symbol(QString newName);
+  void update_selected_symbol(const KnittingSymbolPtr symbol);
 
   
 //private slots:
@@ -83,7 +84,7 @@ private:
   int status_;
 
   /* name of currently selected symbol */
-  QString selectedSymbolName_;
+  KnittingSymbolPtr selectedSymbol_;
 
   /* helper functions */
   void create_grid_item_();

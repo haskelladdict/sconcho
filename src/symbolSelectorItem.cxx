@@ -39,13 +39,13 @@
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-SymbolSelectorItem::SymbolSelectorItem(const QString& name, 
+SymbolSelectorItem::SymbolSelectorItem(KnittingSymbolPtr symbol, 
     QWidget* myParent)
   :
     QGroupBox(myParent),
     selected_(false),
-    name_(name),
-    symbolSvg_(new QSvgWidget(name))
+    symbol_(symbol),
+    symbolSvg_(new QSvgWidget(symbol->path()))
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -106,7 +106,6 @@ void SymbolSelectorItem::select()
 {
   selected_ = true;
   setStyleSheet(selectedStyleSheet_);
-//  setContentsMargins(0,0,0,0);
 }
 
 
@@ -114,16 +113,15 @@ void SymbolSelectorItem::unselect()
 {
   selected_ = false;
   setStyleSheet(unselectedStyleSheet_);
-//  setContentsMargins(0,0,0,0);
 }
 
 
 //------------------------------------------------------------
 // return our name 
 //------------------------------------------------------------
-QString SymbolSelectorItem::symbol_name()
+const KnittingSymbolPtr SymbolSelectorItem::symbol_info() const
 {
-  return name_;
+  return symbol_;
 }
 
 

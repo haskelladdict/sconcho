@@ -62,6 +62,10 @@ bool SymbolSelectorWidget::Init()
     return false;
   }
 
+  /* initialize empty symbol object */
+  emptySymbol_ = KnittingSymbolPtr(
+      new KnittingSymbol("","",QSize(0,0),"",""));
+
   /* call individual initialization routines */
   create_tabs_();
 
@@ -101,12 +105,12 @@ void SymbolSelectorWidget::change_highlighted_item(
   {
     highlightedItem_ = newItem;
     highlightedItem_->select();
-    emit selected_symbol_changed(newItem->symbol_name());
+    emit selected_symbol_changed(newItem->symbol_info());
   }
   else
   {
     highlightedItem_ = 0;
-    emit selected_symbol_changed("");
+    emit selected_symbol_changed(emptySymbol_);
   }
 } 
 
@@ -142,10 +146,17 @@ void SymbolSelectorWidget::change_highlighted_item(
 // list of available widgets 
 //-------------------------------------------------------------
 QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
-    const QString& fileName, const QString& symbolName) 
+    const QString& symbolName)
 {
-  SymbolSelectorItem* symbol = new SymbolSelectorItem(fileName,
-      this);
+  /* create a new knittingSymbol object */
+  KnittingSymbolPtr sym = KnittingSymbolPtr(
+      new KnittingSymbol(patternPath + symbolName + ".svg",
+                         symbolName,
+                         QSize(1,1),
+                         "",
+                         ""));
+
+  SymbolSelectorItem* symbol = new SymbolSelectorItem(sym,this);
   symbol->Init();
  
   QLabel* symbolLabel = new QLabel(symbolName);
@@ -163,7 +174,6 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
 //-------------------------------------------------------------
 void SymbolSelectorWidget::create_tabs_()
 {
-  QString path = "../trunk/symbols/";
   QList<QString> symbols;
   symbols.push_back("knit");
   symbols.push_back("purl");
@@ -172,9 +182,7 @@ void SymbolSelectorWidget::create_tabs_()
   QVBoxLayout* mainLayout = new QVBoxLayout(this);
   for (int i = 0; i < symbols.length(); ++i)
   {
-     mainLayout->addLayout(create_symbol_layout_(
-           path + symbols[i] + ".svg", 
-           symbols[i]));
+     mainLayout->addLayout(create_symbol_layout_(symbols[i]));
   }
   mainLayout->addStretch(1);
 
