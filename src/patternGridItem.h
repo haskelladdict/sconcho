@@ -31,6 +31,7 @@
 #include <QList>
 
 /* local includes */
+#include "knittingSymbol.h"
 
 /* a few forward declarations */
 class GraphicsScene;
@@ -72,13 +73,13 @@ public:
   const QPoint& origin() { return loc_; }
   const QSize& dim() { return dim_; }
 
+  /* insert a new knitting symbol to be displayed */
+  void insert_knitting_symbol(KnittingSymbolPtr symbol);
+
 
 signals:
 
   void item_selected(PatternGridItem* us, bool status);
-
-
-//public slots:
 
 
 protected:
@@ -86,7 +87,6 @@ protected:
   void mousePressEvent(QGraphicsSceneMouseEvent* event);
 
  
-//private slots:
     
 private:
 
@@ -99,6 +99,7 @@ private:
 
   /* our data symbol */
   QGraphicsSvgItem* svgItem_;
+  KnittingSymbolPtr knittingSymbol_;
 
   /* our location and dimensions */
   QPoint loc_;
@@ -114,6 +115,8 @@ private:
   /* functions */
   void set_up_pens_brushes_();
   void fit_svg_();
+  void select_();
+  void unselect_();
 };
 
 

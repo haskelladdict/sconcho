@@ -37,7 +37,6 @@
 /** local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
-#include "knittingSymbol.h"
 #include "patternGridItem.h"
 
 
@@ -125,6 +124,34 @@ void PatternGridItem::paint(QPainter *painter,
 }
 
 
+//-------------------------------------------------------------
+// insert a new knitting symbol
+//-------------------------------------------------------------
+void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
+{
+  /* update pointers */
+  knittingSymbol_ = aSymbol;
+  QString symbolPath(aSymbol->path());
+
+  /* deselect us */
+  unselect_();
+
+  /* delete the previous svgItem if there was one */
+  if ( svgItem_ != 0 ) 
+   {
+    delete svgItem_;
+    svgItem_ = 0;
+  }
+
+  if (symbolPath != "")
+  {
+    svgItem_ = new QGraphicsSvgItem(symbolPath,this);
+    fit_svg_();
+    svgItem_->setVisible(true);
+  }
+}
+  
+
 
 /**************************************************************
  *
@@ -138,35 +165,14 @@ void PatternGridItem::paint(QPainter *painter,
 void PatternGridItem::mousePressEvent(
   QGraphicsSceneMouseEvent* anEvent)
 {
-  /* get the currently selected symbol */
-  //KnittingSymbolPtr symbol = parent_->get_selected_symbol();
-  //QString symbolName = symbol->path();
-
-  /* delete the previous svgItem if there was one */
-  /*if ( svgItem_ != 0 ) 
-   {
-    delete svgItem_;
-    svgItem_ = 0;
-  }
-
-  if (symbolName != "")
-  {
-    svgItem_ = new QGraphicsSvgItem(symbolName,this);
-    fit_svg_();
-    svgItem_->setVisible(true);
-  }
-  */
-
   if (selected_)
   {
-    selected_ = false;
-    currentBrush_ = &inactiveBrush_;
+    unselect_();
     emit item_selected(this, false);
   }
   else
   {
-    selected_ = true;
-    currentBrush_ = &activeBrush_;
+    select_();
     emit item_selected(this, true);
   }
 
@@ -237,3 +243,23 @@ void PatternGridItem::fit_svg_()
   /* translate */
   svgItem_->moveBy(boxRect.x()+pen_.width(), boxRect.y()+pen_.width());
 }
+
+
+//-----------------------------------------------------------------
+// helper function for doing the internal housekeeping during
+// selecting/unselecting
+// NOTE: these functions should not emit an item_selected signal
+//-----------------------------------------------------------------
+void PatternGridItem::select_()
+{
+  selected_ = true;
+  currentBrush_ = &activeBrush_;
+}
+
+
+void PatternGridItem::unselect_()
+{
+  selected_ = false;
+  currentBrush_ = &inactiveBrush_;
+}
+

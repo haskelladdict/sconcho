@@ -145,6 +145,8 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
   /* if we only need and have a single cell we're already good */
   if ( activeItems_.size() == 1 )
   {
+    activeItems_.at(0)->insert_knitting_symbol(selectedSymbol_);
+    activeItems_.clear();
     return;
   }
 
@@ -204,16 +206,15 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
   {
     removeItem(activeItems_[i]);
   }
-  
-  /* clear list of active items */
-  activeItems_.clear();
-
   PatternGridItem* item = 
     new PatternGridItem(newOrigin, QSize(totalWidth,1), cellSize_, this);
   item->Init();
-
-  /* add it to our scene */
   addItem(item);
+
+  /* place knitting symbol and purge previously active items */
+  activeItems_.clear();
+  item->insert_knitting_symbol(selectedSymbol_);
+
 
   qDebug() << "All is well";
 
@@ -276,4 +277,3 @@ void GraphicsScene::create_grid_item_()
     }
   }
 }
-  
