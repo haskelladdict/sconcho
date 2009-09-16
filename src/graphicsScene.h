@@ -84,6 +84,9 @@ private:
   /* construction status variable */
   int status_;
 
+  /* side length of a basic cell */
+  int cellSize_;
+
   /* list of currenly selected items */
   QList<PatternGridItem*> activeItems_;
 

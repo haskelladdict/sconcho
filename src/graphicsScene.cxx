@@ -45,6 +45,7 @@
 GraphicsScene::GraphicsScene(QObject* myParent)
   :
   QGraphicsScene(myParent),
+  cellSize_(30),
   selectedSymbol_(
       KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"","")))
 {
@@ -119,6 +120,7 @@ void GraphicsScene::update_selected_symbol(
 void GraphicsScene::grid_item_selected(PatternGridItem* anItem, 
     bool status)
 {
+  /* first update our list of currently selected items */
   if (status)
   {
     activeItems_.append(anItem);
@@ -128,7 +130,93 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
     activeItems_.removeOne(anItem);
   }
 
-  qDebug() << "*** " << activeItems_.size();
+  /* check how many cells we need for the currently selected
+   * knitting symbol */
+  QSize size = selectedSymbol_->dim();
+  int cellsNeeded = size.width() * size.height();
+
+  /* not the correct number of cells */
+  if ( activeItems_.length() != cellsNeeded )
+  {
+    qDebug() << "Please select " << cellsNeeded << " adjacent cells!";
+    return;
+  }
+
+  /* if we only need and have a single cell we're already good */
+  if ( activeItems_.size() == 1 )
+  {
+    return;
+  }
+
+
+  /* we have the correct number, now make sure that 
+   * selected cells are adjacent */
+  QSet<int> yCoords;
+  QMap<int,int> dims;
+  for (int i=0; i < activeItems_.length(); ++i)
+  {
+    QPoint origin = activeItems_[i]->origin();
+    QSize cellDim = activeItems_[i]->dim();
+    yCoords.insert(origin.y());
+    dims[origin.x()] = cellDim.width();
+  }
+
+  /* compute total selected width and make sure it matches
+   * what we need */
+  int totalWidth = 0;
+  QList<int> widths = dims.values();
+  for (int i=0; i < widths.size(); ++i)
+  {
+    totalWidth += widths[i];
+  }
+
+  if (totalWidth != cellsNeeded)
+  {
+    qDebug() << "The total number of selected units does not match";
+    return;
+  }
+
+  /* all items need to be in a single row */
+  if ( yCoords.size() != 1 )
+  {
+    qDebug() << "The selected items have to be in a single row";
+    return;
+  }
+
+  /* check if origins are adjacent */
+  QList<int> dimOrigins = dims.keys();
+  qSort(dimOrigins.begin(), dimOrigins.end());
+  for (int i=0; i < dimOrigins.size()-1; ++i)
+  {
+    int expectedNeighbor =  dimOrigins[i] + dims[dimOrigins[i]] * cellSize_;
+    int actualNeighbor = dimOrigins[i+1];
+    if ( expectedNeighbor != actualNeighbor )
+    {
+      qDebug() << "The selected items have to be adjacent " << expectedNeighbor << " " << actualNeighbor;
+      return;
+    }
+  }
+
+  /* delete selected cells and replace by a single one of the
+   * requested size */
+  QPoint newOrigin(dimOrigins[0], yCoords.toList()[0]);
+    for (int i=0; i < activeItems_.size(); ++i)
+  {
+    removeItem(activeItems_[i]);
+  }
+  
+  /* clear list of active items */
+  activeItems_.clear();
+
+  PatternGridItem* item = 
+    new PatternGridItem(newOrigin, QSize(totalWidth,1), cellSize_, this);
+  item->Init();
+
+  /* add it to our scene */
+  addItem(item);
+
+  qDebug() << "All is well";
+
 }
 
 
@@ -173,16 +261,14 @@ void GraphicsScene::create_grid_item_()
 {
   int originX = 0;
   int originY = 0;
-  int aWidth = 30;
-  int aHeight = 30;
 
   for (int col=0; col < 10; ++col)
   {
     for (int row=0; row < 10; ++row)
     {
-      QPoint origin(originX+(col*aWidth), originY+(row*aHeight));
+      QPoint origin(originX+(col*cellSize_), originY+(row*cellSize_));
       PatternGridItem* item = 
-        new PatternGridItem(origin, QSize(1,1), 30, this);
+        new PatternGridItem(origin, QSize(1,1), cellSize_, this);
       item->Init();
 
       /* add it to our scene */

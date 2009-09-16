@@ -68,6 +68,10 @@ public:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     QWidget *widget);
 
+  /* accessors for properties */
+  const QPoint& origin() { return loc_; }
+  const QSize& dim() { return dim_; }
+
 
 signals:
 
