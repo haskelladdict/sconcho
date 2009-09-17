@@ -61,7 +61,11 @@ public:
   /* accessor functions */ 
   const KnittingSymbolPtr get_selected_symbol();
   bool shift_pressed();
- 
+
+  /* create the main pattern grid item */
+  void create_grid_item(const QPoint& origin, int numCol, 
+      int numRows, int cellSize);
+
 
 signals:
 
@@ -93,7 +97,10 @@ private:
   /* is shift currently pressed */
   bool shiftPressed_;
 
-  /* side length of a basic cell */
+  /* basic dimensions */
+  QPoint origin_;
+  int numCols_;
+  int numRows_;
   int cellSize_;
 
   /* list of currenly selected items */
@@ -103,7 +110,6 @@ private:
   KnittingSymbolPtr selectedSymbol_;
 
   /* helper functions */
-  void create_grid_item_();
   void try_place_knitting_symbol_();
 };
 

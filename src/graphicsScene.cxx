@@ -47,7 +47,10 @@ GraphicsScene::GraphicsScene(QObject* myParent)
   :
   QGraphicsScene(myParent),
   shiftPressed_(false),
-  cellSize_(30),
+  origin_(QPoint(0,0)),
+  numCols_(0),
+  numRows_(0),
+  cellSize_(0),
   selectedSymbol_(
       KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"","")))
 {
@@ -64,9 +67,6 @@ bool GraphicsScene::Init()
   {
     return false;
   }
-
-  create_grid_item_();
-
 
   /* install signal handlers */
   connect(this,
@@ -108,7 +108,36 @@ bool GraphicsScene::shift_pressed()
   return shiftPressed_;
 }
 
- 
+
+//-------------------------------------------------------------
+// create the grid
+//-------------------------------------------------------------
+void GraphicsScene::create_grid_item(const QPoint& theOrigin, 
+    int nCols, int nRows, int size)
+{
+  origin_ = theOrigin;
+  numCols_ = nCols;
+  numRows_ = nRows;
+  cellSize_ = size;
+
+  for (int col=0; col < numCols_; ++col)
+  {
+    for (int row=0; row < numRows_; ++row)
+    {
+      QPoint origin(origin_.x() +(col*cellSize_), 
+                    origin_.y() +(row*cellSize_));
+      PatternGridItem* item = 
+        new PatternGridItem(origin, QSize(1,1), cellSize_, this);
+      item->Init();
+
+      /* add it to our scene */
+      addItem(item);
+    }
+  }
+}
+
+
+  
 /**************************************************************
  *
  * PUBLIC SLOTS
@@ -237,31 +266,6 @@ void GraphicsScene::keyReleaseEvent(QKeyEvent* keyEvent)
  * PRIVATE MEMBER FUNCTIONS
  *
  *************************************************************/
-
-
-//-------------------------------------------------------------
-// create the grid
-//-------------------------------------------------------------
-void GraphicsScene::create_grid_item_()
-{
-  int originX = 0;
-  int originY = 0;
-
-  for (int col=0; col < 10; ++col)
-  {
-    for (int row=0; row < 10; ++row)
-    {
-      QPoint origin(originX+(col*cellSize_), originY+(row*cellSize_));
-      PatternGridItem* item = 
-        new PatternGridItem(origin, QSize(1,1), cellSize_, this);
-      item->Init();
-
-      /* add it to our scene */
-      addItem(item);
-    }
-  }
-}
-
 
 //-------------------------------------------------------------
 // this function tries to place the currently active
