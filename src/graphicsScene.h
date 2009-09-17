@@ -104,6 +104,7 @@ private:
 
   /* helper functions */
   void create_grid_item_();
+  void try_place_knitting_symbol_();
 };
 
 

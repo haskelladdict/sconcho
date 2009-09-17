@@ -123,6 +123,10 @@ void GraphicsScene::update_selected_symbol(
     const KnittingSymbolPtr symbol)
 {
   selectedSymbol_ = symbol;
+
+  /* we'll also try to place the newly picked item into
+   * the currently selected cells */
+  try_place_knitting_symbol_();
 }
 
 
@@ -145,81 +149,7 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
     activeItems_.removeOne(anItem);
   }
 
-  /* check how many cells we need for the currently selected
-   * knitting symbol */
-  QSize size = selectedSymbol_->dim();
-  int cellsNeeded = size.width() * size.height();
-
-  /* we have the correct number, now make sure that 
-   * selected cells are adjacent */
-  QSet<int> yCoords;
-  QMap<int,int> dims;
-  for (int i=0; i < activeItems_.length(); ++i)
-  {
-    QPoint origin = activeItems_[i]->origin();
-    QSize cellDim = activeItems_[i]->dim();
-    yCoords.insert(origin.y());
-    dims[origin.x()] = cellDim.width();
-  }
-
-  /* compute total selected width and make sure it matches
-   * what we need */
-  int totalWidth = 0;
-  QList<int> widths = dims.values();
-  for (int i=0; i < widths.size(); ++i)
-  {
-    totalWidth += widths[i];
-  }
-
-  if (totalWidth != cellsNeeded)
-  {
-    emit statusBar_message("Number of selected grid units does not "
-        "match selected pattern size");
-    return;
-  }
-
-  /* all items need to be in a single row */
-  if ( yCoords.size() != 1 )
-  {
-    emit statusBar_message("The selected items have to be in a "
-        "single row");
-    return;
-  }
-
-  /* check if origins are adjacent */
-  QList<int> dimOrigins = dims.keys();
-  qSort(dimOrigins.begin(), dimOrigins.end());
-  for (int i=0; i < dimOrigins.size()-1; ++i)
-  {
-    int expectedNeighborPos = dimOrigins[i] 
-      + dims[dimOrigins[i]] * cellSize_;
-    int actualNeighborPos = dimOrigins[i+1];
-    if ( expectedNeighborPos != actualNeighborPos )
-    {
-      emit statusBar_message("The selected items have to be adjacent");
-      return;
-    }
-  }
-
-  /* delete selected cells and replace by a single one of the
-   * requested size */
-  QPoint newOrigin(dimOrigins[0], yCoords.toList()[0]);
-    for (int i=0; i < activeItems_.size(); ++i)
-  {
-    removeItem(activeItems_[i]);
-  }
-  PatternGridItem* item = 
-    new PatternGridItem(newOrigin, QSize(totalWidth,1), 
-      cellSize_, this);
-  item->Init();
-  addItem(item);
-
-  /* place knitting symbol and purge previously active items */
-  activeItems_.clear();
-  item->insert_knitting_symbol(selectedSymbol_);
-
-  /* clear StatusBar */
-  emit statusBar_message("");
+  try_place_knitting_symbol_();
 }
 
 
@@ -331,3 +261,88 @@ void GraphicsScene::create_grid_item_()
     }
   }
 }
+
+
+//-------------------------------------------------------------
+// this function tries to place the currently active
+// knitting symbol into the selected pattern grid cells
+//-------------------------------------------------------------
+void GraphicsScene::try_place_knitting_symbol_()
+{
+  /* check how many cells we need for the currently selected
+   * knitting symbol */
+  QSize size = selectedSymbol_->dim();
+  int cellsNeeded = size.width() * size.height();
+
+  /* we have the correct number, now make sure that 
+   * selected cells are adjacent */
+  QSet<int> yCoords;
+  QMap<int,int> dims;
+  for (int i=0; i < activeItems_.length(); ++i)
+  {
+    QPoint origin = activeItems_[i]->origin();
+    QSize cellDim = activeItems_[i]->dim();
+    yCoords.insert(origin.y());
+    dims[origin.x()] = cellDim.width();
+  }
+
+  /* compute total selected width and make sure it matches
+   * what we need */
+  int totalWidth = 0;
+  QList<int> widths = dims.values();
+  for (int i=0; i < widths.size(); ++i)
+  {
+    totalWidth += widths[i];
+  }
+
+  if (totalWidth != cellsNeeded)
+  {
+    emit statusBar_message("Number of selected grid units does not "
+        "match selected pattern size");
+    return;
+  }
+
+  /* all items need to be in a single row */
+  if ( yCoords.size() != 1 )
+  {
+    emit statusBar_message("The selected items have to be in a "
+        "single row");
+    return;
+  }
+
+  /* check if origins are adjacent */
+  QList<int> dimOrigins = dims.keys();
+  qSort(dimOrigins.begin(), dimOrigins.end());
+  for (int i=0; i < dimOrigins.size()-1; ++i)
+  {
+    int expectedNeighborPos = dimOrigins[i] 
+      + dims[dimOrigins[i]] * cellSize_;
+    int actualNeighborPos = dimOrigins[i+1];
+    if ( expectedNeighborPos != actualNeighborPos )
+    {
+      emit statusBar_message("The selected items have to be adjacent");
+      return;
+    }
+  }
+
+  /* delete selected cells and replace by a single one of the
+   * requested size */
+  QPoint newOrigin(dimOrigins[0], yCoords.toList()[0]);
+    for (int i=0; i < activeItems_.size(); ++i)
+  {
+    removeItem(activeItems_[i]);
+  }
+  PatternGridItem* item = 
+    new PatternGridItem(newOrigin, QSize(totalWidth,1), 
+      cellSize_, this);
+  item->Init();
+  addItem(item);
+
+  /* place knitting symbol and purge previously active items */
+  activeItems_.clear();
+  item->insert_knitting_symbol(selectedSymbol_);
+
+  /* clear StatusBar */
+  emit statusBar_message("");
+}
+
