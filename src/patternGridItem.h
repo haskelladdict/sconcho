@@ -80,6 +80,7 @@ public:
 signals:
 
   void item_selected(PatternGridItem* us, bool status);
+  void item_reset(PatternGridItem* us);
 
 
 protected:

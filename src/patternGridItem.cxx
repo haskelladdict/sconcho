@@ -82,6 +82,12 @@ bool PatternGridItem::Init()
           parent_, 
           SLOT(grid_item_selected(PatternGridItem*, bool)));
 
+  connect(this, 
+          SIGNAL(item_reset(PatternGridItem*)), 
+          parent_, 
+          SLOT(grid_item_reset(PatternGridItem*)));
+
+
   return true;
 }
 
@@ -165,15 +171,24 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
 void PatternGridItem::mousePressEvent(
   QGraphicsSceneMouseEvent* anEvent)
 {
-  if (selected_)
+  /* if the user has shift pressed this is a reset event
+   * otherwise a select/deselect event */
+  if (parent_->shift_pressed())
   {
-    unselect_();
-    emit item_selected(this, false);
+    emit item_reset(this);
   }
   else
   {
-    select_();
-    emit item_selected(this, true);
+    if (selected_)
+    {
+      unselect_();
+      emit item_selected(this, false);
+    }
+    else
+    {
+      select_();
+      emit item_selected(this, true);
+    }
   }
 
   /* repaint */

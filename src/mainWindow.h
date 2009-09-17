@@ -83,6 +83,7 @@ public:
 public slots:
 
   void update_mouse_position_display(QPointF newPos);
+  void show_statusBar_message(QString msg);
 
   
 private slots:

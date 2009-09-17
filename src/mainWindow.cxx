@@ -110,6 +110,17 @@ void MainWindow::update_mouse_position_display(QPointF newPosition)
   currentMousePosWidget_->setText(newLabel);
 }
 
+
+//-------------------------------------------------------------
+// update the status bar message
+//-------------------------------------------------------------
+void MainWindow::show_statusBar_message(QString aMessage)
+{
+  statusBarMessages_->setText(aMessage);
+}
+
+
+
 /**************************************************************
  *
  * PRIVATE SLOTS

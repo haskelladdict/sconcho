@@ -34,6 +34,7 @@
 /* a few forward declarations */
 class PatternGridItem;
 class QGraphicsSceneMouseEvent;
+class QKeyEvent;
 
 
 
@@ -57,19 +58,22 @@ public:
   explicit GraphicsScene(QObject* myParent);
   bool Init();
 
-  /* accessor function to get at the symbol name */
+  /* accessor functions */ 
   const KnittingSymbolPtr get_selected_symbol();
+  bool shift_pressed();
  
 
 signals:
 
   void mouse_moved(QPointF position);
+  void statusBar_message(QString msg);
  
 
 public slots:
 
   void update_selected_symbol(const KnittingSymbolPtr symbol);
   void grid_item_selected(PatternGridItem* item, bool status);
+  void grid_item_reset(PatternGridItem*);
 
   
 //private slots:
@@ -77,12 +81,17 @@ public slots:
 protected:
 
   void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
+  void keyPressEvent(QKeyEvent* mouseEvent);
+  void keyReleaseEvent(QKeyEvent* mouseEvent);
 
   
 private:
 
   /* construction status variable */
   int status_;
+
+  /* is shift currently pressed */
+  bool shiftPressed_;
 
   /* side length of a basic cell */
   int cellSize_;

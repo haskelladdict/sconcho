@@ -24,6 +24,7 @@
 #include <QGraphicsItemGroup>
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QKeyEvent>
 
 
 /** local headers */
@@ -45,6 +46,7 @@
 GraphicsScene::GraphicsScene(QObject* myParent)
   :
   QGraphicsScene(myParent),
+  shiftPressed_(false),
   cellSize_(30),
   selectedSymbol_(
       KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"","")))
@@ -73,6 +75,11 @@ bool GraphicsScene::Init()
           SLOT(update_mouse_position_display(QPointF))
          );
 
+  connect(this,
+          SIGNAL(statusBar_message(QString)),
+          parent(),
+          SLOT(show_statusBar_message(QString))
+         );
   
   return true;
 }
@@ -92,6 +99,14 @@ const KnittingSymbolPtr GraphicsScene::get_selected_symbol()
   return selectedSymbol_;
 }
 
+
+//-------------------------------------------------------------
+// accessor function for status of shift key
+//-------------------------------------------------------------
+bool GraphicsScene::shift_pressed()
+{
+  return shiftPressed_;
+}
 
  
 /**************************************************************
@@ -135,22 +150,6 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
   QSize size = selectedSymbol_->dim();
   int cellsNeeded = size.width() * size.height();
 
-  /* not the correct number of cells */
-  if ( activeItems_.length() != cellsNeeded )
-  {
-    qDebug() << "Please select " << cellsNeeded << " adjacent cells!";
-    return;
-  }
-
-  /* if we only need and have a single cell we're already good */
-  if ( activeItems_.size() == 1 )
-  {
-    activeItems_.at(0)->insert_knitting_symbol(selectedSymbol_);
-    activeItems_.clear();
-    return;
-  }
-
-
   /* we have the correct number, now make sure that 
    * selected cells are adjacent */
   QSet<int> yCoords;
@@ -174,14 +173,16 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
 
   if (totalWidth != cellsNeeded)
   {
-    qDebug() << "The total number of selected units does not match";
+    emit statusBar_message("Number of selected grid units does not "
+        "match selected pattern size");
     return;
   }
 
   /* all items need to be in a single row */
   if ( yCoords.size() != 1 )
   {
-    qDebug() << "The selected items have to be in a single row";
+    emit statusBar_message("The selected items have to be in a "
+        "single row");
     return;
   }
 
@@ -190,11 +191,12 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
   qSort(dimOrigins.begin(), dimOrigins.end());
   for (int i=0; i < dimOrigins.size()-1; ++i)
   {
-    int expectedNeighbor =  dimOrigins[i] + dims[dimOrigins[i]] * cellSize_;
-    int actualNeighbor = dimOrigins[i+1];
-    if ( expectedNeighbor != actualNeighbor )
+    int expectedNeighborPos = dimOrigins[i] 
+      + dims[dimOrigins[i]] * cellSize_;
+    int actualNeighborPos = dimOrigins[i+1];
+    if ( expectedNeighborPos != actualNeighborPos )
     {
-      qDebug() << "The selected items have to be adjacent " << expectedNeighbor << " " << actualNeighbor;
+      emit statusBar_message("The selected items have to be adjacent");
       return;
     }
   }
@@ -207,7 +209,8 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
     removeItem(activeItems_[i]);
   }
   PatternGridItem* item = 
-    new PatternGridItem(newOrigin, QSize(totalWidth,1), cellSize_, this);
+    new PatternGridItem(newOrigin, QSize(totalWidth,1), 
+      cellSize_, this);
   item->Init();
   addItem(item);
 
@@ -215,11 +218,20 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
   activeItems_.clear();
   item->insert_knitting_symbol(selectedSymbol_);
 
-
-  qDebug() << "All is well";
-
+  /* clear StatusBar */
+  emit statusBar_message("");
 }
 
+
+
+//------------------------------------------------------------
+// rest a grid item to its original state, i.e., convert
+// it back into empty single unit cells
+//------------------------------------------------------------
+void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
+{
+  qDebug() << "reseting me";
+}
 
 
 /**************************************************************
@@ -246,6 +258,30 @@ void GraphicsScene::mouseMoveEvent(
   emit mouse_moved(currentPos);
 }
 
+
+//--------------------------------------------------------------
+// event handlers for key press and key release events
+//--------------------------------------------------------------
+void GraphicsScene::keyPressEvent(QKeyEvent* keyEvent)
+{
+  if (keyEvent->key() == Qt::Key_Shift)
+  {
+    shiftPressed_ = true;
+  }
+
+  QGraphicsScene::keyPressEvent(keyEvent);
+}
+
+
+void GraphicsScene::keyReleaseEvent(QKeyEvent* keyEvent)
+{
+  if (keyEvent->key() == Qt::Key_Shift)
+  {
+    shiftPressed_ = false;
+  }
+
+  QGraphicsScene::keyPressEvent(keyEvent);
+}
 
 
 /*************************************************************
