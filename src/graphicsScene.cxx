@@ -230,7 +230,25 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
 //------------------------------------------------------------
 void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
 {
-  qDebug() << "reseting me";
+  /* figure out where item is and how many cells it spans */
+  QPoint origin(anItem->origin());
+  QSize dim(anItem->dim());
+
+  /* get rid of the old cell making sure that we punt if from
+   * the set of activeItems if present */
+  activeItems_.removeAll(anItem);
+  removeItem(anItem);
+
+  /* start filling the hole with new cells */
+  int numNewCells = dim.width();
+  for (int i = 0; i < numNewCells; ++i)
+  {
+    QPoint newOrigin(origin.x() + i*cellSize_, origin.y());
+    PatternGridItem* item = 
+      new PatternGridItem(newOrigin, QSize(1,1), cellSize_, this);
+    item->Init();
+    addItem(item);
+  }
 }
 
 
