@@ -214,12 +214,12 @@ void PatternGridItem::mousePressEvent(
 void PatternGridItem::set_up_pens_brushes_()
 {
   /* pen used */
-  pen_.setWidth(2);
+  pen_.setWidth(1);
   pen_.setJoinStyle(Qt::MiterJoin);
   pen_.setColor(Qt::black);
 
   /* brushes for active/inactive item */
-  activeBrush_ = QBrush(Qt::red);
+  activeBrush_ = QBrush(Qt::yellow);
   inactiveBrush_ = QBrush(Qt::white);
   currentBrush_ = &inactiveBrush_;
 }
@@ -244,13 +244,13 @@ void PatternGridItem::fit_svg_()
   double scaleX = 1.0;
   if ( svgRect.width() > DBL_EPSILON )
   {
-    scaleX = (boxRect.width()-2*pen_.width())/svgRect.width();
+    scaleX = (boxRect.width()-pen_.width())/svgRect.width();
   }
 
   double scaleY = 1.0;
   if ( svgRect.height() > DBL_EPSILON )
   {
-    scaleY = (boxRect.height()-2*pen_.width())/svgRect.height();
+    scaleY = (boxRect.height()-pen_.width())/svgRect.height();
   }
 
   svgItem_->scale(scaleX, scaleY);

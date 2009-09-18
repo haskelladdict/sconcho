@@ -170,7 +170,8 @@ void MainWindow::show_file_export_menu_()
   }
 
   /* for now print the image in a fixed resolution */
-  QImage finalImage(600,600,QImage::Format_ARGB32_Premultiplied);
+  QImage finalImage(2*canvas_->width(), 2*canvas_->height(),
+      QImage::Format_ARGB32_Premultiplied);
   QPainter painter(&finalImage);
   painter.setRenderHints(QPainter::Antialiasing);
   canvas_->render(&painter);
