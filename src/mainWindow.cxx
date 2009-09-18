@@ -34,16 +34,10 @@
 #include <QStatusBar>
 
 
-#include <QDialog>
-#include <QGroupBox>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QSpinBox>
-
-
 /** local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
+#include "gridDimensionDialog.h"
 #include "knittingSymbol.h"
 #include "mainWindow.h"
 #include "symbolSelectorWidget.h"
@@ -322,44 +316,13 @@ void MainWindow::create_graphics_scene_()
   canvasView_ = new QGraphicsView(canvas_);
 
   /* ask user for the grid size */
-  QDialog* gridSizeDialog = new QDialog(this);
-  gridSizeDialog->setFixedSize(QSize(250,100));
-  gridSizeDialog->setModal(true);
-  gridSizeDialog->setWindowTitle(tr("Enter grid dimensions"));
-  gridSizeDialog->show();
-  QGroupBox* mainGrouper = new QGroupBox;
-  QVBoxLayout* mainLayout = new QVBoxLayout;
-  QHBoxLayout* xdimLayout = new QHBoxLayout;
-  QHBoxLayout* ydimLayout = new QHBoxLayout;
+  GridDimensionDialog* gridDialog = new GridDimensionDialog;
+  gridDialog->Init();
+  QSize gridSize = gridDialog->dim();
+  delete gridDialog;
 
-  QLabel* xdimLabel = new QLabel(tr("number of columns"));
-  QLabel* ydimLabel = new QLabel(tr("number of rows"));
-
-  QSpinBox* xdimSelector = new QSpinBox;
-  xdimSelector->setMinimum(0);
-  xdimSelector->setValue(0);
-  xdimSelector->setSingleStep(1);
-
-  QSpinBox* ydimSelector = new QSpinBox;
-  ydimSelector->setMinimum(0);
-  ydimSelector->setValue(0);
-  ydimSelector->setSingleStep(1);
-
-  xdimLayout->addWidget(xdimLabel);
-  xdimLayout->addStretch(1);
-  xdimLayout->addWidget(xdimSelector);
-
-  ydimLayout->addWidget(ydimLabel);
-  ydimLayout->addStretch(1);
-  ydimLayout->addWidget(ydimSelector);
-
-  mainLayout->addLayout(xdimLayout);
-  mainLayout->addLayout(ydimLayout);
-  mainGrouper->setLayout(mainLayout);
-
-  QHBoxLayout* widgetLayout = new QHBoxLayout;
-  widgetLayout->addWidget(mainGrouper);
-  gridSizeDialog->setLayout(widgetLayout);
+  /* create grid item */
+  canvas_->create_pattern_grid(QPoint(0,0), gridSize, 30);
 }
 
 

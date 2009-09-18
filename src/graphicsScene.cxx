@@ -112,12 +112,12 @@ bool GraphicsScene::shift_pressed()
 //-------------------------------------------------------------
 // create the grid
 //-------------------------------------------------------------
-void GraphicsScene::create_grid_item(const QPoint& theOrigin, 
-    int nCols, int nRows, int size)
+void GraphicsScene::create_pattern_grid(const QPoint& theOrigin, 
+    const QSize& dimension, int size)
 {
   origin_ = theOrigin;
-  numCols_ = nCols;
-  numRows_ = nRows;
+  numCols_ = dimension.width();
+  numRows_ = dimension.height();
   cellSize_ = size;
 
   for (int col=0; col < numCols_; ++col)

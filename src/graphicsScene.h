@@ -63,8 +63,8 @@ public:
   bool shift_pressed();
 
   /* create the main pattern grid item */
-  void create_grid_item(const QPoint& origin, int numCol, 
-      int numRows, int cellSize);
+  void create_pattern_grid(const QPoint& origin, const QSize& dim, 
+      int cellSize);
 
 
 signals:

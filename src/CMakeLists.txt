@@ -2,6 +2,7 @@ INCLUDE(${QT_USE_FILE})
 
 SET(SCONCHO_SRCS
   graphicsScene.cxx
+  gridDimensionDialog.cxx
   knittingSymbol.cxx
   mainWindow.cxx
   patternGridItem.cxx
@@ -12,6 +13,7 @@ SET(SCONCHO_SRCS
 
 SET(SCONCHO_MOC_HDRS
   graphicsScene.h
+  gridDimensionDialog.h
   mainWindow.h
   patternGridItem.h
   symbolSelectorItem.h
