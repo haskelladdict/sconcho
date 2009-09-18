@@ -24,6 +24,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QGraphicsView>
+#include <QGraphicsTextItem>
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
@@ -149,7 +150,7 @@ void MainWindow::show_file_export_menu_()
   QString currentDirectory = QDir::currentPath();
   QString saveFileName = QFileDialog::getSaveFileName(this,
     tr("Export Canvas"), currentDirectory,
-    tr("Image Files (*.png *.tif)"));
+    tr("Image Files (*.png *.tif *.jpg *.gif)"));
 
   if ( saveFileName.isEmpty() )
   {
@@ -161,7 +162,8 @@ void MainWindow::show_file_export_menu_()
   QFileInfo saveFileInfo(saveFileName);
   QString extension = saveFileInfo.completeSuffix();
 
-  if ( extension != "png" && extension != "tif" )
+  if ( extension != "png" && extension != "tif" 
+       && extension != "jpg" && extension != "gif" )
   {
     QMessageBox::warning(this, tr("Warning"),
       tr("Unknown file format ") + extension,
@@ -173,7 +175,9 @@ void MainWindow::show_file_export_menu_()
   QImage finalImage(2*canvas_->width(), 2*canvas_->height(),
       QImage::Format_ARGB32_Premultiplied);
   QPainter painter(&finalImage);
-  painter.setRenderHints(QPainter::Antialiasing);
+  painter.setRenderHints(QPainter::SmoothPixmapTransform);
+  painter.setRenderHints(QPainter::HighQualityAntialiasing);
+  painter.setRenderHints(QPainter::TextAntialiasing);
   canvas_->render(&painter);
   painter.end();
   finalImage.save(saveFileName); 
@@ -193,7 +197,10 @@ void MainWindow::show_print_menu_()
   {
     /* tell our canvas that we want to print its */
     QPainter painter(&aPrinter);
-    canvasView_->render(&painter);
+    painter.setRenderHints(QPainter::SmoothPixmapTransform);
+    painter.setRenderHints(QPainter::HighQualityAntialiasing);
+    painter.setRenderHints(QPainter::TextAntialiasing);
+    canvas_->render(&painter);
     painter.end();
   }
 }
@@ -324,6 +331,10 @@ void MainWindow::create_graphics_scene_()
 
   /* create grid item */
   canvas_->create_pattern_grid(QPoint(0,0), gridSize, 30);
+
+  QGraphicsTextItem* key = new QGraphicsTextItem("Key");
+  key->setPos(0, gridSize.height()*30+20);
+  canvas_->addItem(key);
 }
 
 
