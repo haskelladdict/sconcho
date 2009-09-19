@@ -33,7 +33,8 @@
 #include <QPrintDialog>
 #include <QSplitter>
 #include <QStatusBar>
-
+#include <QToolBar>
+#include <QToolButton>
 
 /** local headers */
 #include "basicDefs.h"
@@ -78,6 +79,7 @@ bool MainWindow::Init()
   create_status_bar_();
   create_graphics_scene_();
   create_symbols_widget_();
+  create_toolbar_();
   create_main_splitter_();
 
   connect(symbolSelector_,
@@ -85,7 +87,6 @@ bool MainWindow::Init()
           canvas_,
           SLOT(update_selected_symbol(const KnittingSymbolPtr))
          );
-
 
   setCentralWidget(mainSplitter_);
   return true;
@@ -174,13 +175,17 @@ void MainWindow::show_file_export_menu_()
   /* for now print the image in a fixed resolution 
    * NOTE: We seem to need the 1px buffer region to avoid
    *       the image being cut off */
-  QImage finalImage(2*canvas_->width()+1, 2*canvas_->height()+1,
+  QRectF theScene = canvas_->sceneRect();
+  theScene.adjust(-10,-10,10,10);  // need this to avoid cropping
+
+  QImage finalImage(theScene.width()*2, theScene.height() *2,
       QImage::Format_ARGB32_Premultiplied);
   QPainter painter(&finalImage);
   painter.setRenderHints(QPainter::SmoothPixmapTransform);
   painter.setRenderHints(QPainter::HighQualityAntialiasing);
   painter.setRenderHints(QPainter::TextAntialiasing);
-  canvas_->render(&painter);
+
+  canvas_->render(&painter, QRectF(), theScene);
   painter.end();
   finalImage.save(saveFileName); 
 }
@@ -223,6 +228,52 @@ void MainWindow::quit_sconcho_()
   }
 }
 
+
+//------------------------------------------------------------
+// SLOTS for zooming and paning
+//------------------------------------------------------------
+void MainWindow::zoom_in_()
+{
+  canvasView_->scale(1.1,1.1);
+}
+
+
+void MainWindow::zoom_out_()
+{
+  canvasView_->scale(0.9,0.9);
+}
+
+
+void MainWindow::pan_down_()
+{
+  canvasView_->translate(0,-30);
+}
+
+
+void MainWindow::pan_left_()
+{
+  canvasView_->translate(30,0);
+}
+
+
+void MainWindow::pan_right_()
+{
+  canvasView_->translate(-30,0);
+}
+
+
+void MainWindow::pan_up_()
+{
+  canvasView_->translate(0,30);
+}
+
+
+void MainWindow::fit_in_view_()
+{
+  QRectF canvasSize(canvas_->sceneRect());
+  canvasSize.adjust(-30,-30,30,30);
+  canvasView_->fitInView(canvasSize,Qt::KeepAspectRatio);
+}
 
 
 /*************************************************************
@@ -324,6 +375,8 @@ void MainWindow::create_graphics_scene_()
   }
 
   canvasView_ = new QGraphicsView(canvas_);
+  canvasView_->setDragMode(QGraphicsView::ScrollHandDrag);
+  canvasView_->setTransformationAnchor(QGraphicsView::NoAnchor);
 
   /* ask user for the grid size */
   GridDimensionDialog* gridDialog = new GridDimensionDialog;
@@ -331,12 +384,9 @@ void MainWindow::create_graphics_scene_()
   QSize gridSize = gridDialog->dim();
   delete gridDialog;
 
-  /* create grid item */
+  /* create pattern grid */
   canvas_->create_pattern_grid(QPoint(0,0), gridSize, 30);
-
-  //QGraphicsTextItem* key = new QGraphicsTextItem("Key");
-  //key->setPos(0, gridSize.height()*30+20);
-  //canvas_->addItem(key);
+  fit_in_view_();
 }
 
 
@@ -348,6 +398,94 @@ void MainWindow::create_symbols_widget_()
   symbolSelector_ = new SymbolSelectorWidget(this);
   symbolSelector_->Init();
 }
+
+
+//-------------------------------------------------------------
+// create toolbar
+//-------------------------------------------------------------
+void MainWindow::create_toolbar_()
+{
+  QToolBar* toolBar = new QToolBar(this);
+
+  /* FIXME: not implemented yet */
+/*  QToolButton* openButton = new QToolButton(this);
+  openButton->setIcon(QIcon(":/icons/fileopen.png"));
+  openButton->setToolTip(tr("open data file"));
+  toolBar->addWidget(openButton);
+  connect(openButton,SIGNAL(clicked()),this,
+      SLOT(show_file_open_menu_()));
+*/
+
+  QToolButton* exportButton = new QToolButton(this);
+  exportButton->setIcon(QIcon(":/icons/fileexport.png"));
+  exportButton->setToolTip(tr("export canvas"));
+  toolBar->addWidget(exportButton);
+  connect(exportButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(show_file_export_menu_()));
+ 
+  QToolButton* printButton = new QToolButton(this);
+  printButton->setIcon(QIcon(":/icons/fileprint.png"));
+  printButton->setToolTip(tr("print canvas"));
+  toolBar->addWidget(printButton);
+  connect(printButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(show_print_menu_()));
+
+  toolBar->addSeparator();
+
+  QToolButton* zoomInButton = new QToolButton(this);
+  zoomInButton->setIcon(QIcon(":/icons/viewmag+.png"));
+  zoomInButton->setToolTip(tr("zoom in"));
+  toolBar->addWidget(zoomInButton);
+  connect(zoomInButton,SIGNAL(clicked()),this,SLOT(zoom_in_()));
+  
+  QToolButton* zoomOutButton = new QToolButton(this);
+  zoomOutButton->setIcon(QIcon(":/icons/viewmag-.png"));
+  zoomOutButton->setToolTip(tr("zoom out"));
+  toolBar->addWidget(zoomOutButton);
+  connect(zoomOutButton,SIGNAL(clicked()),this,SLOT(zoom_out_()));
+
+  toolBar->addSeparator();
+
+  QToolButton* resetButton = new QToolButton(this);
+  resetButton->setIcon(QIcon(":/icons/gohome.png"));
+  resetButton->setToolTip(tr("reset view"));
+  toolBar->addWidget(resetButton);
+  connect(resetButton,SIGNAL(clicked()),this,SLOT(fit_in_view_()));
+  
+  toolBar->addSeparator();
+ 
+  QToolButton* leftMoveButton = new QToolButton(this);
+  leftMoveButton->setIcon(QIcon(":/icons/left.png"));
+  leftMoveButton->setToolTip(tr("move canvas left"));
+  toolBar->addWidget(leftMoveButton);
+  connect(leftMoveButton,SIGNAL(clicked()),this,SLOT(pan_left_()));
+  
+  QToolButton* rightMoveButton = new QToolButton(this);
+  rightMoveButton->setIcon(QIcon(":/icons/right.png"));
+  rightMoveButton->setToolTip(tr("move canvas right"));
+  toolBar->addWidget(rightMoveButton);
+  connect(rightMoveButton,SIGNAL(clicked()),this,SLOT(pan_right_()));
+
+  QToolButton* upMoveButton = new QToolButton(this);
+  upMoveButton->setIcon(QIcon(":/icons/up.png"));
+  upMoveButton->setToolTip(tr("move canvas up"));
+  toolBar->addWidget(upMoveButton);
+  connect(upMoveButton,SIGNAL(clicked()),this,SLOT(pan_up_()));
+  
+  QToolButton* downMoveButton = new QToolButton(this);
+  downMoveButton->setIcon(QIcon(":/icons/down.png"));
+  downMoveButton->setToolTip(tr("move canvas down"));
+  toolBar->addWidget(downMoveButton);
+  connect(downMoveButton,SIGNAL(clicked()),this,SLOT(pan_down_()));
+  
+  addToolBar(toolBar);
+}
+
+
 
 
 //-------------------------------------------------------------

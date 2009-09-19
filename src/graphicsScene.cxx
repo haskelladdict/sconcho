@@ -103,11 +103,16 @@ const KnittingSymbolPtr GraphicsScene::get_selected_symbol()
 
 
 //-------------------------------------------------------------
-// accessor function for status of shift key
+// accessor function for status of shift and control keys
 //-------------------------------------------------------------
 bool GraphicsScene::shift_pressed()
 {
   return shiftPressed_;
+}
+
+bool GraphicsScene::control_pressed()
+{
+  return controlPressed_;
 }
 
 
@@ -267,9 +272,18 @@ void GraphicsScene::mouseMoveEvent(
 //--------------------------------------------------------------
 void GraphicsScene::keyPressEvent(QKeyEvent* keyEvent)
 {
-  if (keyEvent->key() == Qt::Key_Shift)
+  switch(keyEvent->key())
   {
-    shiftPressed_ = true;
+    case Qt::Key_Shift:
+      shiftPressed_ = true;
+      break;
+    
+    case Qt::Key_Control:
+      controlPressed_ = true;
+      break;
+
+    default:
+      break;
   }
 
   QGraphicsScene::keyPressEvent(keyEvent);
@@ -278,9 +292,18 @@ void GraphicsScene::keyPressEvent(QKeyEvent* keyEvent)
 
 void GraphicsScene::keyReleaseEvent(QKeyEvent* keyEvent)
 {
-  if (keyEvent->key() == Qt::Key_Shift)
+  switch(keyEvent->key())
   {
-    shiftPressed_ = false;
+    case Qt::Key_Shift:
+      shiftPressed_ = false;
+      break;
+    
+    case Qt::Key_Control:
+      controlPressed_ = false;
+      break;
+
+    default:
+      break;
   }
 
   QGraphicsScene::keyPressEvent(keyEvent);

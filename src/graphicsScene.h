@@ -61,6 +61,7 @@ public:
   /* accessor functions */ 
   const KnittingSymbolPtr get_selected_symbol();
   bool shift_pressed();
+  bool control_pressed();
 
   /* create the main pattern grid item */
   void create_pattern_grid(const QPoint& origin, const QSize& dim, 
@@ -94,7 +95,8 @@ private:
   /* construction status variable */
   int status_;
 
-  /* is shift currently pressed */
+  /* keek track of keypresses currently pressed */
+  bool controlPressed_;
   bool shiftPressed_;
 
   /* basic dimensions */

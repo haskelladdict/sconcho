@@ -87,11 +87,18 @@ public slots:
 
   
 private slots:
-        
+
+  void fit_in_view_();
+  void pan_down_();
+  void pan_left_();
+  void pan_right_();
+  void pan_up_();
+  void quit_sconcho_();
   void show_file_open_menu_();
   void show_file_export_menu_();
   void show_print_menu_();
-  void quit_sconcho_();
+  void zoom_in_();
+  void zoom_out_();
 
   
 private:
@@ -106,11 +113,10 @@ private:
   void create_graphics_scene_();
   void create_main_splitter_();
   void create_symbols_widget_();
+  void create_toolbar_();
 
   /* widget data members */
   QSplitter* mainSplitter_;
-
-  /* menu bar stuff */
   QMenuBar* menuBar_;
 
   /* status bar stuff */

@@ -30,6 +30,7 @@
 #include <QGraphicsRectItem>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 
 
@@ -171,6 +172,13 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
 void PatternGridItem::mousePressEvent(
   QGraphicsSceneMouseEvent* anEvent)
 {
+  /* if the user has control pressed we ignore this event */
+  if (parent_->control_pressed())
+  {
+    anEvent->ignore();
+    return;
+  }
+
   /* if the user has shift pressed this is a reset event
    * otherwise a select/deselect event */
   if (parent_->shift_pressed())
