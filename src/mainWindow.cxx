@@ -171,8 +171,10 @@ void MainWindow::show_file_export_menu_()
     return;
   }
 
-  /* for now print the image in a fixed resolution */
-  QImage finalImage(2*canvas_->width(), 2*canvas_->height(),
+  /* for now print the image in a fixed resolution 
+   * NOTE: We seem to need the 1px buffer region to avoid
+   *       the image being cut off */
+  QImage finalImage(2*canvas_->width()+1, 2*canvas_->height()+1,
       QImage::Format_ARGB32_Premultiplied);
   QPainter painter(&finalImage);
   painter.setRenderHints(QPainter::SmoothPixmapTransform);
