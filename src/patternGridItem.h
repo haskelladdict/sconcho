@@ -59,8 +59,8 @@ class PatternGridItem
     
 public:
 
-  explicit PatternGridItem(const QPoint& loc, const QSize& aDim, const int scale,
-      GraphicsScene* myParent = 0);
+  explicit PatternGridItem(const QPoint& loc, const QSize& aDim, 
+      const int scale, GraphicsScene* myParent = 0);
   bool Init();
 
 

@@ -178,7 +178,7 @@ void MainWindow::show_file_export_menu_()
   QRectF theScene = canvas_->sceneRect();
   theScene.adjust(-10,-10,10,10);  // need this to avoid cropping
 
-  QImage finalImage(theScene.width()*2, theScene.height() *2,
+  QImage finalImage(theScene.width()*3, theScene.height() *3,
       QImage::Format_ARGB32_Premultiplied);
   QPainter painter(&finalImage);
   painter.setRenderHints(QPainter::SmoothPixmapTransform);

@@ -252,13 +252,13 @@ void PatternGridItem::fit_svg_()
   double scaleX = 1.0;
   if ( svgRect.width() > DBL_EPSILON )
   {
-    scaleX = (boxRect.width()-pen_.width())/svgRect.width();
+    scaleX = boxRect.width()/svgRect.width();
   }
 
   double scaleY = 1.0;
   if ( svgRect.height() > DBL_EPSILON )
   {
-    scaleY = (boxRect.height()-pen_.width())/svgRect.height();
+    scaleY = boxRect.height()/svgRect.height();
   }
 
   svgItem_->scale(scaleX, scaleY);
