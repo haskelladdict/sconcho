@@ -24,6 +24,7 @@
 #include <QGraphicsItemGroup>
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsTextItem>
 #include <QKeyEvent>
 
 
@@ -51,6 +52,7 @@ GraphicsScene::GraphicsScene(QObject* myParent)
   numCols_(0),
   numRows_(0),
   cellSize_(0),
+  textFont_("Arial",8),
   selectedSymbol_(
       KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"","")))
 {
@@ -120,6 +122,7 @@ void GraphicsScene::create_pattern_grid(const QPoint& theOrigin,
   numRows_ = dimension.height();
   cellSize_ = size;
 
+  /* grid */
   for (int col=0; col < numCols_; ++col)
   {
     for (int row=0; row < numRows_; ++row)
@@ -134,6 +137,29 @@ void GraphicsScene::create_pattern_grid(const QPoint& theOrigin,
       addItem(item);
     }
   }
+
+  /* grid labels
+   * FIXME: placement of lables needs to become smarter */
+  QString label;
+  for (int col=0; col < numCols_; ++col)
+  {
+    QGraphicsTextItem* text= new QGraphicsTextItem(label.setNum(col));
+    int shift = compute_horizontal_label_shift_(col);
+    text->setPos(origin_.x() + col*cellSize_ + shift, 
+      origin_.y() - 2 * textFont_.pointSize());
+    text->setFont(textFont_);
+    addItem(text);
+  }
+
+  for (int row=0; row < numRows_; ++row)
+  {
+    QGraphicsTextItem* text= new QGraphicsTextItem(label.setNum(row));
+    text->setPos(origin_.x() - cellSize_, 
+      origin_.y() + row * cellSize_ + textFont_.pointSize());
+    text->setFont(textFont_);
+    addItem(text);
+  }
+
 }
 
 
@@ -348,5 +374,31 @@ void GraphicsScene::try_place_knitting_symbol_()
 
   /* clear StatusBar */
   emit statusBar_message("");
+}
+
+
+//-----------------------------------------------------------------
+// compute the shift for horizontal labels so they are centered
+// in each grid cell
+//-----------------------------------------------------------------
+int GraphicsScene::compute_horizontal_label_shift_(int aNum)
+{
+  double size = cellSize_ * 0.5;
+  double numWidth = textFont_.pointSize() * 0.5;
+  double count = 0;
+  if (aNum < 10)
+  {
+    count = 1.5;
+  }
+  else if (aNum < 100)
+  {
+    count = 2.5;
+  }
+  else
+  {
+    count = 3;
+  }
+
+  return static_cast<int>(size - numWidth * count);
 }
 

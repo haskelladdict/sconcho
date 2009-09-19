@@ -334,9 +334,9 @@ void MainWindow::create_graphics_scene_()
   /* create grid item */
   canvas_->create_pattern_grid(QPoint(0,0), gridSize, 30);
 
-  QGraphicsTextItem* key = new QGraphicsTextItem("Key");
-  key->setPos(0, gridSize.height()*30+20);
-  canvas_->addItem(key);
+  //QGraphicsTextItem* key = new QGraphicsTextItem("Key");
+  //key->setPos(0, gridSize.height()*30+20);
+  //canvas_->addItem(key);
 }
 
 

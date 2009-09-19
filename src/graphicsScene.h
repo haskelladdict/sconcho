@@ -103,6 +103,9 @@ private:
   int numRows_;
   int cellSize_;
 
+  /* basic font properties */
+  QFont textFont_;
+
   /* list of currenly selected items */
   QList<PatternGridItem*> activeItems_;
 
@@ -111,6 +114,7 @@ private:
 
   /* helper functions */
   void try_place_knitting_symbol_();
+  int compute_horizontal_label_shift_(int num);
 };
 
 
