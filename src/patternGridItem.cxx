@@ -51,14 +51,17 @@
 // constructor
 //-------------------------------------------------------------
 PatternGridItem::PatternGridItem(const QPoint& aLoc, 
-  const QSize& aDim, const int aScale, GraphicsScene* myParent)
+  const QSize& aDim, int aScale, int aCol, int aRow,
+  GraphicsScene* myParent)
     :
       selected_(false),
       parent_(myParent),
       svgItem_(0),
       loc_(aLoc),
       dim_(aDim),
-      scaling_(aScale)
+      scaling_(aScale),
+      columnIndex_(aCol),
+      rowIndex_(aRow)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }

@@ -35,6 +35,7 @@
 #include "patternGridItem.h"
 
 
+
 /**************************************************************
  *
  * PUBLIC FUNCTIONS 
@@ -47,6 +48,7 @@
 GraphicsScene::GraphicsScene(QObject* myParent)
   :
   QGraphicsScene(myParent),
+  controlPressed_(false),
   shiftPressed_(false),
   origin_(QPoint(0,0)),
   numCols_(0),
@@ -135,7 +137,8 @@ void GraphicsScene::create_pattern_grid(const QPoint& theOrigin,
       QPoint origin(origin_.x() +(col*cellSize_), 
                     origin_.y() +(row*cellSize_));
       PatternGridItem* item = 
-        new PatternGridItem(origin, QSize(1,1), cellSize_, this);
+        new PatternGridItem(origin, QSize(1,1), cellSize_, 
+            col, row, this);
       item->Init();
 
       /* add it to our scene */
@@ -201,14 +204,17 @@ void GraphicsScene::update_selected_symbol(
 void GraphicsScene::grid_item_selected(PatternGridItem* anItem, 
     bool status)
 {
+  /* compute index based on row and col */
+  int index = (anItem->row() * numCols_) + anItem->col();
+
   /* first update our list of currently selected items */
   if (status)
   {
-    activeItems_.append(anItem);
+    activeItems_[index]= anItem;
   }
   else
   {
-    activeItems_.removeOne(anItem);
+    activeItems_.remove(index);
   }
 
   try_place_knitting_symbol_();
@@ -225,10 +231,12 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
   /* figure out where item is and how many cells it spans */
   QPoint origin(anItem->origin());
   QSize dim(anItem->dim());
+  int column = anItem->col();
+  int row = anItem->row();
 
   /* get rid of the old cell making sure that we punt if from
    * the set of activeItems if present */
-  activeItems_.removeAll(anItem);
+ // activeItems_.removeAll(anItem);
   removeItem(anItem);
 
   /* start filling the hole with new cells */
@@ -237,7 +245,12 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
   {
     QPoint newOrigin(origin.x() + i*cellSize_, origin.y());
     PatternGridItem* item = 
-      new PatternGridItem(newOrigin, QSize(1,1), cellSize_, this);
+      new PatternGridItem(newOrigin, 
+                          QSize(1,1), 
+                          cellSize_, 
+                          column+i, 
+                          row, 
+                          this);
     item->Init();
     addItem(item);
   }
@@ -327,76 +340,73 @@ void GraphicsScene::try_place_knitting_symbol_()
   /* check how many cells we need for the currently selected
    * knitting symbol */
   QSize size = selectedSymbol_->dim();
-  int cellsNeeded = size.width() * size.height();
+  int cellsNeeded = size.width(); // * size.height();
 
-  /* we have the correct number, now make sure that 
-   * selected cells are adjacent */
-  QSet<int> yCoords;
-  QMap<int,int> dims;
-  for (int i=0; i < activeItems_.length(); ++i)
+  if (cellsNeeded == 0)
   {
-    QPoint origin = activeItems_[i]->origin();
-    QSize cellDim = activeItems_[i]->dim();
-    yCoords.insert(origin.y());
-    dims[origin.x()] = cellDim.width();
-  }
-
-  /* compute total selected width and make sure it matches
-   * what we need */
-  int totalWidth = 0;
-  QList<int> widths = dims.values();
-  for (int i=0; i < widths.size(); ++i)
-  {
-    totalWidth += widths[i];
-  }
-
-  if (totalWidth != cellsNeeded)
-  {
-    emit statusBar_message("Number of selected grid units does not "
-        "match selected pattern size");
     return;
   }
 
-  /* all items need to be in a single row */
-  if ( yCoords.size() != 1 )
+  /* make sure the number of selected items is an integer multiple
+   * of the required item size */
+  if ( activeItems_.size() % cellsNeeded != 0 )
   {
-    emit statusBar_message("The selected items have to be in a "
-        "single row");
+    emit statusBar_message(tr("Number of selected cells is"
+           "not a multiple of the pattern size"));
+  }
+
+  /* sort selected items row wise */
+  QList<RowItems> rowList;
+  bool sortStatus = sort_selected_items_row_wise_(rowList);
+  if (!sortStatus)
+  { 
     return;
   }
 
-  /* check if origins are adjacent */
-  QList<int> dimOrigins = dims.keys();
-  qSort(dimOrigins.begin(), dimOrigins.end());
-  for (int i=0; i < dimOrigins.size()-1; ++i)
+  /* check if each row has the proper arrangement of 
+   * highlighted cells to fit the selected pattern item */
+  QList<CellMask> replacementCells;
+  bool finalStatus = process_selected_items_(replacementCells, 
+    rowList, cellsNeeded);
+
+  if (!finalStatus)
   {
-    int expectedNeighborPos = dimOrigins[i] 
-      + dims[dimOrigins[i]] * cellSize_;
-    int actualNeighborPos = dimOrigins[i+1];
-    if ( expectedNeighborPos != actualNeighborPos )
+    return;
+  }
+
+
+  /* delete previously highligthed cells */
+  foreach(PatternGridItem* item, activeItems_.values())
+  {
+    removeItem(item);
+  }
+  activeItems_.clear();
+
+  
+  /* at this point all rows are in the proper shape to be
+   * replaced by the current symbol */
+  for (int row=0; row < replacementCells.size(); ++row)
+  {
+    for (int cell=0; cell < replacementCells.at(row).size(); ++cell)
     {
-      emit statusBar_message("The selected items have to be adjacent");
-      return;
+      int column = replacementCells.at(row)[cell].first;
+      int aWidth  = replacementCells.at(row)[cell].second;
+
+      PatternGridItem* item = new PatternGridItem (
+          QPoint(origin_.x() + column * cellSize_, 
+                 origin_.y() + row * cellSize_),
+          QSize(aWidth,1),
+          cellSize_,
+          column,
+          row,
+          this);
+
+      item->Init();
+      item->insert_knitting_symbol(selectedSymbol_);
+      addItem(item);
     }
   }
-
-  /* delete selected cells and replace by a single one of the
-   * requested size */
-  QPoint newOrigin(dimOrigins[0], yCoords.toList()[0]);
-    for (int i=0; i < activeItems_.size(); ++i)
-  {
-    removeItem(activeItems_[i]);
-  }
-  PatternGridItem* item = 
-    new PatternGridItem(newOrigin, QSize(totalWidth,1), 
-      cellSize_, this);
-  item->Init();
-  addItem(item);
-
-  /* place knitting symbol and purge previously active items */
-  activeItems_.clear();
-  item->insert_knitting_symbol(selectedSymbol_);
-
+    
   /* clear StatusBar */
   emit statusBar_message("");
 }
@@ -425,5 +435,126 @@ int GraphicsScene::compute_horizontal_label_shift_(int aNum)
   }
 
   return static_cast<int>(size - numWidth * count);
+}
+
+
+//----------------------------------------------------------------
+// sort all currently selected cells in a row by row fashion
+// returns true on success and false on failure
+//----------------------------------------------------------------
+bool GraphicsScene::sort_selected_items_row_wise_(
+  QList<RowItems>& theRows)
+{
+  for (int i=0; i < numRows_; ++i)
+  {
+    RowItems tempList;
+    theRows.push_back(tempList);
+  }
+
+  QMap<int, PatternGridItem*>::const_iterator iter = 
+    activeItems_.constBegin();
+  while (iter != activeItems_.constEnd()) 
+  {
+    int row = static_cast<int>(iter.key()/numCols_); 
+    theRows[row].push_back(iter.value());
+    ++iter;
+  }
+
+  return true;
+}
+
+
+//--------------------------------------------------------------
+// check if each row has the proper arrangement of 
+// highlighted cells to fit the selected pattern item and
+// arrange highlighted cells in bunches of targetPatternSize
+// NOTE: selectedPatternSize is expected to be non-zero
+//--------------------------------------------------------------
+bool GraphicsScene::process_selected_items_(
+  QList<CellMask>& finalCellLayout, const QList<RowItems>& rowLayout, 
+  int selectedPatternSize)
+{
+  for (int row=0; row < rowLayout.size(); ++row)
+  {
+    RowItems rowItem = rowLayout.at(row);
+
+    int rowLength = 0;
+    foreach(PatternGridItem* anItem, rowItem)
+    {
+      rowLength += (anItem->dim()).width();
+    }
+    
+    /* if the rowLength is not divisible by cellsNeeded we
+     * are done */
+    if (rowLength % selectedPatternSize != 0)
+    {
+      emit statusBar_message(tr("Improper total number of cells."));
+      return false;
+    }
+
+    CellMask cellBounds;
+    foreach(PatternGridItem* anItem, rowItem)
+    {
+      int curStart = (anItem->col());
+      int curWidth = (anItem->dim()).width();
+      if (!cellBounds.empty())
+      {
+        int lastStart = cellBounds.back().first;
+        int lastWidth = cellBounds.back().second;
+
+        /* see if we are extending the last cell */
+        if ( lastStart + lastWidth == curStart )
+        {
+          cellBounds.pop_back();
+          cellBounds.push_back(
+            QPair<int,int>(lastStart, lastWidth+curWidth));
+        }
+        else
+        {
+          cellBounds.push_back(QPair<int,int>(curStart, curWidth));
+        }
+      }
+      else
+      {
+        cellBounds.push_back(QPair<int,int>(curStart, curWidth));
+      }
+    }
+
+    
+    /* generate row message String */
+    QString rowIndex;
+    rowIndex.setNum(row+1);
+    QString rowMsg("row " + rowIndex + ": ");
+   
+    /* reorganize all blocks into multiples of selectedPatternSize */
+    for (int i=0; i < cellBounds.size(); ++i)
+    {
+      int currentOrigin = cellBounds.at(i).first;
+      int currentWidth = cellBounds.at(i).second;
+      div_t multiple = div(currentWidth, selectedPatternSize);
+
+      if (multiple.rem != 0)
+      {
+        emit statusBar_message(rowMsg + "non-matching block size");
+        return false;
+      }
+
+      if (multiple.quot != 1)
+      {
+        for (int cell=0; cell < multiple.quot; ++cell)
+        {
+          cellBounds.push_back(QPair<int,int>(
+              currentOrigin + cell*selectedPatternSize,
+              selectedPatternSize));
+        }
+        cellBounds.removeAt(i);
+      }
+    }
+
+    /* this row checks out */
+    finalCellLayout.push_back(cellBounds);
+  }
+
+  return true;
 }
 

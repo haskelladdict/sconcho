@@ -375,7 +375,8 @@ void MainWindow::create_graphics_scene_()
   }
 
   canvasView_ = new QGraphicsView(canvas_);
-  canvasView_->setDragMode(QGraphicsView::ScrollHandDrag);
+//  canvasView_->setDragMode(QGraphicsView::ScrollHandDrag);
+  canvasView_->setDragMode(QGraphicsView::RubberBandDrag);
   canvasView_->setTransformationAnchor(QGraphicsView::NoAnchor);
 
   /* ask user for the grid size */

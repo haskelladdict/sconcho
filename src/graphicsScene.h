@@ -26,15 +26,22 @@
 
 /* QT includes */
 #include <QGraphicsScene>
+#include <QPair>
 #include <QList>
+#include <QMap>
 
 /* local includes */
 #include "knittingSymbol.h"
+
 
 /* a few forward declarations */
 class PatternGridItem;
 class QGraphicsSceneMouseEvent;
 class QKeyEvent;
+
+/* convenience typedefs */
+typedef QList<QPair<int, int> > CellMask;
+typedef QList<PatternGridItem*> RowItems;
 
 
 
@@ -81,8 +88,6 @@ public slots:
   void grid_item_reset(PatternGridItem*);
 
   
-//private slots:
-
 protected:
 
   void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
@@ -109,7 +114,7 @@ private:
   QFont textFont_;
 
   /* list of currenly selected items */
-  QList<PatternGridItem*> activeItems_;
+  QMap<int,PatternGridItem*> activeItems_;
 
   /* NAme of currently selected symbol */
   KnittingSymbolPtr selectedSymbol_;
@@ -117,6 +122,9 @@ private:
   /* helper functions */
   void try_place_knitting_symbol_();
   int compute_horizontal_label_shift_(int num);
+  bool sort_selected_items_row_wise_(QList<RowItems>& rows);
+  bool process_selected_items_(QList<CellMask>& processedCellLayout,
+      const QList<RowItems>& rowSelection, int targetPatternSize);
 };
 
 

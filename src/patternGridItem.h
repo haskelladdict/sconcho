@@ -60,7 +60,7 @@ class PatternGridItem
 public:
 
   explicit PatternGridItem(const QPoint& loc, const QSize& aDim, 
-      const int scale, GraphicsScene* myParent = 0);
+      int scale, int column, int row, GraphicsScene* myParent = 0);
   bool Init();
 
 
@@ -72,6 +72,9 @@ public:
   /* accessors for properties */
   const QPoint& origin() { return loc_; }
   const QSize& dim() { return dim_; }
+  int col() { return columnIndex_; }
+  int row() { return rowIndex_; }  
+
 
   /* insert a new knitting symbol to be displayed */
   void insert_knitting_symbol(KnittingSymbolPtr symbol);
@@ -106,6 +109,8 @@ private:
   QPoint loc_;
   QSize dim_;
   int scaling_;
+  int columnIndex_;
+  int rowIndex_;
  
   /* drawing related objects */
   QPen pen_;
