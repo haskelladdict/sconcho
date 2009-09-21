@@ -178,13 +178,17 @@ void SymbolSelectorWidget::create_tabs_()
   symbols.push_back("knit");
   symbols.push_back("purl");
   symbols.push_back("yo");
+  symbols.push_back("doubledec");
+  symbols.push_back("k2tog");
+  symbols.push_back("ssk");
 
   QVBoxLayout* mainLayout = new QVBoxLayout(this);
   for (int i = 0; i < symbols.length(); ++i)
   {
      mainLayout->addLayout(create_symbol_layout_(symbols[i], QSize(1,1)));
   }
-  mainLayout->addLayout(create_symbol_layout_("cl1", QSize(2,1)));
+  mainLayout->addLayout(create_symbol_layout_("LT", QSize(2,1)));
+  mainLayout->addLayout(create_symbol_layout_("RT", QSize(2,1)));
   mainLayout->addStretch(1);
 
   QWidget* basicSymbols = new QWidget(this);

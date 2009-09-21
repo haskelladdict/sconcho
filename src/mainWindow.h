@@ -39,9 +39,11 @@ class GraphicsScene;
 class QGraphicsView;
 class QLabel;
 class QMenuBar;
+class QPushButton;
 class QSplitter;
 class QStatusBar;
 class QTabWidget;
+class QVBoxLayout;
 class SymbolSelectorWidget;
 
 
@@ -77,7 +79,9 @@ public:
   explicit MainWindow();
   bool Init();
 
-//signals:
+signals:
+
+  void color_changed(QColor aColor);
 
 
 public slots:
@@ -93,6 +97,7 @@ private slots:
   void pan_left_();
   void pan_right_();
   void pan_up_();
+  void pick_color_();
   void quit_sconcho_();
   void show_file_open_menu_();
   void show_file_export_menu_();
@@ -112,6 +117,7 @@ private:
   void create_status_bar_();
   void create_graphics_scene_();
   void create_main_splitter_();
+  void create_property_widget_();
   void create_symbols_widget_();
   void create_toolbar_();
 
@@ -128,7 +134,8 @@ private:
   GraphicsScene* canvas_;
   QGraphicsView* canvasView_;
 
-  /* our symbol selection */
+  /* widgets for selectors */
+  QPushButton* colorSelector_;
   SymbolSelectorWidget* symbolSelector_;
 };
 

@@ -20,21 +20,25 @@
 
 /** Qt headers */
 #include <QAction>
+#include <QColorDialog>
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
 #include <QGraphicsView>
 #include <QGraphicsTextItem>
+#include <QGroupBox>
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QPushButton>
 #include <QSplitter>
 #include <QStatusBar>
 #include <QToolBar>
 #include <QToolButton>
+#include <QVBoxLayout>
 
 /** local headers */
 #include "basicDefs.h"
@@ -80,6 +84,7 @@ bool MainWindow::Init()
   create_graphics_scene_();
   create_symbols_widget_();
   create_toolbar_();
+  create_property_widget_();
   create_main_splitter_();
 
   connect(symbolSelector_,
@@ -87,6 +92,11 @@ bool MainWindow::Init()
           canvas_,
           SLOT(update_selected_symbol(const KnittingSymbolPtr))
          );
+
+  connect(this,
+          SIGNAL(color_changed(QColor)),
+          canvas_,
+          SLOT(update_current_color(QColor)));
 
   setCentralWidget(mainSplitter_);
   return true;
@@ -227,6 +237,23 @@ void MainWindow::quit_sconcho_()
     exit(0);
   }
 }
+
+
+//------------------------------------------------------------
+// SLOT: fire up color dialog and tell canvas about the
+// currently selected color
+//------------------------------------------------------------
+void MainWindow::pick_color_()
+{
+  QColor selection = QColorDialog::getColor(Qt::white,this,
+      "Select background color");
+
+  QPalette selectorColor = QPalette(selection);
+  colorSelector_->setPalette(selectorColor);
+
+  emit color_changed(selection);
+}
+
 
 
 //------------------------------------------------------------
@@ -477,15 +504,27 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(upMoveButton);
   connect(upMoveButton,SIGNAL(clicked()),this,SLOT(pan_up_()));
   
-  QToolButton* downMoveButton = new QToolButton(this);
-  downMoveButton->setIcon(QIcon(":/icons/down.png"));
-  downMoveButton->setToolTip(tr("move canvas down"));
-  toolBar->addWidget(downMoveButton);
-  connect(downMoveButton,SIGNAL(clicked()),this,SLOT(pan_down_()));
-  
   addToolBar(toolBar);
 }
 
+
+//-------------------------------------------------------------
+// create graph property widget (color selector, line width
+// selector)
+//-------------------------------------------------------------
+void MainWindow::create_property_widget_()
+{
+   colorSelector_ = new QPushButton(this);
+   colorSelector_->setText(tr("cell color"));
+   colorSelector_->setMaximumSize(70,50);
+   QPalette widgetColor = QPalette(Qt::white);
+   colorSelector_->setPalette(widgetColor);
+
+   connect(colorSelector_,
+           SIGNAL(clicked()),
+           this,
+           SLOT(pick_color_()));
+}
 
 
 
@@ -497,7 +536,15 @@ void MainWindow::create_toolbar_()
 //-------------------------------------------------------------
 void MainWindow::create_main_splitter_()
 {
+  /* properties layout */
+  QVBoxLayout* propertiesLayout = new QVBoxLayout(this);
+  propertiesLayout->addWidget(symbolSelector_);
+  propertiesLayout->addWidget(colorSelector_);
+  QGroupBox* propertyBox = new QGroupBox(this);
+  propertyBox->setLayout(propertiesLayout);
+
+  
   mainSplitter_ = new QSplitter(this);
   mainSplitter_->addWidget(canvasView_);
-  mainSplitter_->addWidget(symbolSelector_);
+  mainSplitter_->addWidget(propertyBox);
 }
