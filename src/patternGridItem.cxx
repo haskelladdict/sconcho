@@ -182,7 +182,7 @@ void PatternGridItem::mousePressEvent(
   QGraphicsSceneMouseEvent* anEvent)
 {
   /* if the user has control pressed we ignore this event */
-  if (parent_->control_pressed())
+  if (anEvent->modifiers().testFlag(Qt::ControlModifier))
   {
     anEvent->ignore();
     return;
@@ -190,7 +190,7 @@ void PatternGridItem::mousePressEvent(
 
   /* if the user has shift pressed this is a reset event
    * otherwise a select/deselect event */
-  if (parent_->shift_pressed())
+  if (anEvent->modifiers().testFlag(Qt::ShiftModifier))
   {
     emit item_reset(this);
   }

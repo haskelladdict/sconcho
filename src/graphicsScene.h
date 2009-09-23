@@ -70,8 +70,6 @@ public:
   /* accessor functions */ 
   const KnittingSymbolPtr get_selected_symbol();
   const QColor& get_background_color();
-  bool shift_pressed();
-  bool control_pressed();
 
   /* create the main pattern grid item */
   void create_pattern_grid(const QPoint& origin, const QSize& dim, 
@@ -98,18 +96,12 @@ protected:
 
   void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
   void wheelEvent(QGraphicsSceneWheelEvent* wheelEvent);
-  void keyPressEvent(QKeyEvent* mouseEvent);
-  void keyReleaseEvent(QKeyEvent* mouseEvent);
 
   
 private:
 
   /* construction status variable */
   int status_;
-
-  /* keek track of keypresses currently pressed */
-  bool controlPressed_;
-  bool shiftPressed_;
 
   /* basic dimensions */
   QPoint origin_;

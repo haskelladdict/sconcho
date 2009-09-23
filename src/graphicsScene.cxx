@@ -49,8 +49,6 @@
 GraphicsScene::GraphicsScene(QObject* myParent)
   :
   QGraphicsScene(myParent),
-  controlPressed_(false),
-  shiftPressed_(false),
   origin_(QPoint(0,0)),
   numCols_(0),
   numRows_(0),
@@ -119,20 +117,6 @@ const KnittingSymbolPtr GraphicsScene::get_selected_symbol()
 const QColor& GraphicsScene::get_background_color()
 {
   return backgroundColor_;
-}
-
-
-//-------------------------------------------------------------
-// accessor function for status of shift and control keys
-//-------------------------------------------------------------
-bool GraphicsScene::shift_pressed()
-{
-  return shiftPressed_;
-}
-
-bool GraphicsScene::control_pressed()
-{
-  return controlPressed_;
 }
 
 
@@ -301,11 +285,13 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
 //--------------------------------------------------------------
 void GraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* aWheelEvent)
 {
-  if (controlPressed_ && aWheelEvent->delta() > 0)
+  if (aWheelEvent->modifiers().testFlag(Qt::ControlModifier) 
+      && aWheelEvent->delta() > 0)
   {
     emit mouse_zoom_in();
   }
-  else if (controlPressed_ && aWheelEvent->delta() < 0)
+  else if (aWheelEvent->modifiers().testFlag(Qt::ControlModifier)
+           && aWheelEvent->delta() < 0)
   {
     emit mouse_zoom_out();
   }
@@ -323,49 +309,6 @@ void GraphicsScene::mouseMoveEvent(
 
   /* let our parent know that we moved */
   emit mouse_moved(currentPos);
-}
-
-
-//--------------------------------------------------------------
-// event handlers for key press and key release events
-//--------------------------------------------------------------
-void GraphicsScene::keyPressEvent(QKeyEvent* keyEvent)
-{
-  switch(keyEvent->key())
-  {
-    case Qt::Key_Shift:
-      shiftPressed_ = true;
-      break;
-    
-    case Qt::Key_Control:
-      controlPressed_ = true;
-      break;
-
-    default:
-      break;
-  }
-
-  QGraphicsScene::keyPressEvent(keyEvent);
-}
-
-
-void GraphicsScene::keyReleaseEvent(QKeyEvent* keyEvent)
-{
-  switch(keyEvent->key())
-  {
-    case Qt::Key_Shift:
-      shiftPressed_ = false;
-      break;
-    
-    case Qt::Key_Control:
-      controlPressed_ = false;
-      break;
-
-    default:
-      break;
-  }
-
-  QGraphicsScene::keyPressEvent(keyEvent);
 }
 
 
