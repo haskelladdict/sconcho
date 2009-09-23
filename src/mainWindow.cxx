@@ -411,6 +411,7 @@ void MainWindow::create_graphics_scene_()
   canvasView_->setDragMode(QGraphicsView::RubberBandDrag);
   canvasView_->setTransformationAnchor(QGraphicsView::NoAnchor); 
   canvasView_->setRenderHints(QPainter::Antialiasing);
+  canvasView_->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
   /* ask user for the grid size */
   GridDimensionDialog* gridDialog = new GridDimensionDialog;
