@@ -44,7 +44,7 @@ SymbolSelectorItem::SymbolSelectorItem(KnittingSymbolPtr symbol,
   :
     QFrame(myParent),
     selected_(false),
-    unitSize_(15),
+    unitSize_(30),
     symbol_(symbol)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -66,14 +66,12 @@ bool SymbolSelectorItem::Init()
   selectedStyleSheet_ = "border-width: 1px;"
                         "border-style: solid;"
                         "border-color: red;"
-                        "padding: -4px;"
                         "background-color: lightblue;";
 
 
   unselectedStyleSheet_ = "border-width: 1px;"
                           "border-style: solid;"
                           "border-color: black;"
-                          "padding: -4px;"
                           "background-color: white;";
 
   setStyleSheet(unselectedStyleSheet_);
@@ -85,6 +83,7 @@ bool SymbolSelectorItem::Init()
   symbolSvg_->setMaximumSize(symbolSize);
 
   QHBoxLayout* svgLayout = new QHBoxLayout;
+  svgLayout->setContentsMargins(0,0,0,0);
   svgLayout->addWidget(symbolSvg_);
   setLayout(svgLayout);
 
