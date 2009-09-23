@@ -88,8 +88,10 @@ public slots:
 
   void update_mouse_position_display(QPointF newPos);
   void show_statusBar_message(QString msg);
+  void zoom_in();
+  void zoom_out();
+ 
 
-  
 private slots:
 
   void fit_in_view_();
@@ -102,10 +104,7 @@ private slots:
   void show_file_open_menu_();
   void show_file_export_menu_();
   void show_print_menu_();
-  void zoom_in_();
-  void zoom_out_();
-
-  
+   
 private:
 
   /* status variable */

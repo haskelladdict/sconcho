@@ -24,6 +24,7 @@
 #include <QGraphicsItemGroup>
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneWheelEvent>
 #include <QGraphicsTextItem>
 #include <QKeyEvent>
 
@@ -85,7 +86,17 @@ bool GraphicsScene::Init()
           parent(),
           SLOT(show_statusBar_message(QString))
          );
-  
+ 
+  connect(this,
+          SIGNAL(mouse_zoom_in()),
+          parent(),
+          SLOT(zoom_in()));
+
+  connect(this,
+          SIGNAL(mouse_zoom_out()),
+          parent(),
+          SLOT(zoom_out()));
+
   return true;
 }
 
@@ -280,9 +291,27 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
 
 /**************************************************************
  *
- * PROTECTED SLOTS
+ * PROTECTED 
  *
  *************************************************************/
+
+
+//--------------------------------------------------------------
+// event handler for mouse wheel events
+//--------------------------------------------------------------
+void GraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* aWheelEvent)
+{
+  if (controlPressed_ && aWheelEvent->delta() > 0)
+  {
+    emit mouse_zoom_in();
+  }
+  else if (controlPressed_ && aWheelEvent->delta() < 0)
+  {
+    emit mouse_zoom_out();
+  }
+}
+
+
 
 //---------------------------------------------------------------
 // event handler for mouse move events

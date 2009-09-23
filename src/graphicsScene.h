@@ -38,6 +38,7 @@
 /* a few forward declarations */
 class PatternGridItem;
 class QGraphicsSceneMouseEvent;
+class QGraphicsSceneWheelEvent; 
 class QKeyEvent;
 
 /* convenience typedefs */
@@ -81,6 +82,8 @@ signals:
 
   void mouse_moved(QPointF position);
   void statusBar_message(QString msg);
+  void mouse_zoom_in();
+  void mouse_zoom_out();
  
 
 public slots:
@@ -94,6 +97,7 @@ public slots:
 protected:
 
   void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
+  void wheelEvent(QGraphicsSceneWheelEvent* wheelEvent);
   void keyPressEvent(QKeyEvent* mouseEvent);
   void keyReleaseEvent(QKeyEvent* mouseEvent);
 

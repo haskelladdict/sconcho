@@ -133,6 +133,24 @@ void MainWindow::show_statusBar_message(QString aMessage)
 }
 
 
+//--------------------------------------------------------------
+// zooming
+//
+// These are public since we need to call them from our canvas
+// if the user utilizes her mouse wheel for zooming in/out
+//--------------------------------------------------------------
+void MainWindow::zoom_in()
+{
+  canvasView_->scale(1.1,1.1);
+}
+
+
+void MainWindow::zoom_out()
+{
+  canvasView_->scale(0.9,0.9);
+}
+
+
 
 /**************************************************************
  *
@@ -259,18 +277,6 @@ void MainWindow::pick_color_()
 //------------------------------------------------------------
 // SLOTS for zooming and paning
 //------------------------------------------------------------
-void MainWindow::zoom_in_()
-{
-  canvasView_->scale(1.1,1.1);
-}
-
-
-void MainWindow::zoom_out_()
-{
-  canvasView_->scale(0.9,0.9);
-}
-
-
 void MainWindow::pan_down_()
 {
   canvasView_->translate(0,-30);
@@ -468,13 +474,13 @@ void MainWindow::create_toolbar_()
   zoomInButton->setIcon(QIcon(":/icons/viewmag+.png"));
   zoomInButton->setToolTip(tr("zoom in"));
   toolBar->addWidget(zoomInButton);
-  connect(zoomInButton,SIGNAL(clicked()),this,SLOT(zoom_in_()));
+  connect(zoomInButton,SIGNAL(clicked()),this,SLOT(zoom_in()));
   
   QToolButton* zoomOutButton = new QToolButton(this);
   zoomOutButton->setIcon(QIcon(":/icons/viewmag-.png"));
   zoomOutButton->setToolTip(tr("zoom out"));
   toolBar->addWidget(zoomOutButton);
-  connect(zoomOutButton,SIGNAL(clicked()),this,SLOT(zoom_out_()));
+  connect(zoomOutButton,SIGNAL(clicked()),this,SLOT(zoom_out()));
 
   toolBar->addSeparator();
 
