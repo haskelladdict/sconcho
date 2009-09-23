@@ -408,7 +408,7 @@ void MainWindow::create_graphics_scene_()
   }
 
   canvasView_ = new QGraphicsView(canvas_);
-  canvasView_->setDragMode(QGraphicsView::RubberBandDrag);
+  //canvasView_->setDragMode(QGraphicsView::RubberBandDrag);
   canvasView_->setTransformationAnchor(QGraphicsView::NoAnchor); 
   canvasView_->setRenderHints(QPainter::Antialiasing);
   canvasView_->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
