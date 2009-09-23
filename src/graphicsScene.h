@@ -25,6 +25,7 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
+#include <QColor>
 #include <QGraphicsScene>
 #include <QPair>
 #include <QList>
@@ -67,6 +68,7 @@ public:
 
   /* accessor functions */ 
   const KnittingSymbolPtr get_selected_symbol();
+  const QColor& get_background_color();
   bool shift_pressed();
   bool control_pressed();
 
@@ -86,6 +88,7 @@ public slots:
   void update_selected_symbol(const KnittingSymbolPtr symbol);
   void grid_item_selected(PatternGridItem* item, bool status);
   void grid_item_reset(PatternGridItem*);
+  void update_selected_background_color(const QColor& aColor);
 
   
 protected:
@@ -116,8 +119,10 @@ private:
   /* list of currenly selected items */
   QMap<int,PatternGridItem*> activeItems_;
 
-  /* NAme of currently selected symbol */
+  /* pointers to current user selections (knitting symbol,
+   * color, pen size ..) */
   KnittingSymbolPtr selectedSymbol_;
+  QColor backgroundColor_;
 
   /* helper functions */
   void try_place_knitting_symbol_();

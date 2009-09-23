@@ -146,6 +146,9 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
   knittingSymbol_ = aSymbol;
   QString symbolPath(aSymbol->path());
 
+  /* set the background color to the currently selected one */
+  inactiveBrush_ = QBrush(parent_->get_background_color()); 
+
   /* deselect us */
   unselect_();
 
@@ -234,7 +237,7 @@ void PatternGridItem::set_up_pens_brushes_()
 
   /* brushes for active/inactive item */
   activeBrush_ = QBrush(Qt::gray);
-  inactiveBrush_ = QBrush(Qt::white);
+  inactiveBrush_ = QBrush(parent_->get_background_color());
   currentBrush_ = &inactiveBrush_;
 }
 

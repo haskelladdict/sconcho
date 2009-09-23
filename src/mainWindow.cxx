@@ -96,7 +96,7 @@ bool MainWindow::Init()
   connect(this,
           SIGNAL(color_changed(QColor)),
           canvas_,
-          SLOT(update_current_color(QColor)));
+          SLOT(update_selected_background_color(QColor)));
 
   setCentralWidget(mainSplitter_);
   return true;

@@ -56,7 +56,8 @@ GraphicsScene::GraphicsScene(QObject* myParent)
   cellSize_(0),
   textFont_("Arial",8),
   selectedSymbol_(
-      KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"","")))
+      KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"",""))),
+  backgroundColor_(Qt::white)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -96,11 +97,17 @@ bool GraphicsScene::Init()
  *************************************************************/
 
 //-------------------------------------------------------------
-// accessor function to get at the symbol name 
+// accessor functions for properties
 //-------------------------------------------------------------
 const KnittingSymbolPtr GraphicsScene::get_selected_symbol()
 {
   return selectedSymbol_;
+}
+
+
+const QColor& GraphicsScene::get_background_color()
+{
+  return backgroundColor_;
 }
 
 
@@ -220,6 +227,14 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
   try_place_knitting_symbol_();
 }
 
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void GraphicsScene::update_selected_background_color(
+    const QColor& aColor)
+{
+  backgroundColor_ = aColor;
+}
 
 
 //------------------------------------------------------------
