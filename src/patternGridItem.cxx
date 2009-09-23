@@ -225,8 +225,8 @@ void PatternGridItem::mousePressEvent(
 void PatternGridItem::set_up_pens_brushes_()
 {
   /* pen used */
-  pen_.setWidth(0.5);
-  pen_.setJoinStyle(Qt::MiterJoin);
+  pen_.setWidthF(1.0);
+  //pen_.setJoinStyle(Qt::MiterJoin);
   pen_.setColor(Qt::black);
 
   /* brushes for active/inactive item */
@@ -267,7 +267,7 @@ void PatternGridItem::fit_svg_()
   svgItem_->scale(scaleX, scaleY);
 
   /* translate */
-  svgItem_->moveBy(boxRect.x(), boxRect.y());
+  svgItem_->moveBy(boxRect.x()+0.5, boxRect.y()+0.5);
 }
 
 

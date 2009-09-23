@@ -402,9 +402,9 @@ void MainWindow::create_graphics_scene_()
   }
 
   canvasView_ = new QGraphicsView(canvas_);
-//  canvasView_->setDragMode(QGraphicsView::ScrollHandDrag);
   canvasView_->setDragMode(QGraphicsView::RubberBandDrag);
-  canvasView_->setTransformationAnchor(QGraphicsView::NoAnchor);
+  canvasView_->setTransformationAnchor(QGraphicsView::NoAnchor); 
+  canvasView_->setRenderHints(QPainter::Antialiasing);
 
   /* ask user for the grid size */
   GridDimensionDialog* gridDialog = new GridDimensionDialog;
@@ -503,6 +503,12 @@ void MainWindow::create_toolbar_()
   upMoveButton->setToolTip(tr("move canvas up"));
   toolBar->addWidget(upMoveButton);
   connect(upMoveButton,SIGNAL(clicked()),this,SLOT(pan_up_()));
+  
+  QToolButton* downMoveButton = new QToolButton(this);
+  upMoveButton->setIcon(QIcon(":/icons/down.png"));
+  upMoveButton->setToolTip(tr("move canvas down"));
+  toolBar->addWidget(downMoveButton);
+  connect(upMoveButton,SIGNAL(clicked()),this,SLOT(pan_down_()));
   
   addToolBar(toolBar);
 }
