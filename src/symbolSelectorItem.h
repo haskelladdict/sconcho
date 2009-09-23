@@ -25,9 +25,9 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
-#include <QGroupBox>
 #include <QSize>
 #include <QString>
+#include <QFrame>
 
 /* local includes */
 #include "knittingSymbol.h"
@@ -46,7 +46,7 @@ class QSvgWidget;
  ***************************************************************/
 class SymbolSelectorItem 
   :
-    public QGroupBox,
+    public QFrame,
     public boost::noncopyable
 {
   
@@ -89,9 +89,6 @@ private:
   /* object holding all the info about the underlying 
    * knitting symbol */
   KnittingSymbolPtr symbol_;
-
-  /* the QSvgWidget we own */
-  QSvgWidget* symbolSvg_;
 }; 
 
 #endif

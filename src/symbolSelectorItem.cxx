@@ -42,11 +42,10 @@
 SymbolSelectorItem::SymbolSelectorItem(KnittingSymbolPtr symbol, 
     QWidget* myParent)
   :
-    QGroupBox(myParent),
+    QFrame(myParent),
     selected_(false),
     unitSize_(15),
-    symbol_(symbol),
-    symbolSvg_(new QSvgWidget(symbol->path()))
+    symbol_(symbol)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -77,12 +76,11 @@ bool SymbolSelectorItem::Init()
                           "padding: -4px;"
                           "background-color: white;";
 
-
-
-  /* define the layout holding the pattern */ 
   setStyleSheet(unselectedStyleSheet_);
-
-  /* adjust our QSvgWidget */
+  
+  
+  /* create and adjust our QSvgWidget */
+  QSvgWidget* symbolSvg_ = new QSvgWidget(symbol_->path());
   QSize symbolSize = unitSize_ * symbol_->dim();
   symbolSvg_->setMaximumSize(symbolSize);
 
