@@ -155,7 +155,7 @@ void GraphicsScene::create_pattern_grid(const QPoint& theOrigin,
       new QGraphicsTextItem(label.setNum(col+1));
     int shift = compute_horizontal_label_shift_(col);
     text->setPos(origin_.x() + col*cellSize_ + shift, 
-      origin_.y() - 2 * textFont_.pointSize());
+      origin_.y() - 2.3 * textFont_.pointSize());
     text->setFont(textFont_);
     addItem(text);
   }
@@ -427,7 +427,7 @@ int GraphicsScene::compute_horizontal_label_shift_(int aNum)
   }
   else if (aNum < 100)
   {
-    count = 2.5;
+    count = 2.0;
   }
   else
   {

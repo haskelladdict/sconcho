@@ -505,10 +505,10 @@ void MainWindow::create_toolbar_()
   connect(upMoveButton,SIGNAL(clicked()),this,SLOT(pan_up_()));
   
   QToolButton* downMoveButton = new QToolButton(this);
-  upMoveButton->setIcon(QIcon(":/icons/down.png"));
-  upMoveButton->setToolTip(tr("move canvas down"));
+  downMoveButton->setIcon(QIcon(":/icons/down.png"));
+  downMoveButton->setToolTip(tr("move canvas down"));
   toolBar->addWidget(downMoveButton);
-  connect(upMoveButton,SIGNAL(clicked()),this,SLOT(pan_down_()));
+  connect(downMoveButton,SIGNAL(clicked()),this,SLOT(pan_down_()));
   
   addToolBar(toolBar);
 }
@@ -543,7 +543,7 @@ void MainWindow::create_property_widget_()
 void MainWindow::create_main_splitter_()
 {
   /* properties layout */
-  QVBoxLayout* propertiesLayout = new QVBoxLayout(this);
+  QVBoxLayout* propertiesLayout = new QVBoxLayout;
   propertiesLayout->addWidget(symbolSelector_);
   propertiesLayout->addWidget(colorSelector_);
   QGroupBox* propertyBox = new QGroupBox(this);

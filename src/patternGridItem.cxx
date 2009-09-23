@@ -117,7 +117,10 @@ bool PatternGridItem::Init()
 //------------------------------------------------------------
 QRectF PatternGridItem::boundingRect() const
 {
-  return QRectF(loc_, scaling_*dim_);
+  return QRectF(loc_.x() - pen_.width() * 0.5, 
+                loc_.y() - pen_.width() * 0.5,
+                scaling_ * dim_.width() + pen_.width() * 0.5,
+                scaling_ * dim_.height() + pen_.width() * 0.5);
 }
   
   
@@ -267,7 +270,7 @@ void PatternGridItem::fit_svg_()
   svgItem_->scale(scaleX, scaleY);
 
   /* translate */
-  svgItem_->moveBy(boxRect.x()+0.5, boxRect.y()+0.5);
+  svgItem_->moveBy(boxRect.x(), boxRect.y());
 }
 
 
