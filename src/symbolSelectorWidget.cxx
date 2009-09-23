@@ -162,6 +162,7 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
   QLabel* symbolLabel = new QLabel(symbolName);
   QHBoxLayout* symbolLayout = new QHBoxLayout;
   symbolLayout->addWidget(symbol);
+  symbolLayout->addSpacing(20);
   symbolLayout->addWidget(symbolLabel);
   symbolLayout->addStretch(1);
 
