@@ -6,6 +6,7 @@ SET(SCONCHO_SRCS
   knittingSymbol.cxx
   mainWindow.cxx
   patternGridItem.cxx
+  patternView.cxx
   sconcho.cxx
   symbolSelectorItem.cxx
   symbolSelectorWidget.cxx
@@ -16,6 +17,7 @@ SET(SCONCHO_MOC_HDRS
   gridDimensionDialog.h
   mainWindow.h
   patternGridItem.h
+  patternView.h
   symbolSelectorItem.h
   symbolSelectorWidget.h
 )

@@ -24,7 +24,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
-#include <QGraphicsView>
+//#include <QGraphicsView>
 #include <QGraphicsTextItem>
 #include <QGroupBox>
 #include <QLabel>
@@ -46,6 +46,7 @@
 #include "gridDimensionDialog.h"
 #include "knittingSymbol.h"
 #include "mainWindow.h"
+#include "patternView.h"
 #include "symbolSelectorWidget.h"
 
 
@@ -407,11 +408,8 @@ void MainWindow::create_graphics_scene_()
     qDebug() << "Failed to initialize canvas";
   }
 
-  canvasView_ = new QGraphicsView(canvas_);
-  //canvasView_->setDragMode(QGraphicsView::RubberBandDrag);
-  canvasView_->setTransformationAnchor(QGraphicsView::NoAnchor); 
-  canvasView_->setRenderHints(QPainter::Antialiasing);
-  canvasView_->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  canvasView_ = new PatternView(canvas_);
+  canvasView_->Init();
 
   /* ask user for the grid size */
   GridDimensionDialog* gridDialog = new GridDimensionDialog;

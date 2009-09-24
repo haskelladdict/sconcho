@@ -21,8 +21,6 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-/* STL includes */
-
 /* boost includes */
 #include <boost/utility.hpp>
 
@@ -36,7 +34,7 @@
 
 /* a few forward declarations */
 class GraphicsScene;
-class QGraphicsView;
+class PatternView;
 class QLabel;
 class QMenuBar;
 class QPushButton;
@@ -131,7 +129,7 @@ private:
 
   /* canvas on which the actual data is being displayed */
   GraphicsScene* canvas_;
-  QGraphicsView* canvasView_;
+  PatternView* canvasView_;
 
   /* widgets for selectors */
   QPushButton* colorSelector_;
