@@ -25,6 +25,7 @@
 
 /** local headers */
 #include "basicDefs.h"
+#include "patternGridItem.h"
 #include "patternView.h"
 
 
@@ -87,14 +88,30 @@ bool PatternView::Init()
  *************************************************************/
 
 //-------------------------------------------------------------
-// deal with mouse events and how they translate into rubber
-// band geometry changes if one is requested
+// deal with mouse events and associated rubber band geometry
+// changes if requested
 //-------------------------------------------------------------
 void PatternView::mouseReleaseEvent(QMouseEvent* evt)
 {
   if (rubberBandOn_)
   {
     qDebug() << "stop rubber band";
+
+    /* retrieve final geometry and select objects */
+    QRect finalGeometry(rubberBand_->geometry());
+    QList<QGraphicsItem*> selectedCells(items(finalGeometry));
+
+    QEvent mousePress(QEvent::MouseButtonPress);
+    foreach(QGraphicsItem* cell, selectedCells)
+    {
+      PatternGridItem* item = qgraphicsitem_cast<PatternGridItem*>(cell);
+      if (item != 0)
+      {
+        item->foo();
+        item->update();
+      }
+    }
+
     rubberBandOn_ = false;
     rubberBand_->hide();
   }

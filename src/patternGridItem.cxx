@@ -22,7 +22,7 @@
 #include <float.h>
 
 
-/** Qt headers */
+/* Qt headers */
 #include <QColor>
 #include <QDebug>
 #include <QGraphicsItemGroup>
@@ -33,12 +33,16 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 
-
-
-/** local headers */
+/* local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
 #include "patternGridItem.h"
+
+namespace
+{
+  /* convenience definitions */
+  const int PATTERN_GRID_ITEM_TYPEID = QGraphicsItem::UserType + 1;
+};
 
 
 /**************************************************************
@@ -54,6 +58,7 @@ PatternGridItem::PatternGridItem(const QPoint& aLoc,
   const QSize& aDim, int aScale, int aCol, int aRow,
   GraphicsScene* myParent)
     :
+      QGraphicsItem(),
       selected_(false),
       parent_(myParent),
       svgItem_(0),
@@ -165,6 +170,17 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
     fit_svg_();
     svgItem_->setVisible(true);
   }
+}
+  
+
+
+//--------------------------------------------------------------
+// return our custom type
+// so we can cast via 
+//--------------------------------------------------------------
+int PatternGridItem::type() const
+{
+  return PATTERN_GRID_ITEM_TYPEID;
 }
   
 

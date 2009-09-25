@@ -69,12 +69,16 @@ public:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     QWidget *widget);
 
+  int type() const;
+
+  void foo() { select_(); }
+  
   /* accessors for properties */
   const QPoint& origin() { return loc_; }
   const QSize& dim() { return dim_; }
   int col() { return columnIndex_; }
   int row() { return rowIndex_; }  
-
+  
 
   /* insert a new knitting symbol to be displayed */
   void insert_knitting_symbol(KnittingSymbolPtr symbol);
