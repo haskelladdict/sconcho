@@ -40,7 +40,6 @@
 PatternView::PatternView(QGraphicsScene* aScene, QWidget* myParent)
   :
   QGraphicsView(aScene, myParent),
-  rubberBand_(new QRubberBand(QRubberBand::Rectangle, myParent)),
   rubberBandOn_(false)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -63,6 +62,8 @@ bool PatternView::Init()
   setRenderHints(QPainter::Antialiasing);
   setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
+  initialize_rubberband_();
+  
   return true;
 }
 
@@ -86,19 +87,21 @@ bool PatternView::Init()
  *************************************************************/
 
 //-------------------------------------------------------------
-// deal with mouse release events
-// need this to implement the rubber band selector
+// deal with mouse events and how they translate into rubber
+// band geometry changes if one is requested
 //-------------------------------------------------------------
 void PatternView::mouseReleaseEvent(QMouseEvent* evt)
 {
-  if (evt->modifiers().testFlag(Qt::ControlModifier))
+  if (rubberBandOn_)
   {
     qDebug() << "stop rubber band";
     rubberBandOn_ = false;
+    rubberBand_->hide();
   }
 
   QGraphicsView::mouseReleaseEvent(evt);
 }
+
 
 
 void PatternView::mousePressEvent(QMouseEvent* evt)
@@ -107,19 +110,27 @@ void PatternView::mousePressEvent(QMouseEvent* evt)
   {
     qDebug() << "start rubber band";
     rubberBandOn_ = true;
+    rubberBandOrigin_ = evt->pos();
+    rubberBand_->move(evt->pos());
+    rubberBand_->resize(0,0);
+    rubberBand_->show();
   }
   
   QGraphicsView::mousePressEvent(evt);
 }
 
 
+
 void PatternView::mouseMoveEvent(QMouseEvent* evt)
 {
-  qDebug() << "In PatternView::mouseReleaseEvent";
-  qDebug() << "items selected :" << scene()->selectedItems().size();
-
+  if (rubberBandOn_)
+  {
+    rubberBand_->setGeometry(QRect(rubberBandOrigin_,evt->pos()).normalized());
+  }
+    
   QGraphicsView::mouseMoveEvent(evt);
 }
+
 
 /**************************************************************
  *
@@ -133,3 +144,18 @@ void PatternView::mouseMoveEvent(QMouseEvent* evt)
  *
  *************************************************************/
 
+//-------------------------------------------------------------
+// set up the rubber band
+//-------------------------------------------------------------
+void PatternView::initialize_rubberband_()
+{
+  rubberBand_ = new QRubberBand(QRubberBand::Line, this);
+
+  /* change colors
+   * FIXME: Background coloring does not work for some reason */
+  rubberBand_->setAutoFillBackground(true);
+  QPalette aPalette = rubberBand_->palette();
+  aPalette.setColor(QPalette::Base, Qt::blue);
+  aPalette.setColor(QPalette::WindowText, Qt::red);
+  rubberBand_->setPalette(aPalette);
+}

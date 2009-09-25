@@ -26,6 +26,7 @@
 
 /* QT includes */
 #include <QGraphicsView>
+#include <QPointF>
 
 /* local includes */
 
@@ -74,6 +75,10 @@ private:
   /* member variables */
   QRubberBand* rubberBand_;
   bool rubberBandOn_;
+  QPoint rubberBandOrigin_;
+
+  /* member functions */
+  void initialize_rubberband_();
 };
 
 
