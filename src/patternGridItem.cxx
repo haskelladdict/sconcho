@@ -175,6 +175,28 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
 
 
 //--------------------------------------------------------------
+// "click" on this grid cell and select or deselect it based
+// on our current status
+//--------------------------------------------------------------
+void PatternGridItem::click()
+{
+  if (selected_)
+  {
+    unselect_();
+    emit item_selected(this, false);
+  }
+  else
+  {
+    select_();
+    emit item_selected(this, true);
+  }
+
+  update();
+}
+
+  
+
+//--------------------------------------------------------------
 // return our custom type
 // so we can cast via 
 //--------------------------------------------------------------
@@ -212,20 +234,12 @@ void PatternGridItem::mousePressEvent(
   }
   else
   {
-    if (selected_)
-    {
-      unselect_();
-      emit item_selected(this, false);
-    }
-    else
-    {
-      select_();
-      emit item_selected(this, true);
-    }
+    /* click on us */
+    click();
   }
 
   /* repaint */
-  update();
+  //update();
 }
 
 

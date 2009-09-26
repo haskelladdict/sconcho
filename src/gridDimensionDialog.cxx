@@ -46,8 +46,8 @@ GridDimensionDialog::GridDimensionDialog(QWidget* myParent)
     :
       QDialog(myParent),
       done_(false),
-      columns_(0),
-      rows_(0)
+      columns_(10),
+      rows_(10)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -73,7 +73,7 @@ bool GridDimensionDialog::Init()
   QLabel* xdimLabel = new QLabel(tr("number of columns"));
   QSpinBox* xdimSelector = new QSpinBox;
   xdimSelector->setRange(0,400);
-  xdimSelector->setValue(0);
+  xdimSelector->setValue(columns_);
   connect(xdimSelector, SIGNAL(valueChanged(int)),
           this,SLOT(change_column_count(int)));
 
@@ -86,7 +86,7 @@ bool GridDimensionDialog::Init()
   QLabel* ydimLabel = new QLabel(tr("number of rows"));
   QSpinBox* ydimSelector = new QSpinBox;
   ydimSelector->setRange(0,400);
-  ydimSelector->setValue(0);
+  ydimSelector->setValue(rows_);
   connect(ydimSelector, SIGNAL(valueChanged(int)),
           this,SLOT(change_row_count(int)));
 

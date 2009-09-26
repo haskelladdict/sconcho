@@ -69,19 +69,22 @@ public:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     QWidget *widget);
 
+  /* return our object type; needed for qgraphicsitem_cast */
   int type() const;
 
-  void foo() { select_(); }
+  /* this function clicks on a cell and selectes/deselects it
+   * based on the current status */
+  void click();
   
+  /* insert a new knitting symbol to be displayed */
+  void insert_knitting_symbol(KnittingSymbolPtr symbol);
+
   /* accessors for properties */
   const QPoint& origin() { return loc_; }
   const QSize& dim() { return dim_; }
   int col() { return columnIndex_; }
   int row() { return rowIndex_; }  
   
-
-  /* insert a new knitting symbol to be displayed */
-  void insert_knitting_symbol(KnittingSymbolPtr symbol);
 
 
 signals:

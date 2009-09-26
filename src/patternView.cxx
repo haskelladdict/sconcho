@@ -97,18 +97,20 @@ void PatternView::mouseReleaseEvent(QMouseEvent* evt)
   {
     qDebug() << "stop rubber band";
 
-    /* retrieve final geometry and select objects */
+    /* retrieve final rubberBand geometry and select objects */
     QRect finalGeometry(rubberBand_->geometry());
     QList<QGraphicsItem*> selectedCells(items(finalGeometry));
 
-    QEvent mousePress(QEvent::MouseButtonPress);
+    /* loop through all selected items and click on them */
     foreach(QGraphicsItem* cell, selectedCells)
     {
-      PatternGridItem* item = qgraphicsitem_cast<PatternGridItem*>(cell);
+      PatternGridItem* item =
+        qgraphicsitem_cast<PatternGridItem*>(cell);
+      qDebug() << "are here";
       if (item != 0)
       {
-        item->foo();
-        item->update();
+        item->click();
+        // item->update();
       }
     }
 
@@ -142,7 +144,8 @@ void PatternView::mouseMoveEvent(QMouseEvent* evt)
 {
   if (rubberBandOn_)
   {
-    rubberBand_->setGeometry(QRect(rubberBandOrigin_,evt->pos()).normalized());
+    rubberBand_->setGeometry(QRect(rubberBandOrigin_,
+                                   evt->pos()).normalized());
   }
     
   QGraphicsView::mouseMoveEvent(evt);
@@ -166,13 +169,14 @@ void PatternView::mouseMoveEvent(QMouseEvent* evt)
 //-------------------------------------------------------------
 void PatternView::initialize_rubberband_()
 {
-  rubberBand_ = new QRubberBand(QRubberBand::Line, this);
+  rubberBand_ = new QRubberBand(QRubberBand::Rectangle, this);
 
   /* change colors
    * FIXME: Background coloring does not work for some reason */
   rubberBand_->setAutoFillBackground(true);
+  rubberBand_->setWindowOpacity(0.4);
   QPalette aPalette = rubberBand_->palette();
-  aPalette.setColor(QPalette::Base, Qt::blue);
-  aPalette.setColor(QPalette::WindowText, Qt::red);
+  aPalette.setBrush(QPalette::Base, Qt::blue);
+  aPalette.setBrush(QPalette::WindowText, Qt::red);
   rubberBand_->setPalette(aPalette);
 }
