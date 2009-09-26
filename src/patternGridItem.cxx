@@ -148,11 +148,10 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
   knittingSymbol_ = aSymbol;
   QString symbolPath(aSymbol->path());
 
-  /* set the background color to the currently selected one */
+  /* set the background color to the currently selected one 
+   * and turn hightlight off */
   inactiveBrush_ = QBrush(parent_->get_background_color()); 
-
-  /* deselect us */
-  unselect_();
+  highlight_off_();
 
   /* delete the previous svgItem if there was one */
   if ( svgItem_ != 0 ) 
@@ -172,19 +171,19 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
 
 
 //--------------------------------------------------------------
-// "click" on this grid cell and select or deselect it based
-// on our current status
+// select this grid cell and turn highlighting on/off based
+// on its current status
 //--------------------------------------------------------------
-void PatternGridItem::click()
+void PatternGridItem::select()
 {
   if (selected_)
   {
-    unselect_();
+    highlight_off_();
     emit item_selected(this, false);
   }
   else
   {
-    select_();
+    highlight_on_();
     emit item_selected(this, true);
   }
 
@@ -231,8 +230,7 @@ void PatternGridItem::mousePressEvent(
   }
   else
   {
-    /* "click" on us to select/deselect */
-    click();
+    select();
   }
 }
 
@@ -303,17 +301,17 @@ void PatternGridItem::fit_svg_()
 
 //-----------------------------------------------------------------
 // helper function for doing the internal housekeeping during
-// selecting/unselecting
+// selecting/deselecting
 // NOTE: these functions should not emit an item_selected signal
 //-----------------------------------------------------------------
-void PatternGridItem::select_()
+void PatternGridItem::highlight_on_()
 {
   selected_ = true;
   currentBrush_ = &activeBrush_;
 }
 
 
-void PatternGridItem::unselect_()
+void PatternGridItem::highlight_off_()
 {
   selected_ = false;
   currentBrush_ = &inactiveBrush_;

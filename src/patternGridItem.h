@@ -75,9 +75,9 @@ public:
   enum { Type = UserType + 1 };
   int type() const;
 
-  /* this function clicks on a cell and selectes/deselects it
-   * based on the current status */
-  void click();
+  /* this function selects a cell and highlights/unhightlights it
+   * based on its current status */
+  void select();
   
   /* insert a new knitting symbol to be displayed */
   void insert_knitting_symbol(KnittingSymbolPtr symbol);
@@ -99,7 +99,6 @@ signals:
 protected:
 
   void mousePressEvent(QGraphicsSceneMouseEvent* event);
-  //QVariant itemChange(GraphicsItemChange aChange, const QVariant& val);
  
     
 private:
@@ -131,8 +130,8 @@ private:
   /* functions */
   void set_up_pens_brushes_();
   void fit_svg_();
-  void select_();
-  void unselect_();
+  void highlight_on_();
+  void highlight_off_();
 };
 
 

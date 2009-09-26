@@ -113,7 +113,7 @@ void PatternView::mouseReleaseEvent(QMouseEvent* evt)
         qgraphicsitem_cast<PatternGridItem*>(cell);
       if (item != 0)
       {
-        item->click();
+        item->select();
       }
     }
 
