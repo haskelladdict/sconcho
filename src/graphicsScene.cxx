@@ -355,7 +355,6 @@ void GraphicsScene::try_place_knitting_symbol_()
   QList<CellMask> replacementCells;
   bool finalStatus = process_selected_items_(replacementCells, 
     rowList, cellsNeeded);
-
   if (!finalStatus)
   {
     return;
@@ -443,6 +442,7 @@ bool GraphicsScene::sort_selected_items_row_wise_(
   while (iter != activeItems_.constEnd()) 
   {
     int row = static_cast<int>(iter.key()/numCols_); 
+    qDebug() << row << "  " << iter.key() << "   " << numCols_;
     theRows[row].push_back(iter.value());
     ++iter;
   }
@@ -465,6 +465,8 @@ bool GraphicsScene::process_selected_items_(
   {
     RowItems rowItem = rowLayout.at(row);
 
+    qDebug() << rowItem.size();
+
     int rowLength = 0;
     foreach(PatternGridItem* anItem, rowItem)
     {
@@ -484,6 +486,7 @@ bool GraphicsScene::process_selected_items_(
     {
       int curStart = (anItem->col());
       int curWidth = (anItem->dim()).width();
+
       if (!cellBounds.empty())
       {
         int lastStart = cellBounds.back().first;
@@ -512,14 +515,15 @@ bool GraphicsScene::process_selected_items_(
     QString rowIndex;
     rowIndex.setNum(row+1);
     QString rowMsg("row " + rowIndex + ": ");
-   
+ 
+    CellMask finalCells;
     /* reorganize all blocks into multiples of selectedPatternSize */
     for (int i=0; i < cellBounds.size(); ++i)
     {
       int currentOrigin = cellBounds.at(i).first;
       int currentWidth = cellBounds.at(i).second;
-      div_t multiple = div(currentWidth, selectedPatternSize);
 
+      div_t multiple = div(currentWidth, selectedPatternSize);
       if (multiple.rem != 0)
       {
         emit statusBar_message(rowMsg + "non-matching block size");
@@ -530,16 +534,19 @@ bool GraphicsScene::process_selected_items_(
       {
         for (int cell=0; cell < multiple.quot; ++cell)
         {
-          cellBounds.push_back(QPair<int,int>(
+          finalCells.push_back(QPair<int,int>(
               currentOrigin + cell*selectedPatternSize,
               selectedPatternSize));
         }
-        cellBounds.removeAt(i);
+      }
+      else
+      {
+        finalCells.push_back(cellBounds.at(i));
       }
     }
 
     /* this row checks out */
-    finalCellLayout.push_back(cellBounds);
+    finalCellLayout.push_back(finalCells);
   }
 
   return true;

@@ -106,7 +106,7 @@ void PatternView::mouseReleaseEvent(QMouseEvent* evt)
     {
       PatternGridItem* item =
         qgraphicsitem_cast<PatternGridItem*>(cell);
-      qDebug() << "are here";
+      //qDebug() << "are here";
       if (item != 0)
       {
         item->click();
