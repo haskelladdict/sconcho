@@ -149,15 +149,19 @@ void GraphicsScene::create_pattern_grid(const QPoint& theOrigin,
   }
 
   /* grid labels
+   * NOTE: In accordance with standard knitting practice
+   *       the row/column count starts in the lower right
+   *       corner.
    * FIXME: placement of lables needs to become smarter */
   QString label;
+  qreal yPos = origin_.y() + numRows_ * cellSize_ + 1; 
   for (int col=0; col < numCols_; ++col)
   {
+    int colNum = numCols_ - col;
     QGraphicsTextItem* text= 
-      new QGraphicsTextItem(label.setNum(col+1));
-    int shift = compute_horizontal_label_shift_(col);
-    text->setPos(origin_.x() + col*cellSize_ + shift, 
-      origin_.y() - 2.3 * textFont_.pointSize());
+      new QGraphicsTextItem(label.setNum(colNum));
+    int shift = compute_horizontal_label_shift_(colNum);
+    text->setPos(origin_.x() + col*cellSize_ + shift, yPos); 
     text->setFont(textFont_);
     addItem(text);
   }
@@ -165,7 +169,7 @@ void GraphicsScene::create_pattern_grid(const QPoint& theOrigin,
   for (int row=0; row < numRows_; ++row)
   {
     QGraphicsTextItem* text= 
-      new QGraphicsTextItem(label.setNum(row+1));
+      new QGraphicsTextItem(label.setNum(numRows_ - row));
     text->setPos(origin_.x() - cellSize_, 
       origin_.y() + row * cellSize_ + textFont_.pointSize());
     text->setFont(textFont_);
