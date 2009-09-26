@@ -174,8 +174,8 @@ void GraphicsScene::create_pattern_grid(const QPoint& theOrigin,
 
 }
 
+ 
 
-  
 /**************************************************************
  *
  * PUBLIC SLOTS
@@ -309,6 +309,8 @@ void GraphicsScene::mouseMoveEvent(
 
   /* let our parent know that we moved */
   emit mouse_moved(currentPos);
+
+  return QGraphicsScene::mouseMoveEvent(mouseEvent);
 }
 
 
@@ -442,7 +444,6 @@ bool GraphicsScene::sort_selected_items_row_wise_(
   while (iter != activeItems_.constEnd()) 
   {
     int row = static_cast<int>(iter.key()/numCols_); 
-    qDebug() << row << "  " << iter.key() << "   " << numCols_;
     theRows[row].push_back(iter.value());
     ++iter;
   }
@@ -464,8 +465,6 @@ bool GraphicsScene::process_selected_items_(
   for (int row=0; row < rowLayout.size(); ++row)
   {
     RowItems rowItem = rowLayout.at(row);
-
-    qDebug() << rowItem.size();
 
     int rowLength = 0;
     foreach(PatternGridItem* anItem, rowItem)

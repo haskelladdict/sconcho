@@ -23,6 +23,11 @@
 #include <QMouseEvent>
 #include <QRubberBand>
 
+#include <QCoreApplication>
+#include <QApplication>
+#include <QMouseEvent>
+#include <QGraphicsSceneMouseEvent>
+
 /** local headers */
 #include "basicDefs.h"
 #include "patternGridItem.h"
@@ -97,20 +102,18 @@ void PatternView::mouseReleaseEvent(QMouseEvent* evt)
   {
     qDebug() << "stop rubber band";
 
-    /* retrieve final rubberBand geometry and select objects */
+    /* retrieve final rubberBand geometry and pick
+     * out all PatternGridItem objects via a qgraphicsitem_cast */
     QRect finalGeometry(rubberBand_->geometry());
     QList<QGraphicsItem*> selectedCells(items(finalGeometry));
-
-    /* loop through all selected items and click on them */
+  
     foreach(QGraphicsItem* cell, selectedCells)
     {
-      PatternGridItem* item =
+      PatternGridItem* item = 
         qgraphicsitem_cast<PatternGridItem*>(cell);
-      //qDebug() << "are here";
       if (item != 0)
       {
         item->click();
-        // item->update();
       }
     }
 

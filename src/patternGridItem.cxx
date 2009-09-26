@@ -38,12 +38,6 @@
 #include "graphicsScene.h"
 #include "patternGridItem.h"
 
-namespace
-{
-  /* convenience definitions */
-  const int PATTERN_GRID_ITEM_TYPEID = QGraphicsItem::UserType + 1;
-};
-
 
 /**************************************************************
  *
@@ -82,6 +76,9 @@ bool PatternGridItem::Init()
     return false;
   }
 
+  /* set up some properties */
+  setFlags(QGraphicsItem::ItemIsSelectable);
+  
   /* call individual initialization routines */
   set_up_pens_brushes_();
 
@@ -202,7 +199,7 @@ void PatternGridItem::click()
 //--------------------------------------------------------------
 int PatternGridItem::type() const
 {
-  return PATTERN_GRID_ITEM_TYPEID;
+  return Type;
 }
   
 
@@ -234,12 +231,9 @@ void PatternGridItem::mousePressEvent(
   }
   else
   {
-    /* click on us */
+    /* "click" on us to select/deselect */
     click();
   }
-
-  /* repaint */
-  //update();
 }
 
 

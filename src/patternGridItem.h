@@ -29,6 +29,7 @@
 #include <QGraphicsItem>
 #include <QPen>
 #include <QList>
+#include <QVariant>
 
 /* local includes */
 #include "knittingSymbol.h"
@@ -56,8 +57,9 @@ class PatternGridItem
   
   Q_OBJECT
 
-    
+  
 public:
+
 
   explicit PatternGridItem(const QPoint& loc, const QSize& aDim, 
       int scale, int column, int row, GraphicsScene* myParent = 0);
@@ -70,6 +72,7 @@ public:
     QWidget *widget);
 
   /* return our object type; needed for qgraphicsitem_cast */
+  enum { Type = UserType + 1 };
   int type() const;
 
   /* this function clicks on a cell and selectes/deselects it
@@ -96,7 +99,7 @@ signals:
 protected:
 
   void mousePressEvent(QGraphicsSceneMouseEvent* event);
-
+  //QVariant itemChange(GraphicsItemChange aChange, const QVariant& val);
  
     
 private:
