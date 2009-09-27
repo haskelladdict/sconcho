@@ -1,0 +1,12 @@
+These are features that need to be implemented:
+
+- allow to add new columns/rows. We should be more general and
+  allow the addition of arbitrary cells at any position.
+
+- allow to add cells inidividually or row/column wise.
+
+- window showing all currently selected colors on the canvas
+  with the ability to select all cells of a given color in bulk
+
+- provide a keyboard interface to interact with the cursor on
+  the canvas (or better the whole main window?) 
