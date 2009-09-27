@@ -18,7 +18,10 @@
 *
 ****************************************************************/
 
-/** Qt headers */
+/* C++ headers */
+#include <cmath>
+
+/* Qt headers */
 #include <QDebug>
 #include <QGraphicsItem>
 #include <QGraphicsItemGroup>
@@ -29,7 +32,7 @@
 #include <QKeyEvent>
 
 
-/** local headers */
+/* local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
 #include "knittingSymbol.h"
@@ -354,6 +357,32 @@ void GraphicsScene::mouseMoveEvent(
 }
 
 
+//---------------------------------------------------------------
+// event handler for mouse press events
+//---------------------------------------------------------------
+void GraphicsScene::mousePressEvent(
+    QGraphicsSceneMouseEvent* mouseEvent)
+{
+  QPointF currentPos = mouseEvent->scenePos();
+  QPair<int,int> index(get_cell_coords_(currentPos));
+
+  /* if the user clicked on the index cells (the ones
+   * the have the column/row numbers in them) we 
+   * hightlight the whole row/cell */
+  int column = index.first;
+  int row    = index.second;
+  if (column == -1)
+  {
+    select_row_(row);
+  }
+  else if (row == numRows_)
+  {
+    select_column_(column);
+  }
+
+  return QGraphicsScene::mousePressEvent(mouseEvent);
+}
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -648,3 +677,88 @@ QColor GraphicsScene::determine_selected_cells_color_()
 
 
 
+//--------------------------------------------------------------
+// given a point on the canvas, determines which column/row the
+// click was in. 
+// NOTE: the point does not have to be in the actual pattern
+// grid and the caller is responsible to make sense out of
+// what ever column/row pair it receives
+//---------------------------------------------------------------
+QPair<int,int> GraphicsScene::get_cell_coords_(
+    const QPointF& mousePos)
+{
+  qreal xPosRel = mousePos.x() - origin_.x();
+  qreal yPosRel = mousePos.y() - origin_.y();
+
+  int column = static_cast<int>(floor(xPosRel/cellSize_));
+  int row    = static_cast<int>(floor(yPosRel/cellSize_));
+
+ // qDebug() << column << "&" << row;
+
+  return QPair<int,int>(column,row);
+}
+ 
+
+//-------------------------------------------------------------
+// activate a complete row
+// In order to accomplish this we create a rectangle that 
+// covers all cells in the row, then get all the items and
+// the select them all. 
+// NOTE: This is simular to what we do with the RubberBand.
+//-------------------------------------------------------------
+void GraphicsScene::select_row_(int rowId)
+{
+  /* selector box dimensions */
+  int shift    = static_cast<int>(cellSize_*0.25);
+  int halfCell = static_cast<int>(cellSize_*0.5);
+
+  QPoint boxOrigin(origin_.x() + shift,
+                   rowId * cellSize_ + shift);
+
+  QSize boxDim((numCols_ - 1) * cellSize_ + halfCell, halfCell);
+
+  /* select items */
+  select_region_(QRect(boxOrigin, boxDim));
+}
+
+
+//-------------------------------------------------------------
+// activate a complete column
+// In order to accomplish this we create a rectangle that 
+// covers all cells in the column, then get all the items and
+// the select them all. 
+// NOTE: This is simular to what we do with the RubberBand.
+//-------------------------------------------------------------
+void GraphicsScene::select_column_(int colId)
+{
+  /* selector box dimensions */
+  int shift    = static_cast<int>(cellSize_*0.25);
+  int halfCell = static_cast<int>(cellSize_*0.5);
+
+  QPoint boxOrigin(colId * cellSize_ + shift, shift);
+  QSize boxDim(halfCell, (numRows_ - 1) * cellSize_ + halfCell);
+
+  /* select items */
+  select_region_(QRect(boxOrigin, boxDim));
+}
+
+
+//--------------------------------------------------------------
+// select all PatterGridItems in the region enclosed by
+// the Rectangle
+//--------------------------------------------------------------
+void GraphicsScene::select_region_(const QRect& aRegion)
+{
+  QList<QGraphicsItem*> allItems(items(aRegion));
+
+  /* grab PatterGridItems and select them */
+  foreach(QGraphicsItem* anItem, allItems)
+  {
+    PatternGridItem* cell = 
+      qgraphicsitem_cast<PatternGridItem*>(anItem);
+    if (cell != 0)
+    {
+      cell->select();
+    }
+  }
+}

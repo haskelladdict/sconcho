@@ -96,6 +96,7 @@ public slots:
   
 protected:
 
+  void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent);
   void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
   void wheelEvent(QGraphicsSceneWheelEvent* wheelEvent);
 
@@ -126,11 +127,15 @@ private:
   /* helper functions */
   void try_place_knitting_symbol_();
   void colorize_highlighted_cells_();
+  QPair<int,int> get_cell_coords_(const QPointF& mousePosition);
   int compute_horizontal_label_shift_(int num);
   QColor determine_selected_cells_color_();
   bool sort_selected_items_row_wise_(QList<RowItems>& rows);
   bool process_selected_items_(QList<CellMask>& processedCellLayout,
       const QList<RowItems>& rowSelection, int targetPatternSize);
+  void select_row_(int row);
+  void select_column_(int col);
+  void select_region_(const QRect& region);
 };
 
 
