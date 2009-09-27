@@ -384,6 +384,10 @@ void GraphicsScene::try_place_knitting_symbol_()
            "not a multiple of the pattern size"));
   }
 
+  /* try to come up with a proper color for the cells to
+   * be replaced */
+  QColor cellColor = determine_selected_cells_color_();
+
   /* sort selected items row wise */
   QList<RowItems> rowList;
   bool sortStatus = sort_selected_items_row_wise_(rowList);
@@ -427,7 +431,8 @@ void GraphicsScene::try_place_knitting_symbol_()
           cellSize_,
           column,
           row,
-          this);
+          this,
+          cellColor);
 
       item->Init();
       item->insert_knitting_symbol(selectedSymbol_);
@@ -599,7 +604,6 @@ bool GraphicsScene::process_selected_items_(
 //--------------------------------------------------------------
 void GraphicsScene::colorize_highlighted_cells_()
 {
-   qDebug() << "snoop";
    foreach(PatternGridItem* anItem, activeItems_)
    {
      anItem->select();
@@ -607,4 +611,40 @@ void GraphicsScene::colorize_highlighted_cells_()
 
    activeItems_.clear();
 }
+
+
+
+//--------------------------------------------------------------
+// when placing knitting symbols in selected cells we try
+// to preserve the current cell colors. This is tricky since
+// there could be cases in which a several cell wide symbol
+// spans unit cells with multiple colors. Hence, for now we
+// only do one of two things
+//
+// 1) If all selected cells have the same color with pick it
+// 2) Otherwise we use the default color, Qt::white
+//--------------------------------------------------------------
+QColor GraphicsScene::determine_selected_cells_color_()
+{
+  QColor defaultColor(Qt::white);
+  QList<PatternGridItem*> cells(activeItems_.values());
+
+  if (cells.size() == 0)
+  {
+    return defaultColor;
+  }
+
+  QColor cellColor(cells.at(0)->color());
+  foreach(PatternGridItem* anItem, cells)
+  {
+    if (anItem->color() != cellColor)
+    {
+      return defaultColor;
+    }
+  }
+
+  return cellColor;
+}
+
+
 

@@ -63,7 +63,9 @@ public:
 
 
   explicit PatternGridItem(const QPoint& loc, const QSize& aDim, 
-      int scale, int column, int row, GraphicsScene* myParent = 0);
+      int scale, int column, int row, 
+      GraphicsScene* myParent = 0,
+      const QColor& backColor = Qt::white);
   bool Init();
 
 
@@ -84,11 +86,11 @@ public:
   void insert_knitting_symbol(KnittingSymbolPtr symbol);
 
   /* accessors for properties */
-  const QPoint& origin() { return loc_; }
-  const QSize& dim() { return dim_; }
-  int col() { return columnIndex_; }
-  int row() { return rowIndex_; }  
-  
+  const QPoint& origin() const { return loc_; } 
+  const QSize& dim() const { return dim_; }
+  int col() const { return columnIndex_; }
+  int row() const { return rowIndex_; }  
+  const QColor& color() const { return backColor_; }  
 
 
 signals:
@@ -125,10 +127,9 @@ private:
   /* drawing related objects */
   QPen pen_;
   bool hasColor_;
-  QBrush defaultBrush_;
-  QBrush highlightBrush_;
-  QBrush colorBrush_;
-  QBrush* currentBrush_;
+  QColor backColor_;
+  QColor currentColor_;
+  QColor highlightColor_;
 
   /* functions */
   void set_up_pens_brushes_();

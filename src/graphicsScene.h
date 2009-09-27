@@ -127,6 +127,7 @@ private:
   void try_place_knitting_symbol_();
   void colorize_highlighted_cells_();
   int compute_horizontal_label_shift_(int num);
+  QColor determine_selected_cells_color_();
   bool sort_selected_items_row_wise_(QList<RowItems>& rows);
   bool process_selected_items_(QList<CellMask>& processedCellLayout,
       const QList<RowItems>& rowSelection, int targetPatternSize);

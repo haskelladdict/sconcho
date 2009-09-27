@@ -50,7 +50,7 @@
 //-------------------------------------------------------------
 PatternGridItem::PatternGridItem(const QPoint& aLoc, 
   const QSize& aDim, int aScale, int aCol, int aRow,
-  GraphicsScene* myParent)
+  GraphicsScene* myParent, const QColor& aBackColor)
     :
       QGraphicsItem(),
       selected_(false),
@@ -61,7 +61,8 @@ PatternGridItem::PatternGridItem(const QPoint& aLoc,
       scaling_(aScale),
       columnIndex_(aCol),
       rowIndex_(aRow),
-      hasColor_(false)
+      hasColor_(false),
+      backColor_(aBackColor)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -135,7 +136,10 @@ void PatternGridItem::paint(QPainter *painter,
   const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
   painter->setPen(pen_);
-  painter->setBrush(*currentBrush_);
+
+  QBrush aBrush(currentColor_);
+  painter->setBrush(aBrush);
+
   painter->drawRect(QRectF(loc_, scaling_*dim_));
 }
 
@@ -258,25 +262,10 @@ void PatternGridItem::set_up_pens_brushes_()
   //pen_.setJoinStyle(Qt::MiterJoin);
   pen_.setColor(Qt::black);
 
-  /* brushes for hightlighted, colored and default colored 
-   * items */
-  highlightBrush_ = QBrush(Qt::gray);
-//  colorBrush_     = QBrush(parent_->get_background_color());
-//  defaultBrush_   = QBrush(Qt::white);
-  colorBrush_ = QBrush(Qt::white);
+  /* set up highlight color */
+  highlightColor_ = QColor(Qt::gray);
 
-  currentBrush_ = &colorBrush_;
-/*
-  if (parent_->withColor())
-  {
-    hasColor_ = true;
-    currentBrush_ = &colorBrush_;
-  }
-  else
-  {
-    currentBrush_ = &defaultBrush_;
-  }
-*/
+  currentColor_ = backColor_;
 }
 
 
@@ -323,7 +312,7 @@ void PatternGridItem::fit_svg_()
 void PatternGridItem::highlight_on_()
 {
   selected_ = true;
-  currentBrush_ = &highlightBrush_;
+  currentColor_ = highlightColor_;
 }
 
 
@@ -332,31 +321,14 @@ void PatternGridItem::highlight_off_()
   selected_ = false;
 
   /* if color updating is selected we get the color from the
-   * canvas, update the brush and use it; we also mark the
+   * canvas, update it and use it; we also mark the
    * cell as a colored one */
   if (parent_->withColor())
   {
     hasColor_ = true;
-    colorBrush_ = QBrush(parent_->get_background_color());
+    backColor_ = parent_->get_background_color();
   }
 
-
-  currentBrush_ = &colorBrush_;
-#if 0
-  /* if the color is not supposed to be updated we do the
-   * following: If the cell is colored we keep */
-  else
-  {
-    if (hasColor_)
-    {
-      currentBrush_ = &colorBrush_;
-    }
-    else
-    {
-      currentBrush_ = &defaultBrush_;
-    } 
-  //  currentBrush_ = &colorBrush_;
-  }
-#endif
+  currentColor_ = backColor_; 
 }
 
