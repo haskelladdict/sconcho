@@ -70,6 +70,7 @@ public:
   /* accessor functions */ 
   const KnittingSymbolPtr get_selected_symbol();
   const QColor& get_background_color();
+  bool withColor();
 
   /* create the main pattern grid item */
   void create_pattern_grid(const QPoint& origin, const QSize& dim, 
@@ -90,6 +91,7 @@ public slots:
   void grid_item_selected(PatternGridItem* item, bool status);
   void grid_item_reset(PatternGridItem*);
   void update_selected_background_color(const QColor& aColor);
+  void color_state_changed(int state); 
 
   
 protected:
@@ -119,9 +121,11 @@ private:
    * color, pen size ..) */
   KnittingSymbolPtr selectedSymbol_;
   QColor backgroundColor_;
+  bool wantColor_;
 
   /* helper functions */
   void try_place_knitting_symbol_();
+  void colorize_highlighted_cells_();
   int compute_horizontal_label_shift_(int num);
   bool sort_selected_items_row_wise_(QList<RowItems>& rows);
   bool process_selected_items_(QList<CellMask>& processedCellLayout,

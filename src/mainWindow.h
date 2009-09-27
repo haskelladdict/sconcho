@@ -35,6 +35,7 @@
 /* a few forward declarations */
 class GraphicsScene;
 class PatternView;
+class QGroupBox;
 class QLabel;
 class QMenuBar;
 class QPushButton;
@@ -132,6 +133,7 @@ private:
   PatternView* canvasView_;
 
   /* widgets for selectors */
+  QGroupBox* colorSelectorGrouper_;
   QPushButton* colorSelector_;
   SymbolSelectorWidget* symbolSelector_;
 };

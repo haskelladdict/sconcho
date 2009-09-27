@@ -60,7 +60,8 @@ PatternGridItem::PatternGridItem(const QPoint& aLoc,
       dim_(aDim),
       scaling_(aScale),
       columnIndex_(aCol),
-      rowIndex_(aRow)
+      rowIndex_(aRow),
+      hasColor_(false)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -149,8 +150,8 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
   QString symbolPath(aSymbol->path());
 
   /* set the background color to the currently selected one 
-   * and turn hightlight off */
-  inactiveBrush_ = QBrush(parent_->get_background_color()); 
+   * if requested and turn hightlight off */
+  //colorBrush_ = QBrush(parent_->get_background_color()); 
   highlight_off_();
 
   /* delete the previous svgItem if there was one */
@@ -257,10 +258,25 @@ void PatternGridItem::set_up_pens_brushes_()
   //pen_.setJoinStyle(Qt::MiterJoin);
   pen_.setColor(Qt::black);
 
-  /* brushes for active/inactive item */
-  activeBrush_ = QBrush(Qt::gray);
-  inactiveBrush_ = QBrush(parent_->get_background_color());
-  currentBrush_ = &inactiveBrush_;
+  /* brushes for hightlighted, colored and default colored 
+   * items */
+  highlightBrush_ = QBrush(Qt::gray);
+//  colorBrush_     = QBrush(parent_->get_background_color());
+//  defaultBrush_   = QBrush(Qt::white);
+  colorBrush_ = QBrush(Qt::white);
+
+  currentBrush_ = &colorBrush_;
+/*
+  if (parent_->withColor())
+  {
+    hasColor_ = true;
+    currentBrush_ = &colorBrush_;
+  }
+  else
+  {
+    currentBrush_ = &defaultBrush_;
+  }
+*/
 }
 
 
@@ -307,13 +323,40 @@ void PatternGridItem::fit_svg_()
 void PatternGridItem::highlight_on_()
 {
   selected_ = true;
-  currentBrush_ = &activeBrush_;
+  currentBrush_ = &highlightBrush_;
 }
 
 
 void PatternGridItem::highlight_off_()
 {
   selected_ = false;
-  currentBrush_ = &inactiveBrush_;
+
+  /* if color updating is selected we get the color from the
+   * canvas, update the brush and use it; we also mark the
+   * cell as a colored one */
+  if (parent_->withColor())
+  {
+    hasColor_ = true;
+    colorBrush_ = QBrush(parent_->get_background_color());
+  }
+
+
+  currentBrush_ = &colorBrush_;
+#if 0
+  /* if the color is not supposed to be updated we do the
+   * following: If the cell is colored we keep */
+  else
+  {
+    if (hasColor_)
+    {
+      currentBrush_ = &colorBrush_;
+    }
+    else
+    {
+      currentBrush_ = &defaultBrush_;
+    } 
+  //  currentBrush_ = &colorBrush_;
+  }
+#endif
 }
 

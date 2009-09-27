@@ -26,6 +26,7 @@
 
 /* QT includes */
 #include <QBrush>
+#include <QColor>
 #include <QGraphicsItem>
 #include <QPen>
 #include <QList>
@@ -123,8 +124,10 @@ private:
  
   /* drawing related objects */
   QPen pen_;
-  QBrush activeBrush_;
-  QBrush inactiveBrush_;
+  bool hasColor_;
+  QBrush defaultBrush_;
+  QBrush highlightBrush_;
+  QBrush colorBrush_;
   QBrush* currentBrush_;
 
   /* functions */

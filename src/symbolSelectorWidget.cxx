@@ -186,7 +186,8 @@ void SymbolSelectorWidget::create_tabs_()
   QVBoxLayout* mainLayout = new QVBoxLayout(this);
   for (int i = 0; i < symbols.length(); ++i)
   {
-     mainLayout->addLayout(create_symbol_layout_(symbols[i], QSize(1,1)));
+     mainLayout->addLayout(create_symbol_layout_(
+           symbols[i], QSize(1,1)));
   }
   mainLayout->addLayout(create_symbol_layout_("LT", QSize(2,1)));
   mainLayout->addLayout(create_symbol_layout_("RT", QSize(2,1)));

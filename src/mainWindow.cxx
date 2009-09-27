@@ -20,13 +20,14 @@
 
 /** Qt headers */
 #include <QAction>
+#include <QCheckBox>
 #include <QColorDialog>
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
-//#include <QGraphicsView>
-#include <QGraphicsTextItem>
+//#include <QGraphicsTextItem>
 #include <QGroupBox>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
@@ -526,10 +527,24 @@ void MainWindow::create_toolbar_()
 void MainWindow::create_property_widget_()
 {
    colorSelector_ = new QPushButton(this);
-   colorSelector_->setText(tr("cell color"));
+//   colorSelector_->setText(tr("cell color"));
    colorSelector_->setMaximumSize(70,50);
    QPalette widgetColor = QPalette(Qt::white);
    colorSelector_->setPalette(widgetColor);
+
+   QCheckBox* colorChecker = new QCheckBox("change cell color");
+   colorChecker->setChecked(false);
+
+   colorSelectorGrouper_ = new QGroupBox;
+   QHBoxLayout* colorLayout = new QHBoxLayout;
+   colorLayout->addWidget(colorChecker);
+   colorLayout->addWidget(colorSelector_);
+   colorSelectorGrouper_->setLayout(colorLayout);
+
+   connect(colorChecker,
+           SIGNAL(stateChanged(int)),
+           canvas_,
+           SLOT(color_state_changed(int)));
 
    connect(colorSelector_,
            SIGNAL(clicked()),
@@ -550,11 +565,10 @@ void MainWindow::create_main_splitter_()
   /* properties layout */
   QVBoxLayout* propertiesLayout = new QVBoxLayout;
   propertiesLayout->addWidget(symbolSelector_);
-  propertiesLayout->addWidget(colorSelector_);
+  propertiesLayout->addWidget(colorSelectorGrouper_);
   QGroupBox* propertyBox = new QGroupBox(this);
   propertyBox->setLayout(propertiesLayout);
 
-  
   mainSplitter_ = new QSplitter(this);
   mainSplitter_->addWidget(canvasView_);
   mainSplitter_->addWidget(propertyBox);

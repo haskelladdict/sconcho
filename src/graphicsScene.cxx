@@ -56,7 +56,8 @@ GraphicsScene::GraphicsScene(QObject* myParent)
   textFont_("Arial",8),
   selectedSymbol_(
       KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"",""))),
-  backgroundColor_(Qt::white)
+  backgroundColor_(Qt::white),
+  wantColor_(false)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -117,6 +118,12 @@ const KnittingSymbolPtr GraphicsScene::get_selected_symbol()
 const QColor& GraphicsScene::get_background_color()
 {
   return backgroundColor_;
+}
+
+
+bool GraphicsScene::withColor()
+{
+  return wantColor_;
 }
 
 
@@ -204,8 +211,8 @@ void GraphicsScene::update_selected_symbol(
 //-------------------------------------------------------------
 // update the present list of grid items; if the number of
 // selected items matches the number we need based on the
-// knitting symbol and they are adjacent we can place the
-// symbol
+// knitting symbol and they are adjacent we either try
+// placing the symbol or color the cells.
 //--------------------------------------------------------------
 void GraphicsScene::grid_item_selected(PatternGridItem* anItem, 
     bool status)
@@ -223,7 +230,16 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
     activeItems_.remove(index);
   }
 
-  try_place_knitting_symbol_();
+  /* if a knitting symbol is selected we try placing it,
+   * otherwise we color the cells if requested */
+  if (selectedSymbol_->path() != "")
+  {
+    try_place_knitting_symbol_();
+  }
+  else if (wantColor_)
+  {
+    colorize_highlighted_cells_();
+  }
 }
 
 
@@ -271,6 +287,26 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
 }
 
 
+
+//-------------------------------------------------------------
+// record if a user request coloring of cells or not
+//-------------------------------------------------------------
+void GraphicsScene::color_state_changed(int state)
+{
+  if (state == Qt::Checked)
+  {
+    wantColor_ = true;
+    colorize_highlighted_cells_();
+  }
+  else
+  {
+    wantColor_ = false;
+  }
+}
+
+  
+  
+  
 /**************************************************************
  *
  * PRIVATE SLOTS
@@ -553,5 +589,22 @@ bool GraphicsScene::process_selected_items_(
   }
 
   return true;
+}
+
+
+
+//--------------------------------------------------------------
+// color all highlighted cells in the presently currently
+// selected color
+//--------------------------------------------------------------
+void GraphicsScene::colorize_highlighted_cells_()
+{
+   qDebug() << "snoop";
+   foreach(PatternGridItem* anItem, activeItems_)
+   {
+     anItem->select();
+   }
+
+   activeItems_.clear();
 }
 
