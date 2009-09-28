@@ -172,7 +172,24 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
     svgItem_->setVisible(true);
   }
 }
-  
+ 
+
+
+//--------------------------------------------------------------
+// move this cell to a new location (in the pattern grid
+// array) on the canvas.
+//--------------------------------------------------------------
+void PatternGridItem::reseat(const QPoint& newOrigin, int newCol, 
+    int newRow)
+{
+  /* schedule event with canvas */
+  prepareGeometryChange();
+
+  /* update */
+  loc_ = newOrigin;
+  columnIndex_ = newCol;
+  rowIndex_ = newRow;
+} 
 
 
 //--------------------------------------------------------------

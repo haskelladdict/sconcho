@@ -42,7 +42,7 @@ class QGraphicsSceneWheelEvent;
 class QKeyEvent;
 
 /* convenience typedefs */
-typedef QList<QPair<int, int> > CellMask;
+typedef QList<QPair<int, int> > RowLayout;
 typedef QList<PatternGridItem*> RowItems;
 
 
@@ -92,6 +92,7 @@ public slots:
   void grid_item_reset(PatternGridItem*);
   void update_selected_background_color(const QColor& aColor);
   void color_state_changed(int state); 
+  void delete_active_cells();
 
   
 protected:
@@ -131,8 +132,9 @@ private:
   int compute_horizontal_label_shift_(int num);
   QColor determine_selected_cells_color_();
   bool sort_selected_items_row_wise_(QList<RowItems>& rows);
-  bool process_selected_items_(QList<CellMask>& processedCellLayout,
+  bool process_selected_items_(QList<RowLayout>& processedCellLayout,
       const QList<RowItems>& rowSelection, int targetPatternSize);
+  QPoint compute_cell_origin_(int col, int row);
   void select_row_(int row);
   void select_column_(int col);
   void select_region_(const QRect& region);

@@ -25,7 +25,6 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
-//#include <QGraphicsTextItem>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -80,13 +79,12 @@ bool MainWindow::Init()
   setMinimumSize(initialSize);
 
   /* populate the main interface */
-  create_menu_bar_();
-  create_file_menu_();
-  create_status_bar_();
   create_graphics_scene_();
   create_symbols_widget_();
   create_toolbar_();
   create_property_widget_();
+  create_menu_bar_();
+  create_status_bar_();
   create_main_splitter_();
 
   connect(symbolSelector_,
@@ -324,6 +322,10 @@ void MainWindow::create_menu_bar_()
 {
   menuBar_ = new QMenuBar(this);
   setMenuBar(menuBar_);
+
+  /* create the individual menu options */
+  create_file_menu_();
+  create_grid_menu_();
 } 
 
 
@@ -371,6 +373,23 @@ void MainWindow::create_file_menu_()
       SLOT(quit_sconcho_()));
 } 
 
+
+//------------------------------------------------------------
+// create menu dealing with grid dimensions/layout and
+// deleting and adding of individual cells.
+//------------------------------------------------------------
+void MainWindow::create_grid_menu_()
+{
+   QMenu* fileMenu = menuBar_->addMenu(tr("&Grid"));
+
+  /* open */
+  QAction* deleteAction = new QAction(tr("&Delete selected cells"), this);
+  fileMenu->addAction(deleteAction);
+  deleteAction->setShortcut(tr("Ctrl+D"));
+  connect(deleteAction, SIGNAL(triggered()), canvas_,
+      SLOT(delete_active_cells()));
+}
+  
 
 //------------------------------------------------------------
 // create the status bar
@@ -527,12 +546,12 @@ void MainWindow::create_toolbar_()
 void MainWindow::create_property_widget_()
 {
    colorSelector_ = new QPushButton(this);
-//   colorSelector_->setText(tr("cell color"));
+   colorSelector_->setText(tr("cell color"));
    colorSelector_->setMaximumSize(70,50);
    QPalette widgetColor = QPalette(Qt::white);
    colorSelector_->setPalette(widgetColor);
 
-   QCheckBox* colorChecker = new QCheckBox("change cell color");
+   QCheckBox* colorChecker = new QCheckBox("apply");
    colorChecker->setChecked(false);
 
    colorSelectorGrouper_ = new QGroupBox;

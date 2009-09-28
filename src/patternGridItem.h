@@ -63,7 +63,7 @@ public:
 
 
   explicit PatternGridItem(const QPoint& loc, const QSize& aDim, 
-      int scale, int column, int row, 
+      int scale, int columnID, int rowID, 
       GraphicsScene* myParent = 0,
       const QColor& backColor = Qt::white);
   bool Init();
@@ -84,6 +84,9 @@ public:
   
   /* insert a new knitting symbol to be displayed */
   void insert_knitting_symbol(KnittingSymbolPtr symbol);
+
+  /* reseat this cell to the given new coordinates */
+  void reseat(const QPoint& newOrigin, int newCol, int newRow);
 
   /* accessors for properties */
   const QPoint& origin() const { return loc_; } 

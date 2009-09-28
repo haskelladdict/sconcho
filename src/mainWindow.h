@@ -112,6 +112,7 @@ private:
   /* interface generation functions */
   void create_menu_bar_();
   void create_file_menu_();
+  void create_grid_menu_();
   void create_status_bar_();
   void create_graphics_scene_();
   void create_main_splitter_();

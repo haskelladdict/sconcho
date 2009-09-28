@@ -19,6 +19,8 @@
 ****************************************************************/
 
 /* C++ headers */
+#include <algorithm>
+#include <vector>
 #include <cmath>
 
 /* Qt headers */
@@ -146,11 +148,9 @@ void GraphicsScene::create_pattern_grid(const QPoint& theOrigin,
   {
     for (int row=0; row < numRows_; ++row)
     {
-      QPoint origin(origin_.x() +(col*cellSize_), 
-                    origin_.y() +(row*cellSize_));
       PatternGridItem* item = 
-        new PatternGridItem(origin, QSize(1,1), cellSize_, 
-            col, row, this);
+        new PatternGridItem(compute_cell_origin_(col, row), 
+            QSize(1,1), cellSize_, col, row, this);
       item->Init();
 
       /* add it to our scene */
@@ -308,7 +308,76 @@ void GraphicsScene::color_state_changed(int state)
 }
 
   
-  
+//-------------------------------------------------------------
+// delete all cells currently activated (i.e. the ones in
+// active items from the canvas
+//-------------------------------------------------------------
+void GraphicsScene::delete_active_cells()
+{
+  qDebug() << "deleting active cells";
+
+  /* first step: remove all selected cells from canvas */
+  QList<PatternGridItem*> deadItems = activeItems_.values();
+  foreach(PatternGridItem* anItem, deadItems)
+  {
+    removeItem(anItem);
+  }
+
+  /* second step: do some housekeeping. E.g., if a complete
+   * column/or row has disappeared we adjust the pattern grid
+   * origin as well as the total number of columns/rows. In
+   * addition the grid labels will have to be changed as well */
+  QList<QGraphicsItem*> allItems(items());
+
+  std::vector<int> colIDs;
+  std::vector<int> rowIDs;
+  QList<PatternGridItem*> currentCells;
+  foreach(QGraphicsItem* anItem, allItems)
+  {
+    PatternGridItem* cell = 
+      qgraphicsitem_cast<PatternGridItem*>(anItem);
+
+    if (cell != 0)
+    {
+      currentCells.push_back(cell);
+      colIDs.push_back(cell->col());
+      rowIDs.push_back(cell->row());
+    }
+  }
+
+  int minCol = *std::min_element(colIDs.begin(), colIDs.end());
+  int maxCol = *std::max_element(colIDs.begin(), colIDs.end());
+  int minRow = *std::min_element(rowIDs.begin(), rowIDs.end());
+  int maxRow = *std::max_element(rowIDs.begin(), rowIDs.end());
+  int newNumCols = maxCol - minCol;
+  int newNumRows = maxRow - minRow;
+
+  assert(minCol >= 0);
+  assert(maxCol >= 0);
+  assert(minRow >= 0);
+  assert(maxRow >= 0);
+  assert(newNumCols >= 0);
+  assert(newNumRows >= 0);
+  assert(newNumCols <= numCols_);
+  assert(newNumRows <= numRows_);
+
+  /* if there are empty columns on the left of the pattern grid
+   * we shift the whole array to the array so the leftmost column
+   * is column 0. Similarly, if there are emty rows at the top
+   * we shift the array upward so the topmost row is row 0 */
+  foreach (PatternGridItem* anItem, currentCells)
+  {
+    int newCol = anItem->col() - minCol;
+    int newRow = anItem->row() - minRow;
+    anItem->reseat(compute_cell_origin_(newCol, newRow), newCol, 
+        newRow);
+  }
+
+
+  activeItems_.clear();
+}
+
+
   
 /**************************************************************
  *
@@ -383,6 +452,8 @@ void GraphicsScene::mousePressEvent(
   return QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -427,7 +498,7 @@ void GraphicsScene::try_place_knitting_symbol_()
 
   /* check if each row has the proper arrangement of 
    * highlighted cells to fit the selected pattern item */
-  QList<CellMask> replacementCells;
+  QList<RowLayout> replacementCells;
   bool finalStatus = process_selected_items_(replacementCells, 
     rowList, cellsNeeded);
   if (!finalStatus)
@@ -454,8 +525,7 @@ void GraphicsScene::try_place_knitting_symbol_()
       int aWidth  = replacementCells.at(row)[cell].second;
 
       PatternGridItem* item = new PatternGridItem (
-          QPoint(origin_.x() + column * cellSize_, 
-                 origin_.y() + row * cellSize_),
+          compute_cell_origin_(column, row),  
           QSize(aWidth,1),
           cellSize_,
           column,
@@ -533,7 +603,7 @@ bool GraphicsScene::sort_selected_items_row_wise_(
 // NOTE: selectedPatternSize is expected to be non-zero
 //--------------------------------------------------------------
 bool GraphicsScene::process_selected_items_(
-  QList<CellMask>& finalCellLayout, const QList<RowItems>& rowLayout, 
+  QList<RowLayout>& finalCellLayout, const QList<RowItems>& rowLayout, 
   int selectedPatternSize)
 {
   for (int row=0; row < rowLayout.size(); ++row)
@@ -554,7 +624,7 @@ bool GraphicsScene::process_selected_items_(
       return false;
     }
 
-    CellMask cellBounds;
+    RowLayout cellBounds;
     foreach(PatternGridItem* anItem, rowItem)
     {
       int curStart = (anItem->col());
@@ -589,7 +659,7 @@ bool GraphicsScene::process_selected_items_(
     rowIndex.setNum(row+1);
     QString rowMsg("row " + rowIndex + ": ");
  
-    CellMask finalCells;
+    RowLayout finalCells;
     /* reorganize all blocks into multiples of selectedPatternSize */
     for (int i=0; i < cellBounds.size(); ++i)
     {
@@ -762,3 +832,16 @@ void GraphicsScene::select_region_(const QRect& aRegion)
     }
   }
 }
+
+
+
+//----------------------------------------------------------------
+// compute the origin of a grid cell based on its column and
+// row index
+//----------------------------------------------------------------
+QPoint GraphicsScene::compute_cell_origin_(int col, int row)
+{
+  return QPoint(origin_.x() + col * cellSize_, 
+                origin_.y() + row * cellSize_);
+}
+
