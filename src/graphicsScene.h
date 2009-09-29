@@ -69,7 +69,8 @@ class GraphicsScene
     
 public:
 
-  explicit GraphicsScene(QObject* myParent);
+  explicit GraphicsScene(const QPoint& origin, 
+    const QSize& gridsize, int cellSize, QObject* myParent = 0);
   bool Init();
 
   /* accessor functions */ 
@@ -77,11 +78,7 @@ public:
   const QColor& get_background_color();
   bool withColor();
 
-  /* create the main pattern grid item */
-  void create_pattern_grid(const QPoint& origin, const QSize& dim, 
-      int cellSize);
-
-
+ 
 signals:
 
   void mouse_moved(QPointF position);
@@ -137,6 +134,11 @@ private:
   KnittingSymbolPtr selectedSymbol_;
   QColor backgroundColor_;
   bool wantColor_;
+
+  /* set up functions for canvas */
+  void create_pattern_grid_();
+  void create_grid_row_labels_();
+  void create_grid_column_labels_();
 
   /* helper functions */
   void try_place_knitting_symbol_();

@@ -404,7 +404,15 @@ void MainWindow::create_status_bar_()
 //-------------------------------------------------------------
 void MainWindow::create_graphics_scene_()
 {
-  canvas_ = new GraphicsScene(this);
+  /* ask user for the grid size */
+  GridDimensionDialog* gridDialog = new GridDimensionDialog;
+  gridDialog->Init();
+  QSize gridSize = gridDialog->dim();
+  delete gridDialog;
+
+  /* create canvas */
+  QPoint origin(0,0);
+  canvas_ = new GraphicsScene(origin, gridSize, 30, this);
   if ( !canvas_->Init() )
   {
     qDebug() << "Failed to initialize canvas";
@@ -413,14 +421,6 @@ void MainWindow::create_graphics_scene_()
   canvasView_ = new PatternView(canvas_);
   canvasView_->Init();
 
-  /* ask user for the grid size */
-  GridDimensionDialog* gridDialog = new GridDimensionDialog;
-  gridDialog->Init();
-  QSize gridSize = gridDialog->dim();
-  delete gridDialog;
-
-  /* create pattern grid */
-  canvas_->create_pattern_grid(QPoint(0,0), gridSize, 30);
   fit_in_view_();
 }
 

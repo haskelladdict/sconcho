@@ -53,13 +53,14 @@
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-GraphicsScene::GraphicsScene(QObject* myParent)
+GraphicsScene::GraphicsScene(const QPoint& anOrigin, 
+    const QSize& gridDim, int aSize, QObject* myParent)
   :
   QGraphicsScene(myParent),
-  origin_(QPoint(0,0)),
-  numCols_(0),
-  numRows_(0),
-  cellSize_(0),
+  origin_(anOrigin),
+  numCols_(gridDim.width()),
+  numRows_(gridDim.height()),
+  cellSize_(aSize),
   selectedColumn_(UNSELECTED),
   selectedRow_(UNSELECTED),
   textFont_("Arial",8),
@@ -81,6 +82,11 @@ bool GraphicsScene::Init()
   {
     return false;
   }
+
+  /* build canvas */
+  create_pattern_grid_();
+  create_grid_column_labels_();
+  create_grid_row_labels_();
 
   /* install signal handlers */
   connect(this,
@@ -135,68 +141,6 @@ bool GraphicsScene::withColor()
   return wantColor_;
 }
 
-
-//-------------------------------------------------------------
-// create the grid
-//-------------------------------------------------------------
-void GraphicsScene::create_pattern_grid(const QPoint& theOrigin, 
-    const QSize& dimension, int size)
-{
-  origin_ = theOrigin;
-  numCols_ = dimension.width();
-  numRows_ = dimension.height();
-  cellSize_ = size;
-
-  /* grid */
-  for (int col=0; col < numCols_; ++col)
-  {
-    for (int row=0; row < numRows_; ++row)
-    {
-      PatternGridItem* item = 
-        new PatternGridItem(compute_cell_origin_(col, row), 
-            QSize(1,1), cellSize_, col, row, this);
-      item->Init();
-
-      /* add it to our scene */
-      addItem(item);
-    }
-  }
-
-  /* grid labels
-   * NOTE: In accordance with standard knitting practice
-   *       the row/column count starts in the lower right
-   *       corner.
-   * FIXME: placement of lables needs to become smarter */
-  QString label;
-  qreal yPos = origin_.y() + numRows_ * cellSize_ + 1; 
-  for (int col=0; col < numCols_; ++col)
-  {
-    int colNum = numCols_ - col;
-    PatternGridLabel* text= new PatternGridLabel(
-        label.setNum(colNum), 
-        PatternGridLabel::ColLabel
-        );
-
-    int shift = compute_horizontal_label_shift_(colNum);
-    text->setPos(origin_.x() + col*cellSize_ + shift, yPos); 
-    text->setFont(textFont_);
-    addItem(text);
-  }
-
-  for (int row=0; row < numRows_; ++row)
-  {
-    PatternGridLabel* text= new PatternGridLabel(
-        label.setNum(numRows_ - row),
-        PatternGridLabel::RowLabel
-        );
-
-    text->setPos(origin_.x() - cellSize_, 
-      origin_.y() + row * cellSize_ + textFont_.pointSize());
-    text->setFont(textFont_);
-    addItem(text);
-  }
-
-}
 
  
 
@@ -279,7 +223,6 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
 
   /* get rid of the old cell making sure that we punt if from
    * the set of activeItems if present */
- // activeItems_.removeAll(anItem);
   removeItem(anItem);
 
   /* start filling the hole with new cells */
@@ -876,6 +819,72 @@ void GraphicsScene::manage_rows_(const QPoint& pos, int rowID)
   rowMenu.exec(pos);
 }
   
+
+//-------------------------------------------------------------
+// create the grid
+//-------------------------------------------------------------
+void GraphicsScene::create_pattern_grid_()
+{
+  /* grid */
+  for (int col=0; col < numCols_; ++col)
+  {
+    for (int row=0; row < numRows_; ++row)
+    {
+      PatternGridItem* item = 
+        new PatternGridItem(compute_cell_origin_(col, row), 
+            QSize(1,1), cellSize_, col, row, this);
+      item->Init();
+
+      /* add it to our scene */
+      addItem(item);
+    }
+  }
+}
+
+
+
+//-----------------------------------------------------------------------
+// create the column labels
+//-----------------------------------------------------------------------
+void GraphicsScene::create_grid_column_labels_()
+{
+  QString label;
+  qreal yPos = origin_.y() + numRows_ * cellSize_ + 1; 
+  for (int col=0; col < numCols_; ++col)
+  {
+    int colNum = numCols_ - col;
+    PatternGridLabel* text= new PatternGridLabel(
+        label.setNum(colNum), 
+        PatternGridLabel::ColLabel
+        );
+
+    int shift = compute_horizontal_label_shift_(colNum);
+    text->setPos(origin_.x() + col*cellSize_ + shift, yPos); 
+    text->setFont(textFont_);
+    addItem(text);
+  }
+}
+
+
+//-----------------------------------------------------------------------
+// create the column labels
+//-----------------------------------------------------------------------
+void GraphicsScene::create_grid_row_labels_()
+{
+  QString label;
+  for (int row=0; row < numRows_; ++row)
+  {
+    PatternGridLabel* text= new PatternGridLabel(
+        label.setNum(numRows_ - row),
+        PatternGridLabel::RowLabel
+        );
+
+    text->setPos(origin_.x() - cellSize_, 
+      origin_.y() + row * cellSize_ + textFont_.pointSize());
+    text->setFont(textFont_);
+    addItem(text);
+  }
+}
 
 
 
