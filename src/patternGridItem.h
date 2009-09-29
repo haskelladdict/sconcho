@@ -18,8 +18,8 @@
 *
 ****************************************************************/
 
-#ifndef PATTERN_GRID_H
-#define PATTERN_GRID_H
+#ifndef PATTERN_GRID_ITEM_H
+#define PATTERN_GRID_ITEM_H
 
 /* boost includes */
 #include <boost/utility.hpp>
@@ -30,7 +30,6 @@
 #include <QGraphicsItem>
 #include <QPen>
 #include <QList>
-#include <QVariant>
 
 /* local includes */
 #include "knittingSymbol.h"
@@ -41,6 +40,13 @@ class QGraphicsSceneMouseEvent;
 class QGraphicsSvgItem;
 class QPainter;
 class QStyleOptionGraphicsItem;
+
+
+/* define our user type */
+namespace
+{
+  const int PATTERN_GRID_ITEM_TYPE = 1;
+};
 
 
 /***************************************************************
@@ -75,7 +81,7 @@ public:
     QWidget *widget);
 
   /* return our object type; needed for qgraphicsitem_cast */
-  enum { Type = UserType + 1 };
+  enum { Type = UserType + PATTERN_GRID_ITEM_TYPE };
   int type() const;
 
   /* this function selects a cell and highlights/unhightlights it

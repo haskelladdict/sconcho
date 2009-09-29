@@ -6,6 +6,7 @@ SET(SCONCHO_SRCS
   knittingSymbol.cxx
   mainWindow.cxx
   patternGridItem.cxx
+  patternGridLabel.cxx
   patternView.cxx
   sconcho.cxx
   symbolSelectorItem.cxx

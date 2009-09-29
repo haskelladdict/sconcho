@@ -25,7 +25,6 @@
 /* Qt headers */
 #include <QColor>
 #include <QDebug>
-#include <QGraphicsItemGroup>
 #include <QGraphicsLineItem>
 #include <QGraphicsRectItem>
 #include <QGraphicsSvgItem>

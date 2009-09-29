@@ -40,6 +40,7 @@
 #include "graphicsScene.h"
 #include "knittingSymbol.h"
 #include "patternGridItem.h"
+#include "patternGridLabel.h"
 
 
 
@@ -171,8 +172,11 @@ void GraphicsScene::create_pattern_grid(const QPoint& theOrigin,
   for (int col=0; col < numCols_; ++col)
   {
     int colNum = numCols_ - col;
-    QGraphicsTextItem* text= 
-      new QGraphicsTextItem(label.setNum(colNum));
+    PatternGridLabel* text= new PatternGridLabel(
+        label.setNum(colNum), 
+        PatternGridLabel::ColLabel
+        );
+
     int shift = compute_horizontal_label_shift_(colNum);
     text->setPos(origin_.x() + col*cellSize_ + shift, yPos); 
     text->setFont(textFont_);
@@ -181,8 +185,11 @@ void GraphicsScene::create_pattern_grid(const QPoint& theOrigin,
 
   for (int row=0; row < numRows_; ++row)
   {
-    QGraphicsTextItem* text= 
-      new QGraphicsTextItem(label.setNum(numRows_ - row));
+    PatternGridLabel* text= new PatternGridLabel(
+        label.setNum(numRows_ - row),
+        PatternGridLabel::RowLabel
+        );
+
     text->setPos(origin_.x() - cellSize_, 
       origin_.y() + row * cellSize_ + textFont_.pointSize());
     text->setFont(textFont_);
