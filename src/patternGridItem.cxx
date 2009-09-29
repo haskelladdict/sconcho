@@ -189,6 +189,9 @@ void PatternGridItem::reseat(const QPoint& newOrigin, int newCol,
   loc_ = newOrigin;
   columnIndex_ = newCol;
   rowIndex_ = newRow;
+
+  /* fix up the svg item */
+  fit_svg_();
 } 
 
 
@@ -317,7 +320,7 @@ void PatternGridItem::fit_svg_()
   svgItem_->scale(scaleX, scaleY);
 
   /* translate */
-  svgItem_->moveBy(boxRect.x(), boxRect.y());
+  svgItem_->setPos(boxRect.x(), boxRect.y());
 }
 
 
