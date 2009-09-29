@@ -45,6 +45,11 @@ class QKeyEvent;
 typedef QList<QPair<int, int> > RowLayout;
 typedef QList<PatternGridItem*> RowItems;
 
+/* convenience constants */
+namespace 
+{
+  const int UNSELECTED = -1;
+};
 
 
 /***************************************************************
@@ -92,7 +97,6 @@ public slots:
   void grid_item_reset(PatternGridItem*);
   void update_selected_background_color(const QColor& aColor);
   void color_state_changed(int state); 
-  void delete_active_cells();
 
   
 protected:
@@ -100,6 +104,11 @@ protected:
   void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent);
   void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
   void wheelEvent(QGraphicsSceneWheelEvent* wheelEvent);
+
+
+private slots:
+
+  void delete_row_();
 
   
 private:
@@ -112,6 +121,10 @@ private:
   int numCols_;
   int numRows_;
   int cellSize_;
+
+  /* holds the index of the currently selected column/row if any */
+  int selectedColumn_;
+  int selectedRow_;
 
   /* basic font properties */
   QFont textFont_;
@@ -134,10 +147,15 @@ private:
   bool sort_selected_items_row_wise_(QList<RowItems>& rows);
   bool process_selected_items_(QList<RowLayout>& processedCellLayout,
       const QList<RowItems>& rowSelection, int targetPatternSize);
-  QPoint compute_cell_origin_(int col, int row);
+ 
   void select_row_(int row);
+  void manage_rows_(const QPoint& pos, int row);
+  
   void select_column_(int col);
   void select_region_(const QRect& region);
+
+  QPoint compute_cell_origin_(int col, int row) const;
+  int compute_cell_index_(PatternGridItem* anItem) const;
 };
 
 

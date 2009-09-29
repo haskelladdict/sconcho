@@ -325,7 +325,6 @@ void MainWindow::create_menu_bar_()
 
   /* create the individual menu options */
   create_file_menu_();
-  create_grid_menu_();
 } 
 
 
@@ -373,23 +372,6 @@ void MainWindow::create_file_menu_()
       SLOT(quit_sconcho_()));
 } 
 
-
-//------------------------------------------------------------
-// create menu dealing with grid dimensions/layout and
-// deleting and adding of individual cells.
-//------------------------------------------------------------
-void MainWindow::create_grid_menu_()
-{
-   QMenu* fileMenu = menuBar_->addMenu(tr("&Grid"));
-
-  /* open */
-  QAction* deleteAction = new QAction(tr("&Delete selected cells"), this);
-  fileMenu->addAction(deleteAction);
-  deleteAction->setShortcut(tr("Ctrl+D"));
-  connect(deleteAction, SIGNAL(triggered()), canvas_,
-      SLOT(delete_active_cells()));
-}
-  
 
 //------------------------------------------------------------
 // create the status bar

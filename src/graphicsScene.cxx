@@ -32,6 +32,7 @@
 #include <QGraphicsSceneWheelEvent>
 #include <QGraphicsTextItem>
 #include <QKeyEvent>
+#include <QMenu>
 
 
 /* local headers */
@@ -58,6 +59,8 @@ GraphicsScene::GraphicsScene(QObject* myParent)
   numCols_(0),
   numRows_(0),
   cellSize_(0),
+  selectedColumn_(UNSELECTED),
+  selectedRow_(UNSELECTED),
   textFont_("Arial",8),
   selectedSymbol_(
       KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"",""))),
@@ -221,7 +224,7 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
     bool status)
 {
   /* compute index based on row and col */
-  int index = (anItem->row() * numCols_) + anItem->col();
+  int index = compute_cell_index_(anItem);
 
   /* first update our list of currently selected items */
   if (status)
@@ -308,30 +311,29 @@ void GraphicsScene::color_state_changed(int state)
 }
 
   
-//-------------------------------------------------------------
-// delete all cells currently activated (i.e. the ones in
-// active items from the canvas
-//-------------------------------------------------------------
-void GraphicsScene::delete_active_cells()
-{
-  qDebug() << "deleting active cells";
 
-  /* first step: remove all selected cells from canvas */
-  QList<PatternGridItem*> deadItems = activeItems_.values();
-  foreach(PatternGridItem* anItem, deadItems)
+/**************************************************************
+ *
+ * PRIVATE SLOTS
+ *
+ *************************************************************/
+
+//-------------------------------------------------------------
+// this slots deletes selectedRow from the pattern grid array
+//-------------------------------------------------------------
+void GraphicsScene::delete_row_()
+{
+  if (selectedRow_ == UNSELECTED)
   {
-    removeItem(anItem);
+    return;
   }
 
-  /* second step: do some housekeeping. E.g., if a complete
-   * column/or row has disappeared we adjust the pattern grid
-   * origin as well as the total number of columns/rows. In
-   * addition the grid labels will have to be changed as well */
+  /* go through all grid cells and
+   * - delete the ones in the selectedRow_
+   * - shift the ones in a row greater than selectedRow_
+   *   up by one
+   */
   QList<QGraphicsItem*> allItems(items());
-
-  std::vector<int> colIDs;
-  std::vector<int> rowIDs;
-  QList<PatternGridItem*> currentCells;
   foreach(QGraphicsItem* anItem, allItems)
   {
     PatternGridItem* cell = 
@@ -339,51 +341,25 @@ void GraphicsScene::delete_active_cells()
 
     if (cell != 0)
     {
-      currentCells.push_back(cell);
-      colIDs.push_back(cell->col());
-      rowIDs.push_back(cell->row());
+      if (cell->row() == selectedRow_)
+      {
+        removeItem(cell);
+      }
+      else if (cell->row() > selectedRow_)
+      {
+        cell->reseat(
+                compute_cell_origin_(cell->col(), cell->row()-1),
+                cell->col(),
+                cell->row() - 1);
+      }
     }
   }
 
-  int minCol = *std::min_element(colIDs.begin(), colIDs.end());
-  int maxCol = *std::max_element(colIDs.begin(), colIDs.end());
-  int minRow = *std::min_element(rowIDs.begin(), rowIDs.end());
-  int maxRow = *std::max_element(rowIDs.begin(), rowIDs.end());
-  int newNumCols = maxCol - minCol;
-  int newNumRows = maxRow - minRow;
-
-  assert(minCol >= 0);
-  assert(maxCol >= 0);
-  assert(minRow >= 0);
-  assert(maxRow >= 0);
-  assert(newNumCols >= 0);
-  assert(newNumRows >= 0);
-  assert(newNumCols <= numCols_);
-  assert(newNumRows <= numRows_);
-
-  /* if there are empty columns on the left of the pattern grid
-   * we shift the whole array to the array so the leftmost column
-   * is column 0. Similarly, if there are emty rows at the top
-   * we shift the array upward so the topmost row is row 0 */
-  foreach (PatternGridItem* anItem, currentCells)
-  {
-    int newCol = anItem->col() - minCol;
-    int newRow = anItem->row() - minRow;
-    anItem->reseat(compute_cell_origin_(newCol, newRow), newCol, 
-        newRow);
-  }
-
-
-  activeItems_.clear();
+  /* unselect row */
+  selectedRow_ = UNSELECTED;
 }
 
 
-  
-/**************************************************************
- *
- * PRIVATE SLOTS
- *
- *************************************************************/
 
 /**************************************************************
  *
@@ -436,13 +412,29 @@ void GraphicsScene::mousePressEvent(
   QPair<int,int> index(get_cell_coords_(currentPos));
 
   /* if the user clicked on the index cells (the ones
-   * the have the column/row numbers in them) we 
-   * hightlight the whole row/cell */
+   * the have the column/row numbers in them) we:
+   *
+   * - hightlight the whole row/cell if it is a left-click
+   * - open a row/column delete/insert/add dialog if it is
+   *   a right click 
+   */
   int column = index.first;
   int row    = index.second;
   if (column == -1)
   {
-    select_row_(row);
+    if (mouseEvent->button() == Qt::RightButton)
+    {
+      /* FIXME: manage_row calls the proper member function
+       * via a signal and can't therefore provide the row
+       * ID by itself which is why we have to use a silly
+       * private variable. Is there any way we can avoid this? */
+      selectedRow_ = row;
+      manage_rows_(mouseEvent->screenPos(), row);
+    }
+    else
+    {
+      select_row_(row);
+    }
   }
   else if (row == numRows_)
   {
@@ -839,9 +831,44 @@ void GraphicsScene::select_region_(const QRect& aRegion)
 // compute the origin of a grid cell based on its column and
 // row index
 //----------------------------------------------------------------
-QPoint GraphicsScene::compute_cell_origin_(int col, int row)
+QPoint GraphicsScene::compute_cell_origin_(int col, int row) const
 {
   return QPoint(origin_.x() + col * cellSize_, 
                 origin_.y() + row * cellSize_);
 }
+
+
+
+//-----------------------------------------------------------------
+// compute the index of a given cell based on its present row
+// and column
+//-----------------------------------------------------------------
+int GraphicsScene::compute_cell_index_(PatternGridItem* anItem) const
+{
+  return (anItem->row() * numCols_) + anItem->col();
+}
+
+
+//-----------------------------------------------------------------
+// this function is responsible for opening up a dialog allowing
+// the user to delete/insert/add rows and initiates the necessary
+// steps according to the selection
+//-----------------------------------------------------------------
+void GraphicsScene::manage_rows_(const QPoint& pos, int rowID)
+{
+  /* open up a menu and connect the slots */
+  QMenu rowMenu;
+  QAction* deleteAction    = rowMenu.addAction("delete row");
+  QAction* insertAction    = rowMenu.addAction("insert row");
+  QAction* addTopAction    = rowMenu.addAction("add row at top");
+  QAction* addBottomAction = rowMenu.addAction("add row at bottom");
+
+  connect(deleteAction, SIGNAL(triggered()), 
+          this, SLOT(delete_row_()));
+
+  rowMenu.exec(pos);
+}
+  
+
+
 
