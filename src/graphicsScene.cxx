@@ -277,6 +277,17 @@ void GraphicsScene::delete_row_()
     return;
   }
 
+
+  /* before deleting anything make sure to deselect everything
+   * currently activated and removing it from activeItems since
+   * the numbering is about to change */
+  foreach(PatternGridItem* anItem, activeItems_)
+  {
+    anItem->select();
+  }
+  activeItems_.clear();
+
+
   /* go through all grid cells and
    * - delete the ones in the selectedRow_
    * - shift the ones in a row greater than selectedRow_
@@ -310,6 +321,7 @@ void GraphicsScene::delete_row_()
 
   /* redraw the labels */
   create_grid_labels_();
+
 }
 
 
@@ -768,15 +780,29 @@ void GraphicsScene::select_region_(const QRect& aRegion)
 {
   QList<QGraphicsItem*> allItems(items(aRegion));
 
-  /* grab PatterGridItems and select them */
+  /* grab PatterGridItems and select them 
+   * NOTE: We can not just select the cells as we find
+   * them among all items since their order is arbitrary
+   * causing the selected area to be filled improperly
+   * for larger symbols (just like randomly selecting
+   * cells in the region would). Hence we sort all cells
+   * first by index and then select them in order */
+  QMap<int,PatternGridItem*> gridItems;
   foreach(QGraphicsItem* anItem, allItems)
   {
     PatternGridItem* cell = 
       qgraphicsitem_cast<PatternGridItem*>(anItem);
     if (cell != 0)
     {
-      cell->select();
+      int cellIndex = compute_cell_index_(cell);
+      gridItems[cellIndex] = cell;
     }
+  }
+
+  QList<PatternGridItem*> sortedItems(gridItems.values());
+  foreach(PatternGridItem* cell, sortedItems)
+  {
+    cell->select();
   }
 }
 
