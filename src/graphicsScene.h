@@ -150,6 +150,8 @@ private:
   bool process_selected_items_(QList<RowLayout>& processedCellLayout,
       const QList<RowItems>& rowSelection, int targetPatternSize);
 
+  void deselect_all_active_items_();
+
   void select_column_(int col);
   void select_row_(int row);
   void manage_columns_rows_(const QPoint& pos, int col, int row);

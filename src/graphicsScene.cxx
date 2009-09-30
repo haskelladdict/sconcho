@@ -195,7 +195,7 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
   else if (wantColor_)
   {
     colorize_highlighted_cells_();
-  }
+  } 
 }
 
 
@@ -279,16 +279,8 @@ void GraphicsScene::delete_col_()
   {
     return;
   }
-
-
-  /* before deleting anything make sure to deselect everything
-   * currently activated and removing it from activeItems since
-   * the numbering is about to change */
-  foreach(PatternGridItem* anItem, activeItems_)
-  {
-    anItem->select();
-  }
-  activeItems_.clear();
+  
+  deselect_all_active_items_();
 
   QList<QGraphicsItem*> allItems(items());
   QList<PatternGridItem*> gridItems;
@@ -368,16 +360,7 @@ void GraphicsScene::delete_row_()
     return;
   }
 
-
-  /* before deleting anything make sure to deselect everything
-   * currently activated and removing it from activeItems since
-   * the numbering is about to change */
-  foreach(PatternGridItem* anItem, activeItems_)
-  {
-    anItem->select();
-  }
-  activeItems_.clear();
-
+  deselect_all_active_items_();
 
   /* go through all grid cells and
    * - delete the ones in the selectedRow_
@@ -493,10 +476,12 @@ void GraphicsScene::mousePressEvent(
   {
     if (column == -1)
     {
+      qDebug() << "select row " << row;
       select_row_(row);
     }
     else if (row == numRows_)
     {
+      qDebug() << "select column " << column;
       select_column_(column);
     }
   }
@@ -558,7 +543,6 @@ void GraphicsScene::try_place_knitting_symbol_()
     return;
   }
 
-
   /* delete previously highligthed cells */
   foreach(PatternGridItem* item, activeItems_.values())
   {
@@ -566,7 +550,7 @@ void GraphicsScene::try_place_knitting_symbol_()
   }
   activeItems_.clear();
 
-  
+
   /* at this point all rows are in the proper shape to be
    * replaced by the current symbol */
   for (int row=0; row < replacementCells.size(); ++row)
@@ -576,7 +560,7 @@ void GraphicsScene::try_place_knitting_symbol_()
       int column = replacementCells.at(row)[cell].first;
       int aWidth  = replacementCells.at(row)[cell].second;
 
-      PatternGridItem* item = new PatternGridItem (
+      PatternGridItem* anItem = new PatternGridItem (
           compute_cell_origin_(column, row),  
           QSize(aWidth,1),
           cellSize_,
@@ -585,9 +569,9 @@ void GraphicsScene::try_place_knitting_symbol_()
           this,
           cellColor);
 
-      item->Init();
-      item->insert_knitting_symbol(selectedSymbol_);
-      addItem(item);
+      anItem->Init();
+      anItem->insert_knitting_symbol(selectedSymbol_);
+      addItem(anItem);
     }
   }
     
@@ -751,16 +735,13 @@ bool GraphicsScene::process_selected_items_(
 
 //--------------------------------------------------------------
 // color all highlighted cells in the presently currently
-// selected color
+// selected color. In reality, this really boils down to
+// deselecting them all since they will pick up the current
+// highlight color in the process :)
 //--------------------------------------------------------------
 void GraphicsScene::colorize_highlighted_cells_()
 {
-   foreach(PatternGridItem* anItem, activeItems_)
-   {
-     anItem->select();
-   }
-
-   activeItems_.clear();
+  deselect_all_active_items_();
 }
 
 
@@ -894,11 +875,16 @@ void GraphicsScene::select_region_(const QRect& aRegion)
     }
   }
 
+  qDebug() << "active " << activeItems_.size();
+  qDebug() << "grid " << gridItems.size();
+
   QList<PatternGridItem*> sortedItems(gridItems.values());
   foreach(PatternGridItem* cell, sortedItems)
   {
     cell->select();
   }
+
+  qDebug() << "active " << activeItems_.size();
 }
 
 
@@ -1058,5 +1044,17 @@ void GraphicsScene::create_grid_labels_()
   }
 }
 
+
+//---------------------------------------------------------------
+// deselects all items currenty marked as active
+//---------------------------------------------------------------
+void GraphicsScene::deselect_all_active_items_()
+{
+  foreach(PatternGridItem* anItem, activeItems_)
+  {
+    anItem->select();
+  }
+  activeItems_.clear();
+}
 
 

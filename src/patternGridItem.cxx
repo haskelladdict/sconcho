@@ -154,7 +154,6 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
 
   /* set the background color to the currently selected one 
    * if requested and turn hightlight off */
-  //colorBrush_ = QBrush(parent_->get_background_color()); 
   highlight_off_();
 
   /* delete the previous svgItem if there was one */
@@ -165,10 +164,10 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
   }
 
   if (symbolPath != "")
-  {
+  { 
+    qDebug() << "symbol " << symbolPath << " col:row " << col() << ":" << row();
     svgItem_ = new QGraphicsSvgItem(symbolPath,this);
     fit_svg_();
-    svgItem_->setVisible(true);
   }
 }
  
