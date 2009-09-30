@@ -61,7 +61,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   numCols_(gridDim.width()),
   numRows_(gridDim.height()),
   cellSize_(aSize),
-  selectedColumn_(UNSELECTED),
+  selectedCol_(UNSELECTED),
   selectedRow_(UNSELECTED),
   textFont_("Arial",8),
   selectedSymbol_(
@@ -268,6 +268,67 @@ void GraphicsScene::color_state_changed(int state)
  *************************************************************/
 
 //-------------------------------------------------------------
+// this slots deletes selectedCol from the pattern grid array
+//-------------------------------------------------------------
+void GraphicsScene::delete_col_()
+{
+  if (selectedCol_ == UNSELECTED)
+  {
+    return;
+  }
+
+
+  /* before deleting anything make sure to deselect everything
+   * currently activated and removing it from activeItems since
+   * the numbering is about to change */
+  foreach(PatternGridItem* anItem, activeItems_)
+  {
+    anItem->select();
+  }
+  activeItems_.clear();
+
+
+  /* go through all grid cells and
+   * - delete the ones in the selectedRow_
+   * - shift the ones in a row greater than selectedRow_
+   *   up by one
+   */
+  QList<QGraphicsItem*> allItems(items());
+  foreach(QGraphicsItem* anItem, allItems)
+  {
+    PatternGridItem* cell = 
+      qgraphicsitem_cast<PatternGridItem*>(anItem);
+
+    if (cell != 0)
+    {
+      if (cell->col() == selectedCol_)
+      {
+        removeItem(cell);
+      }
+      else if (cell->col() > selectedCol_)
+      {
+        cell->reseat(
+                compute_cell_origin_(cell->col() - 1, cell->row()),
+                cell->col() - 1,
+                cell->row());
+      }
+    }
+  }
+
+  /* unselect row and update row counter */
+  numCols_ = numCols_ - 1;
+  selectedCol_ = UNSELECTED;
+
+  /* redraw the labels */
+  create_grid_labels_();
+
+  /* update sceneRect 
+   * NOTE: This may be a bottleneck for large grids */
+  setSceneRect(itemsBoundingRect());
+}
+
+
+//-------------------------------------------------------------
 // this slots deletes selectedRow from the pattern grid array
 //-------------------------------------------------------------
 void GraphicsScene::delete_row_()
@@ -322,6 +383,9 @@ void GraphicsScene::delete_row_()
   /* redraw the labels */
   create_grid_labels_();
 
+  /* update sceneRect 
+   * NOTE: This may be a bottleneck for large grids */
+  setSceneRect(itemsBoundingRect());
 }
 
 
@@ -385,25 +449,26 @@ void GraphicsScene::mousePressEvent(
    */
   int column = index.first;
   int row    = index.second;
-  if (column == -1)
+  if (mouseEvent->button() == Qt::RightButton)
   {
-    if (mouseEvent->button() == Qt::RightButton)
-    {
-      /* FIXME: manage_row calls the proper member function
-       * via a signal and can't therefore provide the row
-       * ID by itself which is why we have to use a silly
-       * private variable. Is there any way we can avoid this? */
-      selectedRow_ = row;
-      manage_rows_(mouseEvent->screenPos(), row);
-    }
-    else
+    /* FIXME: manage_columns_rows_ calls the proper member function
+     * via a signal and can't therefore provide the column/row
+     * ID by itself which is why we have to use a silly
+     * private variable. Is there any way we can avoid this? */
+    selectedCol_ = column;
+    selectedRow_ = row;
+    manage_columns_rows_(mouseEvent->screenPos(), column, row);
+  }
+  else
+  {
+    if (column == -1)
     {
       select_row_(row);
     }
-  }
-  else if (row == numRows_)
-  {
-    select_column_(column);
+    else if (row == numRows_)
+    {
+      select_column_(column);
+    }
   }
 
   return QGraphicsScene::mousePressEvent(mouseEvent);
@@ -835,19 +900,56 @@ int GraphicsScene::compute_cell_index_(PatternGridItem* anItem) const
 // the user to delete/insert/add rows and initiates the necessary
 // steps according to the selection
 //-----------------------------------------------------------------
-void GraphicsScene::manage_rows_(const QPoint& pos, int rowID)
+void GraphicsScene::manage_columns_rows_(const QPoint& pos, 
+    int colID, int rowID)
 {
-  /* open up a menu and connect the slots */
-  QMenu rowMenu;
-  QAction* deleteAction    = rowMenu.addAction("delete row");
-  QAction* insertAction    = rowMenu.addAction("insert row");
-  QAction* addTopAction    = rowMenu.addAction("add row at top");
-  QAction* addBottomAction = rowMenu.addAction("add row at bottom");
+  QMenu colRowMenu;
 
-  connect(deleteAction, SIGNAL(triggered()), 
+  /* row related entries */
+  QString rowString;
+  rowString.setNum(numRows_ - rowID);
+
+  /* show these only if we're inside the pattern grid */
+  if (rowID >= 0 && rowID < numRows_)
+  {
+    QAction* rowDeleteAction = 
+      colRowMenu.addAction("delete row " + rowString);
+    QAction* rowInsertAction = 
+      colRowMenu.addAction("insert before row " + rowString);
+    
+    connect(rowDeleteAction, SIGNAL(triggered()), 
           this, SLOT(delete_row_()));
+  }
+  QAction* addRowTopAction    = 
+    colRowMenu.addAction("add row at top");
+  QAction* addRowBottomAction = 
+    colRowMenu.addAction("add row at bottom");
 
-  rowMenu.exec(pos);
+
+  colRowMenu.addSeparator();
+
+  /* row related entries */
+  QString colString;
+  colString.setNum(numCols_ - colID);
+
+  /* show these only if we're inside the pattern grid */
+  if (colID >= 0 && colID < numCols_)
+  {
+    QAction* colDeleteAction = 
+      colRowMenu.addAction("delete column " + colString);
+    QAction* colInsertAction = 
+      colRowMenu.addAction("insert before column " + colString);
+    
+    connect(colDeleteAction, SIGNAL(triggered()), 
+          this, SLOT(delete_col_()));
+  }
+  QAction* addColRightAction = 
+    colRowMenu.addAction("add column at right");
+  QAction* addColLeftAction = 
+    colRowMenu.addAction("add column at left");
+
+
+  colRowMenu.exec(pos);
 }
   
 

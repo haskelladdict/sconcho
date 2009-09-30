@@ -239,6 +239,12 @@ int PatternGridItem::type() const
 void PatternGridItem::mousePressEvent(
   QGraphicsSceneMouseEvent* anEvent)
 {
+  /* ignore right mouse clicks */
+  if (anEvent->button() == Qt::RightButton)  
+  {
+    return;
+  }
+  
   /* if the user has control pressed we ignore this event */
   if (anEvent->modifiers().testFlag(Qt::ControlModifier))
   {

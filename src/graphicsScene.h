@@ -105,6 +105,7 @@ protected:
 
 private slots:
 
+  void delete_col_();
   void delete_row_();
 
   
@@ -120,7 +121,7 @@ private:
   int cellSize_;
 
   /* holds the index of the currently selected column/row if any */
-  int selectedColumn_;
+  int selectedCol_;
   int selectedRow_;
 
   /* basic font properties */
@@ -148,11 +149,10 @@ private:
   bool sort_selected_items_row_wise_(QList<RowItems>& rows);
   bool process_selected_items_(QList<RowLayout>& processedCellLayout,
       const QList<RowItems>& rowSelection, int targetPatternSize);
- 
-  void select_row_(int row);
-  void manage_rows_(const QPoint& pos, int row);
-  
+
   void select_column_(int col);
+  void select_row_(int row);
+  void manage_columns_rows_(const QPoint& pos, int col, int row);
   void select_region_(const QRect& region);
 
   QPoint compute_cell_origin_(int col, int row) const;
