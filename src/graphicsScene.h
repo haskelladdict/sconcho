@@ -137,8 +137,7 @@ private:
 
   /* set up functions for canvas */
   void create_pattern_grid_();
-  void create_grid_row_labels_();
-  void create_grid_column_labels_();
+  void create_grid_labels_();
 
   /* helper functions */
   void try_place_knitting_symbol_();

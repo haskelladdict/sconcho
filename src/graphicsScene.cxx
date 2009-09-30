@@ -85,8 +85,7 @@ bool GraphicsScene::Init()
 
   /* build canvas */
   create_pattern_grid_();
-  create_grid_column_labels_();
-  create_grid_row_labels_();
+  create_grid_labels_();
 
   /* install signal handlers */
   connect(this,
@@ -305,8 +304,12 @@ void GraphicsScene::delete_row_()
     }
   }
 
-  /* unselect row */
+  /* unselect row and update row counter */
+  numRows_ = numRows_ - 1;
   selectedRow_ = UNSELECTED;
+
+  /* redraw the labels */
+  create_grid_labels_();
 }
 
 
@@ -711,6 +714,7 @@ QPair<int,int> GraphicsScene::get_cell_coords_(
 }
  
 
+
 //-------------------------------------------------------------
 // activate a complete row
 // In order to accomplish this we create a rectangle that 
@@ -732,6 +736,7 @@ void GraphicsScene::select_row_(int rowId)
   /* select items */
   select_region_(QRect(boxOrigin, boxDim));
 }
+
 
 
 //-------------------------------------------------------------
@@ -843,11 +848,26 @@ void GraphicsScene::create_pattern_grid_()
 
 
 
-//-----------------------------------------------------------------------
-// create the column labels
-//-----------------------------------------------------------------------
-void GraphicsScene::create_grid_column_labels_()
+//-------------------------------------------------------------
+// create or update the column labels
+//-------------------------------------------------------------
+void GraphicsScene::create_grid_labels_()
 {
+  /* remove all existing labels if there are any */
+  QList<QGraphicsItem*> allItems(items());
+  foreach(QGraphicsItem* aLabel, allItems)
+  {
+    PatternGridLabel* label = 
+      qgraphicsitem_cast<PatternGridLabel*>(aLabel);
+
+    if (label != 0)
+    {
+      removeItem(label);
+    }
+  }  
+
+
+  /* add new column labels */
   QString label;
   qreal yPos = origin_.y() + numRows_ * cellSize_ + 1; 
   for (int col=0; col < numCols_; ++col)
@@ -863,15 +883,9 @@ void GraphicsScene::create_grid_column_labels_()
     text->setFont(textFont_);
     addItem(text);
   }
-}
 
 
-//-----------------------------------------------------------------------
-// create the column labels
-//-----------------------------------------------------------------------
-void GraphicsScene::create_grid_row_labels_()
-{
-  QString label;
+  /* add new row labels */
   for (int row=0; row < numRows_; ++row)
   {
     PatternGridLabel* text= new PatternGridLabel(
