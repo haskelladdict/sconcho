@@ -269,6 +269,9 @@ void GraphicsScene::color_state_changed(int state)
 
 //-------------------------------------------------------------
 // this slots deletes selectedCol from the pattern grid array
+// NOTE: delecting columns is a bit more tricky than deleting
+// rows since we have to bail if the selected column has cells
+// that span more than a single unit cell, i.e., columns.
 //-------------------------------------------------------------
 void GraphicsScene::delete_col_()
 {
@@ -287,13 +290,13 @@ void GraphicsScene::delete_col_()
   }
   activeItems_.clear();
 
-
-  /* go through all grid cells and
-   * - delete the ones in the selectedRow_
-   * - shift the ones in a row greater than selectedRow_
-   *   up by one
-   */
   QList<QGraphicsItem*> allItems(items());
+  QList<PatternGridItem*> gridItems;
+
+  /* go through all items and make sure that the cells
+   * of the selected rows are all unit cells and don't
+   * span multiple columns */
+  int targetColCounter = 0;
   foreach(QGraphicsItem* anItem, allItems)
   {
     PatternGridItem* cell = 
@@ -301,17 +304,44 @@ void GraphicsScene::delete_col_()
 
     if (cell != 0)
     {
-      if (cell->col() == selectedCol_)
+      if (cell->col() == selectedCol_ &&
+          cell->dim().width() == 1)
       {
-        removeItem(cell);
+        targetColCounter += 1;
       }
-      else if (cell->col() > selectedCol_)
-      {
-        cell->reseat(
-                compute_cell_origin_(cell->col() - 1, cell->row()),
-                cell->col() - 1,
-                cell->row());
-      }
+      
+      gridItems.push_back(cell);
+    }
+  }
+        
+  /* if we have less than numCols_ in deletedColCounter there
+   * was at least on multi column cell in the column */
+  if ( targetColCounter < numCols_ )
+  {
+    emit statusBar_message("cannot delete columns with "
+      "cells that span multiple columns");
+    selectedCol_ = UNSELECTED;
+    return;
+  }
+
+
+  /* go through all grid cells and
+   * - delete the ones in the selectedRow_
+   * - shift the ones in a row greater than selectedRow_
+   *   up by one
+   */
+  foreach(PatternGridItem* cell, gridItems)
+  {
+    if (cell->col() == selectedCol_)
+    {
+      removeItem(cell);
+    }
+    else if (cell->col() > selectedCol_)
+    {
+      cell->reseat(
+              compute_cell_origin_(cell->col() - 1, cell->row()),
+              cell->col() - 1,
+              cell->row());
     }
   }
 
