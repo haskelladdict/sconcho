@@ -434,13 +434,12 @@ void GraphicsScene::insert_col_(int aCol)
 {
   deselect_all_active_items_();
 
-  QList<QGraphicsItem*> allItems(items());
-  QList<PatternGridItem*> gridItems;
 
   /* go through all items and make sure that that
    * inserting the columns won't cut through any
    * multy row cells */
   int targetColCounter = 0;
+  QList<QGraphicsItem*> allItems(items());
   foreach(QGraphicsItem* anItem, allItems)
   {
     PatternGridItem* cell = 
@@ -460,8 +459,6 @@ void GraphicsScene::insert_col_(int aCol)
       {
         targetColCounter += 1;
       }
-      
-      gridItems.push_back(cell);
     }
   }
         
@@ -476,18 +473,9 @@ void GraphicsScene::insert_col_(int aCol)
   }
 
 
-  /* go through all grid cells and shift the ones in a column 
-   * greater than aCol to the right by one */
-  foreach(PatternGridItem* cell, gridItems)
-  {
-    if (cell->col() >= aCol )
-    {
-      cell->reseat(
-              compute_cell_origin_(cell->col() + 1, cell->row()),
-              cell->col() + 1,
-              cell->row());
-    }
-  }
+  /* shift the grid to make space */
+  shift_grid_(aCol, NOSHIFT);
+
 
   /* now insert the new column */
   for (int row = 0; row < numRows_; ++row)
@@ -507,7 +495,6 @@ void GraphicsScene::insert_col_(int aCol)
 
 
   /* unselect row and update row counter */
-  numCols_ = numCols_ + 1;
   selectedCol_ = UNSELECTED;
 
   /* redraw the labels */
@@ -517,7 +504,6 @@ void GraphicsScene::insert_col_(int aCol)
    * NOTE: This may be a bottleneck for large grids */
   setSceneRect(itemsBoundingRect());
 }
-
 
 
 //-------------------------------------------------------------
@@ -551,27 +537,8 @@ void GraphicsScene::insert_row_(int aRow)
 {
   deselect_all_active_items_();
 
-  /* go through all grid cells and
-   * shift all cells below row down by one
-   */
-  QList<QGraphicsItem*> allItems(items());
-  foreach(QGraphicsItem* anItem, allItems)
-  {
-    PatternGridItem* cell = 
-      qgraphicsitem_cast<PatternGridItem*>(anItem);
-
-    if (cell != 0)
-    {
-      if (cell->row() > aRow)
-      {
-        cell->reseat(
-                compute_cell_origin_(cell->col(), cell->row()+1),
-                cell->col(),
-                cell->row() + 1);
-      }
-    }
-  }
-
+  /* shift rows to make space */
+  shift_grid_(NOSHIFT, aRow);
 
   /* now insert the new row */
   for (int column = 0; column < numCols_; ++column)
@@ -591,7 +558,6 @@ void GraphicsScene::insert_row_(int aRow)
 
 
   /* unselect row and update row counter */
-  numRows_ = numRows_ + 1;
   selectedRow_ = UNSELECTED;
 
   /* redraw the labels */
@@ -1250,5 +1216,65 @@ void GraphicsScene::deselect_all_active_items_()
   }
   activeItems_.clear();
 }
+
+
+
+//---------------------------------------------------------------
+// shift the pattern grid by one column and/or row wise starting
+// at the specified column and row indices.
+// This is mainly used when inserting/deleting columns/rows
+//--------------------------------------------------------------
+void GraphicsScene::shift_grid_(int colStart, int rowStart)
+{
+  QList<QGraphicsItem*> allItems(items());
+
+  /* go through all items and make sure that that
+   * inserting the columns won't cut through any
+   * multy row cells */
+  foreach(QGraphicsItem* anItem, allItems)
+  {
+    PatternGridItem* cell = 
+      qgraphicsitem_cast<PatternGridItem*>(anItem);
+
+    if (cell != 0)
+    {
+      /* do we want to shift the columns */
+      if (colStart != NOSHIFT)
+      {
+        if (cell->col() >= colStart)
+        {
+          cell->reseat(
+                  compute_cell_origin_(cell->col() + 1, cell->row()),
+                  cell->col() + 1,
+                  cell->row());
+        }
+      }
+
+      /* do we want to shift the rows */
+      if (rowStart != NOSHIFT)
+      {
+        if (cell->row() > rowStart)
+        {
+          cell->reseat(
+                  compute_cell_origin_(cell->col(), cell->row()+1),
+                  cell->col(),
+                  cell->row() + 1);
+        }
+      }
+    }
+  }
+
+  /* adjust the row/col count */
+  if (colStart != NOSHIFT)
+  {
+    numCols_ += 1;
+  }
+
+  if (rowStart != NOSHIFT)
+  {
+    numRows_ += 1;
+  }
+}
+
 
 

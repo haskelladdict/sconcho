@@ -49,6 +49,7 @@ typedef QList<PatternGridItem*> RowItems;
 namespace 
 {
   const int UNSELECTED = -100;
+  const int NOSHIFT    = -101;
 };
 
 
@@ -161,6 +162,7 @@ private:
   void select_row_(int row);
   void insert_col_(int col);
   void insert_row_(int row);
+  void shift_grid_(int colStart, int rowStart);
   void manage_columns_rows_(const QPoint& pos, int col, int row);
   void select_region_(const QRect& region);
 

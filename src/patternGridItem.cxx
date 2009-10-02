@@ -165,7 +165,6 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
 
   if (symbolPath != "")
   { 
-    qDebug() << "symbol " << symbolPath << " col:row " << col() << ":" << row();
     svgItem_ = new QGraphicsSvgItem(symbolPath,this);
     fit_svg_();
   }
