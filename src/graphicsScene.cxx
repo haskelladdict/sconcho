@@ -307,9 +307,9 @@ void GraphicsScene::delete_col_()
     }
   }
         
-  /* if we have less than numCols_ in deletedColCounter there
+  /* if we have less than numRows_ in deletedColCounter there
    * was at least on multi column cell in the column */
-  if ( targetColCounter < numCols_ )
+  if ( targetColCounter < numRows_ )
   {
     emit statusBar_message("cannot delete columns with "
       "cells that span multiple columns");
@@ -407,14 +407,115 @@ void GraphicsScene::delete_row_()
 //-------------------------------------------------------------
 // insert new columns into grid
 //-------------------------------------------------------------
-void GraphicsScene::insert_before_col_()
+void GraphicsScene::insert_left_of_col_()
 {
+  if (selectedCol_ == UNSELECTED)
+  {
+    return;
+  }
+
+  insert_col_(selectedCol_);
+}
+
+
+void GraphicsScene::insert_right_of_col_()
+{
+  if (selectedCol_ == UNSELECTED)
+  {
+    return;
+  }
+
+  insert_col_(selectedCol_ + 1);
 }
 
 
 
-void GraphicsScene::insert_after_col_()
+void GraphicsScene::insert_col_(int aCol)
 {
+  deselect_all_active_items_();
+
+  QList<QGraphicsItem*> allItems(items());
+  QList<PatternGridItem*> gridItems;
+
+  /* go through all items and make sure that that
+   * inserting the columns won't cut through any
+   * multy row cells */
+  int targetColCounter = 0;
+  foreach(QGraphicsItem* anItem, allItems)
+  {
+    PatternGridItem* cell = 
+      qgraphicsitem_cast<PatternGridItem*>(anItem);
+
+    if (cell != 0)
+    {
+      /* in order to make sure we won't cut through
+       * a wide cell, we check if the origin of the cell
+       * is in the current cell. If not, it will surely
+       * start in the cell to the left and we would cut
+       * it in this case */
+      QPoint actualOrigin(cell->origin());
+      QPoint neededOrigin(compute_cell_origin_(aCol, cell->row()));
+      
+      if (cell->col() == aCol && actualOrigin == neededOrigin )
+      {
+        targetColCounter += 1;
+      }
+      
+      gridItems.push_back(cell);
+    }
+  }
+        
+  /* if we have less than numCols_ in deletedColCounter there
+   * was at least on multi column cell in the column */
+  if ( targetColCounter < numRows_ )
+  {
+    emit statusBar_message("cannot insert column in between "
+      "cells that span multiple columns");
+    selectedCol_ = UNSELECTED;
+    return;
+  }
+
+
+  /* go through all grid cells and shift the ones in a column 
+   * greater than aCol to the right by one */
+  foreach(PatternGridItem* cell, gridItems)
+  {
+    if (cell->col() >= aCol )
+    {
+      cell->reseat(
+              compute_cell_origin_(cell->col() + 1, cell->row()),
+              cell->col() + 1,
+              cell->row());
+    }
+  }
+
+  /* now insert the new column */
+  for (int row = 0; row < numRows_; ++row)
+  {
+    PatternGridItem* anItem = new PatternGridItem (
+          compute_cell_origin_(aCol, row),  
+          QSize(1,1),
+          cellSize_,
+          aCol,
+          row,
+          this,
+          defaultColor_);
+
+    anItem->Init();
+    addItem(anItem);
+  }
+
+
+  /* unselect row and update row counter */
+  numCols_ = numCols_ + 1;
+  selectedCol_ = UNSELECTED;
+
+  /* redraw the labels */
+  create_grid_labels_();
+
+  /* update sceneRect 
+   * NOTE: This may be a bottleneck for large grids */
+  setSceneRect(itemsBoundingRect());
 }
 
 
@@ -422,7 +523,7 @@ void GraphicsScene::insert_after_col_()
 //-------------------------------------------------------------
 // insert new rows into grid
 //-------------------------------------------------------------
-void GraphicsScene::insert_before_row_()
+void GraphicsScene::insert_above_row_()
 {
   if (selectedRow_ == UNSELECTED)
   {
@@ -433,7 +534,8 @@ void GraphicsScene::insert_before_row_()
 }
 
 
-void GraphicsScene::insert_after_row_()
+
+void GraphicsScene::insert_below_row_()
 {
   if (selectedRow_ == UNSELECTED)
   {
@@ -442,6 +544,7 @@ void GraphicsScene::insert_after_row_()
 
   insert_row_(selectedRow_);
 }
+
 
 
 void GraphicsScene::insert_row_(int aRow)
@@ -899,8 +1002,6 @@ QPair<int,int> GraphicsScene::get_cell_coords_(
   int column = static_cast<int>(floor(xPosRel/cellSize_));
   int row    = static_cast<int>(floor(yPosRel/cellSize_));
 
- // qDebug() << column << "&" << row;
-
   return QPair<int,int>(column,row);
 }
  
@@ -978,16 +1079,11 @@ void GraphicsScene::select_region_(const QRect& aRegion)
     }
   }
 
-  qDebug() << "active " << activeItems_.size();
-  qDebug() << "grid " << gridItems.size();
-
   QList<PatternGridItem*> sortedItems(gridItems.values());
   foreach(PatternGridItem* cell, sortedItems)
   {
     cell->select();
   }
-
-  qDebug() << "active " << activeItems_.size();
 }
 
 
@@ -1031,17 +1127,17 @@ void GraphicsScene::manage_columns_rows_(const QPoint& pos,
   /* show these only if we're inside the pattern grid */
   QAction* colDeleteAction = 
     colRowMenu.addAction("delete column " + colString);
-  QAction* colInsertBeforeAction = 
-    colRowMenu.addAction("insert before column " + colString);
-  QAction* colInsertAfterAction = 
-    colRowMenu.addAction("insert after column " + colString);
+  QAction* colInsertLeftOfAction = 
+    colRowMenu.addAction("insert left of column " + colString);
+  QAction* colInsertRightOfAction = 
+    colRowMenu.addAction("insert right of column " + colString);
     
   connect(colDeleteAction, SIGNAL(triggered()), 
     this, SLOT(delete_col_()));
-  connect(colInsertBeforeAction, SIGNAL(triggered()),
-    this, SLOT(insert_before_col_()));
-  connect(colInsertAfterAction, SIGNAL(triggered()),
-    this, SLOT(insert_after_col_()));
+  connect(colInsertLeftOfAction, SIGNAL(triggered()),
+    this, SLOT(insert_left_of_col_()));
+  connect(colInsertRightOfAction, SIGNAL(triggered()),
+    this, SLOT(insert_right_of_col_()));
 
   colRowMenu.addSeparator();
   
@@ -1051,17 +1147,17 @@ void GraphicsScene::manage_columns_rows_(const QPoint& pos,
 
   QAction* rowDeleteAction = 
     colRowMenu.addAction("delete row " + rowString);
-  QAction* rowInsertBeforeAction = 
-    colRowMenu.addAction("insert before row " + rowString);
-  QAction* rowInsertAfterAction = 
-    colRowMenu.addAction("insert after row " + rowString);
+  QAction* rowInsertAboveAction = 
+    colRowMenu.addAction("insert above row " + rowString);
+  QAction* rowInsertBelowAction = 
+    colRowMenu.addAction("insert below row " + rowString);
     
   connect(rowDeleteAction, SIGNAL(triggered()), 
     this, SLOT(delete_row_()));
-  connect(rowInsertBeforeAction, SIGNAL(triggered()),
-    this, SLOT(insert_before_row_()));
-  connect(rowInsertAfterAction, SIGNAL(triggered()),
-    this, SLOT(insert_after_row_()));
+  connect(rowInsertAboveAction, SIGNAL(triggered()),
+    this, SLOT(insert_above_row_()));
+  connect(rowInsertBelowAction, SIGNAL(triggered()),
+    this, SLOT(insert_below_row_()));
 
   colRowMenu.exec(pos);
 }

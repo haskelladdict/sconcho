@@ -107,10 +107,10 @@ private slots:
 
   void delete_col_();
   void delete_row_();
-  void insert_before_col_();
-  void insert_after_col_();
-  void insert_before_row_();
-  void insert_after_row_();
+  void insert_left_of_col_();
+  void insert_right_of_col_();
+  void insert_above_row_();
+  void insert_below_row_();
 
   
 private:
@@ -159,6 +159,7 @@ private:
 
   void select_column_(int col);
   void select_row_(int row);
+  void insert_col_(int col);
   void insert_row_(int row);
   void manage_columns_rows_(const QPoint& pos, int col, int row);
   void select_region_(const QRect& region);
