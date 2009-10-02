@@ -67,6 +67,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   selectedSymbol_(
       KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"",""))),
   backgroundColor_(Qt::white),
+  defaultColor_(Qt::white),
   wantColor_(false)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -403,6 +404,102 @@ void GraphicsScene::delete_row_()
 
 
 
+//-------------------------------------------------------------
+// insert new columns into grid
+//-------------------------------------------------------------
+void GraphicsScene::insert_before_col_()
+{
+}
+
+
+
+void GraphicsScene::insert_after_col_()
+{
+}
+
+
+
+//-------------------------------------------------------------
+// insert new rows into grid
+//-------------------------------------------------------------
+void GraphicsScene::insert_before_row_()
+{
+  if (selectedRow_ == UNSELECTED)
+  {
+    return;
+  }
+
+  insert_row_(selectedRow_ - 1);
+}
+
+
+void GraphicsScene::insert_after_row_()
+{
+  if (selectedRow_ == UNSELECTED)
+  {
+    return;
+  }
+
+  insert_row_(selectedRow_);
+}
+
+
+void GraphicsScene::insert_row_(int aRow)
+{
+  deselect_all_active_items_();
+
+  /* go through all grid cells and
+   * shift all cells below row down by one
+   */
+  QList<QGraphicsItem*> allItems(items());
+  foreach(QGraphicsItem* anItem, allItems)
+  {
+    PatternGridItem* cell = 
+      qgraphicsitem_cast<PatternGridItem*>(anItem);
+
+    if (cell != 0)
+    {
+      if (cell->row() > aRow)
+      {
+        cell->reseat(
+                compute_cell_origin_(cell->col(), cell->row()+1),
+                cell->col(),
+                cell->row() + 1);
+      }
+    }
+  }
+
+
+  /* now insert the new row */
+  for (int column = 0; column < numCols_; ++column)
+  {
+    PatternGridItem* anItem = new PatternGridItem (
+          compute_cell_origin_(column, aRow+1),  
+          QSize(1,1),
+          cellSize_,
+          column,
+          aRow+1,
+          this,
+          defaultColor_);
+
+    anItem->Init();
+    addItem(anItem);
+  }
+
+
+  /* unselect row and update row counter */
+  numRows_ = numRows_ + 1;
+  selectedRow_ = UNSELECTED;
+
+  /* redraw the labels */
+  create_grid_labels_();
+
+  /* update sceneRect 
+   * NOTE: This may be a bottleneck for large grids */
+  setSceneRect(itemsBoundingRect());
+}
+
+
 /**************************************************************
  *
  * PROTECTED 
@@ -467,10 +564,17 @@ void GraphicsScene::mousePressEvent(
     /* FIXME: manage_columns_rows_ calls the proper member function
      * via a signal and can't therefore provide the column/row
      * ID by itself which is why we have to use a silly
-     * private variable. Is there any way we can avoid this? */
-    selectedCol_ = column;
-    selectedRow_ = row;
-    manage_columns_rows_(mouseEvent->screenPos(), column, row);
+     * private variable. Is there any way we can avoid this?
+     *
+     * Also we show the menu only if we're inside the pattern
+     * grid plus a margin of a single cellSize_ in all directions */
+    if ( row > -1 || row < (numRows_ + 1) 
+      || column > -1 || column < (numCols_ + 1) )
+    { 
+      selectedCol_ = column;
+      selectedRow_ = row;
+      manage_columns_rows_(mouseEvent->screenPos(), column, row);
+    }
   }
   else
   {
@@ -758,12 +862,11 @@ void GraphicsScene::colorize_highlighted_cells_()
 //--------------------------------------------------------------
 QColor GraphicsScene::determine_selected_cells_color_()
 {
-  QColor defaultColor(Qt::white);
   QList<PatternGridItem*> cells(activeItems_.values());
 
   if (cells.size() == 0)
   {
-    return defaultColor;
+    return defaultColor_;
   }
 
   QColor cellColor(cells.at(0)->color());
@@ -771,7 +874,7 @@ QColor GraphicsScene::determine_selected_cells_color_()
   {
     if (anItem->color() != cellColor)
     {
-      return defaultColor;
+      return defaultColor_;
     }
   }
 
@@ -921,49 +1024,44 @@ void GraphicsScene::manage_columns_rows_(const QPoint& pos,
 {
   QMenu colRowMenu;
 
-  /* row related entries */
-  QString rowString;
-  rowString.setNum(numRows_ - rowID);
-
-  /* show these only if we're inside the pattern grid */
-  if (rowID >= 0 && rowID < numRows_)
-  {
-    QAction* rowDeleteAction = 
-      colRowMenu.addAction("delete row " + rowString);
-    QAction* rowInsertAction = 
-      colRowMenu.addAction("insert before row " + rowString);
-    
-    connect(rowDeleteAction, SIGNAL(triggered()), 
-          this, SLOT(delete_row_()));
-  }
-  QAction* addRowTopAction    = 
-    colRowMenu.addAction("add row at top");
-  QAction* addRowBottomAction = 
-    colRowMenu.addAction("add row at bottom");
-
-
-  colRowMenu.addSeparator();
-
-  /* row related entries */
+  /* column related entries */
   QString colString;
   colString.setNum(numCols_ - colID);
 
   /* show these only if we're inside the pattern grid */
-  if (colID >= 0 && colID < numCols_)
-  {
-    QAction* colDeleteAction = 
-      colRowMenu.addAction("delete column " + colString);
-    QAction* colInsertAction = 
-      colRowMenu.addAction("insert before column " + colString);
+  QAction* colDeleteAction = 
+    colRowMenu.addAction("delete column " + colString);
+  QAction* colInsertBeforeAction = 
+    colRowMenu.addAction("insert before column " + colString);
+  QAction* colInsertAfterAction = 
+    colRowMenu.addAction("insert after column " + colString);
     
-    connect(colDeleteAction, SIGNAL(triggered()), 
-          this, SLOT(delete_col_()));
-  }
-  QAction* addColRightAction = 
-    colRowMenu.addAction("add column at right");
-  QAction* addColLeftAction = 
-    colRowMenu.addAction("add column at left");
+  connect(colDeleteAction, SIGNAL(triggered()), 
+    this, SLOT(delete_col_()));
+  connect(colInsertBeforeAction, SIGNAL(triggered()),
+    this, SLOT(insert_before_col_()));
+  connect(colInsertAfterAction, SIGNAL(triggered()),
+    this, SLOT(insert_after_col_()));
 
+  colRowMenu.addSeparator();
+  
+  /* row related entries */
+  QString rowString;
+  rowString.setNum(numRows_ - rowID);
+
+  QAction* rowDeleteAction = 
+    colRowMenu.addAction("delete row " + rowString);
+  QAction* rowInsertBeforeAction = 
+    colRowMenu.addAction("insert before row " + rowString);
+  QAction* rowInsertAfterAction = 
+    colRowMenu.addAction("insert after row " + rowString);
+    
+  connect(rowDeleteAction, SIGNAL(triggered()), 
+    this, SLOT(delete_row_()));
+  connect(rowInsertBeforeAction, SIGNAL(triggered()),
+    this, SLOT(insert_before_row_()));
+  connect(rowInsertAfterAction, SIGNAL(triggered()),
+    this, SLOT(insert_after_row_()));
 
   colRowMenu.exec(pos);
 }

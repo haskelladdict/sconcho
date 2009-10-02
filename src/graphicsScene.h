@@ -48,7 +48,7 @@ typedef QList<PatternGridItem*> RowItems;
 /* convenience constants */
 namespace 
 {
-  const int UNSELECTED = -1;
+  const int UNSELECTED = -100;
 };
 
 
@@ -107,6 +107,10 @@ private slots:
 
   void delete_col_();
   void delete_row_();
+  void insert_before_col_();
+  void insert_after_col_();
+  void insert_before_row_();
+  void insert_after_row_();
 
   
 private:
@@ -134,6 +138,7 @@ private:
    * color, pen size ..) */
   KnittingSymbolPtr selectedSymbol_;
   QColor backgroundColor_;
+  QColor defaultColor_;
   bool wantColor_;
 
   /* set up functions for canvas */
@@ -154,6 +159,7 @@ private:
 
   void select_column_(int col);
   void select_row_(int row);
+  void insert_row_(int row);
   void manage_columns_rows_(const QPoint& pos, int col, int row);
   void select_region_(const QRect& region);
 
