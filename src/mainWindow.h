@@ -102,8 +102,10 @@ private slots:
   void pick_color_();
   void quit_sconcho_();
   void reset_grid_();
+  void show_about_qt_info_();
   void show_file_open_menu_();
   void show_file_export_menu_();
+  void show_sconcho_info_();
   void show_print_menu_();
    
 private:
@@ -115,6 +117,7 @@ private:
   void create_menu_bar_();
   void create_file_menu_();
   void create_grid_menu_();
+  void create_help_menu_();
   void create_status_bar_();
   void create_graphics_scene_();
   void create_main_splitter_();

@@ -41,6 +41,7 @@
 #include <QVBoxLayout>
 
 /** local headers */
+#include "aboutSconcho.h"
 #include "basicDefs.h"
 #include "graphicsScene.h"
 #include "gridDimensionDialog.h"
@@ -352,6 +353,27 @@ void MainWindow::reset_grid_()
 }
 
 
+//-------------------------------------------------------------
+// slot responsible for displaying a the default Qt info
+// widget
+//-------------------------------------------------------------
+void MainWindow::show_about_qt_info_()
+{
+  QMessageBox::aboutQt(this,tr("About Qt"));
+}
+
+
+//------------------------------------------------------------- 
+// slot responsible for displaying our very own personalized
+// sconcho info and copyright notice
+//------------------------------------------------------------- 
+void MainWindow::show_sconcho_info_() 
+{ 
+  AboutSconchoWidget about; 
+  about.exec(); 
+} 
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -369,6 +391,7 @@ void MainWindow::create_menu_bar_()
   /* create the individual menu options */
   create_file_menu_();
   create_grid_menu_();
+  create_help_menu_();
 } 
 
 
@@ -434,6 +457,28 @@ void MainWindow::create_grid_menu_()
           this,
           SLOT(reset_grid_()));
 } 
+
+
+
+//------------------------------------------------------------
+// create the grid menu for general pattern grid controls 
+//------------------------------------------------------------
+void MainWindow::create_help_menu_()
+{
+  QMenu* helpMenu = menuBar_->addMenu(tr("&Help"));
+
+  /* add entries */
+  QAction* aboutAction = new QAction(tr("&About"),this);
+  helpMenu->addAction(aboutAction);
+  connect(aboutAction, SIGNAL(triggered()), this,
+      SLOT(show_sconcho_info_()));
+
+  QAction* aboutQtAction = new QAction(tr("About Qt"),this);
+  helpMenu->addAction(aboutQtAction);
+  connect(aboutQtAction, SIGNAL(triggered()), this,
+      SLOT(show_about_qt_info_()));
+} 
+
 
 
 //------------------------------------------------------------

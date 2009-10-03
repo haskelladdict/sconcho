@@ -1,6 +1,7 @@
 INCLUDE(${QT_USE_FILE})
 
 SET(SCONCHO_SRCS
+  aboutSconcho.cxx
   graphicsScene.cxx
   gridDimensionDialog.cxx
   knittingSymbol.cxx
