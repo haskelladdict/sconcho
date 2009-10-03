@@ -30,6 +30,7 @@
 
 /** local headers */
 #include "basicDefs.h"
+#include "io.h"
 #include "symbolSelectorItem.h"
 #include "symbolSelectorWidget.h"
 
@@ -149,8 +150,9 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
     const QString& symbolName, const QSize& aSize)
 {
   /* create a new knittingSymbol object */
+  QString patternPath = get_pattern_path(symbolName);
   KnittingSymbolPtr sym = KnittingSymbolPtr(
-      new KnittingSymbol(patternPath + symbolName + ".svg",
+      new KnittingSymbol(patternPath,
                          symbolName,
                          aSize,
                          "",
@@ -176,26 +178,35 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
 void SymbolSelectorWidget::create_tabs_()
 {
   QList<QString> symbols;
-  symbols.push_back("knit");
-  symbols.push_back("purl");
-  symbols.push_back("yo");
-  symbols.push_back("doubledec");
-  symbols.push_back("k2tog");
-  symbols.push_back("ssk");
+  symbols.push_back("basic/knit");
+  symbols.push_back("basic/purl");
+  symbols.push_back("basic/yo");
+  symbols.push_back("basic/doubledec");
+  symbols.push_back("basic/k2tog");
+  symbols.push_back("basic/ssk");
 
-  QVBoxLayout* mainLayout = new QVBoxLayout(this);
+  QVBoxLayout* basicLayout = new QVBoxLayout(this);
   for (int i = 0; i < symbols.length(); ++i)
   {
-     mainLayout->addLayout(create_symbol_layout_(
+     basicLayout->addLayout(create_symbol_layout_(
            symbols[i], QSize(1,1)));
   }
-  mainLayout->addLayout(create_symbol_layout_("LT", QSize(2,1)));
-  mainLayout->addLayout(create_symbol_layout_("RT", QSize(2,1)));
-  mainLayout->addStretch(1);
-
+  basicLayout->addStretch(1);
   QWidget* basicSymbols = new QWidget(this);
-  basicSymbols->setLayout(mainLayout);
+  basicSymbols->setLayout(basicLayout);
   addTab(basicSymbols, QString("basic"));
+
+  QVBoxLayout* cableLayout = new QVBoxLayout(this);
+  cableLayout->addLayout(
+      create_symbol_layout_("cables/LT", QSize(2,1)));
+  cableLayout->addLayout(
+      create_symbol_layout_("cables/RT", QSize(2,1)));
+  cableLayout->addStretch(1);
+
+  QWidget* cableSymbols = new QWidget(this);
+  cableSymbols->setLayout(cableLayout);
+  addTab(cableSymbols, QString("cables"));
 }
+
 
 

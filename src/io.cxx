@@ -18,37 +18,16 @@
  *
  ****************************************************************/
 
-#ifndef ABOUT_SCONCHO_H
-#define ABOUT_SCONCHO_H
-
-/* boost headers */
-#include <boost/utility.hpp>
-
-/* QT headers */
-#include <QMessageBox>
+/* local includes */
+#include "io.h"
 
 
-/*****************************************************************
- *
- * this widget displays sconcho's about and copyright info
- *
- *****************************************************************/
-
-class AboutSconchoWidget 
-  : 
-    public QMessageBox,
-    public boost::noncopyable
+//----------------------------------------------------------------
+// given the name of a knitting pattern, return the path
+// it can be found at 
+//----------------------------------------------------------------
+QString get_pattern_path(const QString& name)
 {
+  return PATTERN_PATH + "/" + name + ".svg";
+}
 
-public:
-
-    explicit AboutSconchoWidget(QWidget* parent = 0);
-
-
-private:
-
-    void setup_contents_();
-};
-
-
-#endif

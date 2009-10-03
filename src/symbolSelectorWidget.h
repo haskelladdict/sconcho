@@ -38,11 +38,6 @@ class QSvgWidget;
 class SymbolSelectorItem;
 
 
-/* path to pattern database */
-const QString patternPath = "../trunk/symbols/";
-
-
-
 /***************************************************************
  * 
  * The GraphicsScene handles the sconcho's main drawing
@@ -87,7 +82,8 @@ private:
   KnittingSymbolPtr emptySymbol_;
 
   /* functions */
-  QHBoxLayout* create_symbol_layout_(const QString& name, const QSize& size); 
+  QHBoxLayout* create_symbol_layout_(const QString& name, 
+      const QSize& size); 
   
   void create_tabs_();
 };

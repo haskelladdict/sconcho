@@ -18,37 +18,23 @@
  *
  ****************************************************************/
 
-#ifndef ABOUT_SCONCHO_H
-#define ABOUT_SCONCHO_H
+#ifndef IO_H 
+#define IO_H 
 
-/* boost headers */
-#include <boost/utility.hpp>
-
-/* QT headers */
-#include <QMessageBox>
+/* QT includes */
+#include <QString>
 
 
-/*****************************************************************
- *
- * this widget displays sconcho's about and copyright info
- *
- *****************************************************************/
-
-class AboutSconchoWidget 
-  : 
-    public QMessageBox,
-    public boost::noncopyable
+namespace
 {
+  const QString PATTERN_PATH("/home/markus/programming/cpp/sconcho/trunk/symbols");
+}
 
-public:
+/* given the name of a knitting pattern, return the path
+ * it can be found at */
+QString get_pattern_path(const QString& name);
 
-    explicit AboutSconchoWidget(QWidget* parent = 0);
 
-
-private:
-
-    void setup_contents_();
-};
 
 
 #endif

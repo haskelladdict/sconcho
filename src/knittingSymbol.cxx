@@ -19,6 +19,7 @@
 ****************************************************************/
 
 /** Qt headers */
+#include <QStringList>
 
 /** local headers */
 #include "basicDefs.h"
@@ -39,14 +40,14 @@ KnittingSymbol::KnittingSymbol(const QString& aPath,
   const QString& aDescription, const QString& aInstruction)
   :
     svgPath_(aPath),
-    name_(aName),
+    fullName_(aName),
+    baseName_(aName.split("/").last()),
     dimensions_(aDimension),
     description_(aDescription),
     instructions_(aInstruction)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
-
 
 
 //--------------------------------------------------------------

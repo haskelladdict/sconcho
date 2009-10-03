@@ -48,7 +48,8 @@ public:
 
   /* some basic accessors */
   const QString& path() { return svgPath_; }
-  const QString& name() { return name_; }
+  const QString& baseName() { return baseName_; }
+  const QString& fullName() { return fullName_; }
   const QSize& dim() { return dimensions_; }
   const QString& desc() { return description_; }
   const QString& instructions() { return instructions_; }
@@ -61,7 +62,8 @@ private:
   int status_;
   
   QString svgPath_;
-  QString name_;
+  QString fullName_;
+  QString baseName_;
   QSize dimensions_;
   QString description_;
   QString instructions_;
