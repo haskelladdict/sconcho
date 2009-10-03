@@ -45,6 +45,7 @@
 #include "basicDefs.h"
 #include "graphicsScene.h"
 #include "gridDimensionDialog.h"
+#include "io.h"
 #include "knittingSymbol.h"
 #include "mainWindow.h"
 #include "patternView.h"
@@ -183,7 +184,39 @@ void MainWindow::show_file_open_menu_()
   QString currentDirectory = QDir::currentPath();
   QString fileName = QFileDialog::getOpenFileName(this,
     tr("open data file"), currentDirectory,
-    tr("data files (*.dat)"));
+    tr("sconcho pattern files (*.spf)"));
+}
+
+  
+//-------------------------------------------------------------
+// SLOT: show file save menu
+//-------------------------------------------------------------
+void MainWindow::show_file_save_menu_()
+{
+  QString currentDirectory = QDir::currentPath();
+  QString saveFileName = QFileDialog::getSaveFileName(this,
+    tr("Save Pattern"), currentDirectory,
+    tr("sconcho pattern files (*.spf)"));
+
+  if ( saveFileName.isEmpty() )
+  {
+    return;
+  }
+
+  /* extract file extension and make sure it corresponds to
+   * a supported format */
+  QFileInfo saveFileInfo(saveFileName);
+  QString extension = saveFileInfo.completeSuffix();
+
+  if (extension != "spf")
+  {
+    QMessageBox::warning(this, tr("Warning"),
+      tr("Unknown file format ") + extension,
+      QMessageBox::Ok);
+    return;
+  }
+
+  save_canvas_(saveFileName);
 }
 
 
@@ -195,7 +228,7 @@ void MainWindow::show_file_export_menu_()
 {
   QString currentDirectory = QDir::currentPath();
   QString saveFileName = QFileDialog::getSaveFileName(this,
-    tr("Export Canvas"), currentDirectory,
+    tr("Export Pattern"), currentDirectory,
     tr("Image Files (*.png *.tif *.jpg *.gif)"));
 
   if ( saveFileName.isEmpty() )
@@ -217,22 +250,8 @@ void MainWindow::show_file_export_menu_()
     return;
   }
 
-  /* for now print the image in a fixed resolution 
-   * NOTE: We seem to need the 1px buffer region to avoid
-   *       the image being cut off */
-  QRectF theScene = canvas_->sceneRect();
-  theScene.adjust(-10,-10,10,10);  // need this to avoid cropping
-
-  QImage finalImage(theScene.width()*3, theScene.height() *3,
-      QImage::Format_ARGB32_Premultiplied);
-  QPainter painter(&finalImage);
-  painter.setRenderHints(QPainter::SmoothPixmapTransform);
-  painter.setRenderHints(QPainter::HighQualityAntialiasing);
-  painter.setRenderHints(QPainter::TextAntialiasing);
-
-  canvas_->render(&painter, QRectF(), theScene);
-  painter.end();
-  finalImage.save(saveFileName); 
+  
+  export_canvas_(saveFileName);
 }
 
 
@@ -407,26 +426,42 @@ void MainWindow::create_file_menu_()
     new QAction(QIcon(":/icons/fileopen.png"),tr("&Open"), this);
   fileMenu->addAction(openAction);
   openAction->setShortcut(tr("Ctrl+O"));
-  connect(openAction, SIGNAL(triggered()), this,
-      SLOT(show_file_open_menu_()));
+  connect(openAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(show_file_open_menu_()));
 
   fileMenu->addSeparator();
+
+  /* save */
+  QAction* saveAction =
+    new QAction(QIcon(":/icons/filesave.png"),tr("&Save"), this);
+  fileMenu->addAction(saveAction);
+  saveAction->setShortcut(tr("Ctrl+S"));
+  connect(saveAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(show_file_save_menu_()));
 
   /* export */
   QAction* exportAction =
     new QAction(QIcon(":/icons/fileexport.png"),tr("&Export"), this);
   fileMenu->addAction(exportAction);
   exportAction->setShortcut(tr("Ctrl+E"));
-  connect(exportAction, SIGNAL(triggered()), this,
-      SLOT(show_file_export_menu_()));
+  connect(exportAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(show_file_export_menu_()));
 
   /* print */
   QAction* printAction =
     new QAction(QIcon(":/icons/fileprint.png"),tr("&Print"), this);
   fileMenu->addAction(printAction);
   printAction->setShortcut(tr("Ctrl+P"));
-  connect(printAction, SIGNAL(triggered()), this,
-      SLOT(show_print_menu_()));
+  connect(printAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(show_print_menu_()));
 
   fileMenu->addSeparator();
 
@@ -435,8 +470,10 @@ void MainWindow::create_file_menu_()
     new QAction(QIcon(":/icons/exit.png"),tr("E&xit"), this);
   fileMenu->addAction(exitAction);
   exitAction->setShortcut(tr("Ctrl+X"));
-  connect(exitAction, SIGNAL(triggered()), this,
-      SLOT(quit_sconcho_()));
+  connect(exitAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(quit_sconcho_()));
 } 
 
 
@@ -548,13 +585,13 @@ void MainWindow::create_toolbar_()
   QToolBar* toolBar = new QToolBar(this);
 
   /* FIXME: not implemented yet */
-/*  QToolButton* openButton = new QToolButton(this);
+  QToolButton* openButton = new QToolButton(this);
   openButton->setIcon(QIcon(":/icons/fileopen.png"));
   openButton->setToolTip(tr("open data file"));
   toolBar->addWidget(openButton);
   connect(openButton,SIGNAL(clicked()),this,
       SLOT(show_file_open_menu_()));
-*/
+
 
   QToolButton* saveButton = new QToolButton(this);
   saveButton->setIcon(QIcon(":/icons/filesave.png"));
@@ -563,7 +600,7 @@ void MainWindow::create_toolbar_()
   connect(saveButton,
           SIGNAL(clicked()),
           this,
-          SLOT(save_to_file_()));
+          SLOT(show_file_save_menu_()));
  
   QToolButton* exportButton = new QToolButton(this);
   exportButton->setIcon(QIcon(":/icons/fileexport.png"));
@@ -708,6 +745,56 @@ QSize MainWindow::show_grid_dimension_dialog_()
   GridDimensionDialog gridDialog; 
   gridDialog.Init();
   return gridDialog.dim();
+}
+
+
+
+//-------------------------------------------------------------
+// export canvas to file fileName
+//-------------------------------------------------------------
+void MainWindow::export_canvas_(const QString& fileName)
+{
+  /* for now print the image in a fixed resolution 
+   * NOTE: We seem to need the 1px buffer region to avoid
+   *       the image being cut off */
+  QRectF theScene = canvas_->sceneRect();
+  theScene.adjust(-10,-10,10,10);  // need this to avoid cropping
+
+  QImage finalImage(theScene.width()*3, theScene.height() *3,
+      QImage::Format_ARGB32_Premultiplied);
+  QPainter painter(&finalImage);
+  painter.setRenderHints(QPainter::SmoothPixmapTransform);
+  painter.setRenderHints(QPainter::HighQualityAntialiasing);
+  painter.setRenderHints(QPainter::TextAntialiasing);
+
+  canvas_->render(&painter, QRectF(), theScene);
+  painter.end();
+  finalImage.save(fileName); 
+}
+
+
+//--------------------------------------------------------------
+// save canvas to file
+//
+// For now (i.e. until our canvas contain additional objects)
+// we only need to save the PatternGridItems and their 
+// associated information, i.e.
+// - origin
+// - size
+// - colors
+// - contained KnittingSymbol
+//
+// Any possible future savable items will follow the same
+// strategy, i.e., we load the item data and then create
+// the corresponding QGraphicsItem object. There should
+// also be a section the contains other general information
+// once user's can change it in the widget (line width, etc).
+//-------------------------------------------------------------
+void MainWindow::save_canvas_(const QString& fileName)
+{
+  CanvasIOWriter writer(canvas_, fileName);
+  writer.Init();
+  writer.save();
 }
 
 

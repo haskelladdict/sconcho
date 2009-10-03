@@ -18,7 +18,14 @@
  *
  ****************************************************************/
 
+/* Qt include */
+#include <QDebug>
+#include <QFile>
+#include <QTextStream>
+
 /* local includes */
+#include "basicDefs.h"
+#include "graphicsScene.h"
 #include "io.h"
 
 
@@ -31,3 +38,124 @@ QString get_pattern_path(const QString& name)
   return PATTERN_PATH + "/" + name + ".svg";
 }
 
+
+
+
+//---------------------------------------------------------------
+//
+//
+// class CanvasIOWriter
+//
+//
+//---------------------------------------------------------------
+
+
+/**************************************************************
+ *
+ * PUBLIC FUNCTIONS 
+ *
+ **************************************************************/
+
+//-------------------------------------------------------------
+// constructor
+//-------------------------------------------------------------
+CanvasIOWriter::CanvasIOWriter(const GraphicsScene* scene,
+    const QString& theName)
+  :
+    ourScene_(scene),
+    fileName_(theName)
+{
+  status_ = SUCCESSFULLY_CONSTRUCTED;
+  qDebug() << "canvasIOWriter constructed";
+}
+
+
+//-------------------------------------------------------------
+// destructor 
+//-------------------------------------------------------------
+CanvasIOWriter::~CanvasIOWriter()
+{
+  writeStream_->flush();
+  delete writeStream_;
+  
+  filePtr_->close();
+  delete filePtr_;
+
+  qDebug() << "canvasIOWriter destroyed";
+}
+
+
+//--------------------------------------------------------------
+// main initialization routine
+//--------------------------------------------------------------
+bool CanvasIOWriter::Init()
+{
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
+  {
+    return false;
+  }
+
+  /* open write stream */
+  filePtr_ = new QFile(fileName_);
+  if (!filePtr_->open(QFile::WriteOnly | QFile::Truncate))
+  {
+    return false;
+  }
+
+  writeStream_ = new QTextStream(filePtr_);
+
+  return true;
+}
+
+
+//--------------------------------------------------------------
+// save content of canvas; 
+// returns true on success or false on failure
+//--------------------------------------------------------------
+bool CanvasIOWriter::save()
+{
+  /* add header */
+  QDomNode xmlNode = writeDoc_.createProcessingInstruction("xml",
+      "version=\"1.0\" encoding=\"UTF-8\"");
+  writeDoc_.insertBefore(xmlNode, writeDoc_.firstChild());
+  QDomElement root = writeDoc_.createElement("sconcho");
+  writeDoc_.appendChild(root);
+
+  /* add actual canvas items */
+  bool statusPatternGridItems = save_patternGridItems_(root);
+
+  /* write it to stream */
+  writeDoc_.save(*writeStream_, 4);
+
+  return statusPatternGridItems;
+}
+
+
+/**************************************************************
+ *
+ * PUBLIC FUNCTIONS 
+ *
+ **************************************************************/
+
+//-------------------------------------------------------------
+// save all PatternGridItems to our write stream
+//-------------------------------------------------------------
+bool CanvasIOWriter::save_patternGridItems_(QDomElement& root)
+{
+  qDebug() << "save patternGridItems";
+
+  QDomElement eventTag = writeDoc_.createElement("event");
+  QDomElement dateTag = writeDoc_.createElement("date");
+  QDomElement contentTag = writeDoc_.createElement("content");
+  QDomText date = writeDoc_.createTextNode("foobar2");
+  QDomText content = 
+    writeDoc_.createTextNode("foobar");
+
+  root.appendChild(eventTag);
+  eventTag.appendChild(dateTag);
+  eventTag.appendChild(contentTag);
+  dateTag.appendChild(date);
+  contentTag.appendChild(content);
+
+  return true;
+} 

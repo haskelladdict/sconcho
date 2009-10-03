@@ -41,15 +41,15 @@ class QGraphicsSceneMouseEvent;
 class QGraphicsSceneWheelEvent; 
 class QKeyEvent;
 
-/* convenience typedefs */
-typedef QList<QPair<int, int> > RowLayout;
-typedef QList<PatternGridItem*> RowItems;
-
-/* convenience constants */
 namespace 
 {
+  /* convenience constants */
   const int UNSELECTED = -100;
   const int NOSHIFT    = -101;
+
+  /* convenience typedefs */
+  typedef QList<QPair<int, int> > RowLayout;
+  typedef QList<PatternGridItem*> RowItems;
 };
 
 
@@ -66,6 +66,11 @@ class GraphicsScene
 {
   
   Q_OBJECT
+
+  /* io objects unfortunately need to access our innards;
+   * FIXME: Is there a better way to do this? */
+  friend class CanvasIOWriter;
+  friend class CanvasIOReader;
 
     
 public:

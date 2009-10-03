@@ -29,9 +29,6 @@
 #include <QSize>
 #include <QString>
 
-/* local includes */
-#include "graphicsScene.h"
-
 /* a few forward declarations */
 class GraphicsScene;
 class PatternView;
@@ -104,6 +101,7 @@ private slots:
   void reset_grid_();
   void show_about_qt_info_();
   void show_file_open_menu_();
+  void show_file_save_menu_();
   void show_file_export_menu_();
   void show_sconcho_info_();
   void show_print_menu_();
@@ -145,6 +143,8 @@ private:
 
   /* helper function */
   QSize show_grid_dimension_dialog_();
+  void export_canvas_(const QString& fileName);
+  void save_canvas_(const QString& fileName);
 };
 
 
