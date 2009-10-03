@@ -473,8 +473,8 @@ void GraphicsScene::insert_col_(int aCol)
   }
 
 
-  /* shift the grid to make space */
-  shift_grid_(aCol, NOSHIFT);
+  /* expand the grid to make space */
+  expand_grid_(aCol, NOSHIFT);
 
 
   /* now insert the new column */
@@ -538,7 +538,7 @@ void GraphicsScene::insert_row_(int aRow)
   deselect_all_active_items_();
 
   /* shift rows to make space */
-  shift_grid_(NOSHIFT, aRow);
+  expand_grid_(NOSHIFT, aRow);
 
   /* now insert the new row */
   for (int column = 0; column < numCols_; ++column)
@@ -1224,7 +1224,7 @@ void GraphicsScene::deselect_all_active_items_()
 // at the specified column and row indices.
 // This is mainly used when inserting/deleting columns/rows
 //--------------------------------------------------------------
-void GraphicsScene::shift_grid_(int colStart, int rowStart)
+void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
 {
   QList<QGraphicsItem*> allItems(items());
 
@@ -1239,9 +1239,9 @@ void GraphicsScene::shift_grid_(int colStart, int rowStart)
     if (cell != 0)
     {
       /* do we want to shift the columns */
-      if (colStart != NOSHIFT)
+      if (colPivot != NOSHIFT)
       {
-        if (cell->col() >= colStart)
+        if (cell->col() >= colPivot)
         {
           cell->reseat(
                   compute_cell_origin_(cell->col() + 1, cell->row()),
@@ -1251,9 +1251,9 @@ void GraphicsScene::shift_grid_(int colStart, int rowStart)
       }
 
       /* do we want to shift the rows */
-      if (rowStart != NOSHIFT)
+      if (rowPivot != NOSHIFT)
       {
-        if (cell->row() > rowStart)
+        if (cell->row() > rowPivot)
         {
           cell->reseat(
                   compute_cell_origin_(cell->col(), cell->row()+1),
@@ -1265,12 +1265,12 @@ void GraphicsScene::shift_grid_(int colStart, int rowStart)
   }
 
   /* adjust the row/col count */
-  if (colStart != NOSHIFT)
+  if (colPivot != NOSHIFT)
   {
     numCols_ += 1;
   }
 
-  if (rowStart != NOSHIFT)
+  if (rowPivot != NOSHIFT)
   {
     numRows_ += 1;
   }

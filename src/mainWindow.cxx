@@ -451,6 +451,15 @@ void MainWindow::create_toolbar_()
       SLOT(show_file_open_menu_()));
 */
 
+  QToolButton* saveButton = new QToolButton(this);
+  saveButton->setIcon(QIcon(":/icons/filesave.png"));
+  saveButton->setToolTip(tr("save"));
+  toolBar->addWidget(saveButton);
+  connect(saveButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(save_to_file_()));
+ 
   QToolButton* exportButton = new QToolButton(this);
   exportButton->setIcon(QIcon(":/icons/fileexport.png"));
   exportButton->setToolTip(tr("export canvas"));
@@ -483,10 +492,8 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(zoomOutButton);
   connect(zoomOutButton,SIGNAL(clicked()),this,SLOT(zoom_out()));
 
-  toolBar->addSeparator();
-
   QToolButton* resetButton = new QToolButton(this);
-  resetButton->setIcon(QIcon(":/icons/gohome.png"));
+  resetButton->setIcon(QIcon(":/icons/viewmagfit.png"));
   resetButton->setToolTip(tr("reset view"));
   toolBar->addWidget(resetButton);
   connect(resetButton,SIGNAL(clicked()),this,SLOT(fit_in_view_()));
@@ -517,6 +524,16 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(downMoveButton);
   connect(downMoveButton,SIGNAL(clicked()),this,SLOT(pan_down_()));
   
+  toolBar->addSeparator();
+
+  QToolButton* resetSelectionButton = new QToolButton(this);
+  resetSelectionButton->setIcon(QIcon(":/icons/stop.png"));
+  resetSelectionButton->setToolTip(tr("reset current selection"));
+  toolBar->addWidget(resetSelectionButton);
+  connect(resetSelectionButton,
+          SIGNAL(clicked()),
+          this,SLOT(pan_down_()));
+
   addToolBar(toolBar);
 }
 
