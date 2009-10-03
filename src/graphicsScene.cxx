@@ -31,6 +31,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneWheelEvent>
 #include <QGraphicsTextItem>
+#include <QGraphicsView>
 #include <QKeyEvent>
 #include <QMenu>
 
@@ -41,7 +42,6 @@
 #include "knittingSymbol.h"
 #include "patternGridItem.h"
 #include "patternGridLabel.h"
-
 
 
 /**************************************************************
@@ -142,6 +142,40 @@ bool GraphicsScene::withColor()
 }
 
 
+//-------------------------------------------------------------
+// this function nukes the current pattern grid and creates
+// a brand new one 
+//-------------------------------------------------------------
+void GraphicsScene::reset_grid(const QSize& newSize)
+{
+  /* remove all previous items
+   * NOTE: We only remove PattergridItems! Any embedded SVGItems
+   * are owned by the PatternGridItems and will be destroyed
+   * automagically. No need to detroy the label items either
+   * since we have to redraw them anyways. */
+  QList<QGraphicsItem*> allItems(items());
+  foreach(QGraphicsItem* anItem, allItems)
+  {
+    PatternGridItem* cell = 
+      qgraphicsitem_cast<PatternGridItem*>(anItem);
+
+    if (cell != 0)
+    {
+      removeItem(anItem);
+    }
+  }
+
+  /* generate new grid */
+  numCols_ = newSize.width();
+  numRows_ = newSize.height();
+  create_pattern_grid_();
+  create_grid_labels_();
+  setSceneRect(itemsBoundingRect());
+  foreach(QGraphicsView* aView, views())
+  {
+    aView->fitInView(itemsBoundingRect(),Qt::KeepAspectRatio);
+  }
+}
  
 
 /**************************************************************
@@ -260,7 +294,20 @@ void GraphicsScene::color_state_changed(int state)
   }
 }
 
-  
+
+//---------------------------------------------------------------
+// deselects all items currenty marked as active
+//---------------------------------------------------------------
+void GraphicsScene::deselect_all_active_items()
+{
+  foreach(PatternGridItem* anItem, activeItems_)
+  {
+    anItem->select();
+  }
+  activeItems_.clear();
+}
+
+
 
 /**************************************************************
  *
@@ -281,7 +328,7 @@ void GraphicsScene::delete_col_()
     return;
   }
   
-  deselect_all_active_items_();
+  deselect_all_active_items();
 
   QList<QGraphicsItem*> allItems(items());
   QList<PatternGridItem*> gridItems;
@@ -361,7 +408,7 @@ void GraphicsScene::delete_row_()
     return;
   }
 
-  deselect_all_active_items_();
+  deselect_all_active_items();
 
   /* go through all grid cells and
    * - delete the ones in the selectedRow_
@@ -432,7 +479,7 @@ void GraphicsScene::insert_right_of_col_()
 
 void GraphicsScene::insert_col_(int aCol)
 {
-  deselect_all_active_items_();
+  deselect_all_active_items();
 
 
   /* go through all items and make sure that that
@@ -535,7 +582,7 @@ void GraphicsScene::insert_below_row_()
 
 void GraphicsScene::insert_row_(int aRow)
 {
-  deselect_all_active_items_();
+  deselect_all_active_items();
 
   /* shift rows to make space */
   expand_grid_(NOSHIFT, aRow);
@@ -914,7 +961,7 @@ bool GraphicsScene::process_selected_items_(
 //--------------------------------------------------------------
 void GraphicsScene::colorize_highlighted_cells_()
 {
-  deselect_all_active_items_();
+  deselect_all_active_items();
 }
 
 
@@ -1202,19 +1249,6 @@ void GraphicsScene::create_grid_labels_()
     text->setFont(textFont_);
     addItem(text);
   }
-}
-
-
-//---------------------------------------------------------------
-// deselects all items currenty marked as active
-//---------------------------------------------------------------
-void GraphicsScene::deselect_all_active_items_()
-{
-  foreach(PatternGridItem* anItem, activeItems_)
-  {
-    anItem->select();
-  }
-  activeItems_.clear();
 }
 
 

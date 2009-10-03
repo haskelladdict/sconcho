@@ -79,7 +79,10 @@ public:
   const QColor& get_background_color();
   bool withColor();
 
- 
+  /* helper functions */
+  void reset_grid(const QSize& newSize);
+
+
 signals:
 
   void mouse_moved(QPointF position);
@@ -95,6 +98,7 @@ public slots:
   void grid_item_reset(PatternGridItem*);
   void update_selected_background_color(const QColor& aColor);
   void color_state_changed(int state); 
+  void deselect_all_active_items();
 
   
 protected:
@@ -156,7 +160,6 @@ private:
   bool process_selected_items_(QList<RowLayout>& processedCellLayout,
       const QList<RowItems>& rowSelection, int targetPatternSize);
 
-  void deselect_all_active_items_();
 
   void select_column_(int col);
   void select_row_(int row);

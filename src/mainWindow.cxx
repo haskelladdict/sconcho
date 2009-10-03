@@ -309,6 +309,33 @@ void MainWindow::fit_in_view_()
 }
 
 
+//------------------------------------------------------------
+// this slot handles user requests to reset the pattern grid
+// and create a new one of a certain dimension
+//------------------------------------------------------------
+void MainWindow::reset_grid_()
+{
+  /* first off, let's warn the user that she is about to
+   * loose all her work */
+  QMessageBox warn(QMessageBox::Critical, tr("Warning"),
+      "Resetting the grid will cause the loss of "
+      "everything that is in the current pattern "
+      "grid. Is this ok?",
+      QMessageBox::Ok | QMessageBox::Cancel);
+
+  int status = warn.exec();
+  
+  if (status != QMessageBox::Ok)
+  {
+    return;
+  }
+
+  /* ask for new grid dimensions and reset canvas */
+  QSize newDimensions = show_grid_dimension_dialog_();
+  canvas_->reset_grid(newDimensions);
+}
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -325,6 +352,7 @@ void MainWindow::create_menu_bar_()
 
   /* create the individual menu options */
   create_file_menu_();
+  create_grid_menu_();
 } 
 
 
@@ -374,6 +402,25 @@ void MainWindow::create_file_menu_()
 
 
 //------------------------------------------------------------
+// create the grid menu for general pattern grid controls 
+//------------------------------------------------------------
+void MainWindow::create_grid_menu_()
+{
+  QMenu* gridMenu = menuBar_->addMenu(tr("&Grid"));
+
+  /* reset */
+  QAction* gridResetAction = 
+    new QAction(tr("&Reset Grid"), this);
+  gridMenu->addAction(gridResetAction);
+  gridResetAction->setShortcut(tr("Ctrl+R"));
+  connect(gridResetAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(reset_grid_()));
+} 
+
+
+//------------------------------------------------------------
 // create the status bar
 //------------------------------------------------------------
 void MainWindow::create_status_bar_()
@@ -405,10 +452,7 @@ void MainWindow::create_status_bar_()
 void MainWindow::create_graphics_scene_()
 {
   /* ask user for the grid size */
-  GridDimensionDialog* gridDialog = new GridDimensionDialog;
-  gridDialog->Init();
-  QSize gridSize = gridDialog->dim();
-  delete gridDialog;
+  QSize gridSize = show_grid_dimension_dialog_();
 
   /* create canvas */
   QPoint origin(0,0);
@@ -532,7 +576,8 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(resetSelectionButton);
   connect(resetSelectionButton,
           SIGNAL(clicked()),
-          this,SLOT(pan_down_()));
+          canvas_,
+          SLOT(deselect_all_active_items()));
 
   addToolBar(toolBar);
 }
@@ -591,3 +636,17 @@ void MainWindow::create_main_splitter_()
   mainSplitter_->addWidget(canvasView_);
   mainSplitter_->addWidget(propertyBox);
 }
+
+
+//-------------------------------------------------------------
+// open dialog to ask user for the dimensions of the pattern
+// grid
+//-------------------------------------------------------------
+QSize MainWindow::show_grid_dimension_dialog_()
+{
+  GridDimensionDialog gridDialog; 
+  gridDialog.Init();
+  return gridDialog.dim();
+}
+
+

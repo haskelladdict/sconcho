@@ -100,6 +100,7 @@ private slots:
   void pan_up_();
   void pick_color_();
   void quit_sconcho_();
+  void reset_grid_();
   void show_file_open_menu_();
   void show_file_export_menu_();
   void show_print_menu_();
@@ -112,6 +113,7 @@ private:
   /* interface generation functions */
   void create_menu_bar_();
   void create_file_menu_();
+  void create_grid_menu_();
   void create_status_bar_();
   void create_graphics_scene_();
   void create_main_splitter_();
@@ -136,6 +138,9 @@ private:
   QGroupBox* colorSelectorGrouper_;
   QPushButton* colorSelector_;
   SymbolSelectorWidget* symbolSelector_;
+
+  /* helper function */
+  QSize show_grid_dimension_dialog_();
 };
 
 
