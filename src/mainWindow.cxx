@@ -125,12 +125,28 @@ void MainWindow::update_mouse_position_display(QPointF newPosition)
 
 
 //-------------------------------------------------------------
-// update the status bar message
+// show messages in status bar 
 //-------------------------------------------------------------
 void MainWindow::show_statusBar_message(QString aMessage)
 {
+  QPalette aPalette = statusBarMessages_->palette();
+  aPalette.setBrush(QPalette::WindowText, Qt::black);
+  statusBarMessages_->setPalette(aPalette);
   statusBarMessages_->setText(aMessage);
 }
+
+
+//-------------------------------------------------------------
+// show errors in status bar 
+//-------------------------------------------------------------
+void MainWindow::show_statusBar_error(QString aMessage)
+{
+  QPalette aPalette = statusBarMessages_->palette();
+  aPalette.setBrush(QPalette::WindowText, Qt::red);
+  statusBarMessages_->setPalette(aPalette);
+  statusBarMessages_->setText(aMessage);
+}
+
 
 
 //--------------------------------------------------------------

@@ -86,6 +86,7 @@ public:
 signals:
 
   void mouse_moved(QPointF position);
+  void statusBar_error(QString msg);
   void statusBar_message(QString msg);
   void mouse_zoom_in();
   void mouse_zoom_out();

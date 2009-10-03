@@ -102,6 +102,12 @@ bool GraphicsScene::Init()
          );
  
   connect(this,
+          SIGNAL(statusBar_error(QString)),
+          parent(),
+          SLOT(show_statusBar_error(QString))
+         );
+ 
+  connect(this,
           SIGNAL(mouse_zoom_in()),
           parent(),
           SLOT(zoom_in()));
@@ -361,7 +367,7 @@ void GraphicsScene::delete_col_()
    * was at least on multi column cell in the column */
   if ( targetColCounter < numRows_ )
   {
-    emit statusBar_message("cannot delete columns with "
+    emit statusBar_error("cannot delete columns with "
       "cells that span multiple columns");
     selectedCol_ = UNSELECTED;
     return;
@@ -524,7 +530,7 @@ void GraphicsScene::insert_col_(int aCol)
      * was at least on multi column cell in the column */
     if ( targetColCounter < numRows_ )
     {
-      emit statusBar_message("cannot insert column in between "
+      emit statusBar_error("cannot insert column in between "
           "cells that span multiple columns");
       selectedCol_ = UNSELECTED;
       return;
@@ -749,7 +755,7 @@ void GraphicsScene::try_place_knitting_symbol_()
    * of the required item size */
   if ( activeItems_.size() % cellsNeeded != 0 )
   {
-    emit statusBar_message(tr("Number of selected cells is"
+    emit statusBar_error(tr("Number of selected cells is"
            "not a multiple of the pattern size"));
   }
 
@@ -888,7 +894,7 @@ bool GraphicsScene::process_selected_items_(
      * are done */
     if (rowLength % selectedPatternSize != 0)
     {
-      emit statusBar_message(tr("Improper total number of cells."));
+      emit statusBar_error(tr("Improper total number of cells."));
       return false;
     }
 
@@ -937,7 +943,7 @@ bool GraphicsScene::process_selected_items_(
       div_t multiple = div(currentWidth, selectedPatternSize);
       if (multiple.rem != 0)
       {
-        emit statusBar_message(rowMsg + "non-matching block size");
+        emit statusBar_error(rowMsg + "non-matching block size");
         return false;
       }
 

@@ -87,6 +87,7 @@ public slots:
 
   void update_mouse_position_display(QPointF newPos);
   void show_statusBar_message(QString msg);
+  void show_statusBar_error(QString msg);
   void zoom_in();
   void zoom_out();
  
