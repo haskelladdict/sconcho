@@ -323,6 +323,9 @@ void GraphicsScene::deselect_all_active_items()
 //-------------------------------------------------------------
 void GraphicsScene::delete_col_()
 {
+  assert(selectedCol_ > 0);
+  assert(selectedCol_ < numCols_);
+
   if (selectedCol_ == UNSELECTED)
   {
     return;
@@ -403,6 +406,9 @@ void GraphicsScene::delete_col_()
 //-------------------------------------------------------------
 void GraphicsScene::delete_row_()
 {
+  assert(selectedRow_ > 0);
+  assert(selectedRow_ < numRows_); 
+
   if (selectedRow_ == UNSELECTED)
   {
     return;
@@ -481,42 +487,48 @@ void GraphicsScene::insert_col_(int aCol)
 {
   deselect_all_active_items();
 
-
   /* go through all items and make sure that that
    * inserting the columns won't cut through any
-   * multy row cells */
-  int targetColCounter = 0;
-  QList<QGraphicsItem*> allItems(items());
-  foreach(QGraphicsItem* anItem, allItems)
+   * multy row cells 
+   * NOTE: The special case here is adding a column at the 
+   * right or left of the pattern grid in which case we're 
+   * always in good shape and the below test will actually
+   * fail when adding at the right */
+  if (aCol != 0 && aCol != numCols_)
   {
-    PatternGridItem* cell = 
-      qgraphicsitem_cast<PatternGridItem*>(anItem);
-
-    if (cell != 0)
+    int targetColCounter = 0;
+    QList<QGraphicsItem*> allItems(items());
+    foreach(QGraphicsItem* anItem, allItems)
     {
-      /* in order to make sure we won't cut through
-       * a wide cell, we check if the origin of the cell
-       * is in the current cell. If not, it will surely
-       * start in the cell to the left and we would cut
-       * it in this case */
-      QPoint actualOrigin(cell->origin());
-      QPoint neededOrigin(compute_cell_origin_(aCol, cell->row()));
-      
-      if (cell->col() == aCol && actualOrigin == neededOrigin )
+      PatternGridItem* cell = 
+        qgraphicsitem_cast<PatternGridItem*>(anItem);
+
+      if (cell != 0)
       {
-        targetColCounter += 1;
+        /* in order to make sure we won't cut through
+         * a wide cell, we check if the origin of the cell
+         * is in the current cell. If not, it will surely
+         * start in the cell to the left and we would cut
+         * it in this case */
+        QPoint actualOrigin(cell->origin());
+        QPoint neededOrigin(compute_cell_origin_(aCol, cell->row()));
+
+        if (cell->col() == aCol && actualOrigin == neededOrigin )
+        {
+          targetColCounter += 1;
+        }
       }
     }
-  }
-        
-  /* if we have less than numCols_ in deletedColCounter there
-   * was at least on multi column cell in the column */
-  if ( targetColCounter < numRows_ )
-  {
-    emit statusBar_message("cannot insert column in between "
-      "cells that span multiple columns");
-    selectedCol_ = UNSELECTED;
-    return;
+
+    /* if we have less than numCols_ in deletedColCounter there
+     * was at least on multi column cell in the column */
+    if ( targetColCounter < numRows_ )
+    {
+      emit statusBar_message("cannot insert column in between "
+          "cells that span multiple columns");
+      selectedCol_ = UNSELECTED;
+      return;
+    }
   }
 
 
@@ -1133,46 +1145,50 @@ void GraphicsScene::manage_columns_rows_(const QPoint& pos,
 {
   QMenu colRowMenu;
 
-  /* column related entries */
-  QString colString;
-  colString.setNum(numCols_ - colID);
+  /* show menu only if we're inside the pattern grid */
+  if (colID >= 0 && colID < numCols_ &&
+      rowID >= 0 && rowID < numRows_)
+  {
+    /* column related entries */
+    QString colString;
+    colString.setNum(numCols_ - colID);
 
-  /* show these only if we're inside the pattern grid */
-  QAction* colDeleteAction = 
-    colRowMenu.addAction("delete column " + colString);
-  QAction* colInsertLeftOfAction = 
-    colRowMenu.addAction("insert left of column " + colString);
-  QAction* colInsertRightOfAction = 
-    colRowMenu.addAction("insert right of column " + colString);
+    QAction* colDeleteAction = 
+      colRowMenu.addAction("delete column " + colString);
+    QAction* colInsertLeftOfAction = 
+      colRowMenu.addAction("insert left of column " + colString);
+    QAction* colInsertRightOfAction = 
+      colRowMenu.addAction("insert right of column " + colString);
     
-  connect(colDeleteAction, SIGNAL(triggered()), 
-    this, SLOT(delete_col_()));
-  connect(colInsertLeftOfAction, SIGNAL(triggered()),
-    this, SLOT(insert_left_of_col_()));
-  connect(colInsertRightOfAction, SIGNAL(triggered()),
-    this, SLOT(insert_right_of_col_()));
+    connect(colDeleteAction, SIGNAL(triggered()), 
+      this, SLOT(delete_col_()));
+    connect(colInsertLeftOfAction, SIGNAL(triggered()),
+      this, SLOT(insert_left_of_col_()));
+    connect(colInsertRightOfAction, SIGNAL(triggered()),
+      this, SLOT(insert_right_of_col_()));
 
-  colRowMenu.addSeparator();
-  
-  /* row related entries */
-  QString rowString;
-  rowString.setNum(numRows_ - rowID);
+    colRowMenu.addSeparator();
+ 
+    /* row related entries */
+    QString rowString;
+    rowString.setNum(numRows_ - rowID);
 
-  QAction* rowDeleteAction = 
-    colRowMenu.addAction("delete row " + rowString);
-  QAction* rowInsertAboveAction = 
-    colRowMenu.addAction("insert above row " + rowString);
-  QAction* rowInsertBelowAction = 
-    colRowMenu.addAction("insert below row " + rowString);
-    
-  connect(rowDeleteAction, SIGNAL(triggered()), 
-    this, SLOT(delete_row_()));
-  connect(rowInsertAboveAction, SIGNAL(triggered()),
-    this, SLOT(insert_above_row_()));
-  connect(rowInsertBelowAction, SIGNAL(triggered()),
-    this, SLOT(insert_below_row_()));
+    QAction* rowDeleteAction = 
+      colRowMenu.addAction("delete row " + rowString);
+    QAction* rowInsertAboveAction = 
+      colRowMenu.addAction("insert above row " + rowString);
+    QAction* rowInsertBelowAction = 
+      colRowMenu.addAction("insert below row " + rowString);
 
-  colRowMenu.exec(pos);
+    connect(rowDeleteAction, SIGNAL(triggered()), 
+        this, SLOT(delete_row_()));
+    connect(rowInsertAboveAction, SIGNAL(triggered()),
+        this, SLOT(insert_above_row_()));
+    connect(rowInsertBelowAction, SIGNAL(triggered()),
+        this, SLOT(insert_below_row_()));
+
+    colRowMenu.exec(pos);
+  }
 }
   
 
