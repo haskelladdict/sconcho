@@ -184,22 +184,33 @@ void GraphicsScene::reset_canvas(
 
   int maxCol = 0;
   int maxRow = 0;
-  foreach(PatternGridItemDescriptor anItem, newItems)
+  foreach(PatternGridItemDescriptor rawItem, newItems)
   {
-    int col = anItem.location.x();
-    int row = anItem.location.y();
+    int col = rawItem.location.x();
+    int row = rawItem.location.y();
    
     maxCol = int_max(col, maxCol);
     maxRow = int_max(row, maxRow);
 
     PatternGridItem* item = 
       new PatternGridItem(compute_cell_origin_(col, row), 
-            anItem.dimension, cellSize_, col, row, this,
-            anItem.backgroundColor);
+            rawItem.dimension, cellSize_, col, row, this,
+            rawItem.backgroundColor);
     item->Init();
 
     /* add it to our scene */
     addItem(item);
+
+    /* generate a knittingSymbolPointer */
+    if (rawItem.knittingSymbolName != "")
+    {
+      QString path = get_pattern_path(rawItem.knittingSymbolName);
+      KnittingSymbolPtr sym = 
+        KnittingSymbolPtr(new KnittingSymbol(path,
+          rawItem.knittingSymbolName, rawItem.dimension,"",""));
+
+      item->insert_knitting_symbol(sym);
+    }
   }
   
   /* adjust dimensions */
@@ -1368,13 +1379,21 @@ void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
 
 //---------------------------------------------------------------
 // remove all items on canvas 
+// NOTE: Since the SVGItems are owned by each PatternGridItem
+// we have to make sure we don't remove them explicitly.
 //---------------------------------------------------------------
 void GraphicsScene::purge_all_canvas_items_()
 {
   QList<QGraphicsItem*> allItems(items());
   foreach(QGraphicsItem* anItem, allItems)
   {
-    removeItem(anItem);
+    PatternGridItem* cell =
+      qgraphicsitem_cast<PatternGridItem*>(anItem);
+
+    if (cell != 0)
+    {
+      removeItem(cell);
+    }
   }
 }
 

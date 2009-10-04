@@ -92,13 +92,16 @@ bool MainWindow::Init()
   connect(symbolSelector_,
           SIGNAL(selected_symbol_changed(const KnittingSymbolPtr)),
           canvas_,
-          SLOT(update_selected_symbol(const KnittingSymbolPtr))
+          SLOT(update_selected_symbol(const KnittingSymbolPtr)),
+          Qt::DirectConnection
          );
 
   connect(this,
           SIGNAL(color_changed(QColor)),
           canvas_,
-          SLOT(update_selected_background_color(QColor)));
+          SLOT(update_selected_background_color(QColor)),
+          Qt::DirectConnection
+         );
 
   setCentralWidget(mainSplitter_);
   return true;

@@ -116,8 +116,6 @@ void SymbolSelectorWidget::change_highlighted_item(
 } 
 
 
-
-
 /**************************************************************
  *
  * PUBLIC MEMBER FUNCTIONS
