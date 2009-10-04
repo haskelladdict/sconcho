@@ -30,6 +30,7 @@
 
 /** local headers */
 #include "basicDefs.h"
+#include "graphicsScene.h"
 #include "patternGridItem.h"
 #include "patternView.h"
 
@@ -43,9 +44,10 @@
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-PatternView::PatternView(QGraphicsScene* aScene, QWidget* myParent)
+PatternView::PatternView(GraphicsScene* aScene, QWidget* myParent)
   :
   QGraphicsView(aScene, myParent),
+  canvas_(aScene),
   rubberBandOn_(false)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -93,8 +95,8 @@ bool PatternView::Init()
  *************************************************************/
 
 //-------------------------------------------------------------
-// deal with mouse events and associated rubber band geometry
-// changes if requested
+// deal with mouse release events and rubber band 
+// events if requested
 //-------------------------------------------------------------
 void PatternView::mouseReleaseEvent(QMouseEvent* evt)
 {
@@ -106,7 +108,10 @@ void PatternView::mouseReleaseEvent(QMouseEvent* evt)
      * out all PatternGridItem objects via a qgraphicsitem_cast */
     QRect finalGeometry(rubberBand_->geometry());
     QList<QGraphicsItem*> selectedCells(items(finalGeometry));
-  
+ 
+    /* while selecting we disable canvas updates */
+    canvas_->disable_canvas_update();
+
     foreach(QGraphicsItem* cell, selectedCells)
     {
       PatternGridItem* item = 
@@ -116,6 +121,9 @@ void PatternView::mouseReleaseEvent(QMouseEvent* evt)
         item->select();
       }
     }
+    canvas_->update_canvas();
+    canvas_->enable_canvas_update();
+
 
     rubberBandOn_ = false;
     rubberBand_->hide();
@@ -125,7 +133,10 @@ void PatternView::mouseReleaseEvent(QMouseEvent* evt)
 }
 
 
-
+//-------------------------------------------------------------
+// deal with mouse press events and rubber band 
+// events if requested
+//-------------------------------------------------------------
 void PatternView::mousePressEvent(QMouseEvent* evt)
 {
   if (evt->modifiers().testFlag(Qt::ControlModifier))
@@ -142,7 +153,10 @@ void PatternView::mousePressEvent(QMouseEvent* evt)
 }
 
 
-
+//-------------------------------------------------------------
+// deal with mouse move events and rubber band 
+// geometry changes 
+//-------------------------------------------------------------
 void PatternView::mouseMoveEvent(QMouseEvent* evt)
 {
   if (rubberBandOn_)

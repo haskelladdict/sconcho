@@ -807,7 +807,7 @@ void MainWindow::save_canvas_(const QString& fileName)
   if (!writer.Init())
   {
     QMessageBox::critical(0,"Save File",
-      QString("Failed to open file\n%1\nfor saving.n") 
+      QString("Failed to open file\n%1\nfor saving.") 
       .arg(fileName));
     return;
   }
@@ -830,7 +830,7 @@ void MainWindow::load_canvas_(const QString& fileName)
   if (!reader.Init())
   {
     QMessageBox::critical(0,"Read File",
-      QString("Failed to open file\n%1\nfor reading.n") 
+      QString("Failed to open file\n%1\nfor reading.") 
       .arg(fileName));
     return;
   }

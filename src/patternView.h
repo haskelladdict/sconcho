@@ -31,6 +31,7 @@
 /* local includes */
 
 /* a few forward declarations */
+class GraphicsScene;
 class QMouseEvent;
 class QRubberBand;
 
@@ -54,7 +55,7 @@ class PatternView
     
 public:
 
-  explicit PatternView(QGraphicsScene* scene, QWidget* myParent = 0);
+  explicit PatternView(GraphicsScene* scene, QWidget* myParent = 0);
   bool Init();
 
 //signals:
@@ -71,6 +72,9 @@ private:
 
   /* construction status variable */
   int status_;
+
+  /* our canvas */
+  GraphicsScene* canvas_;
 
   /* member variables */
   QRubberBand* rubberBand_;

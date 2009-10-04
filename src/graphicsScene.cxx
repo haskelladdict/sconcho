@@ -31,6 +31,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneWheelEvent>
 #include <QGraphicsTextItem>
+#include <QGraphicsSvgItem>
 #include <QGraphicsView>
 #include <QKeyEvent>
 #include <QMenu>
@@ -57,6 +58,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
     const QSize& gridDim, int aSize, QObject* myParent)
   :
   QGraphicsScene(myParent),
+  updateActiveItems_(true),
   origin_(anOrigin),
   numCols_(gridDim.width()),
   numRows_(gridDim.height()),
@@ -228,6 +230,26 @@ void GraphicsScene::reset_canvas(
 
 
 
+//------------------------------------------------------------
+// update the canvas, i.e., add the currently selected 
+// knitting symbol/color to all active items.
+//------------------------------------------------------------
+void GraphicsScene::update_canvas()
+{
+  /* if a knitting symbol is selected we try placing it,
+   * otherwise we color the cells if requested */
+  if (selectedSymbol_->path() != "")
+  {
+    try_place_knitting_symbol_();
+  }
+  else if (wantColor_)
+  {
+    colorize_highlighted_cells_();
+  } 
+}
+
+
+
 /**************************************************************
  *
  * PUBLIC SLOTS
@@ -254,6 +276,12 @@ void GraphicsScene::update_selected_symbol(
 // selected items matches the number we need based on the
 // knitting symbol and they are adjacent we either try
 // placing the symbol or color the cells.
+//
+// NOTE: placement can be temporarty disabled, e.g., if we are 
+// selecting a whole range of items (e.g., via rubberband or 
+// row/column wise) in order to avoid premature placement of
+// knitting symbols that don't really fit into the total
+// available space.
 //--------------------------------------------------------------
 void GraphicsScene::grid_item_selected(PatternGridItem* anItem, 
     bool status)
@@ -271,17 +299,13 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
     activeItems_.remove(index);
   }
 
-  /* if a knitting symbol is selected we try placing it,
-   * otherwise we color the cells if requested */
-  if (selectedSymbol_->path() != "")
+  if (updateActiveItems_)
   {
-    try_place_knitting_symbol_();
+    update_canvas();
   }
-  else if (wantColor_)
-  {
-    colorize_highlighted_cells_();
-  } 
+
 }
+
 
 
 //------------------------------------------------------------
@@ -307,7 +331,7 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
 
   /* get rid of the old cell making sure that we punt if from
    * the set of activeItems if present */
-  removeItem(anItem);
+  delete_item_from_canvas_(anItem);
 
   /* start filling the hole with new cells */
   int numNewCells = dim.width();
@@ -350,11 +374,13 @@ void GraphicsScene::color_state_changed(int state)
 //---------------------------------------------------------------
 void GraphicsScene::deselect_all_active_items()
 {
+  disable_canvas_update();
   foreach(PatternGridItem* anItem, activeItems_)
   {
     anItem->select();
   }
   activeItems_.clear();
+  enable_canvas_update();
 }
 
 
@@ -427,7 +453,7 @@ void GraphicsScene::delete_col_()
   {
     if (cell->col() == selectedCol_)
     {
-      removeItem(cell);
+      delete_item_from_canvas_(cell);
     }
     else if (cell->col() > selectedCol_)
     {
@@ -470,26 +496,36 @@ void GraphicsScene::delete_row_()
    * - delete the ones in the selectedRow_
    * - shift the ones in a row greater than selectedRow_
    *   up by one
+   *
+   * Important: We can't just delete as we go since 
+   * this also nukes the svg item children which 
+   * we are also iterating over
    */
   QList<QGraphicsItem*> allItems(items());
+  QList<PatternGridItem*> patternItems;
   foreach(QGraphicsItem* anItem, allItems)
   {
     PatternGridItem* cell = 
       qgraphicsitem_cast<PatternGridItem*>(anItem);
-
+    
     if (cell != 0)
     {
-      if (cell->row() == selectedRow_)
-      {
-        removeItem(cell);
-      }
-      else if (cell->row() > selectedRow_)
-      {
-        cell->reseat(
-                compute_cell_origin_(cell->col(), cell->row()-1),
-                cell->col(),
-                cell->row() - 1);
-      }
+      patternItems.push_back(cell);
+    }
+  }
+
+  foreach(PatternGridItem* patItem, patternItems)
+  {
+    if (patItem->row() == selectedRow_)
+    {
+      delete_item_from_canvas_(patItem);
+    }
+    else if (patItem->row() > selectedRow_)
+    {
+      patItem->reseat(
+                compute_cell_origin_(patItem->col(), patItem->row()-1),
+                patItem->col(),
+                patItem->row() - 1);
     }
   }
 
@@ -828,7 +864,7 @@ void GraphicsScene::try_place_knitting_symbol_()
   /* delete previously highligthed cells */
   foreach(PatternGridItem* item, activeItems_.values())
   {
-    removeItem(item);
+    delete_item_from_canvas_(item);
   }
   activeItems_.clear();
 
@@ -1100,7 +1136,6 @@ void GraphicsScene::select_row_(int rowId)
 
   QSize boxDim((numCols_ - 1) * cellSize_ + halfCell, halfCell);
 
-  /* select items */
   select_region_(QRect(boxOrigin, boxDim));
 }
 
@@ -1154,11 +1189,18 @@ void GraphicsScene::select_region_(const QRect& aRegion)
     }
   }
 
+  /* disable canvas update until we're done selecting,
+   * then we update and re-enable*/
+  disable_canvas_update();
+
   QList<PatternGridItem*> sortedItems(gridItems.values());
   foreach(PatternGridItem* cell, sortedItems)
   {
     cell->select();
   }
+
+  update_canvas();
+  enable_canvas_update();
 }
 
 
@@ -1272,6 +1314,7 @@ void GraphicsScene::create_grid_labels_()
 {
   /* remove all existing labels if there are any */
   QList<QGraphicsItem*> allItems(items());
+  QList<PatternGridLabel*> allLabels;
   foreach(QGraphicsItem* aLabel, allItems)
   {
     PatternGridLabel* label = 
@@ -1279,10 +1322,14 @@ void GraphicsScene::create_grid_labels_()
 
     if (label != 0)
     {
-      removeItem(label);
+      allLabels.push_back(label);
     }
   }  
 
+  foreach(PatternGridLabel* aLabel, allLabels)
+  {
+    delete_item_from_canvas_(aLabel);
+  }
 
   /* add new column labels */
   QString label;
@@ -1384,17 +1431,31 @@ void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
 //---------------------------------------------------------------
 void GraphicsScene::purge_all_canvas_items_()
 {
+  /* collect all non svgItems first */
   QList<QGraphicsItem*> allItems(items());
+  QList<QGraphicsItem*> nonSvgItems;
   foreach(QGraphicsItem* anItem, allItems)
   {
-    PatternGridItem* cell =
-      qgraphicsitem_cast<PatternGridItem*>(anItem);
-
-    if (cell != 0)
+    if (anItem->type() != QGraphicsSvgItem::Type)
     {
-      removeItem(cell);
+      nonSvgItems.push_back(anItem);
     }
   }
+
+  foreach(QGraphicsItem* finalItem, nonSvgItems)
+  {
+    delete_item_from_canvas_(finalItem);
+  } 
 }
 
+
+//----------------------------------------------------------------
+// this function removes an item from the canvas and als
+// deletes it
+//----------------------------------------------------------------
+void GraphicsScene::delete_item_from_canvas_(QGraphicsItem* deadItem)
+{
+  removeItem(deadItem);
+  delete deadItem;
+}
 

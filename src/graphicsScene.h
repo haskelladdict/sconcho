@@ -81,6 +81,11 @@ public:
   const QColor& get_background_color();
   bool withColor();
 
+  /* helper function for updating of active Items */
+  void enable_canvas_update() { updateActiveItems_ = true; }
+  void disable_canvas_update() { updateActiveItems_ = false; }
+  void update_canvas();
+
   /* helper functions */
   void reset_grid(const QSize& newSize);
   void reset_canvas(const QList<PatternGridItemDescriptor>& newItems);
@@ -127,6 +132,9 @@ private:
   /* construction status variable */
   int status_;
 
+  /* do we want active items to be updated */
+  bool updateActiveItems_;
+
   /* basic dimensions */
   QPoint origin_;
   int numCols_;
@@ -154,6 +162,11 @@ private:
   void create_pattern_grid_();
   void create_grid_labels_();
 
+  /* use this to remove items from canvas */
+  void delete_item_from_canvas_(QGraphicsItem* anItem);
+  void purge_all_canvas_items_();
+  
+  
   /* helper functions */
   void try_place_knitting_symbol_();
   void colorize_highlighted_cells_();
@@ -172,7 +185,6 @@ private:
   void manage_columns_rows_(const QPoint& pos, int col, int row);
   void select_region_(const QRect& region);
 
-  void purge_all_canvas_items_();
 
   QPoint compute_cell_origin_(int col, int row) const;
   int compute_cell_index_(PatternGridItem* anItem) const;
