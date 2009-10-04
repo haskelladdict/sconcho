@@ -21,6 +21,7 @@
 /* Qt include */
 #include <QDebug>
 #include <QFile>
+#include <QMessageBox>
 #include <QTextStream>
 
 /* local includes */
@@ -134,7 +135,7 @@ bool CanvasIOWriter::save()
 
 /**************************************************************
  *
- * PUBLIC FUNCTIONS 
+ * PRIVATE FUNCTIONS 
  *
  **************************************************************/
 
@@ -199,3 +200,196 @@ bool CanvasIOWriter::save_patternGridItems_(QDomElement& root)
 
   return true;
 } 
+
+
+
+//---------------------------------------------------------------
+//
+//
+// class CanvasIOReader
+//
+//
+//---------------------------------------------------------------
+
+
+/**************************************************************
+ *
+ * PUBLIC FUNCTIONS 
+ *
+ **************************************************************/
+
+//-------------------------------------------------------------
+// constructor
+//-------------------------------------------------------------
+CanvasIOReader::CanvasIOReader(GraphicsScene* scene,
+    const QString& theName)
+  :
+    ourScene_(scene),
+    fileName_(theName)
+{
+  status_ = SUCCESSFULLY_CONSTRUCTED;
+  qDebug() << "canvasIOReader constructed";
+}
+
+
+//-------------------------------------------------------------
+// destructor 
+//-------------------------------------------------------------
+CanvasIOReader::~CanvasIOReader()
+{
+  filePtr_->close();
+  delete filePtr_;
+
+  qDebug() << "canvasIOReader destroyed";
+}
+
+
+//--------------------------------------------------------------
+// main initialization routine
+//--------------------------------------------------------------
+bool CanvasIOReader::Init()
+{
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
+  {
+    return false;
+  }
+
+  /* open write stream */
+  filePtr_ = new QFile(fileName_);
+  if (!filePtr_->open(QFile::ReadOnly))
+  {
+    return false;
+  }
+
+  return true;
+}
+
+
+//--------------------------------------------------------------
+// save content of canvas; 
+// returns true on success or false on failure
+//--------------------------------------------------------------
+bool CanvasIOReader::read()
+{
+  /* parse file and make sure we can read it */
+  QString errStr;
+  int errLine;
+  int errCol;
+  if (!readDoc_.setContent(filePtr_, true, &errStr, &errLine, &errCol))
+  {
+    QMessageBox::critical(0,"sconcho DOM Parser",
+      QString("Error parsing\n%1\nat line %2 column %3; %4")
+      .arg(fileName_) .arg(errLine) .arg(errCol) .arg(errStr));
+
+    return false;
+  }
+
+  /* make sure we're reading a sconcho file */
+  QDomElement root = readDoc_.documentElement();
+  if ( root.tagName() != "sconcho" ) return false;
+
+  /** parse all events */
+  QDomNode node = root.firstChild();
+  while ( !node.isNull() )
+  {
+    if (node.toElement().tagName() == "canvasItem")
+    {
+      QDomNode theItem = node.firstChild();
+      if (theItem.toElement().tagName() == "patternGridItem")
+      {
+        parse_patternGridItem_(theItem);
+      }
+    }
+
+    node = node.nextSibling();
+  }
+
+  /* as the canvas to reset itself and recreate the old scene
+   * as specified in newPatternGridItems_ */
+  if (!newPatternGridItems_.isEmpty())
+  {
+    ourScene_->reset_canvas(newPatternGridItems_);
+  }
+
+  return true;
+}
+
+
+
+/**************************************************************
+ *
+ * PRIVATE FUNCTIONS 
+ *
+ **************************************************************/
+
+//-------------------------------------------------------------
+// read a single PatternGridItem from our input stream
+//-------------------------------------------------------------
+bool CanvasIOReader::parse_patternGridItem_(const QDomNode& itemNode)
+{
+  qDebug() << "read patternGridItems";
+
+  /* loop over all the properties we expect for the pattern */
+  int colIndex = 0;
+  int rowIndex = 0;
+  int width    = 0;
+  int height   = 0;
+  uint color   = 0;
+  QString name("");
+
+  QDomNode node = itemNode.firstChild();
+  while (!node.isNull())
+  {
+
+    if (node.toElement().tagName() == "colIndex")
+    {
+      QDomNode childNode(node.firstChild());
+      colIndex = childNode.toText().data().toInt();
+    }
+
+    if (node.toElement().tagName() == "rowIndex")
+    {
+      QDomNode childNode(node.firstChild());
+      rowIndex = childNode.toText().data().toInt();
+    }
+
+    if (node.toElement().tagName() == "width")
+    {
+      QDomNode childNode(node.firstChild());
+      width = childNode.toText().data().toInt();
+    }
+
+    if (node.toElement().tagName() == "height")
+    {
+      QDomNode childNode(node.firstChild());
+      height = childNode.toText().data().toInt();
+    }
+
+    if (node.toElement().tagName() == "backgroundColor")
+    {
+      QDomNode childNode(node.firstChild());
+      color = childNode.toText().data().toUInt();
+    }
+
+    if (node.toElement().tagName() == "SVGSymbolName")
+    {
+      QDomNode childNode(node.firstChild());
+      name = childNode.toText().data();
+    }
+
+    node = node.nextSibling();
+  }
+
+  /* store parsed item in list of new patternGridItems */
+  PatternGridItemDescriptor currentItem;
+  currentItem.location = QPoint(colIndex, rowIndex);
+  currentItem.dimension = QSize(width,height);
+  currentItem.backgroundColor = QColor(color);
+  currentItem.knittingSymbolName = name;
+  newPatternGridItems_.push_back(currentItem);
+
+  qDebug() << colIndex << " " << rowIndex << " " << width << " " <<
+    height << "  " << color << " " << name;
+
+  return true;
+}

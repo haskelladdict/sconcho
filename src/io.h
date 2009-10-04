@@ -30,9 +30,9 @@
 #include <QtXml/QDomElement>
 #include <QtXml/QDomNode>
 
-
 /* forward declarations */
 class GraphicsScene;
+class PatternGridItem;
 class QFile;
 class QTextStream;
 
@@ -85,6 +85,65 @@ private:
 
   /* helper functions */
   bool save_patternGridItems_(QDomElement& rootElement);
+};
+
+
+
+/*******************************************************************
+ *
+ * PatternGridItemDescriptor is a data structure that contains
+ * all the information allowing GraphicsScene to reconstruct
+ * a previous view loaded from a file
+ *
+ ******************************************************************/
+struct PatternGridItemDescriptor
+{
+  QPoint location;
+  QSize dimension;
+  QColor backgroundColor;
+  QString knittingSymbolName;
+};
+
+
+
+/*******************************************************************
+ *
+ * CanvasIOReader is responsible for reading a previously stored
+ * canvas content and instructing the canvas to re-build it
+ *
+ ******************************************************************/
+class CanvasIOReader
+  :
+    public boost::noncopyable
+{
+
+public:
+
+  explicit CanvasIOReader(GraphicsScene* theScene, 
+    const QString& fileName);
+  ~CanvasIOReader();
+  bool Init();
+
+  /* save content of canvas */
+  bool read();
+
+
+private:
+
+  /* status variable */
+  int status_;
+
+  /* variables */
+  GraphicsScene* ourScene_;
+  QString fileName_;
+  QFile* filePtr_;
+  QDomDocument readDoc_;
+
+  /* QList of generated patternGridItems based on input file */
+  QList<PatternGridItemDescriptor> newPatternGridItems_;
+
+  /* helper functions */
+  bool parse_patternGridItem_(const QDomNode& itemNode);
 };
 
 

@@ -33,6 +33,7 @@
 
 /* local includes */
 #include "knittingSymbol.h"
+#include "io.h"
 
 
 /* a few forward declarations */
@@ -82,6 +83,7 @@ public:
 
   /* helper functions */
   void reset_grid(const QSize& newSize);
+  void reset_canvas(const QList<PatternGridItemDescriptor>& newItems);
 
 
 signals:
@@ -162,7 +164,6 @@ private:
   bool process_selected_items_(QList<RowLayout>& processedCellLayout,
       const QList<RowItems>& rowSelection, int targetPatternSize);
 
-
   void select_column_(int col);
   void select_row_(int row);
   void insert_col_(int col);
@@ -171,8 +172,13 @@ private:
   void manage_columns_rows_(const QPoint& pos, int col, int row);
   void select_region_(const QRect& region);
 
+  void purge_all_canvas_items_();
+
   QPoint compute_cell_origin_(int col, int row) const;
   int compute_cell_index_(PatternGridItem* anItem) const;
+
+  /* simple max helper function */
+  int int_max(int a, int b) { return a > b ? a : b; }
 };
 
 

@@ -182,9 +182,29 @@ void MainWindow::zoom_out()
 void MainWindow::show_file_open_menu_()
 {
   QString currentDirectory = QDir::currentPath();
-  QString fileName = QFileDialog::getOpenFileName(this,
+  QString openFileName = QFileDialog::getOpenFileName(this,
     tr("open data file"), currentDirectory,
     tr("sconcho pattern files (*.spf)"));
+
+  if ( openFileName.isEmpty() )
+  {
+    return;
+  }
+
+  /* extract file extension and make sure it corresponds to
+   * a supported format */
+  QFileInfo openFileInfo(openFileName);
+  QString extension = openFileInfo.completeSuffix();
+
+  if (extension != "spf")
+  {
+    QMessageBox::warning(this, tr("Warning"),
+      tr("Can not open file with format ") + extension,
+      QMessageBox::Ok);
+    return;
+  }
+
+  load_canvas_(openFileName);
 }
 
   
@@ -775,26 +795,30 @@ void MainWindow::export_canvas_(const QString& fileName)
 
 //--------------------------------------------------------------
 // save canvas to file
-//
-// For now (i.e. until our canvas contain additional objects)
-// we only need to save the PatternGridItems and their 
-// associated information, i.e.
-// - origin
-// - size
-// - colors
-// - contained KnittingSymbol
-//
-// Any possible future savable items will follow the same
-// strategy, i.e., we load the item data and then create
-// the corresponding QGraphicsItem object. There should
-// also be a section the contains other general information
-// once user's can change it in the widget (line width, etc).
 //-------------------------------------------------------------
 void MainWindow::save_canvas_(const QString& fileName)
 {
   CanvasIOWriter writer(canvas_, fileName);
+
+  // FIXME: make sure to check the init call to make sure 
+  // we were oble to open the file.
   writer.Init();
   writer.save();
 }
 
 
+//-------------------------------------------------------------
+// load a previously saved canvas from file
+//-------------------------------------------------------------
+void MainWindow::load_canvas_(const QString& fileName)
+{
+  // FIXME: before doing anything else make sure to warn
+  // the user that he is about to delete whatever he
+  // currently has on the canvas.
+  CanvasIOReader reader(canvas_, fileName);
+
+  // FIXME: make sure to check the init call to make sure 
+  // we were oble to open the file.
+  reader.Init();
+  reader.read();
+}

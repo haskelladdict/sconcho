@@ -154,22 +154,7 @@ bool GraphicsScene::withColor()
 //-------------------------------------------------------------
 void GraphicsScene::reset_grid(const QSize& newSize)
 {
-  /* remove all previous items
-   * NOTE: We only remove PattergridItems! Any embedded SVGItems
-   * are owned by the PatternGridItems and will be destroyed
-   * automagically. No need to detroy the label items either
-   * since we have to redraw them anyways. */
-  QList<QGraphicsItem*> allItems(items());
-  foreach(QGraphicsItem* anItem, allItems)
-  {
-    PatternGridItem* cell = 
-      qgraphicsitem_cast<PatternGridItem*>(anItem);
-
-    if (cell != 0)
-    {
-      removeItem(anItem);
-    }
-  }
+  purge_all_canvas_items_();
 
   /* generate new grid */
   numCols_ = newSize.width();
@@ -182,7 +167,55 @@ void GraphicsScene::reset_grid(const QSize& newSize)
     aView->fitInView(itemsBoundingRect(),Qt::KeepAspectRatio);
   }
 }
- 
+
+
+
+//-------------------------------------------------------------
+// this function nukes the current pattern grid and creates
+// a previous one as specified in the list of 
+// PatterGridItemDescriptors.
+//-------------------------------------------------------------
+void GraphicsScene::reset_canvas(
+    const QList<PatternGridItemDescriptor>& newItems)
+{
+  assert(newItems.size() != 0);
+
+  purge_all_canvas_items_();
+
+  int maxCol = 0;
+  int maxRow = 0;
+  foreach(PatternGridItemDescriptor anItem, newItems)
+  {
+    int col = anItem.location.x();
+    int row = anItem.location.y();
+   
+    maxCol = int_max(col, maxCol);
+    maxRow = int_max(row, maxRow);
+
+    PatternGridItem* item = 
+      new PatternGridItem(compute_cell_origin_(col, row), 
+            anItem.dimension, cellSize_, col, row, this,
+            anItem.backgroundColor);
+    item->Init();
+
+    /* add it to our scene */
+    addItem(item);
+  }
+  
+  /* adjust dimensions */
+  numCols_ = maxCol + 1;
+  numRows_ = maxRow + 1;
+
+  /* add labels and rescale */
+  create_grid_labels_();
+  setSceneRect(itemsBoundingRect());
+  foreach(QGraphicsView* aView, views())
+  {
+    aView->fitInView(itemsBoundingRect(),Qt::KeepAspectRatio);
+  }
+}
+
+
 
 /**************************************************************
  *
@@ -329,7 +362,7 @@ void GraphicsScene::deselect_all_active_items()
 //-------------------------------------------------------------
 void GraphicsScene::delete_col_()
 {
-  assert(selectedCol_ > 0);
+  assert(selectedCol_ >= 0);
   assert(selectedCol_ < numCols_);
 
   if (selectedCol_ == UNSELECTED)
@@ -412,7 +445,7 @@ void GraphicsScene::delete_col_()
 //-------------------------------------------------------------
 void GraphicsScene::delete_row_()
 {
-  assert(selectedRow_ > 0);
+  assert(selectedRow_ >= 0);
   assert(selectedRow_ < numRows_); 
 
   if (selectedRow_ == UNSELECTED)
@@ -1332,5 +1365,17 @@ void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
   }
 }
 
+
+//---------------------------------------------------------------
+// remove all items on canvas 
+//---------------------------------------------------------------
+void GraphicsScene::purge_all_canvas_items_()
+{
+  QList<QGraphicsItem*> allItems(items());
+  foreach(QGraphicsItem* anItem, allItems)
+  {
+    removeItem(anItem);
+  }
+}
 
 

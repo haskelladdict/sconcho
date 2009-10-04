@@ -145,6 +145,7 @@ private:
   QSize show_grid_dimension_dialog_();
   void export_canvas_(const QString& fileName);
   void save_canvas_(const QString& fileName);
+  void load_canvas_(const QString& fileName);
 };
 
 
