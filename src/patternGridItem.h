@@ -100,6 +100,7 @@ public:
   int col() const { return columnIndex_; }
   int row() const { return rowIndex_; }  
   const QColor& color() const { return backColor_; }  
+  const QString& knittingSymbolName() const;
 
 
 signals:

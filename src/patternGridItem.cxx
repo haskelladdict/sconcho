@@ -55,6 +55,7 @@ PatternGridItem::PatternGridItem(const QPoint& aLoc,
       selected_(false),
       parent_(myParent),
       svgItem_(0),
+      knittingSymbol_(new KnittingSymbol("","",QSize(0,0),"","")),
       loc_(aLoc),
       dim_(aDim),
       scaling_(aScale),
@@ -210,6 +211,17 @@ void PatternGridItem::select()
   }
 
   update();
+}
+
+
+
+//--------------------------------------------------------------
+// return the full name of our embedded knitting symbol if
+// we have one and the empty string otherwise
+//--------------------------------------------------------------
+const QString& PatternGridItem::knittingSymbolName() const
+{
+  return knittingSymbol_->fullName();
 }
 
   

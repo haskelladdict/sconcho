@@ -26,6 +26,7 @@
 /* local includes */
 #include "basicDefs.h"
 #include "graphicsScene.h"
+#include "patternGridItem.h"
 #include "io.h"
 
 
@@ -144,18 +145,57 @@ bool CanvasIOWriter::save_patternGridItems_(QDomElement& root)
 {
   qDebug() << "save patternGridItems";
 
-  QDomElement eventTag = writeDoc_.createElement("event");
-  QDomElement dateTag = writeDoc_.createElement("date");
-  QDomElement contentTag = writeDoc_.createElement("content");
-  QDomText date = writeDoc_.createTextNode("foobar2");
-  QDomText content = 
-    writeDoc_.createTextNode("foobar");
+  /* retrieve all patternGridItems from canvas */
+  QString helper;
+  QList<QGraphicsItem*> allItems(ourScene_->items());
+  foreach(QGraphicsItem* anItem, allItems)
+  {
+    PatternGridItem* cell = 
+      qgraphicsitem_cast<PatternGridItem*>(anItem);
 
-  root.appendChild(eventTag);
-  eventTag.appendChild(dateTag);
-  eventTag.appendChild(contentTag);
-  dateTag.appendChild(date);
-  contentTag.appendChild(content);
+   if ( cell != 0 )
+   {
+     QDomElement mainTag = writeDoc_.createElement("canvasItem");
+     root.appendChild(mainTag);
+
+     QDomElement itemTag = writeDoc_.createElement("patternGridItem");
+     mainTag.appendChild(itemTag);
+
+     /* write column and row info */
+     QDomElement colTag = writeDoc_.createElement("colIndex");
+     itemTag.appendChild(colTag);
+     helper.setNum(cell->col());
+     colTag.appendChild(writeDoc_.createTextNode(helper));
+     
+     QDomElement rowTag = writeDoc_.createElement("rowIndex");
+     itemTag.appendChild(rowTag);
+     helper.setNum(cell->row());
+     rowTag.appendChild(writeDoc_.createTextNode(helper));
+    
+     /* cell width and height */
+     QDomElement widthTag = writeDoc_.createElement("width");
+     itemTag.appendChild(widthTag);
+     helper.setNum(cell->dim().width());
+     widthTag.appendChild(writeDoc_.createTextNode(helper));
+     
+     QDomElement heightTag = writeDoc_.createElement("height");
+     itemTag.appendChild(heightTag);
+     helper.setNum(cell->dim().height());
+     heightTag.appendChild(writeDoc_.createTextNode(helper));
+
+     /* background color */
+     QDomElement colorTag = writeDoc_.createElement("backgroundColor");
+     itemTag.appendChild(colorTag);
+     helper.setNum(cell->color().rgb());
+     colorTag.appendChild(writeDoc_.createTextNode(helper));
+
+     /* knitting symbol name */
+     QDomElement svgTag = writeDoc_.createElement("SVGSymbolName");
+     itemTag.appendChild(svgTag);
+     svgTag.appendChild(
+         writeDoc_.createTextNode(cell->knittingSymbolName()));
+   }
+  }
 
   return true;
 } 

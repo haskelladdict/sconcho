@@ -67,12 +67,8 @@ class GraphicsScene
   
   Q_OBJECT
 
-  /* io objects unfortunately need to access our innards;
-   * FIXME: Is there a better way to do this? */
-  friend class CanvasIOWriter;
-  friend class CanvasIOReader;
+   
 
-    
 public:
 
   explicit GraphicsScene(const QPoint& origin, 
