@@ -803,10 +803,18 @@ void MainWindow::save_canvas_(const QString& fileName)
 {
   CanvasIOWriter writer(canvas_, fileName);
 
-  // FIXME: make sure to check the init call to make sure 
-  // we were oble to open the file.
-  writer.Init();
-  writer.save();
+  /* we need to check if we can open the file for writing */
+  if (!writer.Init())
+  {
+    QMessageBox::critical(0,"Save File",
+      QString("Failed to open file\n%1\nfor saving.n") 
+      .arg(fileName));
+    return;
+  }
+  else
+  {
+    writer.save();
+  }
 }
 
 
@@ -815,13 +823,19 @@ void MainWindow::save_canvas_(const QString& fileName)
 //-------------------------------------------------------------
 void MainWindow::load_canvas_(const QString& fileName)
 {
-  // FIXME: before doing anything else make sure to warn
-  // the user that he is about to delete whatever he
-  // currently has on the canvas.
   CanvasIOReader reader(canvas_, fileName);
 
-  // FIXME: make sure to check the init call to make sure 
-  // we were oble to open the file.
-  reader.Init();
-  reader.read();
+  /* we need to make sure that we are able to open the file 
+   * for reading */
+  if (!reader.Init())
+  {
+    QMessageBox::critical(0,"Read File",
+      QString("Failed to open file\n%1\nfor reading.n") 
+      .arg(fileName));
+    return;
+  }
+  else
+  {
+    reader.read();
+  }
 }

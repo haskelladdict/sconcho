@@ -77,11 +77,14 @@ CanvasIOWriter::CanvasIOWriter(const GraphicsScene* scene,
 //-------------------------------------------------------------
 CanvasIOWriter::~CanvasIOWriter()
 {
-  writeStream_->flush();
-  delete writeStream_;
-  
-  filePtr_->close();
-  delete filePtr_;
+  if (filePtr_ != 0)
+  {
+    filePtr_->close();
+    delete filePtr_;
+
+    writeStream_->flush();
+    delete writeStream_;
+  }
 
   qDebug() << "canvasIOWriter destroyed";
 }
@@ -97,10 +100,13 @@ bool CanvasIOWriter::Init()
     return false;
   }
 
-  /* open write stream */
+  
+  /* open file */
   filePtr_ = new QFile(fileName_);
   if (!filePtr_->open(QFile::WriteOnly | QFile::Truncate))
   {
+    delete filePtr_;
+    filePtr_ = 0;
     return false;
   }
 
@@ -237,8 +243,11 @@ CanvasIOReader::CanvasIOReader(GraphicsScene* scene,
 //-------------------------------------------------------------
 CanvasIOReader::~CanvasIOReader()
 {
-  filePtr_->close();
-  delete filePtr_;
+  if (filePtr_ != 0)
+  {
+    filePtr_->close();
+    delete filePtr_;
+  }
 
   qDebug() << "canvasIOReader destroyed";
 }
@@ -258,6 +267,8 @@ bool CanvasIOReader::Init()
   filePtr_ = new QFile(fileName_);
   if (!filePtr_->open(QFile::ReadOnly))
   {
+    delete filePtr_;
+    filePtr_ = 0;
     return false;
   }
 
