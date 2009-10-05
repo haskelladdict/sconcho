@@ -163,9 +163,7 @@ private:
   void create_grid_labels_();
 
   /* use this to remove items from canvas */
-  void delete_item_from_canvas_(QGraphicsItem* anItem);
   void purge_all_canvas_items_();
-  
   
   /* helper functions */
   void try_place_knitting_symbol_();

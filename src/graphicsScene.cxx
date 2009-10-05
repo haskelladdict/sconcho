@@ -331,7 +331,8 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
 
   /* get rid of the old cell making sure that we punt if from
    * the set of activeItems if present */
-  delete_item_from_canvas_(anItem);
+  removeItem(anItem);
+  anItem->deleteLater();
 
   /* start filling the hole with new cells */
   int numNewCells = dim.width();
@@ -453,7 +454,8 @@ void GraphicsScene::delete_col_()
   {
     if (cell->col() == selectedCol_)
     {
-      delete_item_from_canvas_(cell);
+      removeItem(cell);
+      cell->deleteLater();
     }
     else if (cell->col() > selectedCol_)
     {
@@ -518,7 +520,8 @@ void GraphicsScene::delete_row_()
   {
     if (patItem->row() == selectedRow_)
     {
-      delete_item_from_canvas_(patItem);
+      removeItem(patItem);
+      patItem->deleteLater();
     }
     else if (patItem->row() > selectedRow_)
     {
@@ -861,13 +864,6 @@ void GraphicsScene::try_place_knitting_symbol_()
     return;
   }
 
-  /* delete previously highligthed cells */
-  foreach(PatternGridItem* item, activeItems_.values())
-  {
-    delete_item_from_canvas_(item);
-  }
-  activeItems_.clear();
-
 
   /* at this point all rows are in the proper shape to be
    * replaced by the current symbol */
@@ -892,7 +888,17 @@ void GraphicsScene::try_place_knitting_symbol_()
       addItem(anItem);
     }
   }
-    
+ 
+  
+  /* delete previously highligthed cells */
+  QList<PatternGridItem*> deadItems(activeItems_.values()); 
+  foreach(PatternGridItem* item, deadItems)
+  {
+    removeItem(item);
+    item->deleteLater();
+  }
+  activeItems_.clear();
+  
   /* clear StatusBar */
   emit statusBar_message("");
 }
@@ -1328,7 +1334,8 @@ void GraphicsScene::create_grid_labels_()
 
   foreach(PatternGridLabel* aLabel, allLabels)
   {
-    delete_item_from_canvas_(aLabel);
+    removeItem(aLabel);
+    aLabel->deleteLater();
   }
 
   /* add new column labels */
@@ -1357,7 +1364,7 @@ void GraphicsScene::create_grid_labels_()
         PatternGridLabel::RowLabel
         );
 
-    text->setPos(origin_.x() - cellSize_, 
+    text->setPos(origin_.x() + (numCols_*cellSize_) + 0.1*cellSize_, 
       origin_.y() + row * cellSize_ + textFont_.pointSize());
     text->setFont(textFont_);
     addItem(text);
@@ -1426,8 +1433,12 @@ void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
 
 //---------------------------------------------------------------
 // remove all items on canvas 
+//
 // NOTE: Since the SVGItems are owned by each PatternGridItem
 // we have to make sure we don't remove them explicitly.
+//
+// NOTE: Since we call delete directly, make sure that this
+// function is never called in an event handler.
 //---------------------------------------------------------------
 void GraphicsScene::purge_all_canvas_items_()
 {
@@ -1444,18 +1455,8 @@ void GraphicsScene::purge_all_canvas_items_()
 
   foreach(QGraphicsItem* finalItem, nonSvgItems)
   {
-    delete_item_from_canvas_(finalItem);
+    removeItem(finalItem);
+    delete finalItem;
   } 
-}
-
-
-//----------------------------------------------------------------
-// this function removes an item from the canvas and als
-// deletes it
-//----------------------------------------------------------------
-void GraphicsScene::delete_item_from_canvas_(QGraphicsItem* deadItem)
-{
-  removeItem(deadItem);
-  delete deadItem;
 }
 

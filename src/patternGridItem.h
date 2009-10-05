@@ -74,7 +74,6 @@ public:
       const QColor& backColor = Qt::white);
   bool Init();
 
-
   /* reimplement pure virtual base class methods */
   QRectF boundingRect() const;
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
