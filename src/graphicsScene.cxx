@@ -795,7 +795,7 @@ void GraphicsScene::mousePressEvent(
   }
   else
   {
-    if (column == -1)
+    if (column == numCols_)
     {
       qDebug() << "select row " << row;
       select_row_(row);
@@ -1356,7 +1356,9 @@ void GraphicsScene::create_grid_labels_()
   }
 
 
-  /* add new row labels */
+  /* add new row labels 
+   * FIXME: the exact placement of the labels is hand-tuned
+   * and probably not very robust */
   for (int row=0; row < numRows_; ++row)
   {
     PatternGridLabel* text= new PatternGridLabel(
@@ -1365,7 +1367,7 @@ void GraphicsScene::create_grid_labels_()
         );
 
     text->setPos(origin_.x() + (numCols_*cellSize_) + 0.1*cellSize_, 
-      origin_.y() + row * cellSize_ + textFont_.pointSize());
+      origin_.y() + row * cellSize_ + 0.5*textFont_.pointSize());
     text->setFont(textFont_);
     addItem(text);
   }
