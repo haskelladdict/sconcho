@@ -28,6 +28,16 @@ ENDIF(Boost_FOUND)
 
 
 ####################################################################
+# define options
+####################################################################
+IF(NOT SVG_ROOT_PATH)
+  SET(SVG_ROOT_PATH "/usr/share/sconco/symbols")
+ENDIF(NOT SVG_ROOT_PATH)
+
+CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/config.h.cmake 
+  ${CMAKE_BINARY_DIR}/src/config.h)
+
+####################################################################
 # add subdirs and enable testing 
 ####################################################################
 SUBDIRS(src)

@@ -25,6 +25,7 @@
 #include <QTextStream>
 
 /* local includes */
+#include "config.h"
 #include "basicDefs.h"
 #include "graphicsScene.h"
 #include "patternGridItem.h"
@@ -37,7 +38,7 @@
 //----------------------------------------------------------------
 QString get_pattern_path(const QString& name)
 {
-  return PATTERN_PATH + "/" + name + ".svg";
+  return SVG_ROOT_PATH + "/" + name + ".svg";
 }
 
 
