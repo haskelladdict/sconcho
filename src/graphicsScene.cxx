@@ -130,27 +130,6 @@ bool GraphicsScene::Init()
  *************************************************************/
 
 //-------------------------------------------------------------
-// accessor functions for properties
-//-------------------------------------------------------------
-const KnittingSymbolPtr GraphicsScene::get_selected_symbol()
-{
-  return selectedSymbol_;
-}
-
-
-const QColor& GraphicsScene::get_background_color()
-{
-  return backgroundColor_;
-}
-
-
-bool GraphicsScene::withColor()
-{
-  return wantColor_;
-}
-
-
-//-------------------------------------------------------------
 // this function nukes the current pattern grid and creates
 // a brand new one 
 //-------------------------------------------------------------
@@ -236,6 +215,17 @@ void GraphicsScene::reset_canvas(
 //------------------------------------------------------------
 void GraphicsScene::update_canvas()
 {
+  /* if coloring is selected we set the color of all
+   * curently active Items */
+  if (wantColor_)
+  {
+    QList<PatternGridItem*> patternItems(activeItems_.values());
+    foreach(PatternGridItem* anItem, patternItems)
+    {
+      anItem->set_background_color(backgroundColor_);
+    }
+  }
+
   /* if a knitting symbol is selected we try placing it,
    * otherwise we color the cells if requested */
   if (selectedSymbol_->path() != "")

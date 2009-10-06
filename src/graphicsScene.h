@@ -76,11 +76,6 @@ public:
     const QSize& gridsize, int cellSize, QObject* myParent = 0);
   bool Init();
 
-  /* accessor functions */ 
-  const KnittingSymbolPtr get_selected_symbol();
-  const QColor& get_background_color();
-  bool withColor();
-
   /* helper function for updating of active Items */
   void enable_canvas_update() { updateActiveItems_ = true; }
   void disable_canvas_update() { updateActiveItems_ = false; }

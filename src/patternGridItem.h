@@ -90,6 +90,9 @@ public:
   /* insert a new knitting symbol to be displayed */
   void insert_knitting_symbol(KnittingSymbolPtr symbol);
 
+  /* set the background color */
+  void set_background_color(const QColor& newColor);
+
   /* reseat this cell to the given new coordinates */
   void reseat(const QPoint& newOrigin, int newCol, int newRow);
 
@@ -135,7 +138,7 @@ private:
  
   /* drawing related objects */
   QPen pen_;
-  bool hasColor_;
+//  bool hasColor_;
   QColor backColor_;
   QColor currentColor_;
   QColor highlightColor_;

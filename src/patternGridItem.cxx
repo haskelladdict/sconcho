@@ -61,7 +61,6 @@ PatternGridItem::PatternGridItem(const QPoint& aLoc,
       scaling_(aScale),
       columnIndex_(aCol),
       rowIndex_(aRow),
-      hasColor_(false),
       backColor_(aBackColor)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -171,7 +170,10 @@ void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
   }
 }
  
-
+void PatternGridItem::set_background_color(const QColor& newColor)
+{
+  backColor_ = newColor;
+}
 
 //--------------------------------------------------------------
 // move this cell to a new location (in the pattern grid
@@ -294,7 +296,6 @@ void PatternGridItem::set_up_pens_brushes_()
 {
   /* pen used */
   pen_.setWidthF(1.0);
-  //pen_.setJoinStyle(Qt::MiterJoin);
   pen_.setColor(Qt::black);
 
   /* set up highlight color */
@@ -354,16 +355,6 @@ void PatternGridItem::highlight_on_()
 void PatternGridItem::highlight_off_()
 {
   selected_ = false;
-
-  /* if color updating is selected we get the color from the
-   * canvas, update it and use it; we also mark the
-   * cell as a colored one */
-  if (parent_->withColor())
-  {
-    hasColor_ = true;
-    backColor_ = parent_->get_background_color();
-  }
-
   currentColor_ = backColor_; 
 }
 
