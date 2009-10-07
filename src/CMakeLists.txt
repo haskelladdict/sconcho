@@ -10,6 +10,7 @@ SET(SCONCHO_SRCS
   patternGridItem.cxx
   patternGridLabel.cxx
   patternView.cxx
+  preferencesDialog.cxx
   sconcho.cxx
   symbolSelectorItem.cxx
   symbolSelectorWidget.cxx
@@ -21,6 +22,7 @@ SET(SCONCHO_MOC_HDRS
   mainWindow.h
   patternGridItem.h
   patternView.h
+  preferencesDialog.h
   symbolSelectorItem.h
   symbolSelectorWidget.h
 )

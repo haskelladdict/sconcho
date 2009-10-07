@@ -26,12 +26,14 @@
 
 /* QT includes */
 #include <QMainWindow>
+#include <QSettings>
 #include <QSize>
 #include <QString>
 
 /* a few forward declarations */
 class GraphicsScene;
 class PatternView;
+class PreferencesDialog;
 class QGroupBox;
 class QLabel;
 class QMenuBar;
@@ -75,6 +77,11 @@ public:
   explicit MainWindow();
   bool Init();
 
+  /* this is a way for our children to retrieve the
+   * settings */
+  const QSettings& settings() const { return settings_; }
+
+
 signals:
 
   void color_changed(QColor aColor);
@@ -99,12 +106,12 @@ private slots:
   void pick_color_();
   void quit_sconcho_();
   void reset_grid_();
-  void show_about_qt_info_();
-  void show_file_open_menu_();
-  void show_file_save_menu_();
-  void show_file_export_menu_();
-  void show_sconcho_info_();
-  void show_print_menu_();
+  void show_about_qt_dialog_();
+  void show_file_open_dialog_();
+  void show_file_save_dialog_();
+  void show_file_export_dialog_();
+  void show_sconcho_dialog_();
+  void show_print_dialog_();
    
 private:
 
@@ -114,12 +121,15 @@ private:
   /* interface generation functions */
   void create_menu_bar_();
   void create_file_menu_();
+  void create_edit_menu_();
+  void create_view_menu_();
   void create_grid_menu_();
   void create_help_menu_();
   void create_status_bar_();
   void create_graphics_scene_();
   void create_main_splitter_();
   void create_property_widget_();
+  void create_preferences_dialog_();
   void create_symbols_widget_();
   void create_toolbar_();
 
@@ -137,8 +147,10 @@ private:
   PatternView* canvasView_;
 
   /* widgets for selectors */
+  PreferencesDialog* preferences_;
   QGroupBox* colorSelectorGrouper_;
   QPushButton* colorSelector_;
+  QSettings settings_;
   SymbolSelectorWidget* symbolSelector_;
 
   /* helper function */

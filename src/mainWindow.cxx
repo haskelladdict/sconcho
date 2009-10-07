@@ -34,6 +34,7 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QPushButton>
+#include <QSettings>
 #include <QSplitter>
 #include <QStatusBar>
 #include <QToolBar>
@@ -49,6 +50,7 @@
 #include "knittingSymbol.h"
 #include "mainWindow.h"
 #include "patternView.h"
+#include "preferencesDialog.h"
 #include "symbolSelectorWidget.h"
 
 
@@ -62,6 +64,8 @@
 // constructor
 //-------------------------------------------------------------
 MainWindow::MainWindow() 
+  :
+    settings_("sconcho","haskelladdict")
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -83,6 +87,7 @@ bool MainWindow::Init()
   /* populate the main interface */
   create_graphics_scene_();
   create_symbols_widget_();
+  create_preferences_dialog_();
   create_toolbar_();
   create_property_widget_();
   create_menu_bar_();
@@ -182,7 +187,7 @@ void MainWindow::zoom_out()
 //-------------------------------------------------------------
 // SLOT: show file open menu
 //-------------------------------------------------------------
-void MainWindow::show_file_open_menu_()
+void MainWindow::show_file_open_dialog_()
 {
   QString currentDirectory = QDir::currentPath();
   QString openFileName = QFileDialog::getOpenFileName(this,
@@ -214,7 +219,7 @@ void MainWindow::show_file_open_menu_()
 //-------------------------------------------------------------
 // SLOT: show file save menu
 //-------------------------------------------------------------
-void MainWindow::show_file_save_menu_()
+void MainWindow::show_file_save_dialog_()
 {
   QString currentDirectory = QDir::currentPath();
   QString saveFileName = QFileDialog::getSaveFileName(this,
@@ -247,7 +252,7 @@ void MainWindow::show_file_save_menu_()
 //-------------------------------------------------------------
 // SLOT: show file export menu
 //-------------------------------------------------------------
-void MainWindow::show_file_export_menu_()
+void MainWindow::show_file_export_dialog_()
 {
   QString currentDirectory = QDir::currentPath();
   QString saveFileName = QFileDialog::getSaveFileName(this,
@@ -278,11 +283,10 @@ void MainWindow::show_file_export_menu_()
 }
 
 
-
 //------------------------------------------------------------
 // SLOT: show the print menu
 //------------------------------------------------------------
-void MainWindow::show_print_menu_()
+void MainWindow::show_print_dialog_()
 {
   /* create printer and fire up print dialog */
   QPrinter aPrinter(QPrinter::HighResolution);
@@ -399,7 +403,7 @@ void MainWindow::reset_grid_()
 // slot responsible for displaying a the default Qt info
 // widget
 //-------------------------------------------------------------
-void MainWindow::show_about_qt_info_()
+void MainWindow::show_about_qt_dialog_()
 {
   QMessageBox::aboutQt(this,tr("About Qt"));
 }
@@ -409,7 +413,7 @@ void MainWindow::show_about_qt_info_()
 // slot responsible for displaying our very own personalized
 // sconcho info and copyright notice
 //------------------------------------------------------------- 
-void MainWindow::show_sconcho_info_() 
+void MainWindow::show_sconcho_dialog_() 
 { 
   AboutSconchoWidget about; 
   about.exec(); 
@@ -432,9 +436,22 @@ void MainWindow::create_menu_bar_()
 
   /* create the individual menu options */
   create_file_menu_();
+  create_edit_menu_();
+  create_view_menu_();
   create_grid_menu_();
   create_help_menu_();
 } 
+
+
+//------------------------------------------------------------
+// create the settings data structure and the widget
+// for changing them
+//------------------------------------------------------------
+void MainWindow::create_preferences_dialog_()
+{
+  preferences_ = new PreferencesDialog(settings_, this);
+  preferences_->hide();
+}
 
 
 //------------------------------------------------------------
@@ -452,7 +469,7 @@ void MainWindow::create_file_menu_()
   connect(openAction, 
           SIGNAL(triggered()), 
           this,
-          SLOT(show_file_open_menu_()));
+          SLOT(show_file_open_dialog_()));
 
   fileMenu->addSeparator();
 
@@ -464,7 +481,7 @@ void MainWindow::create_file_menu_()
   connect(saveAction, 
           SIGNAL(triggered()), 
           this,
-          SLOT(show_file_save_menu_()));
+          SLOT(show_file_save_dialog_()));
 
   /* export */
   QAction* exportAction =
@@ -474,7 +491,7 @@ void MainWindow::create_file_menu_()
   connect(exportAction, 
           SIGNAL(triggered()), 
           this,
-          SLOT(show_file_export_menu_()));
+          SLOT(show_file_export_dialog_()));
 
   /* print */
   QAction* printAction =
@@ -484,7 +501,7 @@ void MainWindow::create_file_menu_()
   connect(printAction, 
           SIGNAL(triggered()), 
           this,
-          SLOT(show_print_menu_()));
+          SLOT(show_print_dialog_()));
 
   fileMenu->addSeparator();
 
@@ -497,6 +514,64 @@ void MainWindow::create_file_menu_()
           SIGNAL(triggered()), 
           this,
           SLOT(quit_sconcho_()));
+} 
+
+
+
+//------------------------------------------------------------
+// create the edit menu for general pattern grid controls 
+//------------------------------------------------------------
+void MainWindow::create_edit_menu_()
+{
+  QMenu* editMenu = menuBar_->addMenu(tr("&Edit"));
+
+  /* preferences */
+  QAction* preferencesAction = 
+    new QAction(tr("&Preferences"), this);
+  editMenu->addAction(preferencesAction);
+  connect(preferencesAction, 
+          SIGNAL(triggered()), 
+          preferences_,
+          SLOT(show()));
+} 
+
+
+//------------------------------------------------------------
+// create the view menu for general view control of canvas
+//------------------------------------------------------------
+void MainWindow::create_view_menu_()
+{
+  QMenu* viewMenu = menuBar_->addMenu(tr("&View"));
+
+  /* zoom in */
+  QAction* zoomInAction =
+    new QAction(QIcon(":/icons/viewmag+.png"),tr("&Zoom in"), this);
+  viewMenu->addAction(zoomInAction);
+  zoomInAction->setShortcut(tr("Ctrl++"));
+  connect(zoomInAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(zoom_in()));
+
+  /* zoom out */
+  QAction* zoomOutAction =
+    new QAction(QIcon(":/icons/viewmag-.png"),tr("&Zoom out"), this);
+  viewMenu->addAction(zoomOutAction);
+  zoomOutAction->setShortcut(tr("Ctrl+-"));
+  connect(zoomOutAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(zoom_out()));
+
+  /* zoom in */
+  QAction* fitAction =
+    new QAction(QIcon(":/icons/viewmagfit.png"),tr("&Fit"), this);
+  viewMenu->addAction(fitAction);
+  fitAction->setShortcut(tr("Ctrl+0"));
+  connect(fitAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(fit_in_view_()));
 } 
 
 
@@ -531,12 +606,12 @@ void MainWindow::create_help_menu_()
   QAction* aboutAction = new QAction(tr("&About"),this);
   helpMenu->addAction(aboutAction);
   connect(aboutAction, SIGNAL(triggered()), this,
-      SLOT(show_sconcho_info_()));
+      SLOT(show_sconcho_dialog_()));
 
   QAction* aboutQtAction = new QAction(tr("About Qt"),this);
   helpMenu->addAction(aboutQtAction);
   connect(aboutQtAction, SIGNAL(triggered()), this,
-      SLOT(show_about_qt_info_()));
+      SLOT(show_about_qt_dialog_()));
 } 
 
 
@@ -607,13 +682,12 @@ void MainWindow::create_toolbar_()
 {
   QToolBar* toolBar = new QToolBar(this);
 
-  /* FIXME: not implemented yet */
   QToolButton* openButton = new QToolButton(this);
   openButton->setIcon(QIcon(":/icons/fileopen.png"));
   openButton->setToolTip(tr("open data file"));
   toolBar->addWidget(openButton);
   connect(openButton,SIGNAL(clicked()),this,
-      SLOT(show_file_open_menu_()));
+      SLOT(show_file_open_dialog_()));
 
 
   QToolButton* saveButton = new QToolButton(this);
@@ -623,7 +697,7 @@ void MainWindow::create_toolbar_()
   connect(saveButton,
           SIGNAL(clicked()),
           this,
-          SLOT(show_file_save_menu_()));
+          SLOT(show_file_save_dialog_()));
  
   QToolButton* exportButton = new QToolButton(this);
   exportButton->setIcon(QIcon(":/icons/fileexport.png"));
@@ -632,7 +706,7 @@ void MainWindow::create_toolbar_()
   connect(exportButton,
           SIGNAL(clicked()),
           this,
-          SLOT(show_file_export_menu_()));
+          SLOT(show_file_export_dialog_()));
  
   QToolButton* printButton = new QToolButton(this);
   printButton->setIcon(QIcon(":/icons/fileprint.png"));
@@ -641,7 +715,7 @@ void MainWindow::create_toolbar_()
   connect(printButton,
           SIGNAL(clicked()),
           this,
-          SLOT(show_print_menu_()));
+          SLOT(show_print_dialog_()));
 
   toolBar->addSeparator();
 
@@ -649,19 +723,28 @@ void MainWindow::create_toolbar_()
   zoomInButton->setIcon(QIcon(":/icons/viewmag+.png"));
   zoomInButton->setToolTip(tr("zoom in"));
   toolBar->addWidget(zoomInButton);
-  connect(zoomInButton,SIGNAL(clicked()),this,SLOT(zoom_in()));
+  connect(zoomInButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(zoom_in()));
   
   QToolButton* zoomOutButton = new QToolButton(this);
   zoomOutButton->setIcon(QIcon(":/icons/viewmag-.png"));
   zoomOutButton->setToolTip(tr("zoom out"));
   toolBar->addWidget(zoomOutButton);
-  connect(zoomOutButton,SIGNAL(clicked()),this,SLOT(zoom_out()));
+  connect(zoomOutButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(zoom_out()));
 
   QToolButton* resetButton = new QToolButton(this);
   resetButton->setIcon(QIcon(":/icons/viewmagfit.png"));
   resetButton->setToolTip(tr("reset view"));
   toolBar->addWidget(resetButton);
-  connect(resetButton,SIGNAL(clicked()),this,SLOT(fit_in_view_()));
+  connect(resetButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(fit_in_view_()));
   
   toolBar->addSeparator();
  
@@ -669,25 +752,37 @@ void MainWindow::create_toolbar_()
   leftMoveButton->setIcon(QIcon(":/icons/left.png"));
   leftMoveButton->setToolTip(tr("move canvas left"));
   toolBar->addWidget(leftMoveButton);
-  connect(leftMoveButton,SIGNAL(clicked()),this,SLOT(pan_left_()));
+  connect(leftMoveButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(pan_left_()));
   
   QToolButton* rightMoveButton = new QToolButton(this);
   rightMoveButton->setIcon(QIcon(":/icons/right.png"));
   rightMoveButton->setToolTip(tr("move canvas right"));
   toolBar->addWidget(rightMoveButton);
-  connect(rightMoveButton,SIGNAL(clicked()),this,SLOT(pan_right_()));
+  connect(rightMoveButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(pan_right_()));
 
   QToolButton* upMoveButton = new QToolButton(this);
   upMoveButton->setIcon(QIcon(":/icons/up.png"));
   upMoveButton->setToolTip(tr("move canvas up"));
   toolBar->addWidget(upMoveButton);
-  connect(upMoveButton,SIGNAL(clicked()),this,SLOT(pan_up_()));
+  connect(upMoveButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(pan_up_()));
   
   QToolButton* downMoveButton = new QToolButton(this);
   downMoveButton->setIcon(QIcon(":/icons/down.png"));
   downMoveButton->setToolTip(tr("move canvas down"));
   toolBar->addWidget(downMoveButton);
-  connect(downMoveButton,SIGNAL(clicked()),this,SLOT(pan_down_()));
+  connect(downMoveButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(pan_down_()));
   
   toolBar->addSeparator();
 
@@ -700,6 +795,15 @@ void MainWindow::create_toolbar_()
           canvas_,
           SLOT(deselect_all_active_items()));
 
+  QToolButton* markRectangleButton = new QToolButton(this);
+  markRectangleButton->setIcon(QIcon(":/icons/rectangle.png"));
+  markRectangleButton->setToolTip(tr("mark selection with rectangle"));
+  toolBar->addWidget(markRectangleButton);
+/*  connect(markRectangleButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(show_mark_with_rectangle_dialog()));
+*/
   addToolBar(toolBar);
 }
 
