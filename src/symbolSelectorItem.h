@@ -39,6 +39,8 @@ class QMouseEvent;
 class QSvgWidget;
 
 
+QT_BEGIN_NAMESPACE
+
 /***************************************************************
  * 
  * SymbolSelectorItem manages a single symbol selector widget
@@ -90,5 +92,8 @@ private:
    * knitting symbol */
   KnittingSymbolPtr symbol_;
 }; 
+
+
+QT_END_NAMESPACE
 
 #endif

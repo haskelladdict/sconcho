@@ -41,8 +41,6 @@
 #endif
 #include <cassert>
 
-/** path to symbol files */
-
 /* flag that a class object has been successfully 
  * constructed */
 const int SUCCESSFULLY_CONSTRUCTED = 0xabe123;

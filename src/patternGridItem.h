@@ -42,6 +42,8 @@ class QPainter;
 class QStyleOptionGraphicsItem;
 
 
+QT_BEGIN_NAMESPACE
+
 /* define our user type */
 namespace
 {
@@ -151,5 +153,6 @@ private:
 };
 
 
+QT_END_NAMESPACE
 
 #endif

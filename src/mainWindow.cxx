@@ -54,6 +54,8 @@
 #include "symbolSelectorWidget.h"
 
 
+QT_BEGIN_NAMESPACE
+
 /**************************************************************
  *
  * PUBLIC FUNCTIONS 
@@ -957,3 +959,5 @@ void MainWindow::load_canvas_(const QString& fileName)
     reader.read();
   }
 }
+
+QT_BEGIN_NAMESPACE

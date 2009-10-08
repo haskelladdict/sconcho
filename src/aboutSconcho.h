@@ -27,6 +27,7 @@
 /* QT headers */
 #include <QMessageBox>
 
+QT_BEGIN_NAMESPACE
 
 /*****************************************************************
  *
@@ -50,5 +51,7 @@ private:
     void setup_contents_();
 };
 
+
+QT_END_NAMESPACE
 
 #endif

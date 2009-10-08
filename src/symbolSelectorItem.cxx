@@ -30,6 +30,9 @@
 #include "symbolSelectorItem.h"
 
 
+QT_BEGIN_NAMESPACE
+
+
 /**************************************************************
  *
  * PUBLIC FUNCTIONS 
@@ -177,4 +180,4 @@ void SymbolSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
  *
  *************************************************************/
 
-
+QT_END_NAMESPACE

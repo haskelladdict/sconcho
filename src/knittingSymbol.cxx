@@ -26,6 +26,8 @@
 #include "knittingSymbol.h"
 
 
+QT_BEGIN_NAMESPACE
+
 /**************************************************************
  *
  * PUBLIC FUNCTIONS 
@@ -64,3 +66,4 @@ bool KnittingSymbol::Init()
 }
 
 
+QT_END_NAMESPACE

@@ -35,6 +35,9 @@
 #include "patternView.h"
 
 
+QT_BEGIN_NAMESPACE
+
+
 /**************************************************************
  *
  * PUBLIC FUNCTIONS 
@@ -197,3 +200,6 @@ void PatternView::initialize_rubberband_()
   aPalette.setBrush(QPalette::WindowText, Qt::red);
   rubberBand_->setPalette(aPalette);
 }
+
+
+QT_END_NAMESPACE

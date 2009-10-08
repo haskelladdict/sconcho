@@ -45,6 +45,8 @@ class QVBoxLayout;
 class SymbolSelectorWidget;
 
 
+QT_BEGIN_NAMESPACE
+
 /* convenience typedefs and constants */
 const QSize initialSize(700,500);
 
@@ -161,5 +163,6 @@ private:
   void initialize_settings_();
 };
 
+QT_END_NAMESPACE
 
 #endif

@@ -44,6 +44,7 @@
 #include "patternGridItem.h"
 #include "patternGridLabel.h"
 
+QT_BEGIN_NAMESPACE
 
 /**************************************************************
  *
@@ -1459,3 +1460,4 @@ void GraphicsScene::purge_all_canvas_items_()
   } 
 }
 
+QT_END_NAMESPACE

@@ -38,6 +38,9 @@ class QSvgWidget;
 class SymbolSelectorItem;
 
 
+
+QT_BEGIN_NAMESPACE
+
 /***************************************************************
  * 
  * The GraphicsScene handles the sconcho's main drawing
@@ -88,5 +91,7 @@ private:
   void create_tabs_();
 };
 
+
+QT_END_NAMESPACE
 
 #endif

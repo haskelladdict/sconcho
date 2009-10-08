@@ -35,7 +35,8 @@ class GraphicsScene;
 class QMouseEvent;
 class QRubberBand;
 
-/* convenience typedefs */
+
+QT_BEGIN_NAMESPACE
 
 
 /***************************************************************
@@ -85,5 +86,7 @@ private:
   void initialize_rubberband_();
 };
 
+
+QT_END_NAMESPACE
 
 #endif

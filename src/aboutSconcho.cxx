@@ -24,7 +24,7 @@
 /* local includes */
 #include "aboutSconcho.h"
 
-
+QT_BEGIN_NAMESPACE
 
 /*****************************************************************
  *
@@ -78,3 +78,4 @@ void AboutSconchoWidget::setup_contents_()
   setText(content);
 }
 
+QT_END_NAMESPACE

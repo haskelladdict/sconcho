@@ -36,12 +36,14 @@
 #include "knittingSymbol.h"
 #include "io.h"
 
-
 /* a few forward declarations */
 class PatternGridItem;
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneWheelEvent; 
 class QKeyEvent;
+
+
+QT_BEGIN_NAMESPACE
 
 namespace 
 {
@@ -187,5 +189,7 @@ private:
   int int_max(int a, int b) { return a > b ? a : b; }
 };
 
+
+QT_BEGIN_NAMESPACE
 
 #endif

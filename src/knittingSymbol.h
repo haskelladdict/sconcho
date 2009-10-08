@@ -29,6 +29,7 @@
 #include <QSize>
 
 
+QT_BEGIN_NAMESPACE
 
 /***************************************************************
  * 
@@ -74,5 +75,6 @@ private:
 typedef boost::shared_ptr<KnittingSymbol> KnittingSymbolPtr;
 
 
+QT_END_NAMESPACE
 
 #endif

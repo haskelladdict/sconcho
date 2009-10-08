@@ -31,6 +31,7 @@
 #include "patternGridItem.h"
 #include "io.h"
 
+QT_BEGIN_NAMESPACE
 
 //----------------------------------------------------------------
 // given the name of a knitting pattern, return the path
@@ -405,3 +406,5 @@ bool CanvasIOReader::parse_patternGridItem_(const QDomNode& itemNode)
 
   return true;
 }
+
+QT_END_NAMESPACE

@@ -29,6 +29,9 @@
 #include <QString>
 
 
+QT_BEGIN_NAMESPACE
+
+
 /* define our user type */
 namespace 
 {
@@ -73,6 +76,8 @@ private:
   int labelType_;
 };
 
+
+QT_END_NAMESPACE
 
 
 #endif

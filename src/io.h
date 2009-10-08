@@ -36,11 +36,7 @@ class PatternGridItem;
 class QFile;
 class QTextStream;
 
-namespace
-{
-  const QString PATTERN_PATH(
-      "/home/markus/programming/cpp/sconcho/trunk/symbols");
-}
+QT_BEGIN_NAMESPACE
 
 
 /* given the name of a knitting pattern, return the path
@@ -146,5 +142,6 @@ private:
   bool parse_patternGridItem_(const QDomNode& itemNode);
 };
 
+QT_END_NAMESPACE
 
 #endif

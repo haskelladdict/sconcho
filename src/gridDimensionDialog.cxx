@@ -32,6 +32,7 @@
 #include "basicDefs.h"
 #include "gridDimensionDialog.h"
 
+QT_BEGIN_NAMESPACE
 
 /**************************************************************
  *
@@ -191,4 +192,4 @@ void GridDimensionDialog::okClicked_()
  *
  *************************************************************/
 
-
+QT_END_NAMESPACE

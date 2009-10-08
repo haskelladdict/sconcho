@@ -28,8 +28,8 @@
 #include <QTabWidget>
 #include <QSettings>
 
-/* a few forward declarations */
 
+QT_BEGIN_NAMESPACE
 
 
 /**************************************************************
@@ -67,6 +67,8 @@ private:
   void create_font_tab_();
 };
 
+
+QT_END_NAMESPACE
 
 
 #endif

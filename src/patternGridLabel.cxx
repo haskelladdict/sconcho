@@ -18,13 +18,11 @@
 *
 ****************************************************************/
 
-/* C++ headers */
-
-/* Qt headers */
-
 /* local headers */
 #include "basicDefs.h"
 #include "patternGridLabel.h"
+
+QT_BEGIN_NAMESPACE
 
 
 /**************************************************************
@@ -111,3 +109,5 @@ int PatternGridLabel::label_type() const
  * PRIVATE MEMBER FUNCTIONS
  *
  *************************************************************/
+
+QT_END_NAMESPACE

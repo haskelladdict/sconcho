@@ -32,6 +32,8 @@
 #include "preferencesDialog.h"
 
 
+QT_BEGIN_NAMESPACE
+
 /**************************************************************
  *
  * PUBLIC FUNCTIONS 
@@ -126,3 +128,6 @@ void PreferencesDialog::create_font_tab_()
 
   addTab(fontWidget, tr("Fonts"));
 }
+
+
+QT_END_NAMESPACE

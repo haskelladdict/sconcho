@@ -38,6 +38,8 @@
 #include "patternGridItem.h"
 
 
+QT_BEGIN_NAMESPACE
+
 /**************************************************************
  *
  * PUBLIC FUNCTIONS 
@@ -358,3 +360,5 @@ void PatternGridItem::highlight_off_()
   currentColor_ = backColor_; 
 }
 
+
+QT_END_NAMESPACE

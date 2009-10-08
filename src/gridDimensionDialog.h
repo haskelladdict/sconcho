@@ -27,7 +27,7 @@
 /* QT includes */
 #include <QDialog>
 
-/* a few forward declarations */
+QT_BEGIN_NAMESPACE
 
 
 /***************************************************************
@@ -73,5 +73,6 @@ private:
 };
 
 
+QT_END_NAMESPACE
 
 #endif

@@ -35,6 +35,8 @@
 #include "symbolSelectorWidget.h"
 
 
+QT_BEGIN_NAMESPACE
+
 /**************************************************************
  *
  * PUBLIC FUNCTIONS 
@@ -207,4 +209,4 @@ void SymbolSelectorWidget::create_tabs_()
 }
 
 
-
+QT_END_NAMESPACE
