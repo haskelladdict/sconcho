@@ -55,7 +55,8 @@
 // constructor
 //-------------------------------------------------------------
 GraphicsScene::GraphicsScene(const QPoint& anOrigin, 
-    const QSize& gridDim, int aSize, QObject* myParent)
+    const QSize& gridDim, int aSize, const QSettings& settings,
+    QObject* myParent)
   :
   QGraphicsScene(myParent),
   updateActiveItems_(true),
@@ -65,7 +66,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   cellSize_(aSize),
   selectedCol_(UNSELECTED),
   selectedRow_(UNSELECTED),
-  textFont_("Arial",8),
+  settings_(settings),
   selectedSymbol_(
       KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"",""))),
   backgroundColor_(Qt::white),
@@ -898,10 +899,11 @@ void GraphicsScene::try_place_knitting_symbol_()
 // compute the shift for horizontal labels so they are centered
 // in each grid cell
 //-----------------------------------------------------------------
-int GraphicsScene::compute_horizontal_label_shift_(int aNum)
+int GraphicsScene::compute_horizontal_label_shift_(int aNum, 
+    int fontSize)
 {
   double size = cellSize_ * 0.5;
-  double numWidth = textFont_.pointSize() * 0.5;
+  double numWidth = fontSize * 0.5;
   double count = 0;
   if (aNum < 10)
   {
@@ -1308,6 +1310,10 @@ void GraphicsScene::create_pattern_grid_()
 //-------------------------------------------------------------
 void GraphicsScene::create_grid_labels_()
 {
+  /* retrieve currently selected font size */
+  QFont textFont(settings_.value("canvas/textFont").value<QString>(),
+                 settings_.value("canvas/textSize").value<int>());
+
   /* remove all existing labels if there are any */
   QList<QGraphicsItem*> allItems(items());
   QList<PatternGridLabel*> allLabels;
@@ -1334,14 +1340,15 @@ void GraphicsScene::create_grid_labels_()
   for (int col=0; col < numCols_; ++col)
   {
     int colNum = numCols_ - col;
-    PatternGridLabel* text= new PatternGridLabel(
+    PatternGridLabel* text = new PatternGridLabel(
         label.setNum(colNum), 
         PatternGridLabel::ColLabel
         );
 
-    int shift = compute_horizontal_label_shift_(colNum);
+    int shift = 
+      compute_horizontal_label_shift_(colNum, textFont.pointSize());
     text->setPos(origin_.x() + col*cellSize_ + shift, yPos); 
-    text->setFont(textFont_);
+    text->setFont(textFont);
     addItem(text);
   }
 
@@ -1357,8 +1364,8 @@ void GraphicsScene::create_grid_labels_()
         );
 
     text->setPos(origin_.x() + (numCols_*cellSize_) + 0.1*cellSize_, 
-      origin_.y() + row * cellSize_ + 0.5*textFont_.pointSize());
-    text->setFont(textFont_);
+      origin_.y() + row * cellSize_ + 0.5*textFont.pointSize());
+    text->setFont(textFont);
     addItem(text);
   }
 }

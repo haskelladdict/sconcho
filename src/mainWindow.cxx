@@ -65,7 +65,7 @@
 //-------------------------------------------------------------
 MainWindow::MainWindow() 
   :
-    settings_("sconcho","haskelladdict")
+    settings_("sconcho","settings")
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -83,6 +83,8 @@ bool MainWindow::Init()
 
   setWindowTitle(tr("sconcho"));
   setMinimumSize(initialSize);
+
+  initialize_settings_();
 
   /* populate the main interface */
   create_graphics_scene_();
@@ -449,7 +451,8 @@ void MainWindow::create_menu_bar_()
 //------------------------------------------------------------
 void MainWindow::create_preferences_dialog_()
 {
-  preferences_ = new PreferencesDialog(settings_, this);
+  preferences_ = new PreferencesDialog(settings_);
+  preferences_->Init();
   preferences_->hide();
 }
 
@@ -565,7 +568,7 @@ void MainWindow::create_view_menu_()
 
   /* zoom in */
   QAction* fitAction =
-    new QAction(QIcon(":/icons/viewmagfit.png"),tr("&Fit"), this);
+    new QAction(QIcon(":/icons/viewmagfit.png"),tr("&Fit view"), this);
   viewMenu->addAction(fitAction);
   fitAction->setShortcut(tr("Ctrl+0"));
   connect(fitAction, 
@@ -584,7 +587,7 @@ void MainWindow::create_grid_menu_()
 
   /* reset */
   QAction* gridResetAction = 
-    new QAction(tr("&Reset Grid"), this);
+    new QAction(tr("&Fit view"), this);
   gridMenu->addAction(gridResetAction);
   gridResetAction->setShortcut(tr("Ctrl+R"));
   connect(gridResetAction, 
@@ -643,6 +646,17 @@ void MainWindow::create_status_bar_()
 
 
 //-------------------------------------------------------------
+// initialize all the settings
+//-------------------------------------------------------------
+void MainWindow::initialize_settings_()
+{
+  /* font properties for canvas text */
+  settings_.setValue("canvas/textFont","Arial");
+  settings_.setValue("canvas/textSize","8");
+}
+
+
+//-------------------------------------------------------------
 // create the main GraphicsScene widget
 //-------------------------------------------------------------
 void MainWindow::create_graphics_scene_()
@@ -652,7 +666,7 @@ void MainWindow::create_graphics_scene_()
 
   /* create canvas */
   QPoint origin(0,0);
-  canvas_ = new GraphicsScene(origin, gridSize, 30, this);
+  canvas_ = new GraphicsScene(origin, gridSize, 30, settings_, this);
   if ( !canvas_->Init() )
   {
     qDebug() << "Failed to initialize canvas";

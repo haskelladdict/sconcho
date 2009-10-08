@@ -30,6 +30,7 @@
 #include <QPair>
 #include <QList>
 #include <QMap>
+#include <QSettings>
 
 /* local includes */
 #include "knittingSymbol.h"
@@ -72,8 +73,8 @@ class GraphicsScene
 
 public:
 
-  explicit GraphicsScene(const QPoint& origin, 
-    const QSize& gridsize, int cellSize, QObject* myParent = 0);
+  explicit GraphicsScene(const QPoint& origin, const QSize& gridsize, 
+      int cellSize, const QSettings& settings, QObject* myParent = 0);
   bool Init();
 
   /* helper function for updating of active Items */
@@ -140,8 +141,8 @@ private:
   int selectedCol_;
   int selectedRow_;
 
-  /* basic font properties */
-  QFont textFont_;
+  /* reference to settings */
+  const QSettings& settings_;
 
   /* list of currenly selected items */
   QMap<int,PatternGridItem*> activeItems_;
@@ -164,7 +165,7 @@ private:
   void try_place_knitting_symbol_();
   void colorize_highlighted_cells_();
   QPair<int,int> get_cell_coords_(const QPointF& mousePosition);
-  int compute_horizontal_label_shift_(int num);
+  int compute_horizontal_label_shift_(int num, int fontSize);
   QColor determine_selected_cells_color_();
   bool sort_selected_items_row_wise_(QList<RowItems>& rows);
   bool process_selected_items_(QList<RowLayout>& processedCellLayout,

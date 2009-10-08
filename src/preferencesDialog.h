@@ -62,6 +62,9 @@ private:
 
   /* status variables */
   QSettings& settings_;
+
+  /* interface creation functions */
+  void create_font_tab_();
 };
 
 

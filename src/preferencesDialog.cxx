@@ -19,6 +19,8 @@
 ****************************************************************/
 
 /** Qt headers */
+#include <QDebug>
+#include <QFontDialog>
 
 
 /** local headers */
@@ -55,11 +57,16 @@ bool PreferencesDialog::Init()
     return false;
   }
 
+  qDebug() << "preferences";
+
   /* call individual initialization routines */
-  setFixedSize(QSize(250,130));
+//  setFixedSize(QSize(250,130));
 //  setModal(true);
   setWindowTitle(tr("Preferences"));
-  
+
+  /* create the interface */
+  create_font_tab_();
+
   return true;
 }
 
@@ -96,4 +103,11 @@ bool PreferencesDialog::Init()
  *
  *************************************************************/
 
-
+//------------------------------------------------------------
+// create the font widget
+//------------------------------------------------------------
+void PreferencesDialog::create_font_tab_()
+{
+  QFontDialog* fontDialog = new QFontDialog(this);
+  addTab(fontDialog, tr("Fonts"));
+}
