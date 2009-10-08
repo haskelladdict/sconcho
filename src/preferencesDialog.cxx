@@ -20,8 +20,12 @@
 
 /** Qt headers */
 #include <QDebug>
+#include <QFontComboBox>
 #include <QFontDialog>
-
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QVBoxLayout>
 
 /** local headers */
 #include "basicDefs.h"
@@ -108,6 +112,17 @@ bool PreferencesDialog::Init()
 //------------------------------------------------------------
 void PreferencesDialog::create_font_tab_()
 {
-  QFontDialog* fontDialog = new QFontDialog(this);
-  addTab(fontDialog, tr("Fonts"));
+  QGroupBox* fontWidget = new QGroupBox(this); 
+  QVBoxLayout *mainLayout = new QVBoxLayout(this);
+
+  QHBoxLayout *fontFamilyLayout = new QHBoxLayout(this);
+  QLabel* familyLabel = new QLabel(tr("Family"));
+  QFontComboBox* fonts = new QFontComboBox; 
+  fontFamilyLayout->addWidget(familyLabel);
+  fontFamilyLayout->addWidget(fonts);
+
+  mainLayout->addLayout(fontFamilyLayout);
+  fontWidget->setLayout(mainLayout);
+
+  addTab(fontWidget, tr("Fonts"));
 }
