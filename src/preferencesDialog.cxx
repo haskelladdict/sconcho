@@ -19,12 +19,17 @@
 ****************************************************************/
 
 /** Qt headers */
+#include <QComboBox>
 #include <QDebug>
 #include <QFontComboBox>
+#include <QFontDatabase>
 #include <QFontDialog>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QList>
+#include <QString>
+#include <QStringList>
 #include <QVBoxLayout>
 
 /** local headers */
@@ -65,6 +70,10 @@ bool PreferencesDialog::Init()
 
   qDebug() << "preferences";
 
+  /* set current font; this should eventually come from the
+   * passed in settings */
+  currentFont_.fromString("DejaVu Sans,9,-1,5,50,0,0,0,0,0");
+
   /* call individual initialization routines */
 //  setFixedSize(QSize(250,130));
 //  setModal(true);
@@ -103,6 +112,35 @@ bool PreferencesDialog::Init()
  *
  *************************************************************/
 
+//-------------------------------------------------------------
+// update the font style, point size and example text widgets
+// if the user changes the font family
+//-------------------------------------------------------------
+void PreferencesDialog::update_font_selectors_(const QFont& newFont)
+{
+  QString family(newFont.family());
+  qDebug() << newFont.toString();
+
+  QFontDatabase database;
+
+  QStringList availableStyles(database.styles(family));
+  fontStyleBox_->clear();
+  foreach(QString entry, availableStyles)
+  {
+    fontStyleBox_->addItem(entry);
+  }
+
+  QList<int> availableSizes(database.pointSizes(family));
+  QString helper;
+  fontSizeBox_->clear();
+  foreach(int entry, availableSizes)
+  {
+    fontSizeBox_->addItem(helper.setNum(entry), QVariant(entry));
+  }
+
+}
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -117,16 +155,42 @@ void PreferencesDialog::create_font_tab_()
   QGroupBox* fontWidget = new QGroupBox(this); 
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-  QHBoxLayout *fontFamilyLayout = new QHBoxLayout(this);
-  QLabel* familyLabel = new QLabel(tr("Family"));
-  QFontComboBox* fonts = new QFontComboBox; 
-  fontFamilyLayout->addWidget(familyLabel);
-  fontFamilyLayout->addWidget(fonts);
+  /* font family selector */
+  QHBoxLayout *fontFamilyLayout = new QHBoxLayout;
+  QLabel* fontFamilyLabel = new QLabel(tr("Family"));
+  fontFamilyBox_ = new QFontComboBox;
+  fontFamilyBox_->setCurrentFont(currentFont_);
+  fontFamilyLayout->addWidget(fontFamilyLabel);
+  fontFamilyLayout->addWidget(fontFamilyBox_);
+
+  connect(fontFamilyBox_, 
+          SIGNAL(currentFontChanged(const QFont&)),
+          this,
+          SLOT(update_font_selectors_(const QFont&)));
+
+  /* font style selector */
+  QHBoxLayout *fontStyleLayout = new QHBoxLayout;
+  QLabel* fontStyleLabel =  new QLabel(tr("Style"));
+  fontStyleBox_ = new QComboBox(this);
+  fontStyleLayout->addWidget(fontStyleLabel);
+  fontStyleLayout->addWidget(fontStyleBox_);
+
+  /* font size selector */
+  QHBoxLayout *fontSizeLayout = new QHBoxLayout;
+  QLabel* fontSizeLabel =  new QLabel(tr("Point size"));
+  fontSizeBox_ = new QComboBox(this);
+  fontSizeLayout->addWidget(fontSizeLabel);
+  fontSizeLayout->addWidget(fontSizeBox_);
 
   mainLayout->addLayout(fontFamilyLayout);
+  mainLayout->addLayout(fontStyleLayout);  
+  mainLayout->addLayout(fontSizeLayout);
+  
   fontWidget->setLayout(mainLayout);
-
   addTab(fontWidget, tr("Fonts"));
+
+  /* initialize the whole bunch */
+  update_font_selectors_(currentFont_);
 }
 
 

@@ -30,13 +30,15 @@
 #include <QtXml/QDomElement>
 #include <QtXml/QDomNode>
 
+
+QT_BEGIN_NAMESPACE
+
+
 /* forward declarations */
 class GraphicsScene;
 class PatternGridItem;
 class QFile;
 class QTextStream;
-
-QT_BEGIN_NAMESPACE
 
 
 /* given the name of a knitting pattern, return the path

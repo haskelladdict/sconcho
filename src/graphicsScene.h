@@ -36,14 +36,15 @@
 #include "knittingSymbol.h"
 #include "io.h"
 
+
+QT_BEGIN_NAMESPACE
+
+
 /* a few forward declarations */
 class PatternGridItem;
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneWheelEvent; 
 class QKeyEvent;
-
-
-QT_BEGIN_NAMESPACE
 
 namespace 
 {

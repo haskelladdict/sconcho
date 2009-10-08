@@ -31,6 +31,7 @@
 
 QT_BEGIN_NAMESPACE
 
+
 /***************************************************************
  * 
  * KnittingSymbol manages a single knitting symbol

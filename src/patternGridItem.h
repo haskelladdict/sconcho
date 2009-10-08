@@ -34,6 +34,10 @@
 /* local includes */
 #include "knittingSymbol.h"
 
+
+QT_BEGIN_NAMESPACE
+
+
 /* a few forward declarations */
 class GraphicsScene;
 class QGraphicsSceneMouseEvent;
@@ -41,8 +45,6 @@ class QGraphicsSvgItem;
 class QPainter;
 class QStyleOptionGraphicsItem;
 
-
-QT_BEGIN_NAMESPACE
 
 /* define our user type */
 namespace
@@ -140,7 +142,6 @@ private:
  
   /* drawing related objects */
   QPen pen_;
-//  bool hasColor_;
   QColor backColor_;
   QColor currentColor_;
   QColor highlightColor_;

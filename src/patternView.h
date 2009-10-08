@@ -28,15 +28,14 @@
 #include <QGraphicsView>
 #include <QPointF>
 
-/* local includes */
+
+QT_BEGIN_NAMESPACE
+
 
 /* a few forward declarations */
 class GraphicsScene;
 class QMouseEvent;
 class QRubberBand;
-
-
-QT_BEGIN_NAMESPACE
 
 
 /***************************************************************
@@ -59,9 +58,6 @@ public:
   explicit PatternView(GraphicsScene* scene, QWidget* myParent = 0);
   bool Init();
 
-//signals:
-
-//public slots:
 
 protected:
 

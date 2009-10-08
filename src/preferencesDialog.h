@@ -28,8 +28,13 @@
 #include <QTabWidget>
 #include <QSettings>
 
-
 QT_BEGIN_NAMESPACE
+
+
+/* forward declarations */
+class QComboBox;
+class QFont;
+class QFontComboBox;
 
 
 /**************************************************************
@@ -55,6 +60,11 @@ public:
   bool Init();
 
 
+private slots:
+
+  void update_font_selectors_(const QFont& newFont);
+
+
 private:
 
   /* some tracking variables */
@@ -62,6 +72,14 @@ private:
 
   /* status variables */
   QSettings& settings_;
+
+  /* current selections */
+  QFont currentFont_;
+
+  /* widgets */
+  QFontComboBox* fontFamilyBox_;
+  QComboBox* fontStyleBox_;
+  QComboBox* fontSizeBox_;
 
   /* interface creation functions */
   void create_font_tab_();

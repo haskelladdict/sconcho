@@ -30,6 +30,10 @@
 #include <QSize>
 #include <QString>
 
+
+QT_BEGIN_NAMESPACE
+
+
 /* a few forward declarations */
 class GraphicsScene;
 class PatternView;
@@ -44,8 +48,6 @@ class QTabWidget;
 class QVBoxLayout;
 class SymbolSelectorWidget;
 
-
-QT_BEGIN_NAMESPACE
 
 /* convenience typedefs and constants */
 const QSize initialSize(700,500);

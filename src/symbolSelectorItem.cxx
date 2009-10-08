@@ -153,6 +153,8 @@ const KnittingSymbolPtr SymbolSelectorItem::symbol_info() const
 //---------------------------------------------------------------
 void SymbolSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
 {
+  Q_UNUSED(mouseEvent)
+
   if (selected_)
   {
     emit highlight_me(this, false);
