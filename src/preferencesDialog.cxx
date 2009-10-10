@@ -125,18 +125,35 @@ void PreferencesDialog::update_font_selectors_(const QFont& newFont)
 
   QStringList availableStyles(database.styles(family));
   fontStyleBox_->clear();
-  foreach(QString entry, availableStyles)
+  QString targetStyle(database.styleString(newFont));
+  int targetIndex = 0;
+  for (int index = 0; index < availableStyles.size(); ++index)
   {
-    fontStyleBox_->addItem(entry);
-  }
+    if (availableStyles.at(index) == targetStyle)
+    {
+      targetIndex = index;
+    }
 
+    fontStyleBox_->addItem(availableStyles.at(index));
+  }
+  fontStyleBox_->setCurrentIndex(targetIndex);
+
+  
   QList<int> availableSizes(database.pointSizes(family));
   QString helper;
   fontSizeBox_->clear();
-  foreach(int entry, availableSizes)
+  int targetSize(newFont.pointSize());
+  targetIndex = 0;
+  for (int index = 0; index < availableSizes.size(); ++index)
   {
-    fontSizeBox_->addItem(helper.setNum(entry), QVariant(entry));
+    if (availableSizes.at(index) == targetSize)
+    {
+      targetIndex = index;
+    }
+
+    fontSizeBox_->addItem(helper.setNum(availableSizes.at(index)));
   }
+  fontSizeBox_->setCurrentIndex(targetIndex);
 
 }
 
