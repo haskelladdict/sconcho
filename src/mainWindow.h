@@ -116,6 +116,8 @@ private slots:
   void show_file_export_dialog_();
   void show_sconcho_dialog_();
   void show_print_dialog_();
+  void show_preferences_dialog_();
+
    
 private:
 
@@ -133,7 +135,6 @@ private:
   void create_graphics_scene_();
   void create_main_splitter_();
   void create_property_widget_();
-  void create_preferences_dialog_();
   void create_symbols_widget_();
   void create_toolbar_();
 
@@ -151,7 +152,6 @@ private:
   PatternView* canvasView_;
 
   /* widgets for selectors */
-  PreferencesDialog* preferences_;
   QGroupBox* colorSelectorGrouper_;
   QPushButton* colorSelector_;
   QSettings settings_;

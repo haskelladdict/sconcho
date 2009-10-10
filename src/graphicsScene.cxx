@@ -1312,8 +1312,8 @@ void GraphicsScene::create_pattern_grid_()
 void GraphicsScene::create_grid_labels_()
 {
   /* retrieve currently selected font size */
-  QFont textFont(settings_.value("canvas/textFont").value<QString>(),
-                 settings_.value("canvas/textSize").value<int>());
+  QFont textFont;
+  textFont.fromString(settings_.value("global/font").toString());
 
   /* remove all existing labels if there are any */
   QList<QGraphicsItem*> allItems(items());

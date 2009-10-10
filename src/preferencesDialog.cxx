@@ -28,6 +28,8 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QList>
+#include <QLineEdit>
+#include <QPushButton>
 #include <QString>
 #include <QStringList>
 #include <QVBoxLayout>
@@ -51,8 +53,13 @@ QT_BEGIN_NAMESPACE
 PreferencesDialog::PreferencesDialog(QSettings& theSettings,
   QWidget* myParent)
     :
-      QTabWidget(myParent),
-      settings_(theSettings)
+      QDialog(myParent),
+      settings_(theSettings),
+      tabWidget_(new QTabWidget),
+      fontFamilyBox_(new QFontComboBox),
+      fontStyleBox_(new QComboBox),
+      fontSizeBox_(new QComboBox),
+      exampleText_(new QLineEdit)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -70,18 +77,21 @@ bool PreferencesDialog::Init()
 
   qDebug() << "preferences";
 
-  /* set current font; this should eventually come from the
-   * passed in settings */
-  currentFont_.fromString("DejaVu Sans,9,-1,5,50,0,0,0,0,0");
+  /* get our current font from our settings; if it is empty
+   * we choose a default */
+  QString preferenceFont = settings_.value("global/font").toString();
+  assert( preferenceFont != "");
+  currentFont_.fromString(preferenceFont);
 
   /* call individual initialization routines */
-//  setFixedSize(QSize(250,130));
-//  setModal(true);
+  setModal(true);
   setWindowTitle(tr("Preferences"));
 
   /* create the interface */
+  create_main_layout_();
   create_font_tab_();
 
+  exec();
   return true;
 }
 
@@ -113,16 +123,46 @@ bool PreferencesDialog::Init()
  *************************************************************/
 
 //-------------------------------------------------------------
+// update settings with whatever is selected and then close
+// the widget
+//-------------------------------------------------------------
+void PreferencesDialog::ok_clicked_()
+{
+  settings_.setValue("global/font",currentFont_.toString());
+  close();
+}
+
+
+//-------------------------------------------------------------
+// update the currently selected font based on the font
+// selectors
+//-------------------------------------------------------------
+void PreferencesDialog::update_current_font_()
+{
+  QString fontFamily(fontFamilyBox_->currentFont().family());
+  QString fontStyle(fontStyleBox_->currentText());
+  int fontSizeSelection = fontSizeBox_->currentIndex();
+  int fontSize = fontSizeBox_->itemData(fontSizeSelection).toInt();
+
+  QFontDatabase dataBase;
+  currentFont_ = dataBase.font(fontFamily, fontStyle, fontSize);
+
+  qDebug() << currentFont_.toString();
+  exampleText_->setFont(currentFont_);
+}
+
+
+
+//-------------------------------------------------------------
 // update the font style, point size and example text widgets
 // if the user changes the font family
 //-------------------------------------------------------------
 void PreferencesDialog::update_font_selectors_(const QFont& newFont)
 {
   QString family(newFont.family());
-  qDebug() << newFont.toString();
-
   QFontDatabase database;
 
+  /* update font style */
   QStringList availableStyles(database.styles(family));
   fontStyleBox_->clear();
   QString targetStyle(database.styleString(newFont));
@@ -138,7 +178,8 @@ void PreferencesDialog::update_font_selectors_(const QFont& newFont)
   }
   fontStyleBox_->setCurrentIndex(targetIndex);
 
-  
+ 
+  /* update font size */
   QList<int> availableSizes(database.pointSizes(family));
   QString helper;
   fontSizeBox_->clear();
@@ -151,10 +192,10 @@ void PreferencesDialog::update_font_selectors_(const QFont& newFont)
       targetIndex = index;
     }
 
-    fontSizeBox_->addItem(helper.setNum(availableSizes.at(index)));
+    fontSizeBox_->addItem(helper.setNum(availableSizes.at(index)),
+        QVariant(availableSizes.at(index)));
   }
   fontSizeBox_->setCurrentIndex(targetIndex);
-
 }
 
 
@@ -165,17 +206,49 @@ void PreferencesDialog::update_font_selectors_(const QFont& newFont)
  *************************************************************/
 
 //------------------------------------------------------------
+// create the main widget layout
+//------------------------------------------------------------
+void PreferencesDialog::create_main_layout_()
+{
+  QVBoxLayout* mainLayout = new QVBoxLayout;
+
+  QHBoxLayout* buttonLayout = new QHBoxLayout;
+  QPushButton* okButton = new QPushButton(tr("Ok"),this);
+  QPushButton* cancelButton = new QPushButton(tr("Cancel"),this);
+  buttonLayout->addStretch(1);
+  buttonLayout->addWidget(okButton);
+  buttonLayout->addWidget(cancelButton);
+
+  connect(okButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(ok_clicked_()));
+
+  connect(cancelButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(close()));
+
+
+  mainLayout->addWidget(tabWidget_);
+  mainLayout->addLayout(buttonLayout);
+
+  setLayout(mainLayout);
+}
+
+
+//------------------------------------------------------------
 // create the font widget
 //------------------------------------------------------------
 void PreferencesDialog::create_font_tab_()
 {
   QGroupBox* fontWidget = new QGroupBox(this); 
-  QVBoxLayout *mainLayout = new QVBoxLayout(this);
+  QVBoxLayout *mainLayout = new QVBoxLayout;
 
   /* font family selector */
   QHBoxLayout *fontFamilyLayout = new QHBoxLayout;
   QLabel* fontFamilyLabel = new QLabel(tr("Family"));
-  fontFamilyBox_ = new QFontComboBox;
+  fontFamilyBox_->setWritingSystem(QFontDatabase::Latin);
   fontFamilyBox_->setCurrentFont(currentFont_);
   fontFamilyLayout->addWidget(fontFamilyLabel);
   fontFamilyLayout->addWidget(fontFamilyBox_);
@@ -185,30 +258,55 @@ void PreferencesDialog::create_font_tab_()
           this,
           SLOT(update_font_selectors_(const QFont&)));
 
+  connect(fontFamilyBox_,
+          SIGNAL(currentFontChanged(const QFont&)),
+          this,
+          SLOT(update_current_font_()));
+
+
   /* font style selector */
   QHBoxLayout *fontStyleLayout = new QHBoxLayout;
   QLabel* fontStyleLabel =  new QLabel(tr("Style"));
-  fontStyleBox_ = new QComboBox(this);
   fontStyleLayout->addWidget(fontStyleLabel);
   fontStyleLayout->addWidget(fontStyleBox_);
+
+  connect(fontStyleBox_,
+          SIGNAL(activated(int)),
+          this,
+          SLOT(update_current_font_()));
+
 
   /* font size selector */
   QHBoxLayout *fontSizeLayout = new QHBoxLayout;
   QLabel* fontSizeLabel =  new QLabel(tr("Point size"));
-  fontSizeBox_ = new QComboBox(this);
   fontSizeLayout->addWidget(fontSizeLabel);
   fontSizeLayout->addWidget(fontSizeBox_);
 
+  connect(fontSizeBox_,
+          SIGNAL(activated(int)),
+          this,
+          SLOT(update_current_font_()));
+
+
+  /* example String */
+  exampleText_->setReadOnly(true);
+//  exampleText_->setFixedHeight(50);
+  exampleText_->setFont(currentFont_);
+  exampleText_->setText("Thanks for sharing!");
+  
   mainLayout->addLayout(fontFamilyLayout);
   mainLayout->addLayout(fontStyleLayout);  
   mainLayout->addLayout(fontSizeLayout);
+  mainLayout->addWidget(exampleText_);
   
   fontWidget->setLayout(mainLayout);
-  addTab(fontWidget, tr("Fonts"));
+  tabWidget_->addTab(fontWidget, tr("Canvas Font"));
 
   /* initialize the whole bunch */
   update_font_selectors_(currentFont_);
 }
+
+
 
 
 QT_END_NAMESPACE

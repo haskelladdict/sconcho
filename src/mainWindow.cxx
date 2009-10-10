@@ -91,7 +91,6 @@ bool MainWindow::Init()
   /* populate the main interface */
   create_graphics_scene_();
   create_symbols_widget_();
-  create_preferences_dialog_();
   create_toolbar_();
   create_property_widget_();
   create_menu_bar_();
@@ -424,6 +423,19 @@ void MainWindow::show_sconcho_dialog_()
 } 
 
 
+//------------------------------------------------------------
+// fire up the preferences dialog
+//------------------------------------------------------------
+void MainWindow::show_preferences_dialog_()
+{
+  PreferencesDialog prefDialog(settings_);
+  prefDialog.Init();
+
+  /* update the canvas to pick up changes */
+  //canvas_->update_after_preference_change_();
+}
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -445,18 +457,6 @@ void MainWindow::create_menu_bar_()
   create_grid_menu_();
   create_help_menu_();
 } 
-
-
-//------------------------------------------------------------
-// create the settings data structure and the widget
-// for changing them
-//------------------------------------------------------------
-void MainWindow::create_preferences_dialog_()
-{
-  preferences_ = new PreferencesDialog(settings_);
-  preferences_->Init();
-  preferences_->hide();
-}
 
 
 //------------------------------------------------------------
@@ -536,8 +536,8 @@ void MainWindow::create_edit_menu_()
   editMenu->addAction(preferencesAction);
   connect(preferencesAction, 
           SIGNAL(triggered()), 
-          preferences_,
-          SLOT(show()));
+          this,
+          SLOT(show_preferences_dialog_()));
 } 
 
 
@@ -653,8 +653,11 @@ void MainWindow::create_status_bar_()
 void MainWindow::initialize_settings_()
 {
   /* font properties for canvas text */
-  settings_.setValue("canvas/textFont","Arial");
-  settings_.setValue("canvas/textSize","8");
+  QString preferenceFont = settings_.value("global/font").toString();
+  if (preferenceFont == "")
+  {
+    settings_.setValue("global/font","Arial,10,-1,5,50,0,0,0,0,0");
+  }
 }
 
 

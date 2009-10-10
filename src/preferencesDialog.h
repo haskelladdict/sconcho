@@ -25,7 +25,7 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
-#include <QTabWidget>
+#include <QDialog>
 #include <QSettings>
 
 QT_BEGIN_NAMESPACE
@@ -35,6 +35,8 @@ QT_BEGIN_NAMESPACE
 class QComboBox;
 class QFont;
 class QFontComboBox;
+class QTabWidget;
+class QLineEdit;
 
 
 /**************************************************************
@@ -47,7 +49,7 @@ class QFontComboBox;
  **************************************************************/
 class PreferencesDialog 
   :
-    public QTabWidget,
+    public QDialog,
     public boost::noncopyable
 {
   
@@ -63,6 +65,8 @@ public:
 private slots:
 
   void update_font_selectors_(const QFont& newFont);
+  void update_current_font_();
+  void ok_clicked_();
 
 
 private:
@@ -77,11 +81,14 @@ private:
   QFont currentFont_;
 
   /* widgets */
+  QTabWidget* tabWidget_;
   QFontComboBox* fontFamilyBox_;
   QComboBox* fontStyleBox_;
   QComboBox* fontSizeBox_;
+  QLineEdit* exampleText_;
 
   /* interface creation functions */
+  void create_main_layout_();
   void create_font_tab_();
 };
 
