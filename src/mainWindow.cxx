@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
+#include <QFont>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -431,8 +432,8 @@ void MainWindow::show_preferences_dialog_()
   PreferencesDialog prefDialog(settings_);
   prefDialog.Init();
 
-  /* update the canvas to pick up changes */
-  //canvas_->update_after_preference_change_();
+  /* update all child widgets with new preferences */
+  update_after_preference_change_();
 }
 
 
@@ -671,7 +672,9 @@ void MainWindow::create_graphics_scene_()
 
   /* create canvas */
   QPoint origin(0,0);
-  canvas_ = new GraphicsScene(origin, gridSize, 30, settings_, this);
+  QFont canvasFont;
+  canvasFont.fromString(settings_.value("global/font").toString());
+  canvas_ = new GraphicsScene(origin, gridSize, 30, canvasFont, this);
   if ( !canvas_->Init() )
   {
     qDebug() << "Failed to initialize canvas";
@@ -963,4 +966,21 @@ void MainWindow::load_canvas_(const QString& fileName)
   }
 }
 
-QT_BEGIN_NAMESPACE
+
+//-------------------------------------------------------------
+// let all child widgets know about changes relevant to
+// them 
+//-------------------------------------------------------------
+void MainWindow::update_after_preference_change_()
+{
+  /* font update */
+  QFont newFont;
+  newFont.fromString(settings_.value("global/font").toString());
+
+  canvas_->set_font(newFont);
+}
+ 
+ 
+ 
+ 
+ QT_BEGIN_NAMESPACE

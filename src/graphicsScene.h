@@ -26,11 +26,11 @@
 
 /* QT includes */
 #include <QColor>
+#include <QFont>
 #include <QGraphicsScene>
 #include <QPair>
 #include <QList>
 #include <QMap>
-#include <QSettings>
 
 /* local includes */
 #include "knittingSymbol.h"
@@ -77,13 +77,14 @@ class GraphicsScene
 public:
 
   explicit GraphicsScene(const QPoint& origin, const QSize& gridsize, 
-      int cellSize, const QSettings& settings, QObject* myParent = 0);
+      int cellSize, QFont font, QObject* myParent = 0);
   bool Init();
 
-  /* helper function for updating of active Items */
-  void select_region(const QRectF& region);
+  /* setters */
+  void set_font(QFont font);
 
   /* helper functions */
+  void select_region(const QRectF& region);
   void reset_grid(const QSize& newSize);
   void reset_canvas(const QList<PatternGridItemDescriptor>& newItems);
 
@@ -143,7 +144,7 @@ private:
   int selectedRow_;
 
   /* reference to settings */
-  const QSettings& settings_;
+  QFont canvasFont_;
 
   /* list of currenly selected items */
   QMap<int,PatternGridItem*> activeItems_;

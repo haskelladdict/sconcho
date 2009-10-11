@@ -157,12 +157,13 @@ private:
   QSettings settings_;
   SymbolSelectorWidget* symbolSelector_;
 
-  /* helper function */
+  /* helper functions */
   QSize show_grid_dimension_dialog_();
   void export_canvas_(const QString& fileName);
   void save_canvas_(const QString& fileName);
   void load_canvas_(const QString& fileName);
   void initialize_settings_();
+  void update_after_preference_change_();
 };
 
 QT_END_NAMESPACE
