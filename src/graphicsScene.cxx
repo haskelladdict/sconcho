@@ -56,7 +56,7 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 GraphicsScene::GraphicsScene(const QPoint& anOrigin, 
-    const QSize& gridDim, int aSize, const QSettings& settings,
+    const QSize& gridDim, int aSize, const QFont& font,
     QObject* myParent)
   :
   QGraphicsScene(myParent),
@@ -67,7 +67,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   cellSize_(aSize),
   selectedCol_(UNSELECTED),
   selectedRow_(UNSELECTED),
-  settings_(settings),
+  canvasFont_(font),
   selectedSymbol_(
       KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"",""))),
   backgroundColor_(Qt::white),
@@ -1289,8 +1289,8 @@ void GraphicsScene::create_pattern_grid_()
 void GraphicsScene::create_grid_labels_()
 {
   /* retrieve currently selected font size */
-  QFont textFont;
-  textFont.fromString(settings_.value("global/font").toString());
+  //QFont textFont;
+  //textFont.fromString(settings_.value("global/font").toString());
 
   /* remove all existing labels if there are any */
   QList<QGraphicsItem*> allItems(items());
@@ -1324,9 +1324,9 @@ void GraphicsScene::create_grid_labels_()
         );
 
     int shift = 
-      compute_horizontal_label_shift_(colNum, textFont.pointSize());
+      compute_horizontal_label_shift_(colNum, canvasFont_.pointSize());
     text->setPos(origin_.x() + col*cellSize_ + shift, yPos); 
-    text->setFont(textFont);
+    text->setFont(canvasFont_);
     addItem(text);
   }
 
@@ -1342,8 +1342,8 @@ void GraphicsScene::create_grid_labels_()
         );
 
     text->setPos(origin_.x() + (numCols_*cellSize_) + 0.1*cellSize_, 
-      origin_.y() + row * cellSize_ + 0.5*textFont.pointSize());
-    text->setFont(textFont);
+      origin_.y() + row * cellSize_ + 0.5*canvasFont_.pointSize());
+    text->setFont(canvasFont_);
     addItem(text);
   }
 }
