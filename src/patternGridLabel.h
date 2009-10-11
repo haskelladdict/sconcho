@@ -54,7 +54,7 @@ class PatternGridLabel
   
 public:
 
-  explicit PatternGridLabel(const QString& test, int labelType,
+  explicit PatternGridLabel(const QString& text, int labelType,
       QGraphicsItem* aParent = 0);
   bool Init();
 

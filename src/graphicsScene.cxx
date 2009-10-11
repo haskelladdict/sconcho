@@ -45,6 +45,8 @@
 #include "knittingSymbol.h"
 #include "patternGridItem.h"
 #include "patternGridLabel.h"
+#include "patternGridRectangle.h"
+
 
 QT_BEGIN_NAMESPACE
 
@@ -268,18 +270,7 @@ void GraphicsScene::set_font(QFont newFont)
 {
   canvasFont_ = newFont;
 
-  QList<QGraphicsItem*> allItems(items());
-
-  QMap<int,PatternGridItem*> gridItems;
-  foreach(QGraphicsItem* anItem, allItems)
-  {
-    PatternGridLabel* label = 
-      qgraphicsitem_cast<PatternGridLabel*>(anItem);
-    if (label != 0)
-    {
-      label->setFont(newFont);
-    }
-  }
+  create_grid_labels_();
 }
 
   
@@ -419,6 +410,15 @@ void GraphicsScene::deselect_all_active_items()
   enable_canvas_update_();
 }
 
+
+//-------------------------------------------------------------
+// this slot requests that all currently active grid cells
+// be surrounded by a rectangle
+//-------------------------------------------------------------
+void GraphicsScene::mark_active_cells_with_rectangle()
+{
+  qDebug() << "marking";
+}
 
 
 /**************************************************************
@@ -1313,10 +1313,6 @@ void GraphicsScene::create_pattern_grid_()
 //-------------------------------------------------------------
 void GraphicsScene::create_grid_labels_()
 {
-  /* retrieve currently selected font size */
-  //QFont canvasFont_;
-  //canvasFont_.fromString(settings_.value("global/font").toString());
-
   /* remove all existing labels if there are any */
   QList<QGraphicsItem*> allItems(items());
   QList<PatternGridLabel*> allLabels;
@@ -1361,8 +1357,8 @@ void GraphicsScene::create_grid_labels_()
    * FIXME: the exact placement of the labels is hand-tuned
    * and probably not very robust */
   QFontMetrics metric(canvasFont_);
-  int fontHeight = metric.height();
-  qDebug() << "fonHeig" << fontHeight;
+  int fontHeight = metric.ascent();
+  qDebug() << "foo " << fontHeight;
   for (int row=0; row < numRows_; ++row)
   {
     PatternGridLabel* text= new PatternGridLabel(
@@ -1371,7 +1367,7 @@ void GraphicsScene::create_grid_labels_()
         );
 
     text->setPos(origin_.x() + (numCols_*cellSize_) + 0.1*cellSize_, 
-      origin_.y() + row*cellSize_ + 0.4*(cellSize_ - fontHeight));
+      origin_.y() + row*cellSize_ + 0.5*(cellSize_ - 1.8*fontHeight));
     text->setFont(canvasFont_);
     addItem(text);
   }

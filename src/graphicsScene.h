@@ -106,6 +106,7 @@ public slots:
   void update_selected_background_color(const QColor& aColor);
   void color_state_changed(int state); 
   void deselect_all_active_items();
+  void mark_active_cells_with_rectangle();
 
   
 protected:

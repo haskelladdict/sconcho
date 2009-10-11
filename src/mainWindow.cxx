@@ -821,11 +821,11 @@ void MainWindow::create_toolbar_()
   markRectangleButton->setIcon(QIcon(":/icons/rectangle.png"));
   markRectangleButton->setToolTip(tr("mark selection with rectangle"));
   toolBar->addWidget(markRectangleButton);
-/*  connect(markRectangleButton,
+  connect(markRectangleButton,
           SIGNAL(clicked()),
-          this,
-          SLOT(show_mark_with_rectangle_dialog()));
-*/
+          canvas_,
+          SLOT(mark_active_cells_with_rectangle()));
+
   addToolBar(toolBar);
 }
 

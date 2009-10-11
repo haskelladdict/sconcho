@@ -9,6 +9,7 @@ SET(SCONCHO_SRCS
   mainWindow.cxx
   patternGridItem.cxx
   patternGridLabel.cxx
+  patternGridRectangle.cxx
   patternView.cxx
   preferencesDialog.cxx
   sconcho.cxx
