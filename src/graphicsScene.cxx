@@ -26,6 +26,7 @@
 /* Qt headers */
 #include <QDebug>
 #include <QFont>
+#include <QFontMetrics>
 #include <QGraphicsItem>
 #include <QGraphicsItemGroup>
 #include <QGraphicsLineItem>
@@ -1339,6 +1340,7 @@ void GraphicsScene::create_grid_labels_()
   /* add new column labels */
   QString label;
   qreal yPos = origin_.y() + numRows_ * cellSize_ + 1; 
+
   for (int col=0; col < numCols_; ++col)
   {
     int colNum = numCols_ - col;
@@ -1358,6 +1360,9 @@ void GraphicsScene::create_grid_labels_()
   /* add new row labels 
    * FIXME: the exact placement of the labels is hand-tuned
    * and probably not very robust */
+  QFontMetrics metric(canvasFont_);
+  int fontHeight = metric.height();
+  qDebug() << "fonHeig" << fontHeight;
   for (int row=0; row < numRows_; ++row)
   {
     PatternGridLabel* text= new PatternGridLabel(
@@ -1366,7 +1371,7 @@ void GraphicsScene::create_grid_labels_()
         );
 
     text->setPos(origin_.x() + (numCols_*cellSize_) + 0.1*cellSize_, 
-      origin_.y() + row * cellSize_ + 0.5*canvasFont_.pointSize());
+      origin_.y() + row*cellSize_ + 0.4*(cellSize_ - fontHeight));
     text->setFont(canvasFont_);
     addItem(text);
   }
