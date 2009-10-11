@@ -108,25 +108,10 @@ void PatternView::mouseReleaseEvent(QMouseEvent* evt)
     qDebug() << "stop rubber band";
 
     /* retrieve final rubberBand geometry and pick
-     * out all PatternGridItem objects via a qgraphicsitem_cast */
-    QRect finalGeometry(rubberBand_->geometry());
-    QList<QGraphicsItem*> selectedCells(items(finalGeometry));
- 
-    /* while selecting we disable canvas updates */
-    canvas_->disable_canvas_update();
-
-    foreach(QGraphicsItem* cell, selectedCells)
-    {
-      PatternGridItem* item = 
-        qgraphicsitem_cast<PatternGridItem*>(cell);
-      if (item != 0)
-      {
-        item->select();
-      }
-    }
-    canvas_->update_canvas();
-    canvas_->enable_canvas_update();
-
+     * and select them */
+    QRectF finalGeometry(
+        mapToScene(rubberBand_->geometry()).boundingRect());
+    canvas_->select_region(finalGeometry);
 
     rubberBandOn_ = false;
     rubberBand_->hide();

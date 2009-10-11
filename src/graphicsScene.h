@@ -81,9 +81,7 @@ public:
   bool Init();
 
   /* helper function for updating of active Items */
-  void enable_canvas_update() { updateActiveItems_ = true; }
-  void disable_canvas_update() { updateActiveItems_ = false; }
-  void update_canvas();
+  void select_region(const QRectF& region);
 
   /* helper functions */
   void reset_grid(const QSize& newSize);
@@ -180,8 +178,10 @@ private:
   void insert_row_(int row);
   void expand_grid_(int colStart, int rowStart);
   void manage_columns_rows_(const QPoint& pos, int col, int row);
-  void select_region_(const QRect& region);
 
+  void enable_canvas_update_() { updateActiveItems_ = true; }
+  void disable_canvas_update_() { updateActiveItems_ = false; }
+  void update_active_items_();
 
   QPoint compute_cell_origin_(int col, int row) const;
   int compute_cell_index_(PatternGridItem* anItem) const;

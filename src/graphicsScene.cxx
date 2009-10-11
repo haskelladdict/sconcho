@@ -210,35 +210,53 @@ void GraphicsScene::reset_canvas(
 }
 
 
-
-//------------------------------------------------------------
-// update the canvas, i.e., add the currently selected 
-// knitting symbol/color to all active items.
-//------------------------------------------------------------
-void GraphicsScene::update_canvas()
+//--------------------------------------------------------------
+// select all PatterGridItems in the region enclosed by
+// the Rectangle.
+//
+// NOTE: The reason for the QRectF instead of QRect is
+// that we need to call this function from the PatternView
+// in which case we only have a QRectF available. All the
+// QRect passed in inside GraphicsScene should cast
+// fine into a QRectF so thats probably an ok think to do.
+//--------------------------------------------------------------
+void GraphicsScene::select_region(const QRectF& aRegion)
 {
-  /* if coloring is selected we set the color of all
-   * curently active Items */
-  if (wantColor_)
+  QList<QGraphicsItem*> allItems(items(aRegion));
+
+  /* grab PatterGridItems and select them 
+   * NOTE: We can not just select the cells as we find
+   * them among all items since their order is arbitrary
+   * causing the selected area to be filled improperly
+   * for larger symbols (just like randomly selecting
+   * cells in the region would). Hence we sort all cells
+   * first by index and then select them in order */
+  QMap<int,PatternGridItem*> gridItems;
+  foreach(QGraphicsItem* anItem, allItems)
   {
-    QList<PatternGridItem*> patternItems(activeItems_.values());
-    foreach(PatternGridItem* anItem, patternItems)
+    PatternGridItem* cell = 
+      qgraphicsitem_cast<PatternGridItem*>(anItem);
+    if (cell != 0)
     {
-      anItem->set_background_color(backgroundColor_);
+      int cellIndex = compute_cell_index_(cell);
+      gridItems[cellIndex] = cell;
     }
   }
 
-  /* if a knitting symbol is selected we try placing it,
-   * otherwise we color the cells if requested */
-  if (selectedSymbol_->path() != "")
+  /* disable canvas update until we're done selecting,
+   * then we update and re-enable*/
+  disable_canvas_update_();
+
+  QList<PatternGridItem*> sortedItems(gridItems.values());
+  foreach(PatternGridItem* cell, sortedItems)
   {
-    try_place_knitting_symbol_();
+    cell->select();
   }
-  else if (wantColor_)
-  {
-    colorize_highlighted_cells_();
-  } 
+
+  update_active_items_();
+  enable_canvas_update_();
 }
+
 
 
 
@@ -293,7 +311,7 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
 
   if (updateActiveItems_)
   {
-    update_canvas();
+    update_active_items_();
   }
 
 }
@@ -367,13 +385,13 @@ void GraphicsScene::color_state_changed(int state)
 //---------------------------------------------------------------
 void GraphicsScene::deselect_all_active_items()
 {
-  disable_canvas_update();
+  disable_canvas_update_();
   foreach(PatternGridItem* anItem, activeItems_)
   {
     anItem->select();
   }
   activeItems_.clear();
-  enable_canvas_update();
+  enable_canvas_update_();
 }
 
 
@@ -1135,7 +1153,7 @@ void GraphicsScene::select_row_(int rowId)
 
   QSize boxDim((numCols_ - 1) * cellSize_ + halfCell, halfCell);
 
-  select_region_(QRect(boxOrigin, boxDim));
+  select_region(QRect(boxOrigin, boxDim));
 }
 
 
@@ -1157,50 +1175,9 @@ void GraphicsScene::select_column_(int colId)
   QSize boxDim(halfCell, (numRows_ - 1) * cellSize_ + halfCell);
 
   /* select items */
-  select_region_(QRect(boxOrigin, boxDim));
+  select_region(QRect(boxOrigin, boxDim));
 }
 
-
-//--------------------------------------------------------------
-// select all PatterGridItems in the region enclosed by
-// the Rectangle
-//--------------------------------------------------------------
-void GraphicsScene::select_region_(const QRect& aRegion)
-{
-  QList<QGraphicsItem*> allItems(items(aRegion));
-
-  /* grab PatterGridItems and select them 
-   * NOTE: We can not just select the cells as we find
-   * them among all items since their order is arbitrary
-   * causing the selected area to be filled improperly
-   * for larger symbols (just like randomly selecting
-   * cells in the region would). Hence we sort all cells
-   * first by index and then select them in order */
-  QMap<int,PatternGridItem*> gridItems;
-  foreach(QGraphicsItem* anItem, allItems)
-  {
-    PatternGridItem* cell = 
-      qgraphicsitem_cast<PatternGridItem*>(anItem);
-    if (cell != 0)
-    {
-      int cellIndex = compute_cell_index_(cell);
-      gridItems[cellIndex] = cell;
-    }
-  }
-
-  /* disable canvas update until we're done selecting,
-   * then we update and re-enable*/
-  disable_canvas_update();
-
-  QList<PatternGridItem*> sortedItems(gridItems.values());
-  foreach(PatternGridItem* cell, sortedItems)
-  {
-    cell->select();
-  }
-
-  update_canvas();
-  enable_canvas_update();
-}
 
 
 
@@ -1459,5 +1436,37 @@ void GraphicsScene::purge_all_canvas_items_()
     delete finalItem;
   } 
 }
+
+
+//------------------------------------------------------------
+// update the canvas, i.e., add the currently selected 
+// knitting symbol/color to all active items.
+//------------------------------------------------------------
+void GraphicsScene::update_active_items_()
+{
+  /* if coloring is selected we set the color of all
+   * curently active Items */
+  if (wantColor_)
+  {
+    QList<PatternGridItem*> patternItems(activeItems_.values());
+    foreach(PatternGridItem* anItem, patternItems)
+    {
+      anItem->set_background_color(backgroundColor_);
+    }
+  }
+
+  /* if a knitting symbol is selected we try placing it,
+   * otherwise we color the cells if requested */
+  if (selectedSymbol_->path() != "")
+  {
+    try_place_knitting_symbol_();
+  }
+  else if (wantColor_)
+  {
+    colorize_highlighted_cells_();
+  } 
+}
+
+
 
 QT_END_NAMESPACE
