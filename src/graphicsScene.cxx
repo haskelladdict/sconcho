@@ -417,7 +417,57 @@ void GraphicsScene::deselect_all_active_items()
 //-------------------------------------------------------------
 void GraphicsScene::mark_active_cells_with_rectangle()
 {
-  qDebug() << "marking";
+  if (activeItems_.empty())
+  {
+    emit statusBar_error("Nothing selected");
+    return;
+  }
+
+  /* first make sure the user selected a complete rectangle */
+  QList<RowItems> rowList;
+  sort_active_items_row_wise_(rowList);
+
+  /* remove the top and bottom empty rows */
+  while (rowList.first().empty())
+  {
+    rowList.pop_front();
+  }
+
+  while (rowList.last().empty())
+  {
+    rowList.pop_back();
+  }
+  assert(!rowList.empty());
+
+  QPair<bool,int> initialStatus = is_row_contiguous_(rowList.at(0));
+  bool status = initialStatus.first;
+  for(int index = 1; index < rowList.size(); ++index)
+  {
+    QPair<bool,int> currentStatus = 
+      is_row_contiguous_(rowList.at(index));
+    if (currentStatus != initialStatus)
+    {
+      status = false;
+    }
+  }
+
+  if (!status)
+  {
+    emit statusBar_error("Selected cells don't form a rectangle");
+    return;
+  }
+
+  /* find bounding rectangle and create rectangle */
+  QRect boundingRect = find_bounding_rectangle_(rowList);
+
+  QPen myPen(Qt::red, 4.0);
+  myPen.setJoinStyle(Qt::MiterJoin);
+  PatternGridRectangle* marker = new PatternGridRectangle(boundingRect,
+      myPen);
+  marker->Init();
+  marker->setZValue(1.0);
+  addItem(marker);
+  deselect_all_active_items();
 }
 
 
@@ -883,7 +933,7 @@ void GraphicsScene::try_place_knitting_symbol_()
 
   /* sort selected items row wise */
   QList<RowItems> rowList;
-  bool sortStatus = sort_selected_items_row_wise_(rowList);
+  bool sortStatus = sort_active_items_row_wise_(rowList);
   if (!sortStatus)
   { 
     return;
@@ -944,7 +994,7 @@ void GraphicsScene::try_place_knitting_symbol_()
 // in each grid cell
 //-----------------------------------------------------------------
 int GraphicsScene::compute_horizontal_label_shift_(int aNum, 
-    int fontSize)
+    int fontSize) const
 {
   double size = cellSize_ * 0.5;
   double numWidth = fontSize * 0.5;
@@ -970,8 +1020,8 @@ int GraphicsScene::compute_horizontal_label_shift_(int aNum,
 // sort all currently selected cells in a row by row fashion
 // returns true on success and false on failure
 //----------------------------------------------------------------
-bool GraphicsScene::sort_selected_items_row_wise_(
-  QList<RowItems>& theRows)
+bool GraphicsScene::sort_active_items_row_wise_(
+  QList<RowItems>& theRows) const
 {
   for (int i=0; i < numRows_; ++i)
   {
@@ -1000,7 +1050,7 @@ bool GraphicsScene::sort_selected_items_row_wise_(
 //--------------------------------------------------------------
 bool GraphicsScene::process_selected_items_(
   QList<RowLayout>& finalCellLayout, const QList<RowItems>& rowLayout, 
-  int selectedPatternSize)
+  int selectedPatternSize) 
 {
   for (int row=0; row < rowLayout.size(); ++row)
   {
@@ -1116,7 +1166,7 @@ void GraphicsScene::colorize_highlighted_cells_()
 // 1) If all selected cells have the same color with pick it
 // 2) Otherwise we use the default color, Qt::white
 //--------------------------------------------------------------
-QColor GraphicsScene::determine_selected_cells_color_()
+QColor GraphicsScene::determine_selected_cells_color_() const
 {
   QList<PatternGridItem*> cells(activeItems_.values());
 
@@ -1147,7 +1197,7 @@ QColor GraphicsScene::determine_selected_cells_color_()
 // what ever column/row pair it receives
 //---------------------------------------------------------------
 QPair<int,int> GraphicsScene::get_cell_coords_(
-    const QPointF& mousePos)
+    const QPointF& mousePos) const
 {
   qreal xPosRel = mousePos.x() - origin_.x();
   qreal yPosRel = mousePos.y() - origin_.y();
@@ -1491,6 +1541,86 @@ void GraphicsScene::update_active_items_()
     colorize_highlighted_cells_();
   } 
 }
+
+
+//-----------------------------------------------------------
+// return if a row of PatternGridItems is contiguous, i.e.
+// there are no holes, and the number of unit cells covered
+// by the row (holes not counted)
+//-----------------------------------------------------------
+QPair<bool,int> GraphicsScene::is_row_contiguous_(
+    const RowItems& rows) const
+{
+  /* an empty row is contiguous */
+  if (rows.empty())
+  {
+    return QPair<bool,int>(true,0);
+  }
+
+  int currentCol = rows.at(0)->col();
+  int totalWidth = 0;
+  bool status    = true;
+  for (int index = 1; index < rows.size(); ++index)
+  {
+    int rowCol   = rows.at(index)->col();
+    int rowWidth = rows.at(index)->dim().width();
+    if ((currentCol + rowWidth) != rowCol)
+    {
+      status = false;
+    }
+
+    currentCol = rowCol;
+    totalWidth += rowWidth;
+  }
+
+  return QPair<bool,int>(status, totalWidth);
+}
+
+
+//-------------------------------------------------------------
+// given a list of RowItems, determines the size of the 
+// rectangle that bounds them all. The rows are assumed
+// to be in increasing order of y with respect to the
+// origin
+//-------------------------------------------------------------
+QRect GraphicsScene::find_bounding_rectangle_(
+    const QList<RowItems>& rows) const
+{
+  assert(!rows.empty());
+
+  /* get index of upper left corner */
+  RowItems firstRow = rows.first();
+  assert(!firstRow.empty());
+  int upperLeftColIndex = firstRow.first()->col();
+  int upperLeftRowIndex = firstRow.first()->row();
+
+  /* get index of lower right corner */
+  RowItems lastRow = rows.last();
+  assert(!lastRow.empty());
+  int lowerRightColIndex  = lastRow.last()->col();
+  int lowerRightRowIndex  = lastRow.last()->row();
+  int lowerRightCellWidth = lastRow.last()->dim().width();
+  int lowerRightCellHeight = lastRow.last()->dim().height();
+
+  /* compute coordinates */
+  QPoint upperLeftCorner(origin_.x() + upperLeftColIndex * cellSize_,
+    origin_.y() + upperLeftRowIndex * cellSize_);
+  
+  QPoint lowerRightCorner(origin_.x() - 1
+    + (lowerRightColIndex + lowerRightCellWidth) * cellSize_,
+    origin_.y() - 1
+    + (lowerRightRowIndex + lowerRightCellHeight) * cellSize_); 
+
+  return QRect(upperLeftCorner, lowerRightCorner);
+}
+
+
+
+
+
+
+
+
 
 
 

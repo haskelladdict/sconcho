@@ -92,7 +92,7 @@ public:
 signals:
 
   void mouse_moved(QPointF position);
-  void statusBar_error(QString msg);
+  void statusBar_error(QString msg); 
   void statusBar_message(QString msg);
   void mouse_zoom_in();
   void mouse_zoom_out();
@@ -167,12 +167,12 @@ private:
   /* helper functions */
   void try_place_knitting_symbol_();
   void colorize_highlighted_cells_();
-  QPair<int,int> get_cell_coords_(const QPointF& mousePosition);
-  int compute_horizontal_label_shift_(int num, int fontSize);
-  QColor determine_selected_cells_color_();
-  bool sort_selected_items_row_wise_(QList<RowItems>& rows);
+  QPair<int,int> get_cell_coords_(const QPointF& mousePosition) const;
+  int compute_horizontal_label_shift_(int num, int fontSize) const;
+  QColor determine_selected_cells_color_() const;
+  bool sort_active_items_row_wise_(QList<RowItems>& rows) const;
   bool process_selected_items_(QList<RowLayout>& processedCellLayout,
-      const QList<RowItems>& rowSelection, int targetPatternSize);
+    const QList<RowItems>& rowSelection, int targetPatternSize);
 
   void select_column_(int col);
   void select_row_(int row);
@@ -187,6 +187,9 @@ private:
 
   QPoint compute_cell_origin_(int col, int row) const;
   int compute_cell_index_(PatternGridItem* anItem) const;
+
+  QPair<bool,int> is_row_contiguous_(const RowItems& items) const;
+  QRect find_bounding_rectangle_(const QList<RowItems>& rows) const;
 
   /* simple max helper function */
   int int_max(int a, int b) { return a > b ? a : b; }
