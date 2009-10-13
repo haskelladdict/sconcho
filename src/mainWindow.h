@@ -96,6 +96,7 @@ public slots:
   void update_mouse_position_display(QPointF newPos);
   void show_statusBar_message(QString msg);
   void show_statusBar_error(QString msg);
+  void clear_statusBar();
   void zoom_in();
   void zoom_out();
  
@@ -137,6 +138,7 @@ private:
   void create_property_widget_();
   void create_symbols_widget_();
   void create_toolbar_();
+  void create_timers_();
 
   /* widget data members */
   QSplitter* mainSplitter_;

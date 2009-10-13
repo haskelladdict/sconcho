@@ -954,9 +954,6 @@ void GraphicsScene::try_place_knitting_symbol_()
     item->deleteLater();
   }
   activeItems_.clear();
-  
-  /* clear StatusBar */
-  emit statusBar_message("");
 }
 
 

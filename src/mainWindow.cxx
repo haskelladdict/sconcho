@@ -38,6 +38,7 @@
 #include <QSettings>
 #include <QSplitter>
 #include <QStatusBar>
+#include <QTimer>
 #include <QToolBar>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -97,6 +98,7 @@ bool MainWindow::Init()
   create_menu_bar_();
   create_status_bar_();
   create_main_splitter_();
+  create_timers_();
 
   connect(symbolSelector_,
           SIGNAL(selected_symbol_changed(const KnittingSymbolPtr)),
@@ -161,6 +163,17 @@ void MainWindow::show_statusBar_error(QString aMessage)
   statusBarMessages_->setText(aMessage);
 }
 
+
+//--------------------------------------------------------------
+// clear the status bar
+//--------------------------------------------------------------
+void MainWindow::clear_statusBar()
+{
+  QPalette aPalette = statusBarMessages_->palette();
+  aPalette.setBrush(QPalette::WindowText, Qt::black);
+  statusBarMessages_->setPalette(aPalette);
+  statusBarMessages_->setText(tr("Nice pattern!"));
+}
 
 
 //--------------------------------------------------------------
@@ -882,6 +895,21 @@ void MainWindow::create_main_splitter_()
   mainSplitter_ = new QSplitter(this);
   mainSplitter_->addWidget(canvasView_);
   mainSplitter_->addWidget(propertyBox);
+}
+
+
+//-------------------------------------------------------------
+// create all timers used during exectution
+//-------------------------------------------------------------
+void MainWindow::create_timers_()
+{
+  /* this timers clears the status bar every so ofter */
+  QTimer* statusBarTimer = new QTimer(this);
+  connect(statusBarTimer,
+          SIGNAL(timeout()),
+          this,
+          SLOT(clear_statusBar()));
+  statusBarTimer->start(5000);
 }
 
 
