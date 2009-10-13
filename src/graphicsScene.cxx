@@ -1591,12 +1591,15 @@ QRect GraphicsScene::find_bounding_rectangle_(
 // rectangles
 //--------------------------------------------------------------
 bool GraphicsScene::handle_click_on_marker_rectangle_(
-    QGraphicsSceneMouseEvent* mouseEvent) 
+    const QGraphicsSceneMouseEvent* mouseEvent) 
 {
+  /* reset the toggle for deletion of rectangles */
+  deleteRectangles_ = false;
+
   /* get all items at pos and grab all patternGridRectangles
    * if any */
-  QList<QGraphicsItem*> itemsUnderMouse = 
-    items(mouseEvent->scenePos());
+  QPointF mousePos(mouseEvent->scenePos());
+  QList<QGraphicsItem*> itemsUnderMouse = items(mousePos);
 
   QList<PatternGridRectangle*> rectangles;
   foreach(QGraphicsItem* anItem, itemsUnderMouse)
@@ -1605,19 +1608,30 @@ bool GraphicsScene::handle_click_on_marker_rectangle_(
       qgraphicsitem_cast<PatternGridRectangle*>(anItem);
     if (rectAngle != 0)
     {
-      qDebug() << "found one";
-      rectangles.push_back(rectAngle);
+      if (rectAngle->selected(mousePos))
+      {
+        rectangles.push_back(rectAngle);
+      }
     }
   }
 
   if (!rectangles.empty())
   {
+    show_rectangle_delete_menu_(mouseEvent->screenPos());
+
+    /* if the user selected deletion do so */
+    if (deleteRectangles_)
+    {
+      foreach(PatternGridRectangle* aRect, rectangles)
+      {
+        removeItem(aRect);
+        aRect->deleteLater();
+      }
+    }
     return true;
   }
-  else
-  {
-    return false;
-  }
+ 
+  return false;
 }
 
 
@@ -1626,7 +1640,7 @@ bool GraphicsScene::handle_click_on_marker_rectangle_(
 // handle mouse clicks inside the grid array
 //--------------------------------------------------------------
 bool GraphicsScene::handle_click_on_grid_array_(
-    QGraphicsSceneMouseEvent* mouseEvent)
+    const QGraphicsSceneMouseEvent* mouseEvent)
 {
   QPair<int,int> arrayIndex(get_cell_coords_(mouseEvent->scenePos()));
   int column = arrayIndex.first;
@@ -1655,7 +1669,7 @@ bool GraphicsScene::handle_click_on_grid_array_(
 // handle mouse clicks on the grid labels
 //----------------------------------------------------------------
 bool GraphicsScene::handle_click_on_grid_labels_(
-    QGraphicsSceneMouseEvent* mouseEvent)
+    const QGraphicsSceneMouseEvent* mouseEvent)
 {
   QPointF currentPos = mouseEvent->scenePos();
   QPair<int,int> arrayIndex(get_cell_coords_(currentPos));
@@ -1676,6 +1690,23 @@ bool GraphicsScene::handle_click_on_grid_labels_(
   return true;
 }
 
+
+//---------------------------------------------------------------
+// generate a menu control deletion of marker rectangles
+//---------------------------------------------------------------
+void GraphicsScene::show_rectangle_delete_menu_(const QPoint& pos)
+{
+  QMenu rectangleMenu;
+  QAction* deleteRectAction = 
+    rectangleMenu.addAction("delete rectangle(s)");
+  
+  connect(deleteRectAction,
+          SIGNAL(triggered()),
+          this,
+          SLOT(mark_rectangles_for_deletion_()));
+  
+  rectangleMenu.exec(pos);
+}
 
 
 

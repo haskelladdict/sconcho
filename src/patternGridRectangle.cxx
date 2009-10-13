@@ -18,6 +18,10 @@
 *
 ****************************************************************/
 
+/* Qt headers */
+#include <QDebug>
+
+
 /* local headers */
 #include "basicDefs.h"
 #include "patternGridRectangle.h"
@@ -68,6 +72,27 @@ int PatternGridRectangle::type() const
 {
   return Type;
 }
+
+
+//-------------------------------------------------------------
+// given a position inside our bounding box, returns true
+// if the position is anywhere on the actual rectangle
+// line (i.e. not the interior of the rectangle)
+//-------------------------------------------------------------
+bool PatternGridRectangle::selected(const QPointF& position)
+  const
+{
+  assert(boundingRect().contains(position));
+
+  /* get rectangle covering only the inside (not the 
+   * actual rectangle line */
+  QRectF inside(boundingRect());
+  qreal penWidth(currentPen_.widthF());
+  inside.adjust(penWidth, penWidth, -penWidth, -penWidth);
+
+  return (!inside.contains(position));
+}
+
 
 
 /**************************************************************

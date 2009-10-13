@@ -124,6 +124,7 @@ private slots:
   void insert_right_of_col_();
   void insert_above_row_();
   void insert_below_row_();
+  void mark_rectangles_for_deletion_() { deleteRectangles_ = true; }
 
   
 private:
@@ -189,11 +190,14 @@ private:
   int compute_cell_index_(PatternGridItem* anItem) const;
 
   bool handle_click_on_marker_rectangle_(
-    QGraphicsSceneMouseEvent* mouseEvent); 
+    const QGraphicsSceneMouseEvent* mouseEvent); 
+  void show_rectangle_delete_menu_(const QPoint& pos);
+  bool deleteRectangles_;
+
   bool handle_click_on_grid_array_(
-    QGraphicsSceneMouseEvent* mouseEvent);
+    const QGraphicsSceneMouseEvent* mouseEvent);
   bool handle_click_on_grid_labels_(
-    QGraphicsSceneMouseEvent* mouseEvent);
+    const QGraphicsSceneMouseEvent* mouseEvent);
 
   QPair<bool,int> is_row_contiguous_(const RowItems& items) const;
   QRect find_bounding_rectangle_(const QList<RowItems>& rows) const;
