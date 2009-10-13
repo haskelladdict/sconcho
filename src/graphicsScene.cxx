@@ -849,47 +849,18 @@ void GraphicsScene::mouseMoveEvent(
 void GraphicsScene::mousePressEvent(
     QGraphicsSceneMouseEvent* mouseEvent)
 {
-  QPointF currentPos = mouseEvent->scenePos();
-  QPair<int,int> index(get_cell_coords_(currentPos));
-
-  /* if the user clicked on the index cells (the ones
-   * the have the column/row numbers in them) we:
-   *
-   * - hightlight the whole row/cell if it is a left-click
-   * - open a row/column delete/insert/add dialog if it is
-   *   a right click 
-   */
-  int column = index.first;
-  int row    = index.second;
   if (mouseEvent->button() == Qt::RightButton)
   {
-    /* FIXME: manage_columns_rows_ calls the proper member function
-     * via a signal and can't therefore provide the column/row
-     * ID by itself which is why we have to use a silly
-     * private variable. Is there any way we can avoid this?
-     *
-     * Also we show the menu only if we're inside the pattern
-     * grid plus a margin of a single cellSize_ in all directions */
-    if ( row > -1 || row < (numRows_ + 1) 
-      || column > -1 || column < (numCols_ + 1) )
-    { 
-      selectedCol_ = column;
-      selectedRow_ = row;
-      manage_columns_rows_(mouseEvent->screenPos(), column, row);
+    bool handled = handle_click_on_marker_rectangle_(mouseEvent);
+
+    if (!handled)
+    {
+      handle_click_on_grid_array_(mouseEvent);
     }
   }
   else
   {
-    if (column == numCols_)
-    {
-      qDebug() << "select row " << row;
-      select_row_(row);
-    }
-    else if (row == numRows_)
-    {
-      qDebug() << "select column " << column;
-      select_column_(column);
-    }
+    handle_click_on_grid_labels_(mouseEvent);
   }
 
   return QGraphicsScene::mousePressEvent(mouseEvent);
@@ -1612,6 +1583,97 @@ QRect GraphicsScene::find_bounding_rectangle_(
     + (lowerRightRowIndex + lowerRightCellHeight) * cellSize_); 
 
   return QRect(upperLeftCorner, lowerRightCorner);
+}
+
+
+//--------------------------------------------------------------
+// handle mouse clicks on the boundary of any of the marker
+// rectangles
+//--------------------------------------------------------------
+bool GraphicsScene::handle_click_on_marker_rectangle_(
+    QGraphicsSceneMouseEvent* mouseEvent) 
+{
+  /* get all items at pos and grab all patternGridRectangles
+   * if any */
+  QList<QGraphicsItem*> itemsUnderMouse = 
+    items(mouseEvent->scenePos());
+
+  QList<PatternGridRectangle*> rectangles;
+  foreach(QGraphicsItem* anItem, itemsUnderMouse)
+  {
+    PatternGridRectangle* rectAngle = 
+      qgraphicsitem_cast<PatternGridRectangle*>(anItem);
+    if (rectAngle != 0)
+    {
+      qDebug() << "found one";
+      rectangles.push_back(rectAngle);
+    }
+  }
+
+  if (!rectangles.empty())
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+
+
+//--------------------------------------------------------------
+// handle mouse clicks inside the grid array
+//--------------------------------------------------------------
+bool GraphicsScene::handle_click_on_grid_array_(
+    QGraphicsSceneMouseEvent* mouseEvent)
+{
+  QPair<int,int> arrayIndex(get_cell_coords_(mouseEvent->scenePos()));
+  int column = arrayIndex.first;
+  int row    = arrayIndex.second;
+
+  /* FIXME: manage_columns_rows_ calls the proper member function
+   * via a signal and can't therefore provide the column/row
+   * ID by itself which is why we have to use a silly
+   * private variable. Is there any way we can avoid this?
+   *
+   * Also we show the menu only if we're inside the pattern
+   * grid plus a margin of a single cellSize_ in all directions */
+  if ( row > -1 || row < (numRows_ + 1) || column > -1 
+       || column < (numCols_ + 1)) 
+  { 
+    selectedCol_ = column;
+    selectedRow_ = row;
+    manage_columns_rows_(mouseEvent->screenPos(), column, row);
+  }
+
+  return true;
+}
+
+
+//----------------------------------------------------------------
+// handle mouse clicks on the grid labels
+//----------------------------------------------------------------
+bool GraphicsScene::handle_click_on_grid_labels_(
+    QGraphicsSceneMouseEvent* mouseEvent)
+{
+  QPointF currentPos = mouseEvent->scenePos();
+  QPair<int,int> arrayIndex(get_cell_coords_(currentPos));
+  int column = arrayIndex.first;
+  int row    = arrayIndex.second;
+
+  if (column == numCols_)
+  {
+    qDebug() << "select row " << row;
+    select_row_(row);
+  }
+  else if (row == numRows_)
+  {
+    qDebug() << "select column " << column;
+    select_column_(column);
+  }
+
+  return true;
 }
 
 

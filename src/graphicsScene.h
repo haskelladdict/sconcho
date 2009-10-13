@@ -188,6 +188,13 @@ private:
   QPoint compute_cell_origin_(int col, int row) const;
   int compute_cell_index_(PatternGridItem* anItem) const;
 
+  bool handle_click_on_marker_rectangle_(
+    QGraphicsSceneMouseEvent* mouseEvent); 
+  bool handle_click_on_grid_array_(
+    QGraphicsSceneMouseEvent* mouseEvent);
+  bool handle_click_on_grid_labels_(
+    QGraphicsSceneMouseEvent* mouseEvent);
+
   QPair<bool,int> is_row_contiguous_(const RowItems& items) const;
   QRect find_bounding_rectangle_(const QList<RowItems>& rows) const;
 
