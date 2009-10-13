@@ -346,8 +346,8 @@ void MainWindow::pick_color_()
   QColor selection = QColorDialog::getColor(Qt::white,this,
       "Select background color");
 
-  QPalette selectorColor = QPalette(selection);
-  colorSelector_->setPalette(selectorColor);
+  QPalette selectorPalette = QPalette(selection);
+  colorSelector_->setPalette(selectorPalette);
 
   emit color_changed(selection);
 }

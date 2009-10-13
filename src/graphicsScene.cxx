@@ -46,6 +46,7 @@
 #include "patternGridItem.h"
 #include "patternGridLabel.h"
 #include "patternGridRectangle.h"
+#include "patternGridRectangleDialog.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -415,7 +416,7 @@ void GraphicsScene::deselect_all_active_items()
 // this slot requests that all currently active grid cells
 // be surrounded by a rectangle
 //-------------------------------------------------------------
-void GraphicsScene::mark_active_cells_with_rectangle()
+void GraphicsScene::mark_active_cells_with_rectangle() 
 {
   if (activeItems_.empty())
   {
@@ -460,10 +461,13 @@ void GraphicsScene::mark_active_cells_with_rectangle()
   /* find bounding rectangle and create rectangle */
   QRect boundingRect = find_bounding_rectangle_(rowList);
 
-  QPen myPen(Qt::red, 4.0);
-  myPen.setJoinStyle(Qt::MiterJoin);
+  /* fire up dialog for customizing pattern grid rectangles */
+  PatternGridRectangleDialog rectangleDialog; 
+  rectangleDialog.Init();
+  QPen rectanglePen = rectangleDialog.pen();
+
   PatternGridRectangle* marker = new PatternGridRectangle(boundingRect,
-      myPen);
+      rectanglePen);
   marker->Init();
   marker->setZValue(1.0);
   addItem(marker);

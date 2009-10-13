@@ -18,25 +18,29 @@
 *
 ****************************************************************/
 
-#ifndef GRID_DIMENSION_DIALOG_H
-#define GRID_DIMENSION_DIALOG_H
+#ifndef PATTERN_GRID_RECTANGLE_DIALOG_H
+#define PATTERN_GRID_RECTANGLE_DIALOG_H
 
 /* boost includes */
 #include <boost/utility.hpp>
 
 /* QT includes */
 #include <QDialog>
+#include <QPen>
 
 QT_BEGIN_NAMESPACE
+
+/* forward declarations */
+class QPushButton;
 
 
 /***************************************************************
  * 
- * This dialog provides the user with the opportunity to 
- * change the size of the pattern grid
+ * This dialog allows the user to configure the rectangle
+ * markers
  *
  ***************************************************************/
-class GridDimensionDialog 
+class PatternGridRectangleDialog 
   :
     public QDialog,
     public boost::noncopyable
@@ -47,18 +51,19 @@ class GridDimensionDialog
     
 public:
 
-  explicit GridDimensionDialog(QWidget* myParent = 0);
+  explicit PatternGridRectangleDialog(QWidget* myParent = 0);
   bool Init();
 
-  /* return selected dimensions */
-  QSize dim();
+  /* getters and setters for pen */
+  QPen pen() const;
+  void set_pen(const QPen& newPen) { currentPen_ = newPen; }
 
 
 private slots:
 
   void okClicked_();
-  void change_column_count(int columns);
-  void change_row_count(int rows);
+  void change_line_width_(int newWidth);
+  void pick_color_();
 
 
 private:
@@ -67,9 +72,9 @@ private:
   int status_;
   bool done_;
 
-  /* status variables */
-  int columns_;
-  int rows_;
+  /* private data member */
+  QPushButton* colorSelector_;
+  QPen currentPen_;
 };
 
 
