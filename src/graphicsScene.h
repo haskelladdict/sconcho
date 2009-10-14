@@ -35,6 +35,7 @@
 /* local includes */
 #include "knittingSymbol.h"
 #include "io.h"
+//#include "patternGridRectangle.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -42,14 +43,14 @@ QT_BEGIN_NAMESPACE
 
 /* a few forward declarations */
 class PatternGridItem;
+class PatternGridRectangle;
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneWheelEvent; 
 class QKeyEvent;
 
 namespace 
 {
-  /* convenience constants */
-  const int UNSELECTED = -100;
+  /* convenience constants */ const int UNSELECTED = -100;
   const int NOSHIFT    = -101;
 
   /* convenience typedefs */
@@ -124,7 +125,8 @@ private slots:
   void insert_right_of_col_();
   void insert_above_row_();
   void insert_below_row_();
-  void mark_rectangles_for_deletion_() { deleteRectangles_ = true; }
+  void mark_rectangle_for_deletion_(QObject* foo);
+  void customize_rectangle_(QObject* foo);
 
   
 private:
@@ -191,8 +193,8 @@ private:
 
   bool handle_click_on_marker_rectangle_(
     const QGraphicsSceneMouseEvent* mouseEvent); 
-  void show_rectangle_delete_menu_(const QPoint& pos);
-  bool deleteRectangles_;
+  void show_rectangle_manage_menu_(PatternGridRectangle* aRect,
+      const QPoint& pos);
 
   bool handle_click_on_grid_array_(
     const QGraphicsSceneMouseEvent* mouseEvent);

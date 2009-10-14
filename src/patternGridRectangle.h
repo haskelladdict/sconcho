@@ -26,6 +26,7 @@
 
 /* QT includes */
 #include <QGraphicsRectItem>
+#include <QDebug>
 #include <QObject>
 #include <QPen>
 
@@ -53,7 +54,9 @@ class PatternGridRectangle
     public QGraphicsRectItem,
     public boost::noncopyable
 {
-  
+ 
+  Q_OBJECT
+
 public:
 
   explicit PatternGridRectangle(const QRectF& position, QPen pen,
@@ -61,6 +64,7 @@ public:
   bool Init();
 
   bool selected(const QPointF& clickPos) const;
+  void set_pen(QPen newPen);
   
 
   /* return our object type; needed for qgraphicsitem_cast */

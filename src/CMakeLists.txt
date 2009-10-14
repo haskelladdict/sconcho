@@ -23,6 +23,7 @@ SET(SCONCHO_MOC_HDRS
   gridDimensionDialog.h
   mainWindow.h
   patternGridItem.h
+  patternGridRectangle.h
   patternGridRectangleDialog.h
   patternView.h
   preferencesDialog.h

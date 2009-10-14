@@ -25,6 +25,7 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
+#include <QDebug>
 #include <QDialog>
 #include <QPen>
 

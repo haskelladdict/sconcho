@@ -94,6 +94,16 @@ bool PatternGridRectangle::selected(const QPointF& position)
 }
 
 
+//-------------------------------------------------------------
+// change our current pen
+//-------------------------------------------------------------
+void PatternGridRectangle::set_pen(QPen newPen)
+{ 
+  currentPen_ = newPen; 
+  setPen(currentPen_);
+}
+  
+
 
 /**************************************************************
  *

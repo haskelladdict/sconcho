@@ -37,6 +37,7 @@
 #include <QGraphicsView>
 #include <QKeyEvent>
 #include <QMenu>
+#include <QSignalMapper>
 
 
 /* local headers */
@@ -803,6 +804,42 @@ void GraphicsScene::insert_row_(int aRow)
   /* update sceneRect 
    * NOTE: This may be a bottleneck for large grids */
   setSceneRect(itemsBoundingRect());
+}
+
+
+
+//--------------------------------------------------------------
+// this slot marks a pattern grid rectangle for deletion
+// FIXME: The casting is a bit nasty - can we get rid of it.
+// Since this SLOT is filled via a signal we can only
+// deliver a QObject via QSignalMapper
+//--------------------------------------------------------------
+void GraphicsScene::mark_rectangle_for_deletion_(QObject* rectObj) 
+{ 
+    PatternGridRectangle* rect = 
+      qobject_cast<PatternGridRectangle*>(rectObj);
+    removeItem(rect);
+    rect->deleteLater();
+}
+
+
+//--------------------------------------------------------------
+// this slot fires up a customization dialog to change the
+// properties of the selected rectangle 
+// FIXME: The casting is a bit nasty - can we get rid of it.
+// Since this SLOT is filled via a signal we can only
+// deliver a QObject via QSignalMapper
+//--------------------------------------------------------------
+void GraphicsScene::customize_rectangle_(QObject* rectObj) 
+{ 
+  PatternGridRectangle* rect = 
+    qobject_cast<PatternGridRectangle*>(rectObj);
+
+  PatternGridRectangleDialog rectangleDialog; 
+  rectangleDialog.Init();
+  QPen rectanglePen = rectangleDialog.pen();
+
+  rect->set_pen(rectanglePen);
 }
 
 
@@ -1594,9 +1631,6 @@ QRect GraphicsScene::find_bounding_rectangle_(
 bool GraphicsScene::handle_click_on_marker_rectangle_(
     const QGraphicsSceneMouseEvent* mouseEvent) 
 {
-  /* reset the toggle for deletion of rectangles */
-  deleteRectangles_ = false;
-
   /* get all items at pos and grab all patternGridRectangles
    * if any */
   QPointF mousePos(mouseEvent->scenePos());
@@ -1618,17 +1652,16 @@ bool GraphicsScene::handle_click_on_marker_rectangle_(
 
   if (!rectangles.empty())
   {
-    show_rectangle_delete_menu_(mouseEvent->screenPos());
-
-    /* if the user selected deletion do so */
-    if (deleteRectangles_)
+    /* we allow only one rectangle to be selected at a time */
+    if (rectangles.size() > 1)
     {
-      foreach(PatternGridRectangle* aRect, rectangles)
-      {
-        removeItem(aRect);
-        aRect->deleteLater();
-      }
+      emit statusBar_error(tr("Multiple rectangles selected."));
+      return false;
     }
+
+    show_rectangle_manage_menu_(rectangles.front(),
+        mouseEvent->screenPos());
+
     return true;
   }
  
@@ -1679,12 +1712,10 @@ bool GraphicsScene::handle_click_on_grid_labels_(
 
   if (column == numCols_)
   {
-    qDebug() << "select row " << row;
     select_row_(row);
   }
   else if (row == numRows_)
   {
-    qDebug() << "select column " << column;
     select_column_(column);
   }
 
@@ -1693,22 +1724,53 @@ bool GraphicsScene::handle_click_on_grid_labels_(
 
 
 //---------------------------------------------------------------
-// generate a menu control deletion of marker rectangles
+// generate a menu allowing the user to customize or delete
+// a pattern grid rectangle 
+// FIXME: This function uses a bit of a hack. In order to
+// deliver the to be deleted/edited rectangle to the SLOT
+// via connect we have to invoke a SignalMapper involving
+// some casting downstream. Can we somehow avoid this??
 //---------------------------------------------------------------
-void GraphicsScene::show_rectangle_delete_menu_(const QPoint& pos)
+void GraphicsScene::show_rectangle_manage_menu_(
+    PatternGridRectangle* rect, const QPoint& pos)
 {
+  
   QMenu rectangleMenu;
+
   QAction* deleteRectAction = 
-    rectangleMenu.addAction("delete rectangle(s)");
+    rectangleMenu.addAction(tr("delete rectangle"));
+  QSignalMapper* rectangleDeleter = new QSignalMapper(this);
+  rectangleDeleter->setMapping(deleteRectAction, rect);
   
   connect(deleteRectAction,
           SIGNAL(triggered()),
+          rectangleDeleter,
+          SLOT(map()));
+
+  connect(rectangleDeleter,
+          SIGNAL(mapped(QObject*)),
           this,
-          SLOT(mark_rectangles_for_deletion_()));
-  
+          SLOT(mark_rectangle_for_deletion_(QObject*)));
+
+
+  QAction* customizeRectAction =
+    rectangleMenu.addAction(tr("customize rectangle"));
+  QSignalMapper* rectangleCustomizer = new QSignalMapper(this);
+  rectangleCustomizer->setMapping(customizeRectAction, rect);
+
+  connect(customizeRectAction,
+          SIGNAL(triggered()),
+          rectangleCustomizer,
+          SLOT(map()));
+
+  connect(rectangleCustomizer,
+          SIGNAL(mapped(QObject*)),
+          this,
+          SLOT(customize_rectangle_(QObject*)));
+
+
   rectangleMenu.exec(pos);
 }
-
 
 
 
