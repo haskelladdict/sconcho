@@ -48,9 +48,11 @@
 #include "basicDefs.h"
 #include "graphicsScene.h"
 #include "gridDimensionDialog.h"
+#include "helperFunctions.h"
 #include "io.h"
 #include "knittingSymbol.h"
 #include "mainWindow.h"
+#include "patternKeyDialog.h"
 #include "patternView.h"
 #include "preferencesDialog.h"
 #include "symbolSelectorWidget.h"
@@ -69,6 +71,7 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 MainWindow::MainWindow() 
   :
+    mainSplitter_(new QSplitter),
     settings_("sconcho","settings")
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -97,7 +100,7 @@ bool MainWindow::Init()
   create_property_widget_();
   create_menu_bar_();
   create_status_bar_();
-  create_main_splitter_();
+  create_property_symbol_layout_();
   create_timers_();
 
   connect(symbolSelector_,
@@ -114,6 +117,9 @@ bool MainWindow::Init()
           Qt::DirectConnection
          );
 
+  /* set up main interface */
+  mainSplitter_->addWidget(canvasView_);
+  mainSplitter_->addWidget(propertyBox_);
   setCentralWidget(mainSplitter_);
   return true;
 }
@@ -450,6 +456,18 @@ void MainWindow::show_preferences_dialog_()
 }
 
 
+//------------------------------------------------------------
+// fire up the pattern grid key editing dialog
+//------------------------------------------------------------
+void MainWindow::show_pattern_key_dialog_()
+{
+  PatternKeyDialog patternKeyDialog(settings_);
+  patternKeyDialog.Init();
+}
+
+
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -685,8 +703,7 @@ void MainWindow::create_graphics_scene_()
 
   /* create canvas */
   QPoint origin(0,0);
-  QFont canvasFont;
-  canvasFont.fromString(settings_.value("global/font").toString());
+  QFont canvasFont = extract_font_from_settings(settings_);
   canvas_ = new GraphicsScene(origin, gridSize, 30, canvasFont, this);
   if ( !canvas_->Init() )
   {
@@ -845,8 +862,8 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(toggleKeyButton);
   connect(toggleKeyButton,
           SIGNAL(clicked()),
-          canvas_,
-          SLOT(toggle_key()));
+          this,
+          SLOT(show_pattern_key_dialog_()));
 
 
   addToolBar(toolBar);
@@ -893,18 +910,14 @@ void MainWindow::create_property_widget_()
 // NOTE: all Widgets that belong to the splitter have to exist
 //       at this point
 //-------------------------------------------------------------
-void MainWindow::create_main_splitter_()
+void MainWindow::create_property_symbol_layout_()
 {
   /* properties layout */
   QVBoxLayout* propertiesLayout = new QVBoxLayout;
   propertiesLayout->addWidget(symbolSelector_);
   propertiesLayout->addWidget(colorSelectorGrouper_);
-  QGroupBox* propertyBox = new QGroupBox(this);
-  propertyBox->setLayout(propertiesLayout);
-
-  mainSplitter_ = new QSplitter(this);
-  mainSplitter_->addWidget(canvasView_);
-  mainSplitter_->addWidget(propertyBox);
+  propertyBox_ = new QGroupBox(this);
+  propertyBox_->setLayout(propertiesLayout);
 }
 
 

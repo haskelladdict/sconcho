@@ -48,7 +48,6 @@
 #include "patternGridLabel.h"
 #include "patternGridRectangle.h"
 #include "patternGridRectangleDialog.h"
-#include "patternKey.h"
 
 
 QT_BEGIN_NAMESPACE

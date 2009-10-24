@@ -18,16 +18,14 @@
 *
 ****************************************************************/
 
-#ifndef PATTERN_KEY_ITEM_H
-#define PATTERN_KEY_ITEM_H
+#ifndef PATTERN_KEY_CANVAS_H
+#define PATTERN_KEY_CANVAS_H
 
 /* boost includes */
 #include <boost/utility.hpp>
 
 /* QT includes */
-#include <QFont>
-#include <QGraphicsItem>
-#include <QPen>
+#include <QGraphicsScene>
 
 /* local includes */
 #include "basicDefs.h"
@@ -36,23 +34,19 @@ QT_BEGIN_NAMESPACE
 
 
 /* a few forward declarations */
-class GraphicsScene;
-class QGraphicsSceneMouseEvent;
 class QGraphicsTextItem;
-class QPainter;
-class QStyleOptionGraphicsItem;
+class QSettings;
 
 
 /***************************************************************
  * 
- * The GraphicsScene handles the sconcho's main drawing
- * canvas 
+ * The PatternKeyCanvas allows manipulation of the 
+ * QGraphicsItems belonging to the pattern key
  *
  ***************************************************************/
-class PatternKey
+class PatternKeyCanvas
   :
-    public QObject,
-    public QGraphicsItem,
+    public QGraphicsScene,
     public boost::noncopyable
 {
   
@@ -62,25 +56,12 @@ class PatternKey
 public:
 
 
-  explicit PatternKey(const QPoint& loc, const QFont& font,
-      GraphicsScene* myParent = 0);
+  explicit PatternKeyCanvas(const QSettings& settings, 
+    QObject* myParent = 0);
   bool Init();
 
-  /* reimplement pure virtual base class methods */
-  QRectF boundingRect() const;
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-    QWidget *widget);
-
-  /* return our object type; needed for qgraphicsitem_cast */
-  enum { Type = UserType + PATTERN_KEY_TYPE };
-  int type() const;
-
-  /* accessors for properties */
-  const QPoint& origin() const { return loc_; } 
-  const QSize& dim() const { return dim_; }
-
   /* setters for properties */
-  void set_font(const QFont& newFont); 
+  //void new_settings(const QSettings& newSettings); 
 
 //protected:
 
@@ -92,22 +73,11 @@ private:
   /* some tracking variables */
   int status_;
 
-  /* our parent scene */
-  GraphicsScene* parent_;
-
-  /* our location and dimensions */
-  QPoint loc_;
-  QSize dim_;
-
   /* our graphic items */
   QGraphicsTextItem* mainText_;
 
   /* properties objects */
-  QFont textFont_;
-  QPen pen_;
-  QColor backColor_;
-  QColor currentColor_;
-  QColor highlightColor_;
+  const QSettings& settings_;
 
   /* interface creation functions */
   void create_main_label_();

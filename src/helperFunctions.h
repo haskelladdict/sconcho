@@ -20,37 +20,23 @@
 
 /****************************************************************
  *
- * basic_definitions provides definitions such as macros or
- * better const ints to be used be all other files.
- * NOTE: please keep this file leightweight and do not 
- * include any other files unless necessary for the definitions
- * themselves.
+ * this is a collection of useful helper functions
  *
  ***************************************************************/
 
-#ifndef BASIC_DEFINITIONS_H 
-#define BASIC_DEFINITIONS_H
+#ifndef HELPER_FUNCTIONS_H 
+#define HELPER_FUNCTIONS_H
 
-/* use BOOST_FOREACH */
-#include <boost/foreach.hpp>
-#define FOREACH BOOST_FOREACH
+/* Qt includes */
+#include <QFont>
+#include <QSettings>
 
-/** assert for debugging */
-#ifndef DEBUG
-#define NDEBUG
-#endif
-#include <cassert>
 
-/* flag that a class object has been successfully 
- * constructed */
-const int SUCCESSFULLY_CONSTRUCTED = 0xabe123;
-
-/* types used for identifying custom QGraphicsItems */
-const int PATTERN_GRID_ITEM_TYPE = 1;
-const int PATTERN_GRID_LABEL_TYPE = 2;
-const int PATTERN_GRID_RECTANGLE_TYPE = 3;
-const int PATTERN_KEY_CANVAS_TYPE = 4;
-
+//---------------------------------------------------------------
+// this function returns a QFont object with the currently
+// selected font
+//----------------------------------------------------------------
+QFont extract_font_from_settings(const QSettings& settings);
 
 
 #endif

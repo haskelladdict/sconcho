@@ -4,6 +4,7 @@ SET(SCONCHO_SRCS
   aboutSconcho.cxx
   graphicsScene.cxx
   gridDimensionDialog.cxx
+  helperFunctions.cxx
   io.cxx
   knittingSymbol.cxx
   mainWindow.cxx
@@ -11,7 +12,8 @@ SET(SCONCHO_SRCS
   patternGridLabel.cxx
   patternGridRectangle.cxx
   patternGridRectangleDialog.cxx
-  patternKeyItem.cxx
+  patternKeyDialog.cxx
+  patternKeyCanvas.cxx
   patternView.cxx
   preferencesDialog.cxx
   sconcho.cxx
@@ -26,7 +28,8 @@ SET(SCONCHO_MOC_HDRS
   patternGridItem.h
   patternGridRectangle.h
   patternGridRectangleDialog.h
-  patternKeyItem.h
+  patternKeyDialog.h
+  patternKeyCanvas.h
   patternView.h
   preferencesDialog.h
   symbolSelectorItem.h

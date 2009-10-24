@@ -118,6 +118,7 @@ private slots:
   void show_sconcho_dialog_();
   void show_print_dialog_();
   void show_preferences_dialog_();
+  void show_pattern_key_dialog_();
 
    
 private:
@@ -134,7 +135,7 @@ private:
   void create_help_menu_();
   void create_status_bar_();
   void create_graphics_scene_();
-  void create_main_splitter_();
+  void create_property_symbol_layout_();
   void create_property_widget_();
   void create_symbols_widget_();
   void create_toolbar_();
@@ -142,6 +143,7 @@ private:
 
   /* widget data members */
   QSplitter* mainSplitter_;
+  QGroupBox* propertyBox_;
   QMenuBar* menuBar_;
 
   /* status bar stuff */
