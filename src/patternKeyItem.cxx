@@ -18,11 +18,17 @@
 *
 ****************************************************************/
 
+/* Qt headers */
+#include <QDebug>
+#include <QGraphicsTextItem>
+#include <QPainter>
+
 /* local headers */
-#include "patternGridLabel.h"
+#include "graphicsScene.h"
+#include "patternKeyItem.h"
+
 
 QT_BEGIN_NAMESPACE
-
 
 /**************************************************************
  *
@@ -33,11 +39,13 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-PatternGridLabel::PatternGridLabel(const QString& aText, 
-  int labelType, QGraphicsItem* aParent)
+PatternKey::PatternKey(const QPoint& aLoc, const QFont& aFont,
+  GraphicsScene* myParent)
     :
-      QGraphicsTextItem(aText, aParent),
-      labelType_(labelType)
+      QGraphicsItem(),
+      parent_(myParent),
+      loc_(aLoc),
+      textFont_(aFont)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -46,33 +54,18 @@ PatternGridLabel::PatternGridLabel(const QString& aText,
 //--------------------------------------------------------------
 // main initialization routine
 //--------------------------------------------------------------
-bool PatternGridLabel::Init()
+bool PatternKey::Init()
 {
   if ( status_ != SUCCESSFULLY_CONSTRUCTED )
   {
     return false;
   }
 
+  setPos(loc_);
+
+  create_main_label_();
+
   return true;
-}
-
-
-//--------------------------------------------------------------
-// return our custom object type
-// so we can cast via 
-//--------------------------------------------------------------
-int PatternGridLabel::type() const
-{
-  return Type;
-}
-
-
-//--------------------------------------------------------------
-// return what kind of label we are (column or row)
-//--------------------------------------------------------------
-int PatternGridLabel::label_type() const
-{
-  return labelType_;
 }
 
 
@@ -91,6 +84,57 @@ int PatternGridLabel::label_type() const
  *
  *************************************************************/
 
+//------------------------------------------------------------
+// overload pure virtual base class function returning our
+// dimensions
+//------------------------------------------------------------
+QRectF PatternKey::boundingRect() const
+{
+  return QRectF(loc_.x() - pen_.width() * 0.5, 
+                loc_.y() - pen_.width() * 0.5,
+                100,
+                10);
+}
+
+  
+//------------------------------------------------------------
+// overload pure virtual base class function painting 
+// ourselves
+//------------------------------------------------------------
+void PatternKey::paint(QPainter *painter, 
+  const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+/*  painter->setPen(pen_);
+
+  QBrush aBrush(currentColor_);
+  painter->setBrush(aBrush);
+
+  painter->drawRect(QRectF(loc_, QPoint(100,100))); */
+}
+
+
+//--------------------------------------------------------------
+// return our custom type
+// so we can cast via 
+//--------------------------------------------------------------
+int PatternKey::type() const
+{
+  return Type;
+}
+  
+
+//-------------------------------------------------------------
+// set the font to newFont and updates all children objects
+// that need to be changed
+//-------------------------------------------------------------
+void PatternKey::set_font(const QFont& newFont)
+{
+  textFont_ = newFont;
+
+  mainText_->setFont(textFont_);
+}
+
+
 /**************************************************************
  *
  * PROTECTED MEMBER FUNCTIONS 
@@ -108,5 +152,16 @@ int PatternGridLabel::label_type() const
  * PRIVATE MEMBER FUNCTIONS
  *
  *************************************************************/
+
+//-------------------------------------------------------------
+// create the main label
+//-------------------------------------------------------------
+void PatternKey::create_main_label_()
+{
+  mainText_ = new QGraphicsTextItem(tr("Legend"),this);
+  mainText_->setFont(textFont_);
+  mainText_->setTextInteractionFlags(Qt::TextEditable);
+}
+
 
 QT_END_NAMESPACE

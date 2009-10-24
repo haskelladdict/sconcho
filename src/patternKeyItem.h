@@ -18,68 +18,102 @@
 *
 ****************************************************************/
 
-#ifndef PATTERN_GRID_RECTANGLE_H
-#define PATTERN_GRID_RECTANGLE_H
+#ifndef PATTERN_KEY_ITEM_H
+#define PATTERN_KEY_ITEM_H
 
 /* boost includes */
 #include <boost/utility.hpp>
 
 /* QT includes */
-#include <QGraphicsRectItem>
-#include <QDebug>
-#include <QObject>
+#include <QFont>
+#include <QGraphicsItem>
 #include <QPen>
 
 /* local includes */
 #include "basicDefs.h"
 
-
 QT_BEGIN_NAMESPACE
+
+
+/* a few forward declarations */
+class GraphicsScene;
+class QGraphicsSceneMouseEvent;
+class QGraphicsTextItem;
+class QPainter;
+class QStyleOptionGraphicsItem;
 
 
 /***************************************************************
  * 
- * PatterGridRectangle is a simple rectangle of a certain
- * width and color that makes a certain rectangular array
- * of canvas cells
+ * The GraphicsScene handles the sconcho's main drawing
+ * canvas 
  *
  ***************************************************************/
-class PatternGridRectangle
+class PatternKey
   :
     public QObject,
-    public QGraphicsRectItem,
+    public QGraphicsItem,
     public boost::noncopyable
 {
- 
+  
   Q_OBJECT
 
+  
 public:
 
-  explicit PatternGridRectangle(const QRectF& position, QPen pen,
-    QGraphicsItem* aParent = 0);
+
+  explicit PatternKey(const QPoint& loc, const QFont& font,
+      GraphicsScene* myParent = 0);
   bool Init();
 
-  bool selected(const QPointF& clickPos) const;
-  void set_pen(QPen newPen);
-  
+  /* reimplement pure virtual base class methods */
+  QRectF boundingRect() const;
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+    QWidget *widget);
 
   /* return our object type; needed for qgraphicsitem_cast */
-  enum { Type = UserType + PATTERN_GRID_RECTANGLE_TYPE };
+  enum { Type = UserType + PATTERN_KEY_TYPE };
   int type() const;
 
+  /* accessors for properties */
+  const QPoint& origin() const { return loc_; } 
+  const QSize& dim() const { return dim_; }
 
+  /* setters for properties */
+  void set_font(const QFont& newFont); 
+
+//protected:
+
+//  void mousePressEvent(QGraphicsSceneMouseEvent* event);
+ 
+    
 private:
 
   /* some tracking variables */
   int status_;
 
-  /* variables */
-  QPen currentPen_;
+  /* our parent scene */
+  GraphicsScene* parent_;
 
+  /* our location and dimensions */
+  QPoint loc_;
+  QSize dim_;
+
+  /* our graphic items */
+  QGraphicsTextItem* mainText_;
+
+  /* properties objects */
+  QFont textFont_;
+  QPen pen_;
+  QColor backColor_;
+  QColor currentColor_;
+  QColor highlightColor_;
+
+  /* interface creation functions */
+  void create_main_label_();
 };
 
 
 QT_END_NAMESPACE
-
 
 #endif

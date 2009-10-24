@@ -45,4 +45,12 @@
  * constructed */
 const int SUCCESSFULLY_CONSTRUCTED = 0xabe123;
 
+/* types used for identifying custom QGraphicsItems */
+const int PATTERN_GRID_ITEM_TYPE = 1;
+const int PATTERN_GRID_LABEL_TYPE = 2;
+const int PATTERN_GRID_RECTANGLE_TYPE = 3;
+const int PATTERN_KEY_TYPE = 4;
+
+
+
 #endif

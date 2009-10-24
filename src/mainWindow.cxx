@@ -839,6 +839,16 @@ void MainWindow::create_toolbar_()
           canvas_,
           SLOT(mark_active_cells_with_rectangle()));
 
+  QToolButton* toggleKeyButton = new QToolButton(this);
+  toggleKeyButton->setIcon(QIcon(":/icons/key.png"));
+  toggleKeyButton->setToolTip(tr("toggle pattern key"));
+  toolBar->addWidget(toggleKeyButton);
+  connect(toggleKeyButton,
+          SIGNAL(clicked()),
+          canvas_,
+          SLOT(toggle_key()));
+
+
   addToolBar(toolBar);
 }
 

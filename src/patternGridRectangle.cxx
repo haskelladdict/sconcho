@@ -23,7 +23,6 @@
 
 
 /* local headers */
-#include "basicDefs.h"
 #include "patternGridRectangle.h"
 
 QT_BEGIN_NAMESPACE

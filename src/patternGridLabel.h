@@ -28,15 +28,11 @@
 #include <QGraphicsTextItem>
 #include <QString>
 
+/* local includes */
+#include "basicDefs.h"
+
 
 QT_BEGIN_NAMESPACE
-
-
-/* define our user type */
-namespace 
-{
-  const int PATTERN_GRID_LABEL_TYPE = 2;
-};
 
 
 /***************************************************************

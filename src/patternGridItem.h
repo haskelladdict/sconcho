@@ -32,6 +32,7 @@
 #include <QList>
 
 /* local includes */
+#include "basicDefs.h"
 #include "knittingSymbol.h"
 
 
@@ -44,13 +45,6 @@ class QGraphicsSceneMouseEvent;
 class QGraphicsSvgItem;
 class QPainter;
 class QStyleOptionGraphicsItem;
-
-
-/* define our user type */
-namespace
-{
-  const int PATTERN_GRID_ITEM_TYPE = 1;
-};
 
 
 /***************************************************************

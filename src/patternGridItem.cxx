@@ -33,7 +33,6 @@
 #include <QPainter>
 
 /* local headers */
-#include "basicDefs.h"
 #include "graphicsScene.h"
 #include "patternGridItem.h"
 

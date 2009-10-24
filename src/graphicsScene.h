@@ -35,7 +35,6 @@
 /* local includes */
 #include "knittingSymbol.h"
 #include "io.h"
-//#include "patternGridRectangle.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -163,6 +162,7 @@ private:
   /* set up functions for canvas */
   void create_pattern_grid_();
   void create_grid_labels_();
+  void create_pattern_key_();
 
   /* use this to remove items from canvas */
   void purge_all_canvas_items_();
