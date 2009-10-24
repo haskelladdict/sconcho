@@ -67,12 +67,11 @@ bool PatternGridRectangleDialog::Init()
   }
 
   /* call individual initialization routines */
-//  setFixedSize(QSize(250,130));
   setModal(true);
   setWindowTitle(tr("Enter grid rectangle properties"));
  
   /* color selector */
-  colorSelector_->setText(tr("cell color"));
+  QLabel* lineColorLabel = new QLabel(tr("line color"));
   colorSelector_->setPalette(currentPen_.color());
   connect(colorSelector_,
           SIGNAL(clicked()),
@@ -80,9 +79,8 @@ bool PatternGridRectangleDialog::Init()
           SLOT(pick_color_()));
 
   QHBoxLayout* colorButtonLayout = new QHBoxLayout;
-  colorButtonLayout->addStretch(1);
+  colorButtonLayout->addWidget(lineColorLabel);
   colorButtonLayout->addWidget(colorSelector_);
-  colorButtonLayout->addStretch(1);
 
   /* line width selector */
   QLabel* lineWidthLabel = new QLabel(tr("line width"));
