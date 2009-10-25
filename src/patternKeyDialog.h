@@ -59,6 +59,11 @@ public:
   bool Init();
 
 
+signals:
+
+  void settings_changed();
+
+
 private:
 
   /* some tracking variables */

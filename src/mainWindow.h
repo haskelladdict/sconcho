@@ -90,7 +90,7 @@ public:
 signals:
 
   void color_changed(QColor aColor);
-  void update_after_settings_change();
+  void settings_changed();
 
 
 public slots:

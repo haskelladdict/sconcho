@@ -119,9 +119,15 @@ bool MainWindow::Init()
          );
 
   connect(this,
-          SIGNAL(update_after_settings_change()),
+          SIGNAL(settings_changed()),
           canvas_,
           SLOT(update_after_settings_change())
+         );
+
+  connect(this,
+          SIGNAL(settings_changed()),
+          patternKeyDialog_,
+          SIGNAL(settings_changed())
          );
 
 
@@ -460,7 +466,7 @@ void MainWindow::show_preferences_dialog_()
   prefDialog.Init();
 
   /* update all child widgets with new preferences */
-  emit update_after_settings_change();
+  emit settings_changed();
 }
 
 

@@ -66,7 +66,11 @@ public:
 //protected:
 
 //  void mousePressEvent(QGraphicsSceneMouseEvent* event);
- 
+
+public slots:
+
+  void update_after_settings_change();
+
     
 private:
 

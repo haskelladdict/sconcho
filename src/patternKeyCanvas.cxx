@@ -73,6 +73,17 @@ bool PatternKeyCanvas::Init()
  *
  *************************************************************/
 
+//-------------------------------------------------------------
+// update the items on our canvas after the user changed
+// some settings
+//-------------------------------------------------------------
+void PatternKeyCanvas::update_after_settings_change()
+{
+  QFont newFont = extract_font_from_settings(settings_);
+  
+  /* change main text */
+  mainText_->setFont(newFont);
+}
 
 
 /**************************************************************

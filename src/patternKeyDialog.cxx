@@ -81,6 +81,15 @@ bool PatternKeyDialog::Init()
   mainLayout->addWidget(mainSplitter_);
   setLayout(mainLayout);
 
+
+  /* some plumbing */
+  connect(this,
+          SIGNAL(settings_changed()),
+          patternKeyCanvas_,
+          SLOT(update_after_settings_change())
+         );
+
+
   return true;
 }
 
@@ -90,8 +99,6 @@ bool PatternKeyDialog::Init()
  * PUBLIC SLOTS
  *
  *************************************************************/
-
-
 
 /**************************************************************
  *
