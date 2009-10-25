@@ -23,6 +23,7 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
 #include <QSettings>
 #include <QSplitter>
 #include <QVBoxLayout>
@@ -71,14 +72,14 @@ bool PatternKeyDialog::Init()
   setWindowTitle(tr("Edit pattern key"));
 
   /* create interface */
-  patternKeyCanvas_ = new PatternKeyCanvas(settings_, this);  
-  patternKeyCanvas_->Init();
-  patternKeyView_ = new QGraphicsView(patternKeyCanvas_);
+  create_canvas_();
+  create_buttons_();
 
   /* generate main layout */
   mainSplitter_->addWidget(patternKeyView_);
-  QHBoxLayout* mainLayout = new QHBoxLayout;
+  QVBoxLayout* mainLayout = new QVBoxLayout;
   mainLayout->addWidget(mainSplitter_);
+  mainLayout->addLayout(buttonLayout_);
   setLayout(mainLayout);
 
 
@@ -123,5 +124,41 @@ bool PatternKeyDialog::Init()
  * PRIVATE MEMBER FUNCTIONS
  *
  *************************************************************/
+
+//------------------------------------------------------------
+// create the pattern key canvas and the associated 
+// QGraphicsView
+//------------------------------------------------------------
+void PatternKeyDialog::create_canvas_()
+{
+  patternKeyCanvas_ = new PatternKeyCanvas(settings_, this);  
+  patternKeyCanvas_->Init();
+  patternKeyView_ = new QGraphicsView(patternKeyCanvas_);
+}
+
+
+//-------------------------------------------------------------
+// create and wire up the dialog buttons
+//-------------------------------------------------------------
+void PatternKeyDialog::create_buttons_()
+{
+  buttonLayout_ = new QHBoxLayout;
+
+  QPushButton* closeButton = new QPushButton(tr("close"));
+  QPushButton* exportToCanvasButton = 
+    new QPushButton(tr("export to canvas"));
+
+  buttonLayout_->addWidget(exportToCanvasButton);
+  buttonLayout_->addStretch(1);
+  buttonLayout_->addWidget(closeButton);
+
+  connect(closeButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(hide())
+         );
+}
+
+
 
 QT_END_NAMESPACE

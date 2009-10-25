@@ -33,6 +33,7 @@ QT_BEGIN_NAMESPACE
 /* forward declarations */
 class PatternKeyCanvas;
 class QGraphicsView;
+class QHBoxLayout;
 class QSettings;
 class QSplitter;
 
@@ -69,10 +70,15 @@ private:
   /* some tracking variables */
   int status_;
 
+  /* functions for creating the interface */
+  void create_canvas_();
+  void create_buttons_();
+
   /* private data members */
   QFont mainFont_;
   const QSettings& settings_;
   QSplitter* mainSplitter_;
+  QHBoxLayout* buttonLayout_;
   QGraphicsView* patternKeyView_;
   PatternKeyCanvas* patternKeyCanvas_;
 };
