@@ -37,12 +37,14 @@
 #include <QGraphicsView>
 #include <QKeyEvent>
 #include <QMenu>
+#include <QSettings>
 #include <QSignalMapper>
 
 
 /* local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
+#include "helperFunctions.h"
 #include "knittingSymbol.h"
 #include "patternGridItem.h"
 #include "patternGridLabel.h"
@@ -62,7 +64,7 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 GraphicsScene::GraphicsScene(const QPoint& anOrigin, 
-    const QSize& gridDim, int aSize, QFont aFont,
+    const QSize& gridDim, int aSize, const QSettings& aSetting,
     QObject* myParent)
   :
   QGraphicsScene(myParent),
@@ -73,7 +75,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   cellSize_(aSize),
   selectedCol_(UNSELECTED),
   selectedRow_(UNSELECTED),
-  canvasFont_(aFont),
+  settings_(aSetting),
   selectedSymbol_(
       KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"",""))),
   backgroundColor_(Qt::white),
@@ -262,20 +264,6 @@ void GraphicsScene::select_region(const QRectF& aRegion)
   update_active_items_();
   enable_canvas_update_();
 }
-
-
-//------------------------------------------------------------
-// update our current canvas font and update all objects on
-// the canvas that have a font associated with them:
-//------------------------------------------------------------
-void GraphicsScene::set_font(QFont newFont)
-{
-  canvasFont_ = newFont;
-
-  create_grid_labels_();
-}
-
-  
 
 
 /**************************************************************
@@ -475,6 +463,16 @@ void GraphicsScene::mark_active_cells_with_rectangle()
   deselect_all_active_items();
 }
 
+
+//------------------------------------------------------------
+// update our current canvas after a change in settings
+//------------------------------------------------------------
+void GraphicsScene::update_after_settings_change()
+{
+  create_grid_labels_();
+}
+
+ 
 
 /**************************************************************
  *
@@ -1372,6 +1370,9 @@ void GraphicsScene::create_pattern_grid_()
 //-------------------------------------------------------------
 void GraphicsScene::create_grid_labels_()
 {
+  /* retrieve current canvas font */
+  QFont currentFont = extract_font_from_settings(settings_);
+
   /* remove all existing labels if there are any */
   QList<QGraphicsItem*> allItems(items());
   QList<PatternGridLabel*> allLabels;
@@ -1405,9 +1406,9 @@ void GraphicsScene::create_grid_labels_()
         );
 
     int shift = 
-      compute_horizontal_label_shift_(colNum, canvasFont_.pointSize());
+      compute_horizontal_label_shift_(colNum, currentFont.pointSize());
     text->setPos(origin_.x() + col*cellSize_ + shift, yPos); 
-    text->setFont(canvasFont_);
+    text->setFont(currentFont);
     addItem(text);
   }
 
@@ -1415,7 +1416,7 @@ void GraphicsScene::create_grid_labels_()
   /* add new row labels 
    * FIXME: the exact placement of the labels is hand-tuned
    * and probably not very robust */
-  QFontMetrics metric(canvasFont_);
+  QFontMetrics metric(currentFont);
   int fontHeight = metric.ascent();
   qDebug() << "foo " << fontHeight;
   for (int row=0; row < numRows_; ++row)
@@ -1427,7 +1428,7 @@ void GraphicsScene::create_grid_labels_()
 
     text->setPos(origin_.x() + (numCols_*cellSize_) + 0.1*cellSize_, 
       origin_.y() + row*cellSize_ + 0.5*(cellSize_ - 1.8*fontHeight));
-    text->setFont(canvasFont_);
+    text->setFont(currentFont);
     addItem(text);
   }
 }

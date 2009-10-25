@@ -36,6 +36,7 @@ QT_BEGIN_NAMESPACE
 
 /* a few forward declarations */
 class GraphicsScene;
+class PatternKeyDialog;
 class PatternView;
 class PreferencesDialog;
 class QGroupBox;
@@ -89,6 +90,7 @@ public:
 signals:
 
   void color_changed(QColor aColor);
+  void update_after_settings_change();
 
 
 public slots:
@@ -140,6 +142,7 @@ private:
   void create_symbols_widget_();
   void create_toolbar_();
   void create_timers_();
+  void create_pattern_key_dialog_();
 
   /* widget data members */
   QSplitter* mainSplitter_;
@@ -160,6 +163,7 @@ private:
   QPushButton* colorSelector_;
   QSettings settings_;
   SymbolSelectorWidget* symbolSelector_;
+  PatternKeyDialog* patternKeyDialog_;
 
   /* helper functions */
   QSize show_grid_dimension_dialog_();
@@ -167,7 +171,6 @@ private:
   void save_canvas_(const QString& fileName);
   void load_canvas_(const QString& fileName);
   void initialize_settings_();
-  void update_after_preference_change_();
 };
 
 QT_END_NAMESPACE

@@ -46,6 +46,7 @@ class PatternGridRectangle;
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneWheelEvent; 
 class QKeyEvent;
+class QSettings;
 
 namespace 
 {
@@ -77,11 +78,8 @@ class GraphicsScene
 public:
 
   explicit GraphicsScene(const QPoint& origin, const QSize& gridsize, 
-      int cellSize, QFont font, QObject* myParent = 0);
+      int cellSize, const QSettings& settings, QObject* myParent = 0);
   bool Init();
-
-  /* setters */
-  void set_font(QFont font);
 
   /* helper functions */
   void select_region(const QRectF& region);
@@ -107,6 +105,7 @@ public slots:
   void color_state_changed(int state); 
   void deselect_all_active_items();
   void mark_active_cells_with_rectangle();
+  void update_after_settings_change();
 
   
 protected:
@@ -147,7 +146,7 @@ private:
   int selectedRow_;
 
   /* reference to settings */
-  QFont canvasFont_;
+  const QSettings& settings_;
 
   /* list of currenly selected items */
   QMap<int,PatternGridItem*> activeItems_;

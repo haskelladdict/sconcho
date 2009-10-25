@@ -80,7 +80,6 @@ bool PatternKeyDialog::Init()
   QHBoxLayout* mainLayout = new QHBoxLayout;
   mainLayout->addWidget(mainSplitter_);
   setLayout(mainLayout);
-  exec();
 
   return true;
 }

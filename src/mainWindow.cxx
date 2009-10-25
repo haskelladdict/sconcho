@@ -102,6 +102,7 @@ bool MainWindow::Init()
   create_status_bar_();
   create_property_symbol_layout_();
   create_timers_();
+  create_pattern_key_dialog_();
 
   connect(symbolSelector_,
           SIGNAL(selected_symbol_changed(const KnittingSymbolPtr)),
@@ -116,6 +117,13 @@ bool MainWindow::Init()
           SLOT(update_selected_background_color(QColor)),
           Qt::DirectConnection
          );
+
+  connect(this,
+          SIGNAL(update_after_settings_change()),
+          canvas_,
+          SLOT(update_after_settings_change())
+         );
+
 
   /* set up main interface */
   mainSplitter_->addWidget(canvasView_);
@@ -452,7 +460,7 @@ void MainWindow::show_preferences_dialog_()
   prefDialog.Init();
 
   /* update all child widgets with new preferences */
-  update_after_preference_change_();
+  emit update_after_settings_change();
 }
 
 
@@ -461,8 +469,7 @@ void MainWindow::show_preferences_dialog_()
 //------------------------------------------------------------
 void MainWindow::show_pattern_key_dialog_()
 {
-  PatternKeyDialog patternKeyDialog(settings_);
-  patternKeyDialog.Init();
+  patternKeyDialog_->setVisible(true);
 }
 
 
@@ -680,6 +687,18 @@ void MainWindow::create_status_bar_()
 
 
 //-------------------------------------------------------------
+// initialize the pattern key dialog
+//-------------------------------------------------------------
+void MainWindow::create_pattern_key_dialog_()
+{
+  patternKeyDialog_ = new PatternKeyDialog(settings_,this);
+  patternKeyDialog_->Init();
+  patternKeyDialog_->setVisible(false);
+}
+
+
+
+//-------------------------------------------------------------
 // initialize all the settings
 //-------------------------------------------------------------
 void MainWindow::initialize_settings_()
@@ -703,8 +722,8 @@ void MainWindow::create_graphics_scene_()
 
   /* create canvas */
   QPoint origin(0,0);
-  QFont canvasFont = extract_font_from_settings(settings_);
-  canvas_ = new GraphicsScene(origin, gridSize, 30, canvasFont, this);
+//  QFont canvasFont = extract_font_from_settings(settings_);
+  canvas_ = new GraphicsScene(origin, gridSize, 30, settings_, this);
   if ( !canvas_->Init() )
   {
     qDebug() << "Failed to initialize canvas";
@@ -1018,20 +1037,4 @@ void MainWindow::load_canvas_(const QString& fileName)
 }
 
 
-//-------------------------------------------------------------
-// let all child widgets know about changes relevant to
-// them 
-//-------------------------------------------------------------
-void MainWindow::update_after_preference_change_()
-{
-  /* font update */
-  QFont newFont;
-  newFont.fromString(settings_.value("global/font").toString());
-
-  canvas_->set_font(newFont);
-}
- 
- 
- 
- 
- QT_BEGIN_NAMESPACE
+QT_BEGIN_NAMESPACE
