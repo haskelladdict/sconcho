@@ -1558,21 +1558,21 @@ void GraphicsScene::update_active_items_()
 // by the row (holes not counted)
 //-----------------------------------------------------------
 QPair<bool,int> GraphicsScene::is_row_contiguous_(
-    const RowItems& rows) const
+    const RowItems& aRow) const
 {
   /* an empty row is contiguous */
-  if (rows.empty())
+  if (aRow.empty())
   {
     return QPair<bool,int>(true,0);
   }
 
-  int currentCol = rows.at(0)->col();
+  int currentCol = aRow.at(0)->col();
+  int rowWidth   = aRow.at(0)->dim().width();
   int totalWidth = 0;
   bool status    = true;
-  for (int index = 1; index < rows.size(); ++index)
+  for (int index = 1; index < aRow.size(); ++index)
   {
-    int rowCol   = rows.at(index)->col();
-    int rowWidth = rows.at(index)->dim().width();
+    int rowCol   = aRow.at(index)->col();
     if ((currentCol + rowWidth) != rowCol)
     {
       status = false;
@@ -1580,6 +1580,7 @@ QPair<bool,int> GraphicsScene::is_row_contiguous_(
 
     currentCol = rowCol;
     totalWidth += rowWidth;
+    rowWidth = aRow.at(index)->dim().width();
   }
 
   return QPair<bool,int>(status, totalWidth);
