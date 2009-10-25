@@ -190,7 +190,7 @@ void GraphicsScene::reset_canvas(
     item->Init();
 
     /* add it to our scene */
-    addItem(item);
+    add_patternGridItem_(item);
 
     /* generate a knittingSymbolPointer */
     if (rawItem.knittingSymbolName != "")
@@ -347,8 +347,7 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
 
   /* get rid of the old cell making sure that we punt if from
    * the set of activeItems if present */
-  removeItem(anItem);
-  anItem->deleteLater();
+  remove_patternGridItem_(anItem);
 
   /* start filling the hole with new cells */
   int numNewCells = dim.width();
@@ -363,7 +362,7 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
                           row, 
                           this);
     item->Init();
-    addItem(item);
+    add_patternGridItem_(item);
   }
 }
 
@@ -542,8 +541,7 @@ void GraphicsScene::delete_col_()
   {
     if (cell->col() == selectedCol_)
     {
-      removeItem(cell);
-      cell->deleteLater();
+      remove_patternGridItem_(cell);
     }
     else if (cell->col() > selectedCol_)
     {
@@ -608,8 +606,7 @@ void GraphicsScene::delete_row_()
   {
     if (patItem->row() == selectedRow_)
     {
-      removeItem(patItem);
-      patItem->deleteLater();
+      remove_patternGridItem_(patItem);
     }
     else if (patItem->row() > selectedRow_)
     {
@@ -726,7 +723,7 @@ void GraphicsScene::insert_col_(int aCol)
           defaultColor_);
 
     anItem->Init();
-    addItem(anItem);
+    add_patternGridItem_(anItem);
   }
 
 
@@ -789,7 +786,7 @@ void GraphicsScene::insert_row_(int aRow)
           defaultColor_);
 
     anItem->Init();
-    addItem(anItem);
+    add_patternGridItem_(anItem);
   }
 
 
@@ -980,7 +977,7 @@ void GraphicsScene::try_place_knitting_symbol_()
 
       anItem->Init();
       anItem->insert_knitting_symbol(selectedSymbol_);
-      addItem(anItem);
+      add_patternGridItem_(anItem);
     }
   }
  
@@ -989,8 +986,7 @@ void GraphicsScene::try_place_knitting_symbol_()
   QList<PatternGridItem*> deadItems(activeItems_.values()); 
   foreach(PatternGridItem* item, deadItems)
   {
-    removeItem(item);
-    item->deleteLater();
+    remove_patternGridItem_(item);
   }
   activeItems_.clear();
 }
@@ -1358,7 +1354,7 @@ void GraphicsScene::create_pattern_grid_()
       item->Init();
 
       /* add it to our scene */
-      addItem(item);
+      add_patternGridItem_(item);
     }
   }
 }
@@ -1519,6 +1515,9 @@ void GraphicsScene::purge_all_canvas_items_()
     removeItem(finalItem);
     delete finalItem;
   } 
+
+  /* clear the list of currently used knitting symbols */
+  usedKnittingSymbols_.clear();
 }
 
 
@@ -1775,7 +1774,42 @@ void GraphicsScene::show_rectangle_manage_menu_(
 
 
 
+//-------------------------------------------------------------
+// use this function to add a PatternGridItem to the scene.
+// In addition to that we also update the referene count of
+// currently active knitting symbols
+//-------------------------------------------------------------
+void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
+{
+  addItem(anItem);
 
+  /* update reference count */
+  QString symbolName = anItem->knittingSymbolName();
+  int currentValue = usedKnittingSymbols_[symbolName] + 1;
+  usedKnittingSymbols_[symbolName] = currentValue;
+}
+
+
+//-------------------------------------------------------------
+// use this function to remove a PatternGridItem from the scene.
+// In addition to that we also update the referene count of
+// currently active knitting symbols
+//-------------------------------------------------------------
+void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
+{
+  removeItem(anItem);
+
+  /* update reference count */
+  QString symbolName = anItem->knittingSymbolName();
+  int currentValue = usedKnittingSymbols_[symbolName] - 1;
+  usedKnittingSymbols_[symbolName] = currentValue;
+
+  assert(currentValue >= 0);
+
+  /* delete it for good */
+  anItem->deleteLater();
+
+}
 
 
 

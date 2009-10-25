@@ -151,6 +151,9 @@ private:
   /* list of currenly selected items */
   QMap<int,PatternGridItem*> activeItems_;
 
+  /* reference count of knitting pattern in current use */
+  QMap<QString,int> usedKnittingSymbols_;
+
   /* pointers to current user selections (knitting symbol,
    * color, pen size ..) */
   KnittingSymbolPtr selectedSymbol_;
@@ -162,6 +165,10 @@ private:
   void create_pattern_grid_();
   void create_grid_labels_();
   void create_pattern_key_();
+
+  /* use these to add/remove PatternGridItems to the scene */
+  void add_patternGridItem_(PatternGridItem* anItem);
+  void remove_patternGridItem_(PatternGridItem* anItem);
 
   /* use this to remove items from canvas */
   void purge_all_canvas_items_();
