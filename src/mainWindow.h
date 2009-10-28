@@ -30,6 +30,9 @@
 #include <QSize>
 #include <QString>
 
+/* local includes */
+#include "knittingSymbol.h"
+
 
 QT_BEGIN_NAMESPACE
 
@@ -95,6 +98,8 @@ signals:
 
 public slots:
 
+  void knitting_symbol_added(KnittingSymbolPtr symbol);
+  void knitting_symbol_removed(KnittingSymbolPtr symbol);
   void update_mouse_position_display(QPointF newPos);
   void show_statusBar_message(QString msg);
   void show_statusBar_error(QString msg);

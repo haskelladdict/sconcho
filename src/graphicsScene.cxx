@@ -46,6 +46,7 @@
 #include "graphicsScene.h"
 #include "helperFunctions.h"
 #include "knittingSymbol.h"
+#include "mainWindow.h"
 #include "patternGridItem.h"
 #include "patternGridLabel.h"
 #include "patternGridRectangle.h"
@@ -65,9 +66,10 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 GraphicsScene::GraphicsScene(const QPoint& anOrigin, 
     const QSize& gridDim, int aSize, const QSettings& aSetting,
-    QObject* myParent)
+    MainWindow* myParent)
   :
   QGraphicsScene(myParent),
+  parent_(myParent),
   updateActiveItems_(true),
   origin_(anOrigin),
   numCols_(gridDim.width()),
@@ -1515,9 +1517,6 @@ void GraphicsScene::purge_all_canvas_items_()
     removeItem(finalItem);
     delete finalItem;
   } 
-
-  /* clear the list of currently used knitting symbols */
-  usedKnittingSymbols_.clear();
 }
 
 
@@ -1782,11 +1781,7 @@ void GraphicsScene::show_rectangle_manage_menu_(
 void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 {
   addItem(anItem);
-
-  /* update reference count */
-  QString symbolName = anItem->knittingSymbolName();
-  int currentValue = usedKnittingSymbols_[symbolName] + 1;
-  usedKnittingSymbols_[symbolName] = currentValue;
+  parent_->knitting_symbol_added(anItem->get_knitting_symbol());
 }
 
 
@@ -1798,14 +1793,8 @@ void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
 {
   removeItem(anItem);
-
-  /* update reference count */
-  QString symbolName = anItem->knittingSymbolName();
-  int currentValue = usedKnittingSymbols_[symbolName] - 1;
-  usedKnittingSymbols_[symbolName] = currentValue;
-
-  assert(currentValue >= 0);
-
+  parent_->knitting_symbol_removed(anItem->get_knitting_symbol());
+  
   /* delete it for good */
   anItem->deleteLater();
 

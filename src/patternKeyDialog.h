@@ -26,6 +26,10 @@
 
 /* QT includes */
 #include <QDialog>
+#include <QMap>
+
+/* local included */
+#include "knittingSymbol.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -65,10 +69,19 @@ signals:
   void settings_changed();
 
 
+public slots:
+
+  void add_knitting_symbol(KnittingSymbolPtr newSymbol);
+  void remove_knitting_symbol(KnittingSymbolPtr newSymbol);
+
+
 private:
 
   /* some tracking variables */
   int status_;
+
+  /* reference count of knitting pattern in current use */
+  QMap<QString,int> usedKnittingSymbols_;
 
   /* functions for creating the interface */
   void create_canvas_();

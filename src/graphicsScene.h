@@ -47,6 +47,7 @@ class QGraphicsSceneMouseEvent;
 class QGraphicsSceneWheelEvent; 
 class QKeyEvent;
 class QSettings;
+class MainWindow;
 
 namespace 
 {
@@ -78,7 +79,7 @@ class GraphicsScene
 public:
 
   explicit GraphicsScene(const QPoint& origin, const QSize& gridsize, 
-      int cellSize, const QSettings& settings, QObject* myParent = 0);
+    int cellSize, const QSettings& settings, MainWindow* myParent = 0);
   bool Init();
 
   /* helper functions */
@@ -89,12 +90,14 @@ public:
 
 signals:
 
+  void knitting_symbol_added(KnittingSymbolPtr newSymbol);
+  void knitting_symbol_removed(KnittingSymbolPtr deadSymbol);
   void mouse_moved(QPointF position);
-  void statusBar_error(QString msg); 
-  void statusBar_message(QString msg);
   void mouse_zoom_in();
   void mouse_zoom_out();
- 
+  void statusBar_error(QString msg); 
+  void statusBar_message(QString msg);
+
 
 public slots:
 
@@ -132,6 +135,8 @@ private:
   /* construction status variable */
   int status_;
 
+  MainWindow* parent_;
+
   /* do we want active items to be updated */
   bool updateActiveItems_;
 
@@ -150,9 +155,6 @@ private:
 
   /* list of currenly selected items */
   QMap<int,PatternGridItem*> activeItems_;
-
-  /* reference count of knitting pattern in current use */
-  QMap<QString,int> usedKnittingSymbols_;
 
   /* pointers to current user selections (knitting symbol,
    * color, pen size ..) */

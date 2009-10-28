@@ -219,15 +219,24 @@ void PatternGridItem::select()
 
 
 //--------------------------------------------------------------
-// return the full name of our embedded knitting symbol if
-// we have one and the empty string otherwise
+// return the full name of our embedded knitting symbol
 //--------------------------------------------------------------
-const QString& PatternGridItem::knittingSymbolName() const
+const QString& PatternGridItem::get_knitting_symbol_name() const
 {
   return knittingSymbol_->fullName();
 }
 
-  
+
+
+//--------------------------------------------------------------
+// return a pointer to the currently embedded knitting symbol 
+//--------------------------------------------------------------
+const KnittingSymbolPtr PatternGridItem::get_knitting_symbol() const
+{
+  return knittingSymbol_;
+}
+
+
 
 //--------------------------------------------------------------
 // return our custom type

@@ -202,7 +202,7 @@ bool CanvasIOWriter::save_patternGridItems_(QDomElement& root)
      QDomElement svgTag = writeDoc_.createElement("SVGSymbolName");
      itemTag.appendChild(svgTag);
      svgTag.appendChild(
-         writeDoc_.createTextNode(cell->knittingSymbolName()));
+         writeDoc_.createTextNode(cell->get_knitting_symbol_name()));
    }
   }
 

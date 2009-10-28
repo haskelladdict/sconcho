@@ -50,7 +50,6 @@
 #include "gridDimensionDialog.h"
 #include "helperFunctions.h"
 #include "io.h"
-#include "knittingSymbol.h"
 #include "mainWindow.h"
 #include "patternKeyDialog.h"
 #include "patternView.h"
@@ -94,6 +93,7 @@ bool MainWindow::Init()
   initialize_settings_();
 
   /* populate the main interface */
+  create_pattern_key_dialog_();
   create_graphics_scene_();
   create_symbols_widget_();
   create_toolbar_();
@@ -102,7 +102,6 @@ bool MainWindow::Init()
   create_status_bar_();
   create_property_symbol_layout_();
   create_timers_();
-  create_pattern_key_dialog_();
 
   connect(symbolSelector_,
           SIGNAL(selected_symbol_changed(const KnittingSymbolPtr)),
@@ -138,12 +137,33 @@ bool MainWindow::Init()
   return true;
 }
 
-
 /**************************************************************
  *
  * PUBLIC SLOTS
  *
  *************************************************************/
+
+
+//-------------------------------------------------------------
+// notify the pattern key dialog that a knitting symbol
+// has been added
+//-------------------------------------------------------------
+void MainWindow::knitting_symbol_added(KnittingSymbolPtr aSymbol)
+{
+  patternKeyDialog_->add_knitting_symbol(aSymbol);
+}
+
+
+//-------------------------------------------------------------
+// notify the pattern key dialog that a knitting symbol
+// has been removed
+//-------------------------------------------------------------
+void MainWindow::knitting_symbol_removed(KnittingSymbolPtr aSymbol)
+{
+  patternKeyDialog_->remove_knitting_symbol(aSymbol);
+}
+
+
 
 //-------------------------------------------------------------
 // update the display widget with the current mouse position
@@ -728,7 +748,6 @@ void MainWindow::create_graphics_scene_()
 
   /* create canvas */
   QPoint origin(0,0);
-//  QFont canvasFont = extract_font_from_settings(settings_);
   canvas_ = new GraphicsScene(origin, gridSize, 30, settings_, this);
   if ( !canvas_->Init() )
   {

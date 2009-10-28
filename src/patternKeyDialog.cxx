@@ -19,6 +19,7 @@
 ****************************************************************/
 
 /** Qt headers */
+#include <QDebug>
 #include <QGraphicsView>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -100,6 +101,40 @@ bool PatternKeyDialog::Init()
  * PUBLIC SLOTS
  *
  *************************************************************/
+
+
+//-------------------------------------------------------------
+// every time a symbol is added on the canvas this slot is
+// invoked to reference count the current number of symbols
+// present
+//-------------------------------------------------------------
+void PatternKeyDialog::add_knitting_symbol(
+  KnittingSymbolPtr newSymbol)
+{
+  /* update reference count */
+  QString symbolName = newSymbol->fullName();
+  int currentValue = usedKnittingSymbols_[symbolName] + 1;
+  usedKnittingSymbols_[symbolName] = currentValue;
+}
+
+
+//-------------------------------------------------------------
+// every time a symbol is removed from the canvas this slot is
+// invoked to reference count the current number of symbols
+// present
+//-------------------------------------------------------------
+void PatternKeyDialog::remove_knitting_symbol(
+  KnittingSymbolPtr deadSymbol)
+{
+  /* update reference count */
+  QString symbolName = deadSymbol->fullName();
+  int currentValue = usedKnittingSymbols_[symbolName] - 1;
+  usedKnittingSymbols_[symbolName] = currentValue;
+
+  assert(currentValue >= 0);
+}
+
+
 
 /**************************************************************
  *
