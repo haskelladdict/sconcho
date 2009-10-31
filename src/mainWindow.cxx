@@ -717,7 +717,8 @@ void MainWindow::create_status_bar_()
 //-------------------------------------------------------------
 void MainWindow::create_pattern_key_dialog_()
 {
-  patternKeyDialog_ = new PatternKeyDialog(settings_,this);
+  patternKeyDialog_ = new PatternKeyDialog(GRID_CELL_SIZE,
+    settings_,this);
   patternKeyDialog_->Init();
   patternKeyDialog_->setVisible(false);
 }
@@ -748,7 +749,8 @@ void MainWindow::create_graphics_scene_()
 
   /* create canvas */
   QPoint origin(0,0);
-  canvas_ = new GraphicsScene(origin, gridSize, 30, settings_, this);
+  canvas_ = new GraphicsScene(origin, gridSize, GRID_CELL_SIZE, 
+      settings_, this);
   if ( !canvas_->Init() )
   {
     qDebug() << "Failed to initialize canvas";
@@ -766,7 +768,7 @@ void MainWindow::create_graphics_scene_()
 //-------------------------------------------------------------
 void MainWindow::create_symbols_widget_()
 {
-  symbolSelector_ = new SymbolSelectorWidget(this);
+  symbolSelector_ = new SymbolSelectorWidget(GRID_CELL_SIZE, this);
   symbolSelector_->Init();
 }
 

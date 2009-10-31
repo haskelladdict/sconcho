@@ -46,9 +46,11 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-SymbolSelectorWidget::SymbolSelectorWidget(QWidget* myParent)
+SymbolSelectorWidget::SymbolSelectorWidget(int cellSize,
+  QWidget* myParent)
     :
       QTabWidget(myParent),
+      cellSize_(cellSize),
       highlightedItem_(0)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -158,7 +160,8 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
                          "",
                          ""));
 
-  SymbolSelectorItem* symbol = new SymbolSelectorItem(sym,this);
+  SymbolSelectorItem* symbol = 
+    new SymbolSelectorItem(cellSize_, sym, this);
   symbol->Init();
  
   QLabel* symbolLabel = new QLabel(sym->baseName());

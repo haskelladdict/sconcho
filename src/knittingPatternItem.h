@@ -18,8 +18,8 @@
 *
 ****************************************************************/
 
-#ifndef PATTERN_GRID_ITEM_H
-#define PATTERN_GRID_ITEM_H
+#ifndef KNITTING_PATTERN_ITEM_H
+#define KNITTING_PATTERN_ITEM_H
 
 /* boost includes */
 #include <boost/utility.hpp>
@@ -29,11 +29,10 @@
 #include <QColor>
 #include <QGraphicsItem>
 #include <QPen>
-#include <QList>
+//#include <QList>
 
 /* local includes */
 #include "basicDefs.h"
-#include "knittingPatternItem.h"
 #include "knittingSymbol.h"
 
 
@@ -54,22 +53,17 @@ class QStyleOptionGraphicsItem;
  * canvas 
  *
  ***************************************************************/
-class PatternGridItem
+class KnittingPatternItem
   :
-    public QObject,
     public QGraphicsItem,
     public boost::noncopyable
 {
   
-  Q_OBJECT
-
-  
 public:
 
 
-  explicit PatternGridItem(const QPoint& loc, const QSize& aDim, 
+  explicit KnittingPatternItem(const QPoint& loc, const QSize& aDim, 
       int scale, int columnID, int rowID, 
-      GraphicsScene* myParent = 0,
       const QColor& backColor = Qt::white);
   bool Init();
 
@@ -78,56 +72,36 @@ public:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     QWidget *widget);
 
-  /* return our object type; needed for qgraphicsitem_cast */
-  enum { Type = UserType + PATTERN_GRID_ITEM_TYPE };
-  int type() const;
-
-  /* this function selects a cell and highlights/unhightlights it
-   * based on its current status */
-  void select();
-  
   /* insert a new knitting symbol to be displayed */
   void insert_knitting_symbol(KnittingSymbolPtr symbol);
 
-  /* set the background color */
-  void set_background_color(const QColor& newColor);
-
   /* reseat this cell to the given new coordinates */
   void reseat(const QPoint& newOrigin, int newCol, int newRow);
+
+  /* set the background color */
+  void set_background_color(const QColor& newColor);
 
   /* accessors for properties */
   const QPoint& origin() const { return loc_; } 
   const QSize& dim() const { return dim_; }
   int col() const { return columnIndex_; }
-  int row() const { return rowIndex_; }  
-  const QColor& color() const { return backColor_; }  
+  int row() const { return rowIndex_; }
   const QString& get_knitting_symbol_name() const;
   const KnittingSymbolPtr get_knitting_symbol() const;
 
 
-signals:
-
-  void item_selected(PatternGridItem* us, bool status);
-  void item_reset(PatternGridItem* us);
-
-
-protected:
-
-  void mousePressEvent(QGraphicsSceneMouseEvent* event);
- 
-    
 private:
 
   /* some tracking variables */
   int status_;
-  bool selected_;
-
-  /* our parent scene */
-  GraphicsScene* parent_;
 
   /* our data symbol */
   QGraphicsSvgItem* svgItem_;
   KnittingSymbolPtr knittingSymbol_;
+
+  /* drawing related objects */
+  QPen pen_;
+  QColor backColor_;
 
   /* our location and dimensions */
   QPoint loc_;
@@ -136,17 +110,9 @@ private:
   int columnIndex_;
   int rowIndex_;
  
-  /* drawing related objects */
-  QPen pen_;
-  QColor backColor_;
-  QColor currentColor_;
-  QColor highlightColor_;
-
   /* functions */
   void set_up_pens_brushes_();
   void fit_svg_();
-  void highlight_on_();
-  void highlight_off_();
 };
 
 

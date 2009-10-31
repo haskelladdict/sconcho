@@ -26,14 +26,19 @@
 
 /* QT includes */
 #include <QGraphicsScene>
+#include <QList>
+#include <QPoint>
 
 /* local includes */
 #include "basicDefs.h"
+#include "knittingSymbol.h"
+
 
 QT_BEGIN_NAMESPACE
 
 
 /* a few forward declarations */
+class KnittingPatternItem;
 class QGraphicsTextItem;
 class QSettings;
 
@@ -56,9 +61,13 @@ class PatternKeyCanvas
 public:
 
 
-  explicit PatternKeyCanvas(const QSettings& settings, 
-    QObject* myParent = 0);
+  explicit PatternKeyCanvas(QPoint origin, int aSize, 
+    const QSettings& settings, QObject* myParent = 0);
   bool Init();
+
+  /* add or remove symbol from legend canvas */
+  void add_symbol(KnittingSymbolPtr newSymbol);
+
 
   /* setters for properties */
   //void new_settings(const QSettings& newSettings); 
@@ -76,6 +85,19 @@ private:
 
   /* some tracking variables */
   int status_;
+
+  /* origin of display */
+  QPoint origin_;
+
+  /* list of currently displayed KnittingPatternItems in
+   * the order they are displayed on the screen so we can
+   * easily figure out where to insert a new item */
+  QList<KnittingPatternItem*> displayedItems_;
+
+  /* size of a cell for displaying knitting patterns present
+   * on canvas and number of rows currently shown */
+  int cellSize_;
+  int cellMargin_;
 
   /* our graphic items */
   QGraphicsTextItem* mainText_;

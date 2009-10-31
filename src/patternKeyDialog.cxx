@@ -47,10 +47,11 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-PatternKeyDialog::PatternKeyDialog(const QSettings& aSetting,
-  QWidget* myParent)
+PatternKeyDialog::PatternKeyDialog(int cellSize,
+  const QSettings& aSetting, QWidget* myParent)
     :
       QDialog(myParent),
+      cellSize_(cellSize),
       settings_(aSetting),
       mainSplitter_(new QSplitter)
 {
@@ -114,7 +115,28 @@ void PatternKeyDialog::add_knitting_symbol(
   /* update reference count */
   QString symbolName = newSymbol->fullName();
   int currentValue = usedKnittingSymbols_[symbolName] + 1;
+  assert(currentValue > 0);
+  
   usedKnittingSymbols_[symbolName] = currentValue;
+
+  /* if the currentValue is one the symbol has come "into
+   * existence" and we need to show it on the legend canvas;
+   * if this is the very first time the user selected it
+   * we also add the default descriptor text to the 
+   * symbolDescriptor_ map */
+  if (currentValue == 1)
+  {
+    if (!symbolDescriptors_.contains(symbolName))
+    {
+      QString description = newSymbol->baseName();
+      symbolDescriptors_[symbolName] = description;
+      qDebug() << symbolDescriptors_[symbolName];
+    }
+
+    /* show it on the canvas */
+    patternKeyCanvas_->add_symbol(newSymbol);
+  }
+
 }
 
 
@@ -166,9 +188,14 @@ void PatternKeyDialog::remove_knitting_symbol(
 //------------------------------------------------------------
 void PatternKeyDialog::create_canvas_()
 {
-  patternKeyCanvas_ = new PatternKeyCanvas(settings_, this);  
+  QPoint origin(0,0);
+  patternKeyCanvas_ = 
+    new PatternKeyCanvas(origin, cellSize_, settings_, this);  
   patternKeyCanvas_->Init();
   patternKeyView_ = new QGraphicsView(patternKeyCanvas_);
+  patternKeyView_->setRenderHints(QPainter::Antialiasing);
+  patternKeyView_->setViewportUpdateMode(
+      QGraphicsView::FullViewportUpdate);
 }
 
 

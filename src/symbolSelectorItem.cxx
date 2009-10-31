@@ -42,12 +42,12 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-SymbolSelectorItem::SymbolSelectorItem(KnittingSymbolPtr symbol, 
-    QWidget* myParent)
+SymbolSelectorItem::SymbolSelectorItem(int cellSize,
+  KnittingSymbolPtr symbol, QWidget* myParent)
   :
     QFrame(myParent),
     selected_(false),
-    unitSize_(30),
+    unitSize_(cellSize),
     symbol_(symbol)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;

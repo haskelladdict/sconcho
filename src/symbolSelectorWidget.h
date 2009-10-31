@@ -58,7 +58,7 @@ class SymbolSelectorWidget
     
 public:
 
-  explicit SymbolSelectorWidget(QWidget* myParent = 0);
+  explicit SymbolSelectorWidget(int cellSize, QWidget* myParent = 0);
   bool Init();
 
 
@@ -76,6 +76,9 @@ private:
 
   /* some tracking variables */
   int status_;
+
+  /* size of a unit pattern symbol cell in pixels */
+  int cellSize_;
 
   /* the currently selected symbol */
   SymbolSelectorItem* highlightedItem_;

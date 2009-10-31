@@ -59,7 +59,7 @@ class PatternKeyDialog
     
 public:
 
-  explicit PatternKeyDialog(const QSettings& aSetting, 
+  explicit PatternKeyDialog(int cellSize, const QSettings& aSetting, 
     QWidget* myParent = 0);
   bool Init();
 
@@ -80,8 +80,18 @@ private:
   /* some tracking variables */
   int status_;
 
+  /* size of cells showing each pattern grid item */
+  int cellSize_;
+
   /* reference count of knitting pattern in current use */
   QMap<QString,int> usedKnittingSymbols_;
+
+  /* map holding the descriptor for all currently "known"
+   * knitting symbols (even ones not currently shown, e.g.
+   * for symbols that were previously visible, had their 
+   * text changed and then disappered again since the user
+   * removed all instances of the symbol from the pattern) */
+  QMap<QString,QString> symbolDescriptors_;
 
   /* functions for creating the interface */
   void create_canvas_();

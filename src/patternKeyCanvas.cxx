@@ -20,12 +20,14 @@
 
 /* Qt headers */
 #include <QDebug>
+#include <QColor>
 #include <QGraphicsTextItem>
 #include <QPainter>
 #include <QSettings>
 
 /* local headers */
 #include "helperFunctions.h"
+#include "patternGridItem.h"
 #include "patternKeyCanvas.h"
 
 
@@ -40,10 +42,13 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-PatternKeyCanvas::PatternKeyCanvas(const QSettings& settings,
-  QObject* myParent)
+PatternKeyCanvas::PatternKeyCanvas(QPoint origin, int aSize, 
+  const QSettings& settings, QObject* myParent)
     :
       QGraphicsScene(myParent),
+      origin_(origin),
+      cellSize_(aSize),
+      cellMargin_(10),
       settings_(settings)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -92,6 +97,62 @@ void PatternKeyCanvas::update_after_settings_change()
  *
  *************************************************************/
 
+//-------------------------------------------------------------
+// add new symbol to legend canvas 
+//-------------------------------------------------------------
+void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol)
+{
+  /* make sure we don't add the empty symbol */
+  if (newSymbol->fullName() == "")
+  {
+    return;
+  }
+
+  /* We want to display items in order of increasing 
+   * symbol size. Hence we go through the list of currently
+   * displayed items until we find the correct location */
+  int currentSize = newSymbol->dim().width();
+  int row = 0;
+  while (row < displayedItems_.size())
+  {
+    KnittingSymbolPtr symbol = 
+      displayedItems_.at(row)->get_knitting_symbol();
+    int symbolSize = symbol->dim().width();
+
+    if (symbolSize > currentSize)
+    {
+      break;
+    }
+
+    ++row;
+  }
+
+  /* shift all remaining items by one */
+  for (int counter = row; counter < displayedItems_.size(); ++counter)
+  {
+    QPoint newOrigin(origin_.x(), 
+        origin_.y() + (counter + 1) * (cellSize_ + cellMargin_));
+
+    KnittingPatternItem* currentItem = displayedItems_.at(counter);
+    currentItem->reseat(newOrigin, 0, counter + 1);
+  }
+
+  /* add new item */
+  QPoint newOrigin(origin_.x(), 
+      origin_.y() + row * (cellSize_ + cellMargin_));
+  KnittingPatternItem* newItem = new KnittingPatternItem(
+      newOrigin, newSymbol->dim(), cellSize_, 0, row);
+  newItem->Init();
+  newItem->insert_knitting_symbol(newSymbol);
+  addItem(newItem);
+  displayedItems_.insert(row, newItem);
+
+  setSceneRect(itemsBoundingRect());
+}
+
+
+
+
 /**************************************************************
  *
  * PROTECTED MEMBER FUNCTIONS 
@@ -116,9 +177,11 @@ void PatternKeyCanvas::update_after_settings_change()
 void PatternKeyCanvas::create_main_label_()
 {
   QFont currentFont = extract_font_from_settings(settings_);
+  QPoint fontLocation(origin_.x(), origin_.y() - 1.2 * cellSize_);
   mainText_ = new QGraphicsTextItem(tr("Legend"));
   mainText_->setFont(currentFont);
   mainText_->setTextInteractionFlags(Qt::TextEditable);
+  mainText_->setPos(fontLocation);
   addItem(mainText_);
 }
 

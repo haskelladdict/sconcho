@@ -6,6 +6,7 @@ SET(SCONCHO_SRCS
   gridDimensionDialog.cxx
   helperFunctions.cxx
   io.cxx
+  knittingPatternItem.cxx
   knittingSymbol.cxx
   mainWindow.cxx
   patternGridItem.cxx

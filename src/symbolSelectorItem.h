@@ -56,7 +56,7 @@ class SymbolSelectorItem
 
 public:
 
-  explicit SymbolSelectorItem(KnittingSymbolPtr name, 
+  explicit SymbolSelectorItem(int cellSize, KnittingSymbolPtr name, 
     QWidget* myParent = 0);
   bool Init();
 
