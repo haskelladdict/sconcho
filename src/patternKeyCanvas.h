@@ -43,6 +43,16 @@ class QGraphicsTextItem;
 class QSettings;
 
 
+namespace KeyCanvas
+{
+  struct LabelItem
+  {
+    KnittingPatternItem* pattern;
+    QGraphicsTextItem* description;
+  };
+};
+
+
 /***************************************************************
  * 
  * The PatternKeyCanvas allows manipulation of the 
@@ -66,7 +76,7 @@ public:
   bool Init();
 
   /* add or remove symbol from legend canvas */
-  void add_symbol(KnittingSymbolPtr newSymbol);
+  void add_symbol(KnittingSymbolPtr newSymbol, const QString& desc);
 
 
   /* setters for properties */
@@ -92,7 +102,7 @@ private:
   /* list of currently displayed KnittingPatternItems in
    * the order they are displayed on the screen so we can
    * easily figure out where to insert a new item */
-  QList<KnittingPatternItem*> displayedItems_;
+  QList<KeyCanvas::LabelItem> displayedItems_;
 
   /* size of a cell for displaying knitting patterns present
    * on canvas and number of rows currently shown */
@@ -107,6 +117,9 @@ private:
 
   /* interface creation functions */
   void create_main_label_();
+
+  /* helper functions */
+  int get_text_x_position_(const KnittingPatternItem* anItem) const;
 };
 
 

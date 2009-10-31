@@ -212,8 +212,6 @@ private:
   QPair<bool,int> is_row_contiguous_(const RowItems& items) const;
   QRect find_bounding_rectangle_(const QList<RowItems>& rows) const;
 
-  /* simple max helper function */
-  int int_max(int a, int b) { return a > b ? a : b; }
 };
 
 

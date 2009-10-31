@@ -100,13 +100,19 @@ void PatternKeyCanvas::update_after_settings_change()
 //-------------------------------------------------------------
 // add new symbol to legend canvas 
 //-------------------------------------------------------------
-void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol)
+void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
+    const QString& description)
 {
   /* make sure we don't add the empty symbol */
   if (newSymbol->fullName() == "")
   {
     return;
   }
+
+  /* get width of widest symbol for text placement */
+//  int maxWidth = get_max_symbol_width_();
+//  maxWidth = int_max(maxWidth, newSymbol->dim().width());
+//  int textXPos = (maxWidth + 1) * cellSize_;
 
   /* We want to display items in order of increasing 
    * symbol size. Hence we go through the list of currently
@@ -115,8 +121,8 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol)
   int row = 0;
   while (row < displayedItems_.size())
   {
-    KnittingSymbolPtr symbol = 
-      displayedItems_.at(row)->get_knitting_symbol();
+    KeyCanvas::LabelItem item = displayedItems_.at(row);
+    KnittingSymbolPtr symbol = item.pattern->get_knitting_symbol();
     int symbolSize = symbol->dim().width();
 
     if (symbolSize > currentSize)
@@ -130,22 +136,35 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol)
   /* shift all remaining items by one */
   for (int counter = row; counter < displayedItems_.size(); ++counter)
   {
-    QPoint newOrigin(origin_.x(), 
-        origin_.y() + (counter + 1) * (cellSize_ + cellMargin_));
+    int yPos = origin_.y() + (counter + 1) * (cellSize_ + cellMargin_);
 
-    KnittingPatternItem* currentItem = displayedItems_.at(counter);
-    currentItem->reseat(newOrigin, 0, counter + 1);
+    KeyCanvas::LabelItem item = displayedItems_.at(counter);
+
+    KnittingPatternItem* currentItem = item.pattern;
+    currentItem->reseat(QPoint(0,yPos), 0, counter + 1);
+
+    int textXPos = get_text_x_position_(currentItem);
+    QGraphicsTextItem* currentText = item.description;
+    currentText->setPos(QPoint(textXPos, yPos));
   }
 
   /* add new item */
-  QPoint newOrigin(origin_.x(), 
-      origin_.y() + row * (cellSize_ + cellMargin_));
+  int newYPos = origin_.y() + row * (cellSize_ + cellMargin_);
   KnittingPatternItem* newItem = new KnittingPatternItem(
-      newOrigin, newSymbol->dim(), cellSize_, 0, row);
+      QPoint(0, newYPos), newSymbol->dim(), cellSize_, 0, row);
   newItem->Init();
   newItem->insert_knitting_symbol(newSymbol);
   addItem(newItem);
-  displayedItems_.insert(row, newItem);
+
+  QGraphicsTextItem* newTextItem = new QGraphicsTextItem(description);
+  int textXPos = get_text_x_position_(newItem);
+  newTextItem->setPos(textXPos, newYPos);
+  addItem(newTextItem);
+
+  KeyCanvas::LabelItem newLabelItem;
+  newLabelItem.pattern = newItem;
+  newLabelItem.description = newTextItem;
+  displayedItems_.insert(row, newLabelItem);
 
   setSceneRect(itemsBoundingRect());
 }
@@ -184,6 +203,21 @@ void PatternKeyCanvas::create_main_label_()
   mainText_->setPos(fontLocation);
   addItem(mainText_);
 }
+
+
+//-------------------------------------------------------------
+// returns the x position where the QGraphicsTextItem should 
+// go based on the width of the symbol 
+//-------------------------------------------------------------
+int PatternKeyCanvas::get_text_x_position_(
+  const KnittingPatternItem* anItem) const
+{
+  int symbolWidth = anItem->get_knitting_symbol()->dim().width();
+  int textXPos = (symbolWidth + 1) * cellSize_;
+
+  return textXPos;
+}
+
 
 
 QT_END_NAMESPACE

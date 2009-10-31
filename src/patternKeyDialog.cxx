@@ -134,7 +134,8 @@ void PatternKeyDialog::add_knitting_symbol(
     }
 
     /* show it on the canvas */
-    patternKeyCanvas_->add_symbol(newSymbol);
+    patternKeyCanvas_->add_symbol(newSymbol, 
+      symbolDescriptors_[symbolName]);
   }
 
 }
