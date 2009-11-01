@@ -366,6 +366,10 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
     item->Init();
     add_patternGridItem_(item);
   }
+
+  /* make sure to delect all items since the current item
+   * may have been part of the active items */
+  deselect_all_active_items();
 }
 
 
