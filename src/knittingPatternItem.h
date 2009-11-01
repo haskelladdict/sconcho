@@ -55,6 +55,7 @@ class QStyleOptionGraphicsItem;
  ***************************************************************/
 class KnittingPatternItem
   :
+    public QObject,
     public QGraphicsItem,
     public boost::noncopyable
 {

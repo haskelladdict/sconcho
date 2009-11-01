@@ -204,6 +204,8 @@ void SymbolSelectorWidget::create_tabs_()
       create_symbol_layout_("cables/LT", QSize(2,1)));
   cableLayout->addLayout(
       create_symbol_layout_("cables/RT", QSize(2,1)));
+  cableLayout->addLayout(
+      create_symbol_layout_("cables/2over2left", QSize(4,1)));
   cableLayout->addStretch(1);
 
   QWidget* cableSymbols = new QWidget(this);

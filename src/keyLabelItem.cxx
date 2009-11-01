@@ -20,11 +20,11 @@
 
 /** Qt headers */
 #include <QDebug>
+#include <QKeyEvent>
 
 /** local headers */
 #include "basicDefs.h"
 #include "keyLabelItem.h"
-
 
 QT_BEGIN_NAMESPACE
 
@@ -38,14 +38,21 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-KeyLabelItem::KeyLabelItem(const QString& text, 
-  QGraphicsItem* aParent)
+KeyLabelItem::KeyLabelItem(const QString& labelID, 
+  const QString& text, QGraphicsItem* aParent)
   :
-  QGraphicsTextItem(text, aParent)
+  QGraphicsTextItem(text, aParent),
+  IDString_(labelID)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
 
+
+/**************************************************************
+ *
+ * PUBLIC FUNCTIONS
+ *
+ *************************************************************/
 
 //--------------------------------------------------------------
 // main initialization routine
@@ -58,17 +65,11 @@ bool KeyLabelItem::Init()
   }
 
   /* set some basic properties */
-  setTextInteractionFlags(Qt::TextEditable);
+  setTextInteractionFlags(Qt::TextEditorInteraction);
   
   return true;
 }
 
-
-/**************************************************************
- *
- * PUBLIC FUNCTIONS
- *
- *************************************************************/
 
 /**************************************************************
  *
@@ -81,6 +82,17 @@ bool KeyLabelItem::Init()
  * PROTECTED 
  *
  *************************************************************/
+
+//------------------------------------------------------------
+// capture keypress events and make sure we send the current
+// legend text upstream to the PatternKeyDialog
+//------------------------------------------------------------
+void KeyLabelItem::keyPressEvent(QKeyEvent* anEvent)
+{
+  QGraphicsTextItem::keyPressEvent(anEvent);
+  emit label_changed(IDString_, toPlainText());
+}
+
 
 /**************************************************************
  *

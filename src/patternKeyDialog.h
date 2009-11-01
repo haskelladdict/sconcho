@@ -75,6 +75,11 @@ public slots:
   void remove_knitting_symbol(KnittingSymbolPtr newSymbol);
 
 
+private slots:
+
+  void update_key_label_(QString id, QString newLabelText);
+
+
 private:
 
   /* some tracking variables */

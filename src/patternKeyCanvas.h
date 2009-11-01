@@ -44,6 +44,7 @@ class QGraphicsTextItem;
 class QSettings;
 
 
+/* helper struct to keep track of a symbol/label pair */
 namespace KeyCanvas
 {
   struct LabelItem
@@ -78,20 +79,19 @@ public:
 
   /* add or remove symbol from legend canvas */
   void add_symbol(KnittingSymbolPtr newSymbol, const QString& desc);
+  void remove_symbol(const QString& deadSymbolName);
 
-
-  /* setters for properties */
-  //void new_settings(const QSettings& newSettings); 
-
-//protected:
-
-//  void mousePressEvent(QGraphicsSceneMouseEvent* event);
 
 public slots:
 
   void update_after_settings_change();
 
-    
+
+signals:
+
+  void key_label_changed(QString id, QString newText);
+
+
 private:
 
   /* some tracking variables */
@@ -121,6 +121,7 @@ private:
 
   /* helper functions */
   int get_text_x_position_(const KnittingPatternItem* anItem) const;
+  int get_insertion_index_(int newSymbolSize) const;
 };
 
 

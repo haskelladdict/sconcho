@@ -32,6 +32,7 @@ QT_BEGIN_NAMESPACE
 
 
 /* a few forward declarations */
+class QKeyEvent;
 
 
 /***************************************************************
@@ -51,14 +52,28 @@ class KeyLabelItem
     
 public:
 
-  explicit KeyLabelItem(const QString& text, QGraphicsItem* parent=0);
+  explicit KeyLabelItem(const QString& labelID, const QString& text, 
+    QGraphicsItem* parent=0);
   bool Init();
+
+
+signals:
+
+  void label_changed(QString id, QString labelText);
+
+
+protected:
+
+  void keyPressEvent(QKeyEvent* anEvent);
 
 
 private:
 
   /* construction status variable */
   int status_;
+
+  /* name under which upstream knows us */
+  QString IDString_; 
 };
 
 

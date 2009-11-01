@@ -96,6 +96,11 @@ bool PatternKeyDialog::Init()
           SLOT(update_after_settings_change())
          );
 
+  connect(patternKeyCanvas_,
+          SIGNAL(key_label_changed(QString, QString)),
+          this,
+          SLOT(update_key_label_(QString, QString))
+         );
 
   return true;
 }
@@ -159,6 +164,14 @@ void PatternKeyDialog::remove_knitting_symbol(
   usedKnittingSymbols_[symbolName] = currentValue;
 
   assert(currentValue >= 0);
+ 
+  /* remove symbol if reference count hits 0 */
+  if (currentValue == 0)
+  {
+    usedKnittingSymbols_.remove(symbolName);
+    patternKeyCanvas_->remove_symbol(symbolName);
+  }
+
 }
 
 
@@ -180,6 +193,17 @@ void PatternKeyDialog::remove_knitting_symbol(
  * PRIVATE SLOTS
  *
  *************************************************************/
+
+//-------------------------------------------------------------
+// this slot is called when a currently visible key label 
+// changes its text via user interaction 
+//-------------------------------------------------------------
+void PatternKeyDialog::update_key_label_(QString labelID, 
+  QString newLabelText)
+{
+  symbolDescriptors_[labelID] = newLabelText; 
+}
+
 
 /*************************************************************
  *

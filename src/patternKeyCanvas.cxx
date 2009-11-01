@@ -122,20 +122,7 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
    * symbol size. Hence we go through the list of currently
    * displayed items until we find the correct location */
   int currentSize = newSymbol->dim().width();
-  int row = 0;
-  while (row < displayedItems_.size())
-  {
-    KeyCanvas::LabelItem item = displayedItems_.at(row);
-    KnittingSymbolPtr symbol = item.pattern->get_knitting_symbol();
-    int symbolSize = symbol->dim().width();
-
-    if (symbolSize > currentSize)
-    {
-      break;
-    }
-
-    ++row;
-  }
+  int row = get_insertion_index_(currentSize);
 
   /* shift all remaining items by one */
   for (int counter = row; counter < displayedItems_.size(); ++counter)
@@ -152,7 +139,7 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
     currentText->setPos(QPoint(textXPos, yPos));
   }
 
-  /* add new item */
+  /* add new symbol/label pair */
   int newYPos = origin_.y() + row * (cellSize_ + cellMargin_);
   KnittingPatternItem* newSymbolItem = new KnittingPatternItem(
       QPoint(0, newYPos), newSymbol->dim(), cellSize_, 0, row);
@@ -161,23 +148,70 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
   addItem(newSymbolItem);
 
   QFont currentFont = extract_font_from_settings(settings_);
-  KeyLabelItem* newTextItem = new KeyLabelItem(description);
+  QString labelID = newSymbol->fullName();
+  KeyLabelItem* newTextItem = new KeyLabelItem(labelID, description);
   newTextItem->Init();
   int textXPos = get_text_x_position_(newSymbolItem);
   newTextItem->setPos(textXPos, newYPos);
   newTextItem->setFont(currentFont);
   addItem(newTextItem);
+  connect(newTextItem,
+          SIGNAL(label_changed(QString, QString)),
+          this,
+          SIGNAL(key_label_changed(QString, QString))
+         );
 
   KeyCanvas::LabelItem newLabelItem;
   newLabelItem.pattern = newSymbolItem;
   newLabelItem.description = newTextItem;
   displayedItems_.insert(row, newLabelItem);
-
-  setSceneRect(itemsBoundingRect());
 }
 
 
+//-------------------------------------------------------------
+// remove unused symbol from legend canvas 
+//-------------------------------------------------------------
+void PatternKeyCanvas::remove_symbol(const QString& deadSymbolName)
+{
+  /* find index of to be removed symbol */
+  int counter = 0;
+  KnittingPatternItem* deadPatternItem;
+  KeyLabelItem* deadLabelItem;
+  foreach(KeyCanvas::LabelItem label, displayedItems_)
+  {
+    deadPatternItem = label.pattern;
+    if ( deadPatternItem->get_knitting_symbol_name() 
+         == deadSymbolName)
+    {
+      deadLabelItem = label.description;
+      break;
+    }
 
+    ++counter;
+  }
+
+  /* redraw all following symbols */
+  for (int pos = counter; pos <  displayedItems_.size(); ++pos)
+  {
+    int yPos = origin_.y() + (pos-1) * (cellSize_ + cellMargin_);
+
+    KeyCanvas::LabelItem item = displayedItems_.at(pos);
+    KnittingPatternItem* currentItem = item.pattern;
+    currentItem->reseat(QPoint(0,yPos), 0, (pos-1));
+
+    int textXPos = get_text_x_position_(currentItem);
+    KeyLabelItem* currentText = item.description;
+    currentText->setPos(QPoint(textXPos, yPos));
+  }
+
+  /* remove symbol */
+  removeItem(deadPatternItem);
+  deadPatternItem->deleteLater();
+  removeItem(deadLabelItem);
+  deadLabelItem->deleteLater();
+  displayedItems_.removeAt(counter);
+}
+ 
 
 /**************************************************************
  *
@@ -223,6 +257,31 @@ int PatternKeyCanvas::get_text_x_position_(
   int textXPos = (symbolWidth + 1) * cellSize_;
 
   return textXPos;
+}
+
+
+//-------------------------------------------------------------
+// given the width of a new knitting symbol returns the
+// insertion position in the list of currently displayed symbols
+//--------------------------------------------------------------
+int PatternKeyCanvas::get_insertion_index_(int newSymbolSize) const
+{
+  int row = 0;
+  while (row < displayedItems_.size())
+  {
+    KeyCanvas::LabelItem item = displayedItems_.at(row);
+    KnittingSymbolPtr symbol = item.pattern->get_knitting_symbol();
+    int symbolSize = symbol->dim().width();
+
+    if (symbolSize > newSymbolSize)
+    {
+      break;
+    }
+
+    ++row;
+  }
+
+  return row;
 }
 
 
