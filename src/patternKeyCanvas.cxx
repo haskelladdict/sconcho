@@ -27,6 +27,7 @@
 
 /* local headers */
 #include "helperFunctions.h"
+#include "keyLabelItem.h"
 #include "patternGridItem.h"
 #include "patternKeyCanvas.h"
 
@@ -65,6 +66,7 @@ bool PatternKeyCanvas::Init()
     return false;
   }
 
+  /* setup interface */
   create_main_label_();
 
   return true;
@@ -88,6 +90,13 @@ void PatternKeyCanvas::update_after_settings_change()
   
   /* change main text */
   mainText_->setFont(newFont);
+
+  /* change pattern symbol labels */
+  foreach(KeyCanvas::LabelItem item, displayedItems_)
+  {
+    KeyLabelItem* currentLabel = item.description;
+    currentLabel->setFont(newFont);
+  }
 }
 
 
@@ -108,11 +117,6 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
   {
     return;
   }
-
-  /* get width of widest symbol for text placement */
-//  int maxWidth = get_max_symbol_width_();
-//  maxWidth = int_max(maxWidth, newSymbol->dim().width());
-//  int textXPos = (maxWidth + 1) * cellSize_;
 
   /* We want to display items in order of increasing 
    * symbol size. Hence we go through the list of currently
@@ -144,25 +148,28 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
     currentItem->reseat(QPoint(0,yPos), 0, counter + 1);
 
     int textXPos = get_text_x_position_(currentItem);
-    QGraphicsTextItem* currentText = item.description;
+    KeyLabelItem* currentText = item.description;
     currentText->setPos(QPoint(textXPos, yPos));
   }
 
   /* add new item */
   int newYPos = origin_.y() + row * (cellSize_ + cellMargin_);
-  KnittingPatternItem* newItem = new KnittingPatternItem(
+  KnittingPatternItem* newSymbolItem = new KnittingPatternItem(
       QPoint(0, newYPos), newSymbol->dim(), cellSize_, 0, row);
-  newItem->Init();
-  newItem->insert_knitting_symbol(newSymbol);
-  addItem(newItem);
+  newSymbolItem->Init();
+  newSymbolItem->insert_knitting_symbol(newSymbol);
+  addItem(newSymbolItem);
 
-  QGraphicsTextItem* newTextItem = new QGraphicsTextItem(description);
-  int textXPos = get_text_x_position_(newItem);
+  QFont currentFont = extract_font_from_settings(settings_);
+  KeyLabelItem* newTextItem = new KeyLabelItem(description);
+  newTextItem->Init();
+  int textXPos = get_text_x_position_(newSymbolItem);
   newTextItem->setPos(textXPos, newYPos);
+  newTextItem->setFont(currentFont);
   addItem(newTextItem);
 
   KeyCanvas::LabelItem newLabelItem;
-  newLabelItem.pattern = newItem;
+  newLabelItem.pattern = newSymbolItem;
   newLabelItem.description = newTextItem;
   displayedItems_.insert(row, newLabelItem);
 

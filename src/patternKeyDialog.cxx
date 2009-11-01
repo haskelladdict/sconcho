@@ -69,6 +69,10 @@ bool PatternKeyDialog::Init()
     return false;
   }
 
+  /* set properties */
+  setMinimumSize(300,400);
+  setWindowFlags(Qt::Window);
+
   /* call individual initialization routines */
   setModal(false);
   setWindowTitle(tr("Edit pattern key"));

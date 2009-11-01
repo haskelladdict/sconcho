@@ -22,10 +22,6 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QRubberBand>
-
-#include <QCoreApplication>
-#include <QApplication>
-#include <QMouseEvent>
 #include <QGraphicsSceneMouseEvent>
 
 /** local headers */

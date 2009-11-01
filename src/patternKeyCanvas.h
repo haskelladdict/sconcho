@@ -38,6 +38,7 @@ QT_BEGIN_NAMESPACE
 
 
 /* a few forward declarations */
+class KeyLabelItem;
 class KnittingPatternItem;
 class QGraphicsTextItem;
 class QSettings;
@@ -48,7 +49,7 @@ namespace KeyCanvas
   struct LabelItem
   {
     KnittingPatternItem* pattern;
-    QGraphicsTextItem* description;
+    KeyLabelItem* description;
   };
 };
 
