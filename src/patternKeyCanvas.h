@@ -100,9 +100,7 @@ private:
   /* origin of display */
   QPoint origin_;
 
-  /* list of currently displayed KnittingPatternItems in
-   * the order they are displayed on the screen so we can
-   * easily figure out where to insert a new item */
+  /* list of currently displayed KnittingPatternItems */ 
   QList<KeyCanvas::LabelItem> displayedItems_;
 
   /* size of a cell for displaying knitting patterns present
@@ -121,7 +119,6 @@ private:
 
   /* helper functions */
   int get_text_x_position_(const KnittingPatternItem* anItem) const;
-  int get_insertion_index_(int newSymbolSize) const;
 };
 
 

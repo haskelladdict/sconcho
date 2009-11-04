@@ -118,42 +118,48 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
     return;
   }
 
-  /* We want to display items in order of increasing 
-   * symbol size. Hence we go through the list of currently
-   * displayed items until we find the correct location */
-  int currentSize = newSymbol->dim().width();
-  int row = get_insertion_index_(currentSize);
-
-  /* shift all remaining items by one */
-  for (int counter = row; counter < displayedItems_.size(); ++counter)
+  /* compute the new symbol position somewhere below the lowest 
+   * item present on the canvas */
+  qreal xOrigin = 0.0;
+  qreal yOrigin = 0.0;
+  QList<QGraphicsItem*> allItems(items());
+  foreach(QGraphicsItem* anItem, allItems)
   {
-    int yPos = origin_.y() + (counter + 1) * (cellSize_ + cellMargin_);
+    qreal xPos = anItem->scenePos().x();
+    qreal yPos = anItem->scenePos().y();
 
-    KeyCanvas::LabelItem item = displayedItems_.at(counter);
+    if (xOrigin > xPos)
+    {
+      xOrigin = xPos;
+    }
 
-    KnittingPatternItem* currentItem = item.pattern;
-    currentItem->reseat(QPoint(0,yPos), 0, counter + 1);
-
-    int textXPos = get_text_x_position_(currentItem);
-    KeyLabelItem* currentText = item.description;
-    currentText->setPos(QPoint(textXPos, yPos));
+    if (yOrigin < yPos)
+    {
+      yOrigin = yPos;
+    }
   }
+  int newXPos = static_cast<int>(xOrigin);
+  int newYPos = static_cast<int>(yOrigin) + cellSize_ + cellMargin_;
 
-  /* add new symbol/label pair */
-  int newYPos = origin_.y() + row * (cellSize_ + cellMargin_);
+
+  /* create new symbol */
   KnittingPatternItem* newSymbolItem = new KnittingPatternItem(
-      QPoint(0, newYPos), newSymbol->dim(), cellSize_, 0, row);
+      QPoint(newXPos, newYPos), newSymbol->dim(), cellSize_, 0, 0);
   newSymbolItem->Init();
   newSymbolItem->insert_knitting_symbol(newSymbol);
+  newSymbolItem->setFlag(QGraphicsItem::ItemIsMovable);
   addItem(newSymbolItem);
 
+
+  /* create new label */
   QFont currentFont = extract_font_from_settings(settings_);
   QString labelID = newSymbol->fullName();
   KeyLabelItem* newTextItem = new KeyLabelItem(labelID, description);
   newTextItem->Init();
   int textXPos = get_text_x_position_(newSymbolItem);
-  newTextItem->setPos(textXPos, newYPos);
+  newTextItem->setPos(newXPos + textXPos, newYPos);
   newTextItem->setFont(currentFont);
+  newTextItem->setFlag(QGraphicsItem::ItemIsMovable);
   addItem(newTextItem);
   connect(newTextItem,
           SIGNAL(label_changed(QString, QString)),
@@ -161,10 +167,11 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
           SIGNAL(key_label_changed(QString, QString))
          );
 
+  /* add symbol/label pair to tracker */
   KeyCanvas::LabelItem newLabelItem;
   newLabelItem.pattern = newSymbolItem;
   newLabelItem.description = newTextItem;
-  displayedItems_.insert(row, newLabelItem);
+  displayedItems_.push_back(newLabelItem);
 }
 
 
@@ -177,6 +184,7 @@ void PatternKeyCanvas::remove_symbol(const QString& deadSymbolName)
   int counter = 0;
   KnittingPatternItem* deadPatternItem;
   KeyLabelItem* deadLabelItem;
+
   foreach(KeyCanvas::LabelItem label, displayedItems_)
   {
     deadPatternItem = label.pattern;
@@ -188,20 +196,6 @@ void PatternKeyCanvas::remove_symbol(const QString& deadSymbolName)
     }
 
     ++counter;
-  }
-
-  /* redraw all following symbols */
-  for (int pos = counter; pos <  displayedItems_.size(); ++pos)
-  {
-    int yPos = origin_.y() + (pos-1) * (cellSize_ + cellMargin_);
-
-    KeyCanvas::LabelItem item = displayedItems_.at(pos);
-    KnittingPatternItem* currentItem = item.pattern;
-    currentItem->reseat(QPoint(0,yPos), 0, (pos-1));
-
-    int textXPos = get_text_x_position_(currentItem);
-    KeyLabelItem* currentText = item.description;
-    currentText->setPos(QPoint(textXPos, yPos));
   }
 
   /* remove symbol */
@@ -237,9 +231,10 @@ void PatternKeyCanvas::remove_symbol(const QString& deadSymbolName)
 void PatternKeyCanvas::create_main_label_()
 {
   QFont currentFont = extract_font_from_settings(settings_);
-  QPoint fontLocation(origin_.x(), origin_.y() - 1.2 * cellSize_);
+  QPoint fontLocation(origin_.x(), origin_.y());
   mainText_ = new QGraphicsTextItem(tr("Legend"));
   mainText_->setFont(currentFont);
+  mainText_->setFlag(QGraphicsItem::ItemIsMovable);
   mainText_->setTextInteractionFlags(Qt::TextEditable);
   mainText_->setPos(fontLocation);
   addItem(mainText_);
@@ -258,32 +253,6 @@ int PatternKeyCanvas::get_text_x_position_(
 
   return textXPos;
 }
-
-
-//-------------------------------------------------------------
-// given the width of a new knitting symbol returns the
-// insertion position in the list of currently displayed symbols
-//--------------------------------------------------------------
-int PatternKeyCanvas::get_insertion_index_(int newSymbolSize) const
-{
-  int row = 0;
-  while (row < displayedItems_.size())
-  {
-    KeyCanvas::LabelItem item = displayedItems_.at(row);
-    KnittingSymbolPtr symbol = item.pattern->get_knitting_symbol();
-    int symbolSize = symbol->dim().width();
-
-    if (symbolSize > newSymbolSize)
-    {
-      break;
-    }
-
-    ++row;
-  }
-
-  return row;
-}
-
 
 
 QT_END_NAMESPACE
