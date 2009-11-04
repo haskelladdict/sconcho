@@ -46,8 +46,7 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 KnittingPatternItem::KnittingPatternItem(const QPoint& aLoc, 
-  const QSize& aDim, int aScale, int colID, int rowID,
-  const QColor& aBackColor) 
+  const QSize& aDim, int aScale, const QColor& aBackColor) 
     :
       QGraphicsItem(),
       svgItem_(0),
@@ -55,9 +54,7 @@ KnittingPatternItem::KnittingPatternItem(const QPoint& aLoc,
       backColor_(aBackColor),
       loc_(aLoc),
       dim_(aDim),
-      scaling_(aScale),
-      columnIndex_(colID),
-      rowIndex_(rowID)
+      scaling_(aScale)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -74,7 +71,7 @@ bool KnittingPatternItem::Init()
   }
 
   /* set up some properties */
-  //setFlags(QGraphicsItem::ItemIsSelectable);
+  setFlags(QGraphicsItem::ItemClipsChildrenToShape);
   
   /* call individual initialization routines */
   set_up_pens_brushes_();
@@ -152,26 +149,6 @@ void KnittingPatternItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
   }
 }
  
-
-//--------------------------------------------------------------
-// move this cell to a new location (in the pattern grid
-// array) on the canvas.
-//--------------------------------------------------------------
-void KnittingPatternItem::reseat(const QPoint& newOrigin, int newCol, 
-    int newRow)
-{
-  /* schedule event with canvas */
-  prepareGeometryChange();
-
-  /* update */
-  loc_ = newOrigin;
-  columnIndex_ = newCol;
-  rowIndex_ = newRow;
-
-  /* fix up the svg item */
-  fit_svg_();
-} 
-
 
 //--------------------------------------------------------------
 // return the full name of our embedded knitting symbol

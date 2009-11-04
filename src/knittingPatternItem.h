@@ -64,8 +64,7 @@ public:
 
 
   explicit KnittingPatternItem(const QPoint& loc, const QSize& aDim, 
-      int scale, int columnID, int rowID, 
-      const QColor& backColor = Qt::white);
+      int scale, const QColor& backColor = Qt::white);
   bool Init();
 
   /* reimplement pure virtual base class methods */
@@ -76,17 +75,12 @@ public:
   /* insert a new knitting symbol to be displayed */
   void insert_knitting_symbol(KnittingSymbolPtr symbol);
 
-  /* reseat this cell to the given new coordinates */
-  void reseat(const QPoint& newOrigin, int newCol, int newRow);
-
   /* set the background color */
   void set_background_color(const QColor& newColor);
 
   /* accessors for properties */
   const QPoint& origin() const { return loc_; } 
   const QSize& dim() const { return dim_; }
-  int col() const { return columnIndex_; }
-  int row() const { return rowIndex_; }
   const QString& get_knitting_symbol_name() const;
   const KnittingSymbolPtr get_knitting_symbol() const;
 
@@ -108,8 +102,6 @@ private:
   QPoint loc_;
   QSize dim_;
   int scaling_;
-  int columnIndex_;
-  int rowIndex_;
  
   /* functions */
   void set_up_pens_brushes_();

@@ -144,7 +144,7 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
 
   /* create new symbol */
   KnittingPatternItem* newSymbolItem = new KnittingPatternItem(
-      QPoint(newXPos, newYPos), newSymbol->dim(), cellSize_, 0, 0);
+      QPoint(newXPos, newYPos), newSymbol->dim(), cellSize_);
   newSymbolItem->Init();
   newSymbolItem->insert_knitting_symbol(newSymbol);
   newSymbolItem->setFlag(QGraphicsItem::ItemIsMovable);
