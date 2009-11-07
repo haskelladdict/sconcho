@@ -29,7 +29,7 @@
 #include <QColor>
 #include <QGraphicsItem>
 #include <QPen>
-//#include <QList>
+
 
 /* local includes */
 #include "basicDefs.h"
@@ -62,22 +62,22 @@ class KnittingPatternItem
   
 public:
 
-
   explicit KnittingPatternItem(const QPoint& loc, const QSize& aDim, 
       int scale, const QColor& backColor = Qt::white);
   bool Init();
 
   /* reimplement pure virtual base class methods */
   QRectF boundingRect() const;
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-    QWidget *widget);
+  void paint(QPainter *painter,
+    const QStyleOptionGraphicsItem *option, QWidget *widget);
 
   /* insert a new knitting symbol to be displayed */
   void insert_knitting_symbol(KnittingSymbolPtr symbol);
 
-  /* set the background color */
+  /* color related functions */
   void set_background_color(const QColor& newColor);
-
+  const QColor& color() const { return backColor_; }  
+  
   /* accessors for properties */
   const QPoint& origin() const { return loc_; } 
   const QSize& dim() const { return dim_; }
@@ -85,6 +85,17 @@ public:
   const KnittingSymbolPtr get_knitting_symbol() const;
 
 
+protected:
+
+  /* a few setters for our children */
+  void select_background_color() { currentColor_ = backColor_; }
+  void select_highlight_color() { currentColor_ = highlightColor_; }
+  void set_new_location(QPoint aLoc) { loc_ = aLoc; }
+
+  /* fit the svg item snug into our frame */
+  void fit_svg_();
+
+  
 private:
 
   /* some tracking variables */
@@ -97,15 +108,16 @@ private:
   /* drawing related objects */
   QPen pen_;
   QColor backColor_;
+  QColor currentColor_;
+  QColor highlightColor_;
 
   /* our location and dimensions */
-  QPoint loc_;
   QSize dim_;
+  QPoint loc_;
   int scaling_;
  
   /* functions */
   void set_up_pens_brushes_();
-  void fit_svg_();
 };
 
 

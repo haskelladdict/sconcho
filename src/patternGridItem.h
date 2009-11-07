@@ -56,9 +56,7 @@ class QStyleOptionGraphicsItem;
  ***************************************************************/
 class PatternGridItem
   :
-    public QObject,
-    public QGraphicsItem,
-    public boost::noncopyable
+    public KnittingPatternItem
 {
   
   Q_OBJECT
@@ -66,17 +64,11 @@ class PatternGridItem
   
 public:
 
-
   explicit PatternGridItem(const QPoint& loc, const QSize& aDim, 
       int scale, int columnID, int rowID, 
       GraphicsScene* myParent = 0,
       const QColor& backColor = Qt::white);
   bool Init();
-
-  /* reimplement pure virtual base class methods */
-  QRectF boundingRect() const;
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-    QWidget *widget);
 
   /* return our object type; needed for qgraphicsitem_cast */
   enum { Type = UserType + PATTERN_GRID_ITEM_TYPE };
@@ -86,23 +78,12 @@ public:
    * based on its current status */
   void select();
   
-  /* insert a new knitting symbol to be displayed */
-  void insert_knitting_symbol(KnittingSymbolPtr symbol);
-
-  /* set the background color */
-  void set_background_color(const QColor& newColor);
-
   /* reseat this cell to the given new coordinates */
   void reseat(const QPoint& newOrigin, int newCol, int newRow);
 
   /* accessors for properties */
-  const QPoint& origin() const { return loc_; } 
-  const QSize& dim() const { return dim_; }
   int col() const { return columnIndex_; }
   int row() const { return rowIndex_; }  
-  const QColor& color() const { return backColor_; }  
-  const QString& get_knitting_symbol_name() const;
-  const KnittingSymbolPtr get_knitting_symbol() const;
 
 
 signals:
@@ -125,26 +106,11 @@ private:
   /* our parent scene */
   GraphicsScene* parent_;
 
-  /* our data symbol */
-  QGraphicsSvgItem* svgItem_;
-  KnittingSymbolPtr knittingSymbol_;
-
   /* our location and dimensions */
-  QPoint loc_;
-  QSize dim_;
-  int scaling_;
   int columnIndex_;
   int rowIndex_;
  
-  /* drawing related objects */
-  QPen pen_;
-  QColor backColor_;
-  QColor currentColor_;
-  QColor highlightColor_;
-
   /* functions */
-  void set_up_pens_brushes_();
-  void fit_svg_();
   void highlight_on_();
   void highlight_off_();
 };

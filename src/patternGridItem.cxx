@@ -52,17 +52,12 @@ PatternGridItem::PatternGridItem(const QPoint& aLoc,
   const QSize& aDim, int aScale, int aCol, int aRow,
   GraphicsScene* myParent, const QColor& aBackColor)
     :
-      QGraphicsItem(),
+      KnittingPatternItem(aLoc, aDim, aScale, aBackColor),
       selected_(false),
       parent_(myParent),
-      svgItem_(0),
-      knittingSymbol_(new KnittingSymbol("","",QSize(0,0),"","")),
-      loc_(aLoc),
-      dim_(aDim),
-      scaling_(aScale),
       columnIndex_(aCol),
-      rowIndex_(aRow),
-      backColor_(aBackColor)
+      rowIndex_(aRow)
+//      highlightColor_(QColor(Qt::gray))
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -78,12 +73,12 @@ bool PatternGridItem::Init()
     return false;
   }
 
+  /* initialize our parent */
+  KnittingPatternItem::Init();
+  
   /* set up some properties */
   setFlags(QGraphicsItem::ItemIsSelectable);
   
-  /* call individual initialization routines */
-  set_up_pens_brushes_();
-
   /* some signals and slots */
   connect(this, 
           SIGNAL(item_selected(PatternGridItem*, bool)), 
@@ -107,76 +102,11 @@ bool PatternGridItem::Init()
  *
  *************************************************************/
 
-
-
 /**************************************************************
  *
  * PUBLIC MEMBER FUNCTIONS
  *
  *************************************************************/
-
-//------------------------------------------------------------
-// overload pure virtual base class function returning our
-// dimensions
-//------------------------------------------------------------
-QRectF PatternGridItem::boundingRect() const
-{
-  return QRectF(loc_.x() - pen_.width() * 0.5, 
-                loc_.y() - pen_.width() * 0.5,
-                scaling_ * dim_.width() + pen_.width() * 0.5,
-                scaling_ * dim_.height() + pen_.width() * 0.5);
-}
-  
-  
-//------------------------------------------------------------
-// overload pure virtual base class function painting 
-// ourselves
-//------------------------------------------------------------
-void PatternGridItem::paint(QPainter *painter, 
-  const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-  Q_UNUSED(option);
-  Q_UNUSED(widget);
-
-  painter->setPen(pen_);
-  QBrush aBrush(currentColor_);
-  painter->setBrush(aBrush);
-
-  painter->drawRect(QRectF(loc_, scaling_*dim_));
-}
-
-
-//-------------------------------------------------------------
-// insert a new knitting symbol
-//-------------------------------------------------------------
-void PatternGridItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
-{
-  /* update pointers */
-  knittingSymbol_ = aSymbol;
-  QString symbolPath(aSymbol->path());
-
-  /* set the background color to the currently selected one 
-   * if requested and turn hightlight off */
-  highlight_off_();
-
-  /* delete the previous svgItem if there was one */
-  if ( svgItem_ != 0 ) 
-   {
-    delete svgItem_;
-    svgItem_ = 0;
-  }
-
-  if (symbolPath != "")
-  { 
-    svgItem_ = new QGraphicsSvgItem(symbolPath,this);
-    fit_svg_();
-  }
-}
- 
-void PatternGridItem::set_background_color(const QColor& newColor)
-{
-  backColor_ = newColor;
-}
 
 //--------------------------------------------------------------
 // move this cell to a new location (in the pattern grid
@@ -189,7 +119,7 @@ void PatternGridItem::reseat(const QPoint& newOrigin, int newCol,
   prepareGeometryChange();
 
   /* update */
-  loc_ = newOrigin;
+  set_new_location(newOrigin);
   columnIndex_ = newCol;
   rowIndex_ = newRow;
 
@@ -219,27 +149,6 @@ void PatternGridItem::select()
 }
 
 
-
-//--------------------------------------------------------------
-// return the full name of our embedded knitting symbol
-//--------------------------------------------------------------
-const QString& PatternGridItem::get_knitting_symbol_name() const
-{
-  return knittingSymbol_->fullName();
-}
-
-
-
-//--------------------------------------------------------------
-// return a pointer to the currently embedded knitting symbol 
-//--------------------------------------------------------------
-const KnittingSymbolPtr PatternGridItem::get_knitting_symbol() const
-{
-  return knittingSymbol_;
-}
-
-
-
 //--------------------------------------------------------------
 // return our custom type
 // so we can cast via 
@@ -249,7 +158,6 @@ int PatternGridItem::type() const
   return Type;
 }
   
-
 
 /**************************************************************
  *
@@ -301,57 +209,6 @@ void PatternGridItem::mousePressEvent(
  *
  *************************************************************/
 
-//-------------------------------------------------------------
-// set up all the pens we use for drawing
-//-------------------------------------------------------------
-void PatternGridItem::set_up_pens_brushes_()
-{
-  /* pen used */
-  pen_.setWidthF(1.0);
-  pen_.setColor(Qt::black);
-
-  /* set up highlight color */
-  highlightColor_ = QColor(Qt::gray);
-
-  currentColor_ = backColor_;
-}
-
-
-//---------------------------------------------------------------
-// scale and shift svg item so it fits into our bounding 
-// box
-//---------------------------------------------------------------
-void PatternGridItem::fit_svg_()
-{
-  if (svgItem_ == 0)
-  {
-    return;
-  }
-
-  /* get bounding boxes */
-  QRectF svgRect = svgItem_->sceneBoundingRect();
-  QRectF boxRect = sceneBoundingRect();
-
-  /* scale */
-  double scaleX = 1.0;
-  if ( svgRect.width() > DBL_EPSILON )
-  {
-    scaleX = boxRect.width()/svgRect.width();
-  }
-
-  double scaleY = 1.0;
-  if ( svgRect.height() > DBL_EPSILON )
-  {
-    scaleY = boxRect.height()/svgRect.height();
-  }
-
-  svgItem_->scale(scaleX, scaleY);
-
-  /* translate */
-  svgItem_->setPos(boxRect.x(), boxRect.y());
-}
-
-
 //-----------------------------------------------------------------
 // helper function for doing the internal housekeeping during
 // selecting/deselecting
@@ -360,14 +217,16 @@ void PatternGridItem::fit_svg_()
 void PatternGridItem::highlight_on_()
 {
   selected_ = true;
-  currentColor_ = highlightColor_;
+//  currentColor_ = highlightColor_;
+  select_highlight_color();
 }
 
 
 void PatternGridItem::highlight_off_()
 {
   selected_ = false;
-  currentColor_ = backColor_; 
+//  currentColor_ = backColor_;
+  select_background_color();
 }
 
 

@@ -383,6 +383,7 @@ void GraphicsScene::color_state_changed(int state)
   {
     wantColor_ = true;
     colorize_highlighted_cells_();
+    deselect_all_active_items();
   }
   else
   {
@@ -1160,7 +1161,15 @@ bool GraphicsScene::process_selected_items_(
 //--------------------------------------------------------------
 void GraphicsScene::colorize_highlighted_cells_()
 {
-  deselect_all_active_items();
+  /* if coloring is selected we set the color of all
+   * curently active Items */
+  QList<PatternGridItem*> patternItems(activeItems_.values());
+  foreach(PatternGridItem* anItem, patternItems)
+  {
+    anItem->set_background_color(backgroundColor_);
+  }
+
+  //deselect_all_active_items();
 }
 
 
@@ -1530,6 +1539,7 @@ void GraphicsScene::purge_all_canvas_items_()
 //------------------------------------------------------------
 void GraphicsScene::update_active_items_()
 {
+#if 0
   /* if coloring is selected we set the color of all
    * curently active Items */
   if (wantColor_)
@@ -1540,6 +1550,11 @@ void GraphicsScene::update_active_items_()
       anItem->set_background_color(backgroundColor_);
     }
   }
+#endif
+  if (wantColor_)
+  {
+    colorize_highlighted_cells_();
+  }
 
   /* if a knitting symbol is selected we try placing it,
    * otherwise we color the cells if requested */
@@ -1549,7 +1564,8 @@ void GraphicsScene::update_active_items_()
   }
   else if (wantColor_)
   {
-    colorize_highlighted_cells_();
+    //colorize_highlighted_cells_();
+    deselect_all_active_items();
   } 
 }
 

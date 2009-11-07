@@ -49,10 +49,10 @@ KnittingPatternItem::KnittingPatternItem(const QPoint& aLoc,
   const QSize& aDim, int aScale, const QColor& aBackColor) 
     :
       QGraphicsItem(),
-      svgItem_(0),
-      knittingSymbol_(new KnittingSymbol("","",QSize(0,0),"","")),
       backColor_(aBackColor),
       loc_(aLoc),
+      svgItem_(0),
+      knittingSymbol_(new KnittingSymbol("","",QSize(0,0),"","")),
       dim_(aDim),
       scaling_(aScale)
 {
@@ -119,7 +119,7 @@ void KnittingPatternItem::paint(QPainter *painter,
   Q_UNUSED(option);
   
   painter->setPen(pen_);
-  QBrush aBrush(backColor_);
+  QBrush aBrush(currentColor_);
   painter->setBrush(aBrush);
 
   painter->drawRect(QRectF(loc_, scaling_*dim_));
@@ -129,7 +129,8 @@ void KnittingPatternItem::paint(QPainter *painter,
 //-------------------------------------------------------------
 // insert a new knitting symbol
 //-------------------------------------------------------------
-void KnittingPatternItem::insert_knitting_symbol(KnittingSymbolPtr aSymbol)
+void KnittingPatternItem::insert_knitting_symbol(
+  KnittingSymbolPtr aSymbol)
 {
   /* update pointers */
   knittingSymbol_ = aSymbol;
@@ -163,7 +164,8 @@ const QString& KnittingPatternItem::get_knitting_symbol_name() const
 //--------------------------------------------------------------
 // return a pointer to the currently embedded knitting symbol 
 //--------------------------------------------------------------
-const KnittingSymbolPtr KnittingPatternItem::get_knitting_symbol() const
+const KnittingSymbolPtr KnittingPatternItem::get_knitting_symbol()
+  const
 {
   return knittingSymbol_;
 }
@@ -183,34 +185,6 @@ void KnittingPatternItem::set_background_color(const QColor& newColor)
  * PROTECTED MEMBER FUNCTIONS 
  *
  *************************************************************/
-
-/**************************************************************
- *
- * PRIVATE SLOTS
- *
- *************************************************************/
-
-/*************************************************************
- *
- * PRIVATE MEMBER FUNCTIONS
- *
- *************************************************************/
-
-//-------------------------------------------------------------
-// set up all the pens we use for drawing
-//-------------------------------------------------------------
-void KnittingPatternItem::set_up_pens_brushes_()
-{
-  /* pen used */
-  pen_.setWidthF(1.0);
-  pen_.setColor(Qt::black);
-
-  /* set up highlight color */
-  //highlightColor_ = QColor(Qt::gray);
-
-  //currentColor_ = backColor_;
-}
-
 
 //---------------------------------------------------------------
 // scale and shift svg item so it fits into our bounding 
@@ -245,6 +219,35 @@ void KnittingPatternItem::fit_svg_()
   /* translate */
   svgItem_->setPos(boxRect.x(), boxRect.y());
 }
+
+
+/**************************************************************
+ *
+ * PRIVATE SLOTS
+ *
+ *************************************************************/
+
+/*************************************************************
+ *
+ * PRIVATE MEMBER FUNCTIONS
+ *
+ *************************************************************/
+
+//-------------------------------------------------------------
+// set up all the pens we use for drawing
+//-------------------------------------------------------------
+void KnittingPatternItem::set_up_pens_brushes_()
+{
+  /* pen used */
+  pen_.setWidthF(1.0);
+  pen_.setColor(Qt::black);
+
+  /* set up highlight color */
+  highlightColor_ = QColor(Qt::gray);
+
+  currentColor_ = backColor_;
+}
+
 
 
 QT_END_NAMESPACE
