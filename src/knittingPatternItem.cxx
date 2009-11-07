@@ -49,11 +49,11 @@ KnittingPatternItem::KnittingPatternItem(const QPoint& aLoc,
   const QSize& aDim, int aScale, const QColor& aBackColor) 
     :
       QGraphicsItem(),
-      backColor_(aBackColor),
-      loc_(aLoc),
       svgItem_(0),
       knittingSymbol_(new KnittingSymbol("","",QSize(0,0),"","")),
+      backColor_(aBackColor),
       dim_(aDim),
+      loc_(aLoc),
       scaling_(aScale)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;

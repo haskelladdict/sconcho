@@ -119,7 +119,7 @@ bool PatternKeyDialog::Init()
 // present
 //-------------------------------------------------------------
 void PatternKeyDialog::add_knitting_symbol(
-  KnittingSymbolPtr newSymbol)
+  KnittingSymbolPtr newSymbol, const QColor& aColor)
 {
   /* update reference count */
   QString symbolName = newSymbol->fullName();
@@ -156,7 +156,7 @@ void PatternKeyDialog::add_knitting_symbol(
 // present
 //-------------------------------------------------------------
 void PatternKeyDialog::remove_knitting_symbol(
-  KnittingSymbolPtr deadSymbol)
+  KnittingSymbolPtr deadSymbol, const QColor& aColor)
 {
   /* update reference count */
   QString symbolName = deadSymbol->fullName();

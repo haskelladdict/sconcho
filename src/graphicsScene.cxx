@@ -1801,7 +1801,8 @@ void GraphicsScene::show_rectangle_manage_menu_(
 void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 {
   addItem(anItem);
-  parent_->knitting_symbol_added(anItem->get_knitting_symbol());
+  parent_->knitting_symbol_added(anItem->get_knitting_symbol(),
+                                 anItem->color());
 }
 
 
@@ -1813,7 +1814,8 @@ void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
 {
   removeItem(anItem);
-  parent_->knitting_symbol_removed(anItem->get_knitting_symbol());
+  parent_->knitting_symbol_removed(anItem->get_knitting_symbol(),
+                                   anItem->color());
   
   /* delete it for good */
   anItem->deleteLater();

@@ -71,8 +71,10 @@ signals:
 
 public slots:
 
-  void add_knitting_symbol(KnittingSymbolPtr newSymbol);
-  void remove_knitting_symbol(KnittingSymbolPtr newSymbol);
+  void add_knitting_symbol(KnittingSymbolPtr newSymbol,
+                           const QColor& color);
+  void remove_knitting_symbol(KnittingSymbolPtr newSymbol,
+                              const QColor& color);
 
 
 private slots:

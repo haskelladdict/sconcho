@@ -148,9 +148,10 @@ bool MainWindow::Init()
 // notify the pattern key dialog that a knitting symbol
 // has been added
 //-------------------------------------------------------------
-void MainWindow::knitting_symbol_added(KnittingSymbolPtr aSymbol)
+void MainWindow::knitting_symbol_added(KnittingSymbolPtr aSymbol,
+  const QColor& aColor)
 {
-  patternKeyDialog_->add_knitting_symbol(aSymbol);
+  patternKeyDialog_->add_knitting_symbol(aSymbol, aColor);
 }
 
 
@@ -158,9 +159,10 @@ void MainWindow::knitting_symbol_added(KnittingSymbolPtr aSymbol)
 // notify the pattern key dialog that a knitting symbol
 // has been removed
 //-------------------------------------------------------------
-void MainWindow::knitting_symbol_removed(KnittingSymbolPtr aSymbol)
+void MainWindow::knitting_symbol_removed(KnittingSymbolPtr aSymbol,
+  const QColor& aColor)
 {
-  patternKeyDialog_->remove_knitting_symbol(aSymbol);
+  patternKeyDialog_->remove_knitting_symbol(aSymbol, aColor);
 }
 
 

@@ -98,8 +98,10 @@ signals:
 
 public slots:
 
-  void knitting_symbol_added(KnittingSymbolPtr symbol);
-  void knitting_symbol_removed(KnittingSymbolPtr symbol);
+  void knitting_symbol_added(KnittingSymbolPtr symbol,
+                             const QColor& color);
+  void knitting_symbol_removed(KnittingSymbolPtr symbol,
+                               const QColor& color);
   void update_mouse_position_display(QPointF newPos);
   void show_statusBar_message(QString msg);
   void show_statusBar_error(QString msg);

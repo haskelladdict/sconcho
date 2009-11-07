@@ -79,11 +79,12 @@ bool SymbolSelectorItem::Init()
 
   setStyleSheet(unselectedStyleSheet_);
   
-  
   /* create and adjust our QSvgWidget */
   QSvgWidget* symbolSvg_ = new QSvgWidget(symbol_->path());
   QSize symbolSize = unitSize_ * symbol_->dim();
   symbolSvg_->setMaximumSize(symbolSize);
+  //symbolSvg_->setMinimumSize(symbolSize);
+  //symbolSvg_->setMaximumSize(symbolSize);
 
   QHBoxLayout* svgLayout = new QHBoxLayout;
   svgLayout->setContentsMargins(0,0,0,0);

@@ -90,8 +90,10 @@ public:
 
 signals:
 
-  void knitting_symbol_added(KnittingSymbolPtr newSymbol);
-  void knitting_symbol_removed(KnittingSymbolPtr deadSymbol);
+  void knitting_symbol_added(KnittingSymbolPtr newSymbol,
+                             const QColor& color);
+  void knitting_symbol_removed(KnittingSymbolPtr deadSymbol,
+                               const QColor& color);
   void mouse_moved(QPointF position);
   void mouse_zoom_in();
   void mouse_zoom_out();
