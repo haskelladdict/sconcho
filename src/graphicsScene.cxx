@@ -78,7 +78,8 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   selectedCol_(UNSELECTED),
   selectedRow_(UNSELECTED),
   settings_(aSetting),
-  selectedSymbol_(defaultSymbol),
+  selectedSymbol_(emptyKnittingSymbol),
+  defaultSymbol_(defaultSymbol),
   backgroundColor_(Qt::white),
   defaultColor_(Qt::white),
   wantColor_(false)
@@ -363,6 +364,7 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
                           row, 
                           this);
     item->Init();
+    item->insert_knitting_symbol(defaultSymbol_);
     add_patternGridItem_(item);
   }
 
@@ -1366,7 +1368,7 @@ void GraphicsScene::create_pattern_grid_()
         new PatternGridItem(compute_cell_origin_(col, row), 
             QSize(1,1), cellSize_, col, row, this);
       item->Init();
-      item->insert_knitting_symbol(selectedSymbol_);
+      item->insert_knitting_symbol(defaultSymbol_);
 
       /* add it to our scene */
       add_patternGridItem_(item);
@@ -1538,7 +1540,10 @@ void GraphicsScene::purge_all_canvas_items_()
 //------------------------------------------------------------
 void GraphicsScene::update_active_items_()
 {
-  try_place_knitting_symbol_();
+  if (selectedSymbol_->fullName() != "")
+  {
+    try_place_knitting_symbol_();
+  }
 }
 
 
@@ -1793,9 +1798,6 @@ void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
   anItem->deleteLater();
 
 }
-
-
-
 
 
 QT_END_NAMESPACE

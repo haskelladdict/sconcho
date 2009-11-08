@@ -61,7 +61,8 @@ public:
   explicit SymbolSelectorWidget(int cellSize, QWidget* myParent = 0);
   bool Init();
 
-  /* access to currently selected symbol */
+  /* access to default symbol, i.e. the one that will be 
+   * place initially */
   KnittingSymbolPtr selected_symbol() const { return defaultSymbol_; }
 
 

@@ -30,7 +30,9 @@
 /* Qt includes */
 #include <QFont>
 #include <QSettings>
+#include <QString>
 
+QT_BEGIN_NAMESPACE
 
 //---------------------------------------------------------------
 // simple integer min max function
@@ -41,8 +43,17 @@ int int_max(int a, int b);
 //---------------------------------------------------------------
 // this function returns a QFont object with the currently
 // selected font
-//----------------------------------------------------------------
+//---------------------------------------------------------------
 QFont extract_font_from_settings(const QSettings& settings);
 
+
+//---------------------------------------------------------------
+// this functions a file export dialog and returns the selected
+// filename or an empty string if nothing was selected
+//---------------------------------------------------------------
+QString show_file_export_dialog();
+
+
+QT_END_NAMESPACE
 
 #endif

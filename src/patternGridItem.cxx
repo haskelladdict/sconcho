@@ -57,7 +57,6 @@ PatternGridItem::PatternGridItem(const QPoint& aLoc,
       parent_(myParent),
       columnIndex_(aCol),
       rowIndex_(aRow)
-//      highlightColor_(QColor(Qt::gray))
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }

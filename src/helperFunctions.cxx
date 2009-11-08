@@ -18,10 +18,18 @@
  *
  ****************************************************************/
 
+/* qt includes */
+#include <QDir>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QObject>
+
+
 /* local includes */
 #include "helperFunctions.h"
 
-
+QT_BEGIN_NAMESPACE
 
 //---------------------------------------------------------------
 // simple integer min max function
@@ -43,3 +51,40 @@ QFont extract_font_from_settings(const QSettings& settings)
 
   return theFont;
 }
+
+
+//---------------------------------------------------------------
+// this functions a file export dialog and returns the selected
+// filename or an empty string if nothing was selected
+//---------------------------------------------------------------
+QString show_file_export_dialog()
+{
+  QString currentDirectory = QDir::currentPath();
+  QString saveFileName = QFileDialog::getSaveFileName(0,
+    QObject::tr("Export"), currentDirectory,
+    QObject::tr("Image Files (*.png *.tif *.jpg *.gif)"));
+
+  if ( saveFileName.isEmpty() )
+  {
+    return QString("");
+  }
+
+  /* extract file extension and make sure it corresponds to
+   * a supported format */
+  QFileInfo saveFileInfo(saveFileName);
+  QString extension = saveFileInfo.completeSuffix();
+
+  if ( extension != "png" && extension != "tif"
+       && extension != "jpg" && extension != "gif" )
+  {
+    QMessageBox::warning(0, QObject::tr("Warning"),
+      QObject::tr("Unknown file format ") + extension,
+      QMessageBox::Ok);
+    return QString("");
+  }
+
+  return saveFileName;
+}
+
+
+QT_END_NAMESPACE

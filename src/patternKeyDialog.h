@@ -81,6 +81,9 @@ private slots:
 
   void update_key_label_(QString id, QString newLabelText);
 
+  /* export dialogs */
+  void export_legend_();
+
 
 private:
 

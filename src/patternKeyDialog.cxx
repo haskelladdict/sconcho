@@ -32,6 +32,7 @@
 
 /** local headers */
 #include "basicDefs.h"
+#include "helperFunctions.h"
 #include "patternKeyCanvas.h"
 #include "patternKeyDialog.h"
 
@@ -207,6 +208,18 @@ void PatternKeyDialog::update_key_label_(QString labelID,
 }
 
 
+//-------------------------------------------------------------
+// this slot opens up a file export dialog for saving the
+// content of the legend canvas to a file
+//-------------------------------------------------------------
+void PatternKeyDialog::export_legend_()
+{
+  QString fileName = show_file_export_dialog();
+}
+
+
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -237,12 +250,28 @@ void PatternKeyDialog::create_buttons_()
 {
   buttonLayout_ = new QHBoxLayout;
 
-  QPushButton* closeButton = new QPushButton(tr("close"));
-  QPushButton* exportToCanvasButton = 
-    new QPushButton(tr("export to canvas"));
+  QPushButton* exportToFileButton = 
+    new QPushButton(QIcon(":/icons/fileexport.png"),
+        tr("export to file"));
+  connect(exportToFileButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(export_legend_()));
 
-  buttonLayout_->addWidget(exportToCanvasButton);
+  QPushButton* printButton = 
+    new QPushButton(QIcon(":/icons/fileprint.png"), tr("print"));
+
+  QPushButton* exportToCanvasButton = 
+    new QPushButton(QIcon(":/icons/rectangle.png"),
+        tr("export to canvas"));
+
+  QPushButton* closeButton = 
+    new QPushButton(QIcon(":/icons/stop.png"), tr("close"));
+
+  buttonLayout_->addWidget(exportToFileButton);
+  buttonLayout_->addWidget(printButton);
   buttonLayout_->addStretch(1);
+  buttonLayout_->addWidget(exportToCanvasButton);
   buttonLayout_->addWidget(closeButton);
 
   connect(closeButton,

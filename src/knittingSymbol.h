@@ -75,6 +75,10 @@ private:
 /* convenience typedef */
 typedef boost::shared_ptr<KnittingSymbol> KnittingSymbolPtr;
 
+/* this is the empty knitting Symbol */
+const KnittingSymbolPtr emptyKnittingSymbol = 
+  KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"",""));
+
 
 QT_END_NAMESPACE
 

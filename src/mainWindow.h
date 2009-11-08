@@ -123,7 +123,7 @@ private slots:
   void show_about_qt_dialog_();
   void show_file_open_dialog_();
   void show_file_save_dialog_();
-  void show_file_export_dialog_();
+  void export_canvas_();
   void show_sconcho_dialog_();
   void show_print_dialog_();
   void show_preferences_dialog_();

@@ -162,6 +162,7 @@ private:
   /* pointers to current user selections (knitting symbol,
    * color, pen size ..) */
   KnittingSymbolPtr selectedSymbol_;
+  KnittingSymbolPtr defaultSymbol_;
   QColor backgroundColor_;
   QColor defaultColor_;
   bool wantColor_;

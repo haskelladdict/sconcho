@@ -168,7 +168,6 @@ void MainWindow::knitting_symbol_added(KnittingSymbolPtr aSymbol,
 void MainWindow::knitting_symbol_removed(KnittingSymbolPtr aSymbol,
   const QColor& aColor)
 {
-  qDebug() << "snoopie: " << aColor.name();
   patternKeyDialog_->remove_knitting_symbol(aSymbol, aColor);
 }
 
@@ -318,34 +317,15 @@ void MainWindow::show_file_save_dialog_()
 //-------------------------------------------------------------
 // SLOT: show file export menu
 //-------------------------------------------------------------
-void MainWindow::show_file_export_dialog_()
+void MainWindow::export_canvas_()
 {
-  QString currentDirectory = QDir::currentPath();
-  QString saveFileName = QFileDialog::getSaveFileName(this,
-    tr("Export Pattern"), currentDirectory,
-    tr("Image Files (*.png *.tif *.jpg *.gif)"));
-
-  if ( saveFileName.isEmpty() )
+  QString exportFilename = show_file_export_dialog();
+  if (exportFilename.isEmpty())
   {
     return;
   }
-
-  /* extract file extension and make sure it corresponds to
-   * a supported format */
-  QFileInfo saveFileInfo(saveFileName);
-  QString extension = saveFileInfo.completeSuffix();
-
-  if ( extension != "png" && extension != "tif" 
-       && extension != "jpg" && extension != "gif" )
-  {
-    QMessageBox::warning(this, tr("Warning"),
-      tr("Unknown file format ") + extension,
-      QMessageBox::Ok);
-    return;
-  }
-
   
-  export_canvas_(saveFileName);
+  export_canvas_(exportFilename);
 }
 
 
@@ -570,7 +550,7 @@ void MainWindow::create_file_menu_()
   connect(exportAction, 
           SIGNAL(triggered()), 
           this,
-          SLOT(show_file_export_dialog_()));
+          SLOT(export_canvas_()));
 
   /* print */
   QAction* printAction =
@@ -816,7 +796,7 @@ void MainWindow::create_toolbar_()
   connect(exportButton,
           SIGNAL(clicked()),
           this,
-          SLOT(show_file_export_dialog_()));
+          SLOT(export_canvas_()));
  
   QToolButton* printButton = new QToolButton(this);
   printButton->setIcon(QIcon(":/icons/fileprint.png"));
@@ -940,7 +920,7 @@ void MainWindow::create_property_widget_()
    QPalette widgetColor = QPalette(Qt::white);
    colorSelector_->setPalette(widgetColor);
 
-   QCheckBox* colorChecker = new QCheckBox("apply");
+   QCheckBox* colorChecker = new QCheckBox("add to cell");
    colorChecker->setChecked(false);
 
    colorSelectorGrouper_ = new QGroupBox;

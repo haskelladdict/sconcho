@@ -112,7 +112,7 @@ void SymbolSelectorWidget::change_highlighted_item(
   else
   {
     highlightedItem_ = 0;
-    emit selected_symbol_changed(defaultSymbol_);
+    emit selected_symbol_changed(emptyKnittingSymbol);
   }
 } 
 
