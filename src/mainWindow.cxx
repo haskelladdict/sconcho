@@ -92,10 +92,13 @@ bool MainWindow::Init()
 
   initialize_settings_();
 
-  /* populate the main interface */
+  /* populate the main interface 
+   * NOTE: We NEED to first create the patterKeyDialog and
+   * symbolsWidget before we add the graphicsScence since the
+   * supply some required objects */
   create_pattern_key_dialog_();
-  create_graphics_scene_();
   create_symbols_widget_();
+  create_graphics_scene_();
   create_toolbar_();
   create_property_widget_();
   create_menu_bar_();
@@ -130,9 +133,12 @@ bool MainWindow::Init()
          );
 
 
-  /* set up main interface */
+  /* set up main interface and set initial splitter sizes */
   mainSplitter_->addWidget(canvasView_);
   mainSplitter_->addWidget(propertyBox_);
+  QList<int> sizes;
+  sizes << 450 << 250;
+  mainSplitter_->setSizes(sizes);
   setCentralWidget(mainSplitter_);
   return true;
 }
@@ -162,6 +168,7 @@ void MainWindow::knitting_symbol_added(KnittingSymbolPtr aSymbol,
 void MainWindow::knitting_symbol_removed(KnittingSymbolPtr aSymbol,
   const QColor& aColor)
 {
+  qDebug() << "snoopie: " << aColor.name();
   patternKeyDialog_->remove_knitting_symbol(aSymbol, aColor);
 }
 
@@ -749,10 +756,13 @@ void MainWindow::create_graphics_scene_()
   /* ask user for the grid size */
   QSize gridSize = show_grid_dimension_dialog_();
 
+  /* get default symbol from symbol selector widget */
+  KnittingSymbolPtr defaultSymbol = symbolSelector_->selected_symbol();
+
   /* create canvas */
   QPoint origin(0,0);
   canvas_ = new GraphicsScene(origin, gridSize, GRID_CELL_SIZE, 
-      settings_, this);
+      settings_, defaultSymbol, this);
   if ( !canvas_->Init() )
   {
     qDebug() << "Failed to initialize canvas";

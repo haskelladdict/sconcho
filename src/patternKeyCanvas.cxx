@@ -110,7 +110,7 @@ void PatternKeyCanvas::update_after_settings_change()
 // add new symbol to legend canvas 
 //-------------------------------------------------------------
 void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
-    const QString& description)
+    const QString& description, const QColor& color)
 {
   /* make sure we don't add the empty symbol */
   if (newSymbol->fullName() == "")
@@ -144,7 +144,7 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
 
   /* create new symbol */
   KnittingPatternItem* newSymbolItem = new KnittingPatternItem(
-      QPoint(newXPos, newYPos), newSymbol->dim(), cellSize_);
+      QPoint(newXPos, newYPos), newSymbol->dim(), cellSize_, color);
   newSymbolItem->Init();
   newSymbolItem->insert_knitting_symbol(newSymbol);
   newSymbolItem->setFlag(QGraphicsItem::ItemIsMovable);
@@ -178,18 +178,19 @@ void PatternKeyCanvas::add_symbol(KnittingSymbolPtr newSymbol,
 //-------------------------------------------------------------
 // remove unused symbol from legend canvas 
 //-------------------------------------------------------------
-void PatternKeyCanvas::remove_symbol(const QString& deadSymbolName)
+void PatternKeyCanvas::remove_symbol(const QString& deadName,
+  const QColor& deadColor)
 {
   /* find index of to be removed symbol */
   int counter = 0;
-  KnittingPatternItem* deadPatternItem;
+  KnittingPatternItem* deadItem;
   KeyLabelItem* deadLabelItem;
 
   foreach(KeyCanvas::LabelItem label, displayedItems_)
   {
-    deadPatternItem = label.pattern;
-    if ( deadPatternItem->get_knitting_symbol_name() 
-         == deadSymbolName)
+    deadItem = label.pattern;
+    if (deadItem->get_knitting_symbol_name() == deadName
+        && deadItem->color() == deadColor)
     {
       deadLabelItem = label.description;
       break;
@@ -199,8 +200,8 @@ void PatternKeyCanvas::remove_symbol(const QString& deadSymbolName)
   }
 
   /* remove symbol */
-  removeItem(deadPatternItem);
-  deadPatternItem->deleteLater();
+  removeItem(deadItem);
+  deadItem->deleteLater();
   removeItem(deadLabelItem);
   deadLabelItem->deleteLater();
   displayedItems_.removeAt(counter);

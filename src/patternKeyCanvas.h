@@ -78,8 +78,10 @@ public:
   bool Init();
 
   /* add or remove symbol from legend canvas */
-  void add_symbol(KnittingSymbolPtr newSymbol, const QString& desc);
-  void remove_symbol(const QString& deadSymbolName);
+  void add_symbol(KnittingSymbolPtr newSymbol, const QString& desc,
+    const QColor& aColor);
+  void remove_symbol(const QString& deadSymbolName, 
+    const QColor& aColor);
 
 
 public slots:

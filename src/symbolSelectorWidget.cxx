@@ -68,10 +68,6 @@ bool SymbolSelectorWidget::Init()
     return false;
   }
 
-  /* initialize empty symbol object */
-  emptySymbol_ = KnittingSymbolPtr(
-      new KnittingSymbol("","",QSize(0,0),"",""));
-
   /* call individual initialization routines */
   create_tabs_();
 
@@ -116,7 +112,7 @@ void SymbolSelectorWidget::change_highlighted_item(
   else
   {
     highlightedItem_ = 0;
-    emit selected_symbol_changed(emptySymbol_);
+    emit selected_symbol_changed(defaultSymbol_);
   }
 } 
 
@@ -160,6 +156,13 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
                          aSize,
                          "",
                          ""));
+
+  /* the knitting symbol is our default so we'll have
+   * to keep a pointer to it */
+  if (symbolName == "basic/knit")
+  {
+    defaultSymbol_ = sym;
+  }
 
   SymbolSelectorItem* symbol = 
     new SymbolSelectorItem(cellSize_, sym, this);

@@ -79,7 +79,8 @@ class GraphicsScene
 public:
 
   explicit GraphicsScene(const QPoint& origin, const QSize& gridsize, 
-    int cellSize, const QSettings& settings, MainWindow* myParent = 0);
+    int cellSize, const QSettings& settings, 
+    KnittingSymbolPtr defaultSymbol, MainWindow* myParent = 0);
   bool Init();
 
   /* helper functions */

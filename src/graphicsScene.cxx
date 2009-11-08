@@ -66,7 +66,7 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 GraphicsScene::GraphicsScene(const QPoint& anOrigin, 
     const QSize& gridDim, int aSize, const QSettings& aSetting,
-    MainWindow* myParent)
+    KnittingSymbolPtr defaultSymbol, MainWindow* myParent)
   :
   QGraphicsScene(myParent),
   parent_(myParent),
@@ -78,8 +78,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   selectedCol_(UNSELECTED),
   selectedRow_(UNSELECTED),
   settings_(aSetting),
-  selectedSymbol_(
-      KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"",""))),
+  selectedSymbol_(defaultSymbol),
   backgroundColor_(Qt::white),
   defaultColor_(Qt::white),
   wantColor_(false)
@@ -285,7 +284,7 @@ void GraphicsScene::update_selected_symbol(
 
   /* we'll also try to place the newly picked item into
    * the currently selected cells */
-  try_place_knitting_symbol_();
+  update_active_items_();
 }
 
 
@@ -963,6 +962,14 @@ void GraphicsScene::try_place_knitting_symbol_()
     return;
   }
 
+  
+  /* delete previously highligthed cells */
+  QList<PatternGridItem*> deadItems(activeItems_.values()); 
+  foreach(PatternGridItem* item, deadItems)
+  {
+    remove_patternGridItem_(item);
+  }
+
 
   /* at this point all rows are in the proper shape to be
    * replaced by the current symbol */
@@ -987,14 +994,8 @@ void GraphicsScene::try_place_knitting_symbol_()
       add_patternGridItem_(anItem);
     }
   }
- 
-  
-  /* delete previously highligthed cells */
-  QList<PatternGridItem*> deadItems(activeItems_.values()); 
-  foreach(PatternGridItem* item, deadItems)
-  {
-    remove_patternGridItem_(item);
-  }
+
+  /* clear selection */
   activeItems_.clear();
 }
 
@@ -1168,8 +1169,6 @@ void GraphicsScene::colorize_highlighted_cells_()
   {
     anItem->set_background_color(backgroundColor_);
   }
-
-  //deselect_all_active_items();
 }
 
 
@@ -1182,15 +1181,15 @@ void GraphicsScene::colorize_highlighted_cells_()
 // only do one of two things
 //
 // 1) If all selected cells have the same color with pick it
-// 2) Otherwise we use the default color, Qt::white
+// 2) Otherwise we use either the default color, Qt::white,
+//    or whichever color is currently selected and active.
 //--------------------------------------------------------------
 QColor GraphicsScene::determine_selected_cells_color_() const
 {
   QList<PatternGridItem*> cells(activeItems_.values());
-
-  if (cells.size() == 0)
+  if (wantColor_ || cells.size() == 0)
   {
-    return defaultColor_;
+    return backgroundColor_; 
   }
 
   QColor cellColor(cells.at(0)->color());
@@ -1367,6 +1366,7 @@ void GraphicsScene::create_pattern_grid_()
         new PatternGridItem(compute_cell_origin_(col, row), 
             QSize(1,1), cellSize_, col, row, this);
       item->Init();
+      item->insert_knitting_symbol(selectedSymbol_);
 
       /* add it to our scene */
       add_patternGridItem_(item);
@@ -1429,7 +1429,6 @@ void GraphicsScene::create_grid_labels_()
    * and probably not very robust */
   QFontMetrics metric(currentFont);
   int fontHeight = metric.ascent();
-  qDebug() << "foo " << fontHeight;
   for (int row=0; row < numRows_; ++row)
   {
     PatternGridLabel* text= new PatternGridLabel(
@@ -1539,34 +1538,7 @@ void GraphicsScene::purge_all_canvas_items_()
 //------------------------------------------------------------
 void GraphicsScene::update_active_items_()
 {
-#if 0
-  /* if coloring is selected we set the color of all
-   * curently active Items */
-  if (wantColor_)
-  {
-    QList<PatternGridItem*> patternItems(activeItems_.values());
-    foreach(PatternGridItem* anItem, patternItems)
-    {
-      anItem->set_background_color(backgroundColor_);
-    }
-  }
-#endif
-  if (wantColor_)
-  {
-    colorize_highlighted_cells_();
-  }
-
-  /* if a knitting symbol is selected we try placing it,
-   * otherwise we color the cells if requested */
-  if (selectedSymbol_->path() != "")
-  {
-    try_place_knitting_symbol_();
-  }
-  else if (wantColor_)
-  {
-    //colorize_highlighted_cells_();
-    deselect_all_active_items();
-  } 
+  try_place_knitting_symbol_();
 }
 
 

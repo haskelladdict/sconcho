@@ -119,14 +119,16 @@ bool PatternKeyDialog::Init()
 // present
 //-------------------------------------------------------------
 void PatternKeyDialog::add_knitting_symbol(
-  KnittingSymbolPtr newSymbol, const QColor& aColor)
+  KnittingSymbolPtr newSymbol, const QColor& color)
 {
   /* update reference count */
   QString symbolName = newSymbol->fullName();
-  int currentValue = usedKnittingSymbols_[symbolName] + 1;
+  QString colorName = color.name();
+  QString fullName = symbolName + colorName;
+  int currentValue = usedKnittingSymbols_[fullName] + 1;
   assert(currentValue > 0);
-  
-  usedKnittingSymbols_[symbolName] = currentValue;
+ 
+  usedKnittingSymbols_[fullName] = currentValue;
 
   /* if the currentValue is one the symbol has come "into
    * existence" and we need to show it on the legend canvas;
@@ -135,16 +137,15 @@ void PatternKeyDialog::add_knitting_symbol(
    * symbolDescriptor_ map */
   if (currentValue == 1)
   {
-    if (!symbolDescriptors_.contains(symbolName))
+    if (!symbolDescriptors_.contains(fullName))
     {
       QString description = newSymbol->baseName();
-      symbolDescriptors_[symbolName] = description;
-      qDebug() << symbolDescriptors_[symbolName];
+      symbolDescriptors_[fullName] = description;
     }
 
     /* show it on the canvas */
     patternKeyCanvas_->add_symbol(newSymbol, 
-      symbolDescriptors_[symbolName]);
+      symbolDescriptors_[fullName], color);
   }
 
 }
@@ -156,22 +157,23 @@ void PatternKeyDialog::add_knitting_symbol(
 // present
 //-------------------------------------------------------------
 void PatternKeyDialog::remove_knitting_symbol(
-  KnittingSymbolPtr deadSymbol, const QColor& aColor)
+  KnittingSymbolPtr deadSymbol, const QColor& color)
 {
   /* update reference count */
   QString symbolName = deadSymbol->fullName();
-  int currentValue = usedKnittingSymbols_[symbolName] - 1;
-  usedKnittingSymbols_[symbolName] = currentValue;
+  QString colorName  = color.name();
+  QString fullName = symbolName + colorName;
+  int currentValue = usedKnittingSymbols_[fullName] - 1;
+  usedKnittingSymbols_[fullName] = currentValue;
 
   assert(currentValue >= 0);
  
   /* remove symbol if reference count hits 0 */
   if (currentValue == 0)
   {
-    usedKnittingSymbols_.remove(symbolName);
-    patternKeyCanvas_->remove_symbol(symbolName);
+    usedKnittingSymbols_.remove(fullName);
+    patternKeyCanvas_->remove_symbol(symbolName, colorName);
   }
-
 }
 
 

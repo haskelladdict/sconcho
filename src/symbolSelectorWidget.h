@@ -61,6 +61,9 @@ public:
   explicit SymbolSelectorWidget(int cellSize, QWidget* myParent = 0);
   bool Init();
 
+  /* access to currently selected symbol */
+  KnittingSymbolPtr selected_symbol() const { return defaultSymbol_; }
+
 
 signals:
 
@@ -83,9 +86,9 @@ private:
   /* the currently selected symbol */
   SymbolSelectorItem* highlightedItem_;
 
-  /* empty knitting symbol object indicating that none
-   * is currently selected */
-  KnittingSymbolPtr emptySymbol_;
+  /* our default knitting symbol (the one with with all
+   * cells are initially pre-filled */
+  KnittingSymbolPtr defaultSymbol_;
 
   /* functions */
   QHBoxLayout* create_symbol_layout_(const QString& name, 
