@@ -317,7 +317,7 @@ void MainWindow::show_file_save_dialog_()
 //-------------------------------------------------------------
 // SLOT: show file export menu
 //-------------------------------------------------------------
-void MainWindow::export_canvas_()
+void MainWindow::export_canvas_dialog_()
 {
   QString exportFilename = show_file_export_dialog();
   if (exportFilename.isEmpty())
@@ -325,7 +325,7 @@ void MainWindow::export_canvas_()
     return;
   }
   
-  export_canvas_(exportFilename);
+  export_scene(exportFilename, canvas_);
 }
 
 
@@ -334,19 +334,7 @@ void MainWindow::export_canvas_()
 //------------------------------------------------------------
 void MainWindow::show_print_dialog_()
 {
-  /* create printer and fire up print dialog */
-  QPrinter aPrinter(QPrinter::HighResolution);
-  QPrintDialog printDialog(&aPrinter, this);
-  if ( printDialog.exec() == QDialog::Accepted )
-  {
-    /* tell our canvas that we want to print its */
-    QPainter painter(&aPrinter);
-    painter.setRenderHints(QPainter::SmoothPixmapTransform);
-    painter.setRenderHints(QPainter::HighQualityAntialiasing);
-    painter.setRenderHints(QPainter::TextAntialiasing);
-    canvas_->render(&painter);
-    painter.end();
-  }
+  print_scene(canvas_);
 }
 
 
@@ -550,7 +538,7 @@ void MainWindow::create_file_menu_()
   connect(exportAction, 
           SIGNAL(triggered()), 
           this,
-          SLOT(export_canvas_()));
+          SLOT(export_canvas_dialog_()));
 
   /* print */
   QAction* printAction =
@@ -796,7 +784,7 @@ void MainWindow::create_toolbar_()
   connect(exportButton,
           SIGNAL(clicked()),
           this,
-          SLOT(export_canvas_()));
+          SLOT(export_canvas_dialog_()));
  
   QToolButton* printButton = new QToolButton(this);
   printButton->setIcon(QIcon(":/icons/fileprint.png"));
@@ -983,31 +971,6 @@ QSize MainWindow::show_grid_dimension_dialog_()
   GridDimensionDialog gridDialog; 
   gridDialog.Init();
   return gridDialog.dim();
-}
-
-
-
-//-------------------------------------------------------------
-// export canvas to file fileName
-//-------------------------------------------------------------
-void MainWindow::export_canvas_(const QString& fileName)
-{
-  /* for now print the image in a fixed resolution 
-   * NOTE: We seem to need the 1px buffer region to avoid
-   *       the image being cut off */
-  QRectF theScene = canvas_->sceneRect();
-  theScene.adjust(-10,-10,10,10);  // need this to avoid cropping
-
-  QImage finalImage(theScene.width()*3, theScene.height() *3,
-      QImage::Format_ARGB32_Premultiplied);
-  QPainter painter(&finalImage);
-  painter.setRenderHints(QPainter::SmoothPixmapTransform);
-  painter.setRenderHints(QPainter::HighQualityAntialiasing);
-  painter.setRenderHints(QPainter::TextAntialiasing);
-
-  canvas_->render(&painter, QRectF(), theScene);
-  painter.end();
-  finalImage.save(fileName); 
 }
 
 

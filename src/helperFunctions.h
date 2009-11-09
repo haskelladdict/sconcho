@@ -34,6 +34,10 @@
 
 QT_BEGIN_NAMESPACE
 
+/* forward declarations */
+class QGraphicsScene;
+
+
 //---------------------------------------------------------------
 // simple integer min max function
 //---------------------------------------------------------------
@@ -48,10 +52,25 @@ QFont extract_font_from_settings(const QSettings& settings);
 
 
 //---------------------------------------------------------------
-// this functions a file export dialog and returns the selected
-// filename or an empty string if nothing was selected
+// this functions fires up a file export dialog and returns 
+// the selected filename or an empty string if none
+// was entered
 //---------------------------------------------------------------
 QString show_file_export_dialog();
+
+
+//---------------------------------------------------------------
+// this functions export the content of a QGraphicsScene to
+// a file
+//---------------------------------------------------------------
+void export_scene(const QString& fileName, QGraphicsScene* theScene);
+
+
+//---------------------------------------------------------------
+// this function prints the content of a QGraphicsScene
+//---------------------------------------------------------------
+void print_scene(QGraphicsScene* theScene);
+
 
 
 QT_END_NAMESPACE

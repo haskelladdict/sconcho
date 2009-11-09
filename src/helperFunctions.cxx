@@ -22,14 +22,19 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QGraphicsScene>
 #include <QMessageBox>
 #include <QObject>
-
+#include <QPainter>
+#include <QPrinter>
+#include <QPrintDialog>
 
 /* local includes */
 #include "helperFunctions.h"
 
+
 QT_BEGIN_NAMESPACE
+
 
 //---------------------------------------------------------------
 // simple integer min max function
@@ -84,6 +89,53 @@ QString show_file_export_dialog()
   }
 
   return saveFileName;
+}
+
+
+
+//---------------------------------------------------------------
+// this functions export the content of a QGraphicsScene to
+// a file
+//---------------------------------------------------------------
+void export_scene(const QString& fileName, QGraphicsScene* scene)
+{
+  /* for now print the image in a fixed resolution 
+   * NOTE: We seem to need the 1px buffer region to avoid
+   *       the image being cut off */
+  QRectF theScene = scene->sceneRect();
+  theScene.adjust(-10,-10,10,10);  // need this to avoid cropping
+
+  QImage finalImage(theScene.width()*3, theScene.height() *3,
+      QImage::Format_ARGB32_Premultiplied);
+  QPainter painter(&finalImage);
+  painter.setRenderHints(QPainter::SmoothPixmapTransform);
+  painter.setRenderHints(QPainter::HighQualityAntialiasing);
+  painter.setRenderHints(QPainter::TextAntialiasing);
+
+  scene->render(&painter, QRectF(), theScene);
+  painter.end();
+  finalImage.save(fileName);
+}
+
+
+
+//---------------------------------------------------------------
+// this function prints the content of a QGraphicsScene
+//---------------------------------------------------------------
+void print_scene(QGraphicsScene* scene)
+{
+  QPrinter aPrinter(QPrinter::HighResolution);
+  QPrintDialog printDialog(&aPrinter);
+  if ( printDialog.exec() == QDialog::Accepted )
+  {
+    /* tell our canvas that we want to print its */
+    QPainter painter(&aPrinter);
+    painter.setRenderHints(QPainter::SmoothPixmapTransform);
+    painter.setRenderHints(QPainter::HighQualityAntialiasing);
+    painter.setRenderHints(QPainter::TextAntialiasing);
+    scene->render(&painter);
+    painter.end();
+  }
 }
 
 

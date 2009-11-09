@@ -123,7 +123,7 @@ private slots:
   void show_about_qt_dialog_();
   void show_file_open_dialog_();
   void show_file_save_dialog_();
-  void export_canvas_();
+  void export_canvas_dialog_();
   void show_sconcho_dialog_();
   void show_print_dialog_();
   void show_preferences_dialog_();
@@ -174,7 +174,6 @@ private:
 
   /* helper functions */
   QSize show_grid_dimension_dialog_();
-  void export_canvas_(const QString& fileName);
   void save_canvas_(const QString& fileName);
   void load_canvas_(const QString& fileName);
   void initialize_settings_();

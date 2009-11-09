@@ -215,6 +215,17 @@ void PatternKeyDialog::update_key_label_(QString labelID,
 void PatternKeyDialog::export_legend_()
 {
   QString fileName = show_file_export_dialog();
+  export_scene(fileName, patternKeyCanvas_);
+}
+
+
+//-------------------------------------------------------------
+// this slot opens up a file export dialog for saving the
+// content of the legend canvas to a file
+//-------------------------------------------------------------
+void PatternKeyDialog::print_legend_()
+{
+  print_scene(patternKeyCanvas_);
 }
 
 
@@ -250,6 +261,7 @@ void PatternKeyDialog::create_buttons_()
 {
   buttonLayout_ = new QHBoxLayout;
 
+  /* export button */
   QPushButton* exportToFileButton = 
     new QPushButton(QIcon(":/icons/fileexport.png"),
         tr("export to file"));
@@ -258,27 +270,35 @@ void PatternKeyDialog::create_buttons_()
           this,
           SLOT(export_legend_()));
 
+  /* print button */
   QPushButton* printButton = 
     new QPushButton(QIcon(":/icons/fileprint.png"), tr("print"));
+  connect(printButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(print_legend_()));
 
+  /* export to canvas button */
   QPushButton* exportToCanvasButton = 
     new QPushButton(QIcon(":/icons/rectangle.png"),
         tr("export to canvas"));
 
+  /* close button */
   QPushButton* closeButton = 
     new QPushButton(QIcon(":/icons/stop.png"), tr("close"));
+  connect(closeButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(hide())
+         );
 
+  /* assemble the complete layout */
   buttonLayout_->addWidget(exportToFileButton);
   buttonLayout_->addWidget(printButton);
   buttonLayout_->addStretch(1);
   buttonLayout_->addWidget(exportToCanvasButton);
   buttonLayout_->addWidget(closeButton);
 
-  connect(closeButton,
-          SIGNAL(clicked()),
-          this,
-          SLOT(hide())
-         );
 }
 
 
