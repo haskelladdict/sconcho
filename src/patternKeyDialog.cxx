@@ -228,6 +228,17 @@ void PatternKeyDialog::print_legend_()
   print_scene(patternKeyCanvas_);
 }
 
+//-------------------------------------------------------------
+// this slot gathers all of the legend as a QGraphicsItemGroup
+// and exports it to the main canvas
+//-------------------------------------------------------------
+void PatternKeyDialog::export_to_canvas_()
+{
+  // nothing here yet
+}
+
+
+
 
 
 
@@ -282,6 +293,11 @@ void PatternKeyDialog::create_buttons_()
   QPushButton* exportToCanvasButton = 
     new QPushButton(QIcon(":/icons/rectangle.png"),
         tr("export to canvas"));
+  connect(exportToCanvasButton,
+          SIGNAL(clicked()),
+          this,
+          SLOT(export_to_canvas_()));
+
 
   /* close button */
   QPushButton* closeButton = 
