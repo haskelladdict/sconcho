@@ -37,6 +37,7 @@ QT_BEGIN_NAMESPACE
 /* forward declarations */
 class PatternKeyCanvas;
 class QGraphicsView;
+class QGraphicsItemGroup;
 class QHBoxLayout;
 class QSettings;
 class QSplitter;
@@ -67,6 +68,7 @@ public:
 signals:
 
   void settings_changed();
+  void export_legend_canvas(const QGraphicsItemGroup* legendGroup);
 
 
 public slots:
@@ -104,6 +106,9 @@ private:
    * text changed and then disappered again since the user
    * removed all instances of the symbol from the pattern) */
   QMap<QString,QString> symbolDescriptors_;
+
+  /* this GraphicsItemGroup holds all items on the canvas */
+  QGraphicsItemGroup* legendGrouper_;
 
   /* functions for creating the interface */
   void create_canvas_();

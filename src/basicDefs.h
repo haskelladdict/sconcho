@@ -51,6 +51,7 @@ const int PATTERN_GRID_LABEL_TYPE = 2;
 const int PATTERN_GRID_RECTANGLE_TYPE = 3;
 const int PATTERN_KEY_CANVAS_TYPE = 4;
 const int KNITTING_PATTERN_ITEM_TYPE = 5;
+const int KEY_LABEL_ITEM_TYPE = 6;
 
 /* the size (in pixels) of a grid cell */
 const int GRID_CELL_SIZE = 30;

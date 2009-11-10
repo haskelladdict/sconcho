@@ -150,7 +150,6 @@ void PatternGridItem::select()
 
 //--------------------------------------------------------------
 // return our custom type
-// so we can cast via 
 //--------------------------------------------------------------
 int PatternGridItem::type() const
 {

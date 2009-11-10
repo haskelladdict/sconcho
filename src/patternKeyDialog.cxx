@@ -20,6 +20,8 @@
 
 /** Qt headers */
 #include <QDebug>
+#include <QGraphicsItemGroup>
+#include <QGraphicsTextItem>
 #include <QGraphicsView>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -33,6 +35,8 @@
 /** local headers */
 #include "basicDefs.h"
 #include "helperFunctions.h"
+#include "keyLabelItem.h"
+#include "knittingPatternItem.h"
 #include "patternKeyCanvas.h"
 #include "patternKeyDialog.h"
 
@@ -234,12 +238,48 @@ void PatternKeyDialog::print_legend_()
 //-------------------------------------------------------------
 void PatternKeyDialog::export_to_canvas_()
 {
-  // nothing here yet
+  /* unfortunately, we can't just grab all items via item() since
+   * then the QSvgItems contained in each knittingPatternItem
+   * will be reparented and disociate from their pattern items.
+   * Hence we grab the labels and pattern items by hand and add 
+   * them */
+  QList<QGraphicsItem*> allItems(patternKeyCanvas_->items());
+  QList<QGraphicsItem*> toBeGroupedItems;
+  foreach(QGraphicsItem* anItem, allItems)
+  {
+    /* add knitting patterns to group */
+    KnittingPatternItem* knitItem =
+      qgraphicsitem_cast<KnittingPatternItem*>(anItem);
+    if (knitItem != 0)
+    {
+      toBeGroupedItems.push_back(knitItem);
+    }
+
+    /* add labels to group */
+    KeyLabelItem* labelItem =
+      qgraphicsitem_cast<KeyLabelItem*>(anItem);
+    if (labelItem != 0)
+    {
+      toBeGroupedItems.push_back(labelItem);
+    }
+
+    /* add text items to group */
+    QGraphicsTextItem* textItem =
+      qgraphicsitem_cast<QGraphicsTextItem*>(anItem);
+    if (textItem != 0)
+    {
+      toBeGroupedItems.push_back(textItem);
+    }
+
+  }
+
+
+  legendGrouper_ = patternKeyCanvas_->createItemGroup(toBeGroupedItems);
+
+  emit export_legend_canvas(legendGrouper_);
+ 
+  patternKeyCanvas_->destroyItemGroup(legendGrouper_);
 }
-
-
-
-
 
 
 /*************************************************************

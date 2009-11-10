@@ -66,6 +66,10 @@ public:
       int scale, const QColor& backColor = Qt::white);
   bool Init();
 
+  /* return our object type; needed for qgraphicsitem_cast */
+  enum { Type = UserType + KNITTING_PATTERN_ITEM_TYPE };
+  int type() const;
+
   /* reimplement pure virtual base class methods */
   QRectF boundingRect() const;
   void paint(QPainter *painter,
