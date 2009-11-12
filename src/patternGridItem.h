@@ -64,10 +64,11 @@ class PatternGridItem
   
 public:
 
-  explicit PatternGridItem(const QPoint& loc, const QSize& aDim, 
+  explicit PatternGridItem(const QSize& aDim, 
       int scale, int columnID, int rowID, 
       GraphicsScene* myParent = 0,
-      const QColor& backColor = Qt::white);
+      const QColor& backColor = Qt::white,
+      const QPoint& loc = QPoint(0,0));
   bool Init();
 
   /* return our object type; needed for qgraphicsitem_cast */
@@ -78,8 +79,8 @@ public:
    * based on its current status */
   void select();
   
-  /* reseat this cell to the given new coordinates */
-  void reseat(const QPoint& newOrigin, int newCol, int newRow);
+  /* reseat this cell to the given new column/row */
+  void reseat(int newCol, int newRow);
 
   /* accessors for properties */
   int col() const { return columnIndex_; }

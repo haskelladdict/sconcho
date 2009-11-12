@@ -27,6 +27,7 @@
 /* QT includes */
 #include <QDialog>
 #include <QMap>
+#include <QList>
 
 /* local included */
 #include "knittingSymbol.h"
@@ -36,11 +37,23 @@ QT_BEGIN_NAMESPACE
 
 /* forward declarations */
 class PatternKeyCanvas;
-class QGraphicsView;
+class QGraphicsItem;
 class QGraphicsItemGroup;
+class QGraphicsView;
 class QHBoxLayout;
 class QSettings;
 class QSplitter;
+
+
+/* helper structures for copying QGraphicsItems
+ * between legend canvas and main canvas */
+struct LegendCopyItem
+{
+  QGraphicsItem* legendItem;
+  QPointF position;
+};
+
+typedef QList<LegendCopyItem> LegendCopyContainer;
 
 
 /***************************************************************
@@ -68,7 +81,7 @@ public:
 signals:
 
   void settings_changed();
-  void export_legend_canvas(const QGraphicsItemGroup* legendGroup);
+  void export_legend_canvas(LegendCopyContainer copiedItems);
 
 
 public slots:

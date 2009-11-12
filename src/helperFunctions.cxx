@@ -19,9 +19,11 @@
  ****************************************************************/
 
 /* qt includes */
+#include <QDebug>
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QMessageBox>
 #include <QObject>
@@ -137,6 +139,29 @@ void print_scene(QGraphicsScene* scene)
     painter.end();
   }
 }
+
+
+//---------------------------------------------------------------
+// given a list of QGraphicsItems returns the maximum y
+// coordinate
+//---------------------------------------------------------------
+qreal get_max_y_coordinate(const QList<QGraphicsItem*> items)
+{
+  qreal yMax = 0.0;
+  foreach(QGraphicsItem* anItem, items)
+  {
+    qreal yPos = anItem->scenePos().y();
+    if (yMax < yPos)
+    {
+      yMax = yPos;
+    }
+  }
+
+  return yMax;
+}
+
+
+
 
 
 QT_END_NAMESPACE

@@ -82,7 +82,8 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   defaultSymbol_(defaultSymbol),
   backgroundColor_(Qt::white),
   defaultColor_(Qt::white),
-  wantColor_(false)
+  wantColor_(false),
+  legendIsVisible_(false)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -154,7 +155,7 @@ void GraphicsScene::reset_grid(const QSize& newSize)
   numRows_ = newSize.height();
   create_pattern_grid_();
   create_grid_labels_();
-  setSceneRect(itemsBoundingRect());
+
   foreach(QGraphicsView* aView, views())
   {
     aView->fitInView(itemsBoundingRect(),Qt::KeepAspectRatio);
@@ -186,10 +187,10 @@ void GraphicsScene::reset_canvas(
     maxRow = int_max(row, maxRow);
 
     PatternGridItem* item = 
-      new PatternGridItem(compute_cell_origin_(col, row), 
-            rawItem.dimension, cellSize_, col, row, this,
-            rawItem.backgroundColor);
+        new PatternGridItem(rawItem.dimension, cellSize_, col, row, 
+          this, rawItem.backgroundColor);
     item->Init();
+    item->setPos(compute_cell_origin_(col, row));
 
     /* add it to our scene */
     add_patternGridItem_(item);
@@ -212,7 +213,6 @@ void GraphicsScene::reset_canvas(
 
   /* add labels and rescale */
   create_grid_labels_();
-  setSceneRect(itemsBoundingRect());
   foreach(QGraphicsView* aView, views())
   {
     aView->fitInView(itemsBoundingRect(),Qt::KeepAspectRatio);
@@ -355,16 +355,15 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
   int numNewCells = dim.width();
   for (int i = 0; i < numNewCells; ++i)
   {
-    QPoint newOrigin(origin.x() + i*cellSize_, origin.y());
     PatternGridItem* item = 
-      new PatternGridItem(newOrigin, 
-                          QSize(1,1), 
+      new PatternGridItem(QSize(1,1), 
                           cellSize_, 
                           column+i, 
                           row, 
                           this);
     item->Init();
     item->insert_knitting_symbol(defaultSymbol_);
+    item->setPos(QPoint(origin.x() + i*cellSize_, origin.y()));
     add_patternGridItem_(item);
   }
 
@@ -479,7 +478,22 @@ void GraphicsScene::update_after_settings_change()
   create_grid_labels_();
 }
 
- 
+
+//-------------------------------------------------------------
+// this slot adds a new or updated legend from the legend
+// Widget
+//-------------------------------------------------------------
+void GraphicsScene::add_legend(LegendCopyContainer newLegend)
+{
+  QPointF offset(0,400);
+  foreach(LegendCopyItem anItem, newLegend)
+  {
+    addItem(anItem.legendItem);
+    (anItem.legendItem)->setPos(anItem.position + offset);
+  }
+}
+
+
 
 /**************************************************************
  *
@@ -553,10 +567,8 @@ void GraphicsScene::delete_col_()
     }
     else if (cell->col() > selectedCol_)
     {
-      cell->reseat(
-              compute_cell_origin_(cell->col() - 1, cell->row()),
-              cell->col() - 1,
-              cell->row());
+      cell->reseat(cell->col() - 1, cell->row());
+      cell->setPos(compute_cell_origin_(cell->col(), cell->row()));
     }
   }
 
@@ -618,10 +630,9 @@ void GraphicsScene::delete_row_()
     }
     else if (patItem->row() > selectedRow_)
     {
-      patItem->reseat(
-                compute_cell_origin_(patItem->col(), patItem->row()-1),
-                patItem->col(),
-                patItem->row() - 1);
+      patItem->reseat(patItem->col(), patItem->row() - 1);
+      patItem->setPos(
+        compute_cell_origin_(patItem->col(), patItem->row()));
     }
   }
 
@@ -692,9 +703,10 @@ void GraphicsScene::insert_col_(int aCol)
          * is in the current cell. If not, it will surely
          * start in the cell to the left and we would cut
          * it in this case */
-        QPoint actualOrigin(cell->origin());
-        QPoint neededOrigin(compute_cell_origin_(aCol, cell->row()));
+        QPointF actualOrigin(cell->scenePos());
+        QPointF neededOrigin(compute_cell_origin_(aCol, cell->row()));
 
+        /* FIXME: we shouldn't be comparing QPointFs !!! */
         if (cell->col() == aCol && actualOrigin == neededOrigin )
         {
           targetColCounter += 1;
@@ -722,7 +734,6 @@ void GraphicsScene::insert_col_(int aCol)
   for (int row = 0; row < numRows_; ++row)
   {
     PatternGridItem* anItem = new PatternGridItem (
-          compute_cell_origin_(aCol, row),  
           QSize(1,1),
           cellSize_,
           aCol,
@@ -731,6 +742,7 @@ void GraphicsScene::insert_col_(int aCol)
           defaultColor_);
 
     anItem->Init();
+    anItem->setPos(compute_cell_origin_(aCol, row));  
     add_patternGridItem_(anItem);
   }
 
@@ -785,7 +797,6 @@ void GraphicsScene::insert_row_(int aRow)
   for (int column = 0; column < numCols_; ++column)
   {
     PatternGridItem* anItem = new PatternGridItem (
-          compute_cell_origin_(column, aRow+1),  
           QSize(1,1),
           cellSize_,
           column,
@@ -794,6 +805,7 @@ void GraphicsScene::insert_row_(int aRow)
           defaultColor_);
 
     anItem->Init();
+    anItem->setPos(compute_cell_origin_(column, aRow+1)); 
     add_patternGridItem_(anItem);
   }
 
@@ -983,7 +995,6 @@ void GraphicsScene::try_place_knitting_symbol_()
       int aWidth  = replacementCells.at(row)[cell].second;
 
       PatternGridItem* anItem = new PatternGridItem (
-          compute_cell_origin_(column, row),  
           QSize(aWidth,1),
           cellSize_,
           column,
@@ -993,6 +1004,7 @@ void GraphicsScene::try_place_knitting_symbol_()
 
       anItem->Init();
       anItem->insert_knitting_symbol(selectedSymbol_);
+      anItem->setPos(compute_cell_origin_(column, row));  
       add_patternGridItem_(anItem);
     }
   }
@@ -1365,9 +1377,9 @@ void GraphicsScene::create_pattern_grid_()
     for (int row=0; row < numRows_; ++row)
     {
       PatternGridItem* item = 
-        new PatternGridItem(compute_cell_origin_(col, row), 
-            QSize(1,1), cellSize_, col, row, this);
+        new PatternGridItem(QSize(1,1), cellSize_, col, row, this);
       item->Init();
+      item->setPos(compute_cell_origin_(col, row)); 
       item->insert_knitting_symbol(defaultSymbol_);
 
       /* add it to our scene */
@@ -1470,10 +1482,8 @@ void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
       {
         if (cell->col() >= colPivot)
         {
-          cell->reseat(
-                  compute_cell_origin_(cell->col() + 1, cell->row()),
-                  cell->col() + 1,
-                  cell->row());
+          cell->reseat(cell->col() + 1,cell->row());
+          cell->setPos(compute_cell_origin_(cell->col(), cell->row()));
         }
       }
 
@@ -1482,10 +1492,10 @@ void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
       {
         if (cell->row() > rowPivot)
         {
-          cell->reseat(
-                  compute_cell_origin_(cell->col(), cell->row()+1),
-                  cell->col(),
-                  cell->row() + 1);
+          /* Note: we shift the cell first and can the just
+           * use its new position, i.e. no row()+1 in set Pos */
+          cell->reseat(cell->col(),cell->row() + 1);
+          cell->setPos(compute_cell_origin_(cell->col(), cell->row()));
         }
       }
     }
@@ -1778,8 +1788,11 @@ void GraphicsScene::show_rectangle_manage_menu_(
 void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 {
   addItem(anItem);
+  add_item_to_legend_(anItem);
+#if 0
   parent_->knitting_symbol_added(anItem->get_knitting_symbol(),
                                  anItem->color());
+#endif
 }
 
 
@@ -1791,13 +1804,70 @@ void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
 {
   removeItem(anItem);
+#if 0
   parent_->knitting_symbol_removed(anItem->get_knitting_symbol(),
                                    anItem->color());
+#endif
   
   /* delete it for good */
   anItem->deleteLater();
 
 }
+
+
+//-------------------------------------------------------------
+// this function checks if the added symbol already exists
+// in the legend. If not, create it.
+//-------------------------------------------------------------
+void GraphicsScene::add_item_to_legend_(const PatternGridItem* item)
+{
+  KnittingSymbolPtr symbol = item->get_knitting_symbol();
+  QString symbolName = symbol->fullName();
+  QString colorName  = item->color().name();
+  QString fullName = symbolName + colorName;
+#if 0
+  /* update reference count */
+  int currentValue = usedKnittingSymbols_[fullName] + 1;
+  assert(currentValue > 0);
+  usedKnittingSymbols_[fullName] = currentValue;
+
+  /* if the symbol got newly added we add a description unless
+   * it already existed previously and show it in the legend */
+  if (currentValue == 1)
+  {
+    if (!symbolDescriptors_.contains(fullName))
+    {
+      QString description = symbol->baseName();
+      symbolDescriptors_[fullName] = description;
+    }
+  
+    /* find ideal placement position */
+    qreal yMax = get_max_y_coordinate(legendItems_) + cellSize_*1.5;
+    qDebug() << yMax;
+    if (yMax < 400)
+    {
+      yMax = 400;
+    }
+    qDebug() << yMax;
+
+    KnittingPatternItem* newLegendItem = new KnittingPatternItem(
+      symbol->dim(), cellSize_, item->color());
+    newLegendItem->Init();
+    newLegendItem->insert_knitting_symbol(symbol);
+    newLegendItem->setPos(0, yMax);
+    addItem(newLegendItem);
+    qDebug() << " (((( " << newLegendItem->y();
+    legendItems_.push_back(newLegendItem);
+  }
+#endif
+}
+        
+
+
+
+
+
+  
 
 
 QT_END_NAMESPACE

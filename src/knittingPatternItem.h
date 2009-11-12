@@ -62,8 +62,9 @@ class KnittingPatternItem
   
 public:
 
-  explicit KnittingPatternItem(const QPoint& loc, const QSize& aDim, 
-      int scale, const QColor& backColor = Qt::white);
+  explicit KnittingPatternItem( const QSize& aDim, int scale, 
+    const QColor& backColor = Qt::white, 
+    const QPoint& loc = QPoint(0,0));
   bool Init();
 
   /* return our object type; needed for qgraphicsitem_cast */
@@ -94,7 +95,6 @@ protected:
   /* a few setters for our children */
   void select_background_color() { currentColor_ = backColor_; }
   void select_highlight_color() { currentColor_ = highlightColor_; }
-  void set_new_location(QPoint aLoc) { loc_ = aLoc; }
 
   /* fit the svg item snug into our frame */
   void fit_svg_();

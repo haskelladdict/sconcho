@@ -14,8 +14,8 @@ SET(SCONCHO_SRCS
   patternGridLabel.cxx
   patternGridRectangle.cxx
   patternGridRectangleDialog.cxx
-  patternKeyDialog.cxx
-  patternKeyCanvas.cxx
+  #  patternKeyDialog.cxx
+  #  patternKeyCanvas.cxx
   patternView.cxx
   preferencesDialog.cxx
   sconcho.cxx
@@ -31,8 +31,8 @@ SET(SCONCHO_MOC_HDRS
   patternGridItem.h
   patternGridRectangle.h
   patternGridRectangleDialog.h
-  patternKeyDialog.h
-  patternKeyCanvas.h
+  #  patternKeyDialog.h
+  #  patternKeyCanvas.h
   patternView.h
   preferencesDialog.h
   symbolSelectorItem.h

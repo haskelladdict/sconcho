@@ -29,12 +29,14 @@
 
 /* Qt includes */
 #include <QFont>
+#include <QList>
 #include <QSettings>
 #include <QString>
 
 QT_BEGIN_NAMESPACE
 
 /* forward declarations */
+class QGraphicsItem;
 class QGraphicsScene;
 
 
@@ -70,6 +72,13 @@ void export_scene(const QString& fileName, QGraphicsScene* theScene);
 // this function prints the content of a QGraphicsScene
 //---------------------------------------------------------------
 void print_scene(QGraphicsScene* theScene);
+
+
+//---------------------------------------------------------------
+// given a list of QGraphicsItems returns the maximum y
+// coordinate
+//---------------------------------------------------------------
+qreal get_max_y_coordinate(const QList<QGraphicsItem*> items);
 
 
 

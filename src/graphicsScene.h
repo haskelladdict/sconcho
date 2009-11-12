@@ -34,6 +34,7 @@
 
 /* local includes */
 #include "knittingSymbol.h"
+#include "patternKeyDialog.h"
 #include "io.h"
 
 
@@ -112,6 +113,7 @@ public slots:
   void deselect_all_active_items();
   void mark_active_cells_with_rectangle();
   void update_after_settings_change();
+  void add_legend(LegendCopyContainer newLegend);
 
   
 protected:
@@ -171,6 +173,27 @@ private:
   void create_pattern_grid_();
   void create_grid_labels_();
   void create_pattern_key_();
+
+
+  /* items related to the legend */
+  bool legendIsVisible_;
+  void add_item_to_legend_(const PatternGridItem* anItem);
+
+  /* List of items in the current Legend */
+  QList<QGraphicsItem*> legendItems_;
+
+  /* map holding the descriptor for all currently "known"
+   * knitting symbols (even ones not currently shown, e.g.
+   * for symbols that were previously visible, had their 
+   * text changed and then disappered again since the user
+   * removed all instances of the symbol from the pattern) */
+  QMap<QString,QString> symbolDescriptors_;
+  
+  /* reference count of knitting symbols currently in use */
+  QMap<QString,int> usedKnittingSymbols_;
+
+
+
 
   /* use these to add/remove PatternGridItems to the scene */
   void add_patternGridItem_(PatternGridItem* anItem);

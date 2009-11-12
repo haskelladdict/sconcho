@@ -244,9 +244,10 @@ void PatternKeyDialog::export_to_canvas_()
    * Hence we grab the labels and pattern items by hand and add 
    * them */
   QList<QGraphicsItem*> allItems(patternKeyCanvas_->items());
-  QList<QGraphicsItem*> toBeGroupedItems;
+  LegendCopyContainer copiedItems;
   foreach(QGraphicsItem* anItem, allItems)
   {
+#if 0
     /* add knitting patterns to group */
     KnittingPatternItem* knitItem =
       qgraphicsitem_cast<KnittingPatternItem*>(anItem);
@@ -254,15 +255,24 @@ void PatternKeyDialog::export_to_canvas_()
     {
       toBeGroupedItems.push_back(knitItem);
     }
+#endif
 
     /* add labels to group */
     KeyLabelItem* labelItem =
       qgraphicsitem_cast<KeyLabelItem*>(anItem);
     if (labelItem != 0)
     {
-      toBeGroupedItems.push_back(labelItem);
+      QString text = labelItem->toPlainText();
+      KeyLabelItem* newLabel = new KeyLabelItem("", text);
+     
+      LegendCopyItem newItem;
+      newItem.legendItem = newLabel;
+      newItem.position = labelItem->pos();
+      
+      copiedItems.push_back(newItem);
     }
 
+#if 0
     /* add text items to group */
     QGraphicsTextItem* textItem =
       qgraphicsitem_cast<QGraphicsTextItem*>(anItem);
@@ -270,15 +280,11 @@ void PatternKeyDialog::export_to_canvas_()
     {
       toBeGroupedItems.push_back(textItem);
     }
-
+#endif
   }
 
-
-  legendGrouper_ = patternKeyCanvas_->createItemGroup(toBeGroupedItems);
-
-  emit export_legend_canvas(legendGrouper_);
- 
-  patternKeyCanvas_->destroyItemGroup(legendGrouper_);
+  /* group, send it off, the ungroup */
+  emit export_legend_canvas(copiedItems);
 }
 
 

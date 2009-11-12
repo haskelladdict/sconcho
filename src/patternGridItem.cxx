@@ -48,11 +48,11 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-PatternGridItem::PatternGridItem(const QPoint& aLoc, 
-  const QSize& aDim, int aScale, int aCol, int aRow,
-  GraphicsScene* myParent, const QColor& aBackColor)
+PatternGridItem::PatternGridItem( const QSize& aDim, int aScale, 
+  int aCol, int aRow, GraphicsScene* myParent, 
+  const QColor& aBackColor,const QPoint& aLoc)
     :
-      KnittingPatternItem(aLoc, aDim, aScale, aBackColor),
+      KnittingPatternItem(aDim, aScale, aBackColor, aLoc),
       selected_(false),
       parent_(myParent),
       columnIndex_(aCol),
@@ -111,19 +111,10 @@ bool PatternGridItem::Init()
 // move this cell to a new location (in the pattern grid
 // array) on the canvas.
 //--------------------------------------------------------------
-void PatternGridItem::reseat(const QPoint& newOrigin, int newCol, 
-    int newRow)
+void PatternGridItem::reseat(int newCol, int newRow)
 {
-  /* schedule event with canvas */
-  prepareGeometryChange();
-
-  /* update */
-  set_new_location(newOrigin);
   columnIndex_ = newCol;
   rowIndex_ = newRow;
-
-  /* fix up the svg item */
-  fit_svg_();
 } 
 
 

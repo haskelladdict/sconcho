@@ -45,8 +45,8 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-KnittingPatternItem::KnittingPatternItem(const QPoint& aLoc, 
-  const QSize& aDim, int aScale, const QColor& aBackColor) 
+KnittingPatternItem::KnittingPatternItem(const QSize& aDim, 
+  int aScale, const QColor& aBackColor, const QPoint& aLoc) 
     :
       QGraphicsItem(),
       svgItem_(0),
@@ -222,9 +222,6 @@ void KnittingPatternItem::fit_svg_()
   }
 
   svgItem_->scale(scaleX, scaleY);
-
-  /* translate */
-  svgItem_->setPos(boxRect.x(), boxRect.y());
 }
 
 

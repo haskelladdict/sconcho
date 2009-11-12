@@ -97,11 +97,12 @@ signals:
 
 
 public slots:
-
+#if 0
   void knitting_symbol_added(KnittingSymbolPtr symbol,
                              const QColor& color);
   void knitting_symbol_removed(KnittingSymbolPtr symbol,
                                const QColor& color);
+#endif
   void update_mouse_position_display(QPointF newPos);
   void show_statusBar_message(QString msg);
   void show_statusBar_error(QString msg);
@@ -127,7 +128,7 @@ private slots:
   void show_sconcho_dialog_();
   void show_print_dialog_();
   void show_preferences_dialog_();
-  void show_pattern_key_dialog_();
+//  void show_pattern_key_dialog_();
 
    
 private:

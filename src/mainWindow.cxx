@@ -96,7 +96,7 @@ bool MainWindow::Init()
    * NOTE: We NEED to first create the patterKeyDialog and
    * symbolsWidget before we add the graphicsScence since the
    * supply some required objects */
-  create_pattern_key_dialog_();
+//  create_pattern_key_dialog_();
   create_symbols_widget_();
   create_graphics_scene_();
   create_toolbar_();
@@ -125,14 +125,19 @@ bool MainWindow::Init()
           canvas_,
           SLOT(update_after_settings_change())
          );
-
+/*
   connect(this,
           SIGNAL(settings_changed()),
           patternKeyDialog_,
           SIGNAL(settings_changed())
          );
 
-
+  connect(patternKeyDialog_,
+          SIGNAL(export_legend_canvas(LegendCopyContainer)),
+          canvas_,
+          SLOT(add_legend(LegendCopyContainer))
+         );
+*/
   /* set up main interface and set initial splitter sizes */
   mainSplitter_->addWidget(canvasView_);
   mainSplitter_->addWidget(propertyBox_);
@@ -149,7 +154,7 @@ bool MainWindow::Init()
  *
  *************************************************************/
 
-
+#if 0
 //-------------------------------------------------------------
 // notify the pattern key dialog that a knitting symbol
 // has been added
@@ -170,7 +175,7 @@ void MainWindow::knitting_symbol_removed(KnittingSymbolPtr aSymbol,
 {
   patternKeyDialog_->remove_knitting_symbol(aSymbol, aColor);
 }
-
+#endif
 
 
 //-------------------------------------------------------------
@@ -466,7 +471,7 @@ void MainWindow::show_preferences_dialog_()
   emit settings_changed();
 }
 
-
+#if 0
 //------------------------------------------------------------
 // fire up the pattern grid key editing dialog
 //------------------------------------------------------------
@@ -474,7 +479,7 @@ void MainWindow::show_pattern_key_dialog_()
 {
   patternKeyDialog_->setVisible(true);
 }
-
+#endif
 
 
 
@@ -631,7 +636,7 @@ void MainWindow::create_grid_menu_()
 
   /* reset */
   QAction* gridResetAction = 
-    new QAction(tr("&Fit view"), this);
+    new QAction(tr("&Reset Grid"), this);
   gridMenu->addAction(gridResetAction);
   gridResetAction->setShortcut(tr("Ctrl+R"));
   connect(gridResetAction, 
@@ -688,7 +693,7 @@ void MainWindow::create_status_bar_()
   setStatusBar(statusBar_);
 }
 
-
+#if 0
 //-------------------------------------------------------------
 // initialize the pattern key dialog
 //-------------------------------------------------------------
@@ -699,7 +704,7 @@ void MainWindow::create_pattern_key_dialog_()
   patternKeyDialog_->Init();
   patternKeyDialog_->setVisible(false);
 }
-
+#endif
 
 
 //-------------------------------------------------------------
@@ -817,7 +822,7 @@ void MainWindow::create_toolbar_()
 
   QToolButton* resetButton = new QToolButton(this);
   resetButton->setIcon(QIcon(":/icons/viewmagfit.png"));
-  resetButton->setToolTip(tr("reset view"));
+  resetButton->setToolTip(tr("fit view"));
   toolBar->addWidget(resetButton);
   connect(resetButton,
           SIGNAL(clicked()),
@@ -886,11 +891,11 @@ void MainWindow::create_toolbar_()
   toggleKeyButton->setIcon(QIcon(":/icons/key.png"));
   toggleKeyButton->setToolTip(tr("toggle pattern key"));
   toolBar->addWidget(toggleKeyButton);
-  connect(toggleKeyButton,
+/*  connect(toggleKeyButton,
           SIGNAL(clicked()),
           this,
           SLOT(show_pattern_key_dialog_()));
-
+*/
 
   addToolBar(toolBar);
 }
