@@ -42,6 +42,8 @@ QT_BEGIN_NAMESPACE
 
 
 /* a few forward declarations */
+class KeyLabelItem;
+class KnittingPatternItem;
 class PatternGridItem;
 class PatternGridRectangle;
 class QGraphicsSceneMouseEvent;
@@ -58,6 +60,8 @@ namespace
   /* convenience typedefs */
   typedef QList<QPair<int, int> > RowLayout;
   typedef QList<PatternGridItem*> RowItems;
+
+  typedef QPair<KnittingPatternItem*,KeyLabelItem*> LegendItem;
 };
 
 
@@ -113,7 +117,7 @@ public slots:
   void deselect_all_active_items();
   void mark_active_cells_with_rectangle();
   void update_after_settings_change();
-  void add_legend(LegendCopyContainer newLegend);
+  void toggle_pattern_visibility();
 
   
 protected:
@@ -133,6 +137,7 @@ private slots:
   void insert_below_row_();
   void mark_rectangle_for_deletion_(QObject* foo);
   void customize_rectangle_(QObject* foo);
+  void update_key_label_text_(QString, QString);
 
   
 private:
@@ -174,13 +179,14 @@ private:
   void create_grid_labels_();
   void create_pattern_key_();
 
-
   /* items related to the legend */
   bool legendIsVisible_;
-  void add_item_to_legend_(const PatternGridItem* anItem);
+  void notify_legend_of_item_addition_(const PatternGridItem* anItem);
+  void notify_legend_of_item_removal_(const PatternGridItem* anItem);
 
   /* List of items in the current Legend */
   QList<QGraphicsItem*> legendItems_;
+  QMap<QString,LegendItem> legendItemsNew_;
 
   /* map holding the descriptor for all currently "known"
    * knitting symbols (even ones not currently shown, e.g.
@@ -191,8 +197,6 @@ private:
   
   /* reference count of knitting symbols currently in use */
   QMap<QString,int> usedKnittingSymbols_;
-
-
 
 
   /* use these to add/remove PatternGridItems to the scene */

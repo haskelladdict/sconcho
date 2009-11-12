@@ -471,17 +471,6 @@ void MainWindow::show_preferences_dialog_()
   emit settings_changed();
 }
 
-#if 0
-//------------------------------------------------------------
-// fire up the pattern grid key editing dialog
-//------------------------------------------------------------
-void MainWindow::show_pattern_key_dialog_()
-{
-  patternKeyDialog_->setVisible(true);
-}
-#endif
-
-
 
 /*************************************************************
  *
@@ -891,11 +880,10 @@ void MainWindow::create_toolbar_()
   toggleKeyButton->setIcon(QIcon(":/icons/key.png"));
   toggleKeyButton->setToolTip(tr("toggle pattern key"));
   toolBar->addWidget(toggleKeyButton);
-/*  connect(toggleKeyButton,
+  connect(toggleKeyButton,
           SIGNAL(clicked()),
-          this,
-          SLOT(show_pattern_key_dialog_()));
-*/
+          canvas_,
+          SLOT(toggle_pattern_visibility()));
 
   addToolBar(toolBar);
 }

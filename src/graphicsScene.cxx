@@ -45,6 +45,7 @@
 #include "basicDefs.h"
 #include "graphicsScene.h"
 #include "helperFunctions.h"
+#include "keyLabelItem.h"
 #include "knittingSymbol.h"
 #include "mainWindow.h"
 #include "patternGridItem.h"
@@ -83,7 +84,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   backgroundColor_(Qt::white),
   defaultColor_(Qt::white),
   wantColor_(false),
-  legendIsVisible_(false)
+  legendIsVisible_(true)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -480,19 +481,28 @@ void GraphicsScene::update_after_settings_change()
 
 
 //-------------------------------------------------------------
-// this slot adds a new or updated legend from the legend
-// Widget
+// shows or hides legend items depending on their current
+// state
 //-------------------------------------------------------------
-void GraphicsScene::add_legend(LegendCopyContainer newLegend)
+void GraphicsScene::toggle_pattern_visibility() 
 {
-  QPointF offset(0,400);
-  foreach(LegendCopyItem anItem, newLegend)
+  if (legendIsVisible_)
   {
-    addItem(anItem.legendItem);
-    (anItem.legendItem)->setPos(anItem.position + offset);
+    foreach(QGraphicsItem* item, legendItems_)
+    {
+      item->hide();
+    }
+    legendIsVisible_ = false;
+  }
+  else
+  {
+    foreach(QGraphicsItem* item, legendItems_)
+    {
+      item->show();
+    }
+    legendIsVisible_ = true;
   }
 }
-
 
 
 /**************************************************************
@@ -855,6 +865,17 @@ void GraphicsScene::customize_rectangle_(QObject* rectObj)
   QPen rectanglePen = rectangleDialog.pen();
 
   rect->set_pen(rectanglePen);
+}
+
+
+//-------------------------------------------------------------
+// this slot update the text we store for a particular
+// legend label
+//-------------------------------------------------------------
+void GraphicsScene::update_key_label_text_(QString labelID, 
+  QString newLabelText)
+{
+  symbolDescriptors_[labelID] = newLabelText;
 }
 
 
@@ -1788,11 +1809,7 @@ void GraphicsScene::show_rectangle_manage_menu_(
 void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 {
   addItem(anItem);
-  add_item_to_legend_(anItem);
-#if 0
-  parent_->knitting_symbol_added(anItem->get_knitting_symbol(),
-                                 anItem->color());
-#endif
+  notify_legend_of_item_addition_(anItem);
 }
 
 
@@ -1804,10 +1821,7 @@ void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
 {
   removeItem(anItem);
-#if 0
-  parent_->knitting_symbol_removed(anItem->get_knitting_symbol(),
-                                   anItem->color());
-#endif
+  notify_legend_of_item_removal_(anItem);
   
   /* delete it for good */
   anItem->deleteLater();
@@ -1816,16 +1830,18 @@ void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
 
 
 //-------------------------------------------------------------
-// this function checks if the added symbol already exists
+// Add a symbol plus description to the legend if neccessary.
+// This function checks if the added symbol already exists
 // in the legend. If not, create it.
 //-------------------------------------------------------------
-void GraphicsScene::add_item_to_legend_(const PatternGridItem* item)
+void GraphicsScene::notify_legend_of_item_addition_(
+    const PatternGridItem* item)
 {
   KnittingSymbolPtr symbol = item->get_knitting_symbol();
   QString symbolName = symbol->fullName();
   QString colorName  = item->color().name();
   QString fullName = symbolName + colorName;
-#if 0
+
   /* update reference count */
   int currentValue = usedKnittingSymbols_[fullName] + 1;
   assert(currentValue > 0);
@@ -1835,34 +1851,94 @@ void GraphicsScene::add_item_to_legend_(const PatternGridItem* item)
    * it already existed previously and show it in the legend */
   if (currentValue == 1)
   {
+    QString description = symbol->baseName();
     if (!symbolDescriptors_.contains(fullName))
     {
-      QString description = symbol->baseName();
       symbolDescriptors_[fullName] = description;
     }
-  
-    /* find ideal placement position */
-    qreal yMax = get_max_y_coordinate(legendItems_) + cellSize_*1.5;
-    qDebug() << yMax;
-    if (yMax < 400)
+    else
     {
-      yMax = 400;
+      description = symbolDescriptors_[fullName];
     }
-    qDebug() << yMax;
+  
+    /* find ideal placement position 
+     * We need to set a minimum yMax since otherwise we'll
+     * place the legend item for the default symbol at the
+     * wrong position during startup */
+    int yMax = (numRows_ + 1) * cellSize_;
+    if (yMax < height() )
+    {
+      yMax = height();
+    }
+    int yPos = yMax + cellSize_ * 0.5;
+    int xPosSym = 0;
+    int xPosLabel = (symbol->dim().width() + 1) * cellSize_;
 
     KnittingPatternItem* newLegendItem = new KnittingPatternItem(
       symbol->dim(), cellSize_, item->color());
     newLegendItem->Init();
     newLegendItem->insert_knitting_symbol(symbol);
-    newLegendItem->setPos(0, yMax);
+    newLegendItem->setPos(xPosSym, yPos);
+    newLegendItem->setFlag(QGraphicsItem::ItemIsMovable);
     addItem(newLegendItem);
-    qDebug() << " (((( " << newLegendItem->y();
-    legendItems_.push_back(newLegendItem);
+
+    /* add label */
+    QFont currentFont = extract_font_from_settings(settings_);
+    KeyLabelItem* newTextItem = 
+      new KeyLabelItem(fullName, description);
+    newTextItem->Init();
+    newTextItem->setPos(xPosLabel, yPos);
+    newTextItem->setFont(currentFont);
+    newTextItem->setFlag(QGraphicsItem::ItemIsMovable);
+    addItem(newTextItem);
+    connect(newTextItem,
+            SIGNAL(label_changed(QString, QString)),
+            this,
+            SLOT(update_key_label_text_(QString, QString))
+           );
+
+    legendItemsNew_[fullName] = LegendItem(newLegendItem, newTextItem);
+
+    if (!legendIsVisible_)
+    {
+      newLegendItem->hide();
+      newTextItem->hide();
+    }
   }
-#endif
 }
         
 
+//-------------------------------------------------------------
+// Remove a symbol plus description from the legend if neccessary.
+// This function checks if the removed symbol is the "last of
+// its kind" and if so removed it.
+//-------------------------------------------------------------
+void GraphicsScene::notify_legend_of_item_removal_(
+    const PatternGridItem* item)
+{
+  KnittingSymbolPtr symbol = item->get_knitting_symbol();
+  QString symbolName = symbol->fullName();
+  QString colorName  = item->color().name();
+  QString fullName = symbolName + colorName;
+
+  int currentValue = usedKnittingSymbols_[fullName] - 1;
+
+  assert(currentValue >= 0);
+
+  /* remove symbol if reference count hits 0 */
+  if (currentValue == 0)
+  {
+    usedKnittingSymbols_.remove(fullName);
+
+    LegendItem deadItem = legendItemsNew_[fullName];
+    removeItem(deadItem.first);
+    deadItem.first->deleteLater();
+    removeItem(deadItem.second);
+    deadItem.second->deleteLater();
+    legendItemsNew_.remove(fullName);
+  }
+}
+        
 
 
 
