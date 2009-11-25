@@ -111,7 +111,7 @@ public slots:
 
   void update_selected_symbol(const KnittingSymbolPtr symbol);
   void grid_item_selected(PatternGridItem* item, bool status);
-  void grid_item_reset(PatternGridItem*);
+  void grid_item_reset(PatternGridItem* item);
   void update_selected_background_color(const QColor& aColor);
   void color_state_changed(int state); 
   void deselect_all_active_items();
@@ -183,10 +183,11 @@ private:
   bool legendIsVisible_;
   void notify_legend_of_item_addition_(const PatternGridItem* anItem);
   void notify_legend_of_item_removal_(const PatternGridItem* anItem);
+  void update_legend_labels_();
 
   /* List of items in the current Legend */
-  QList<QGraphicsItem*> legendItems_;
-  QMap<QString,LegendItem> legendItemsNew_;
+  //QList<QGraphicsItem*> legendItems_;
+  QMap<QString,LegendItem> legendItems_;
 
   /* map holding the descriptor for all currently "known"
    * knitting symbols (even ones not currently shown, e.g.
@@ -194,6 +195,8 @@ private:
    * text changed and then disappered again since the user
    * removed all instances of the symbol from the pattern) */
   QMap<QString,QString> symbolDescriptors_;
+  QString get_symbol_description_(KnittingSymbolPtr aSymbol,
+    QString aColorName);
   
   /* reference count of knitting symbols currently in use */
   QMap<QString,int> usedKnittingSymbols_;

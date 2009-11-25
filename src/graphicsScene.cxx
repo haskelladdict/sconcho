@@ -477,6 +477,7 @@ void GraphicsScene::mark_active_cells_with_rectangle()
 void GraphicsScene::update_after_settings_change()
 {
   create_grid_labels_();
+  update_legend_labels_();
 }
 
 
@@ -486,6 +487,7 @@ void GraphicsScene::update_after_settings_change()
 //-------------------------------------------------------------
 void GraphicsScene::toggle_pattern_visibility() 
 {
+#if 0
   if (legendIsVisible_)
   {
     foreach(QGraphicsItem* item, legendItems_)
@@ -502,6 +504,7 @@ void GraphicsScene::toggle_pattern_visibility()
     }
     legendIsVisible_ = true;
   }
+#endif
 }
 
 
@@ -1829,6 +1832,32 @@ void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
 }
 
 
+
+//-------------------------------------------------------------
+// get the description for the knitting symbol. If this is
+// the first time we ask for it we use the symbols base name
+// and also store it in the map that keeps track of the name
+// from now one
+//-------------------------------------------------------------
+QString GraphicsScene::get_symbol_description_(
+  KnittingSymbolPtr aSymbol, QString colorName)
+{
+  QString description = aSymbol->baseName();
+  QString fullName = aSymbol->fullName() + colorName;
+  if (!symbolDescriptors_.contains(fullName))
+  {
+    symbolDescriptors_[fullName] = description;
+  }
+  else
+  {
+    description = symbolDescriptors_[fullName];
+  }
+
+  return description;
+}
+ 
+
+
 //-------------------------------------------------------------
 // Add a symbol plus description to the legend if neccessary.
 // This function checks if the added symbol already exists
@@ -1851,20 +1880,8 @@ void GraphicsScene::notify_legend_of_item_addition_(
    * it already existed previously and show it in the legend */
   if (currentValue == 1)
   {
-    QString description = symbol->baseName();
-    if (!symbolDescriptors_.contains(fullName))
-    {
-      symbolDescriptors_[fullName] = description;
-    }
-    else
-    {
-      description = symbolDescriptors_[fullName];
-    }
-  
-    /* find ideal placement position 
-     * We need to set a minimum yMax since otherwise we'll
-     * place the legend item for the default symbol at the
-     * wrong position during startup */
+    QString description = get_symbol_description_(symbol, colorName);
+
     int yMax = (numRows_ + 1) * cellSize_;
     if (yMax < height() )
     {
@@ -1897,7 +1914,7 @@ void GraphicsScene::notify_legend_of_item_addition_(
             SLOT(update_key_label_text_(QString, QString))
            );
 
-    legendItemsNew_[fullName] = LegendItem(newLegendItem, newTextItem);
+    legendItems_[fullName] = LegendItem(newLegendItem, newTextItem);
 
     if (!legendIsVisible_)
     {
@@ -1914,7 +1931,7 @@ void GraphicsScene::notify_legend_of_item_addition_(
 // its kind" and if so removed it.
 //-------------------------------------------------------------
 void GraphicsScene::notify_legend_of_item_removal_(
-    const PatternGridItem* item)
+  const PatternGridItem* item)
 {
   KnittingSymbolPtr symbol = item->get_knitting_symbol();
   QString symbolName = symbol->fullName();
@@ -1922,26 +1939,39 @@ void GraphicsScene::notify_legend_of_item_removal_(
   QString fullName = symbolName + colorName;
 
   int currentValue = usedKnittingSymbols_[fullName] - 1;
-
   assert(currentValue >= 0);
+  usedKnittingSymbols_[fullName] = currentValue;
 
   /* remove symbol if reference count hits 0 */
   if (currentValue == 0)
   {
     usedKnittingSymbols_.remove(fullName);
 
-    LegendItem deadItem = legendItemsNew_[fullName];
+    LegendItem deadItem = legendItems_[fullName];
     removeItem(deadItem.first);
     deadItem.first->deleteLater();
     removeItem(deadItem.second);
     deadItem.second->deleteLater();
-    legendItemsNew_.remove(fullName);
+    legendItems_.remove(fullName);
   }
 }
         
 
-
-
+//-------------------------------------------------------------
+// Update the legend labels after a settings change
+//-------------------------------------------------------------
+void GraphicsScene::update_legend_labels_()
+{
+  QList<LegendItem> allItems(legendItems_.values());
+  QFont currentFont = extract_font_from_settings(settings_);
+  
+  foreach(LegendItem item, allItems)
+  {
+    item.second->setFont(currentFont);
+  }
+}
+      
+      
 
   
 
