@@ -84,7 +84,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   backgroundColor_(Qt::white),
   defaultColor_(Qt::white),
   wantColor_(false),
-  legendIsVisible_(true)
+  legendIsVisible_(false)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -487,24 +487,24 @@ void GraphicsScene::update_after_settings_change()
 //-------------------------------------------------------------
 void GraphicsScene::toggle_pattern_visibility() 
 {
-#if 0
   if (legendIsVisible_)
   {
-    foreach(QGraphicsItem* item, legendItems_)
+    foreach(LegendItem item, legendItems_)
     {
-      item->hide();
+      item.first->hide();
+      item.second->hide();
     }
     legendIsVisible_ = false;
   }
   else
   {
-    foreach(QGraphicsItem* item, legendItems_)
+    foreach(LegendItem item, legendItems_)
     {
-      item->show();
+      item.first->show();
+      item.second->show();
     }
     legendIsVisible_ = true;
   }
-#endif
 }
 
 
@@ -1974,6 +1974,4 @@ void GraphicsScene::update_legend_labels_()
       
 
   
-
-
 QT_END_NAMESPACE
