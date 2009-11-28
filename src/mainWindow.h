@@ -39,7 +39,6 @@ QT_BEGIN_NAMESPACE
 
 /* a few forward declarations */
 class GraphicsScene;
-class PatternKeyDialog;
 class PatternView;
 class PreferencesDialog;
 class QGroupBox;
@@ -164,7 +163,6 @@ private:
   QPushButton* colorSelector_;
   QSettings settings_;
   SymbolSelectorWidget* symbolSelector_;
-  PatternKeyDialog* patternKeyDialog_;
 
   /* helper functions */
   QSize show_grid_dimension_dialog_();

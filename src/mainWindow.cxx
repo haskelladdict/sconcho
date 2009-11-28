@@ -51,7 +51,6 @@
 #include "helperFunctions.h"
 #include "io.h"
 #include "mainWindow.h"
-#include "patternKeyDialog.h"
 #include "patternView.h"
 #include "preferencesDialog.h"
 #include "symbolSelectorWidget.h"

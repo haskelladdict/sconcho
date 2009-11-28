@@ -34,7 +34,6 @@
 
 /* local includes */
 #include "knittingSymbol.h"
-#include "patternKeyDialog.h"
 #include "io.h"
 
 
@@ -208,7 +207,7 @@ private:
 
   /* these functions take care of resetting the canvas */
   void reset_canvas_();
-g void purge_all_canvas_items_();
+  void purge_all_canvas_items_();
   void purge_legend_();
   
   /* helper functions */
