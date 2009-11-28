@@ -168,7 +168,6 @@ private:
   QSize show_grid_dimension_dialog_();
   void save_canvas_(const QString& fileName);
   void load_canvas_(const QString& fileName);
-  void initialize_settings_();
 };
 
 QT_END_NAMESPACE

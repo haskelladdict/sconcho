@@ -53,6 +53,7 @@
 #include "mainWindow.h"
 #include "patternView.h"
 #include "preferencesDialog.h"
+#include "settings.h"
 #include "symbolSelectorWidget.h"
 
 
@@ -89,13 +90,12 @@ bool MainWindow::Init()
   setWindowTitle(tr("sconcho"));
   setMinimumSize(initialSize);
 
-  initialize_settings_();
+  initialize_settings(settings_);
 
   /* populate the main interface 
    * NOTE: We NEED to first create the patterKeyDialog and
    * symbolsWidget before we add the graphicsScence since the
    * supply some required objects */
-//  create_pattern_key_dialog_();
   create_symbols_widget_();
   create_graphics_scene_();
   create_toolbar_();
@@ -651,20 +651,6 @@ void MainWindow::create_status_bar_()
 
   /* add to main window */
   setStatusBar(statusBar_);
-}
-
-
-//-------------------------------------------------------------
-// initialize all the settings
-//-------------------------------------------------------------
-void MainWindow::initialize_settings_()
-{
-  /* font properties for canvas text */
-  QString preferenceFont = settings_.value("global/font").toString();
-  if (preferenceFont == "")
-  {
-    settings_.setValue("global/font","Arial,10,-1,5,50,0,0,0,0,0");
-  }
 }
 
 

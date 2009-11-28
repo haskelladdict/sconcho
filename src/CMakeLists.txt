@@ -17,6 +17,7 @@ SET(SCONCHO_SRCS
   patternView.cxx
   preferencesDialog.cxx
   sconcho.cxx
+  settings.cxx
   symbolSelectorItem.cxx
   symbolSelectorWidget.cxx
 )
