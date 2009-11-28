@@ -36,7 +36,9 @@
 
 /** local headers */
 #include "basicDefs.h"
+#include "helperFunctions.h"
 #include "preferencesDialog.h"
+#include "settings.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -55,6 +57,7 @@ PreferencesDialog::PreferencesDialog(QSettings& theSettings,
     :
       QDialog(myParent),
       settings_(theSettings),
+      currentFont_(extract_font_from_settings(theSettings)),
       tabWidget_(new QTabWidget),
       fontFamilyBox_(new QFontComboBox),
       fontStyleBox_(new QComboBox),
@@ -74,14 +77,6 @@ bool PreferencesDialog::Init()
   {
     return false;
   }
-
-  qDebug() << "preferences";
-
-  /* get our current font from our settings; if it is empty
-   * we choose a default */
-  QString preferenceFont = settings_.value("global/font").toString();
-  assert( preferenceFont != "");
-  currentFont_.fromString(preferenceFont);
 
   /* call individual initialization routines */
   setModal(true);
@@ -128,9 +123,10 @@ bool PreferencesDialog::Init()
 //-------------------------------------------------------------
 void PreferencesDialog::ok_clicked_()
 {
-  settings_.setValue("global/font",currentFont_.toString());
+  set_font_string(settings_, currentFont_.toString());
   close();
 }
+
 
 
 //-------------------------------------------------------------
@@ -162,6 +158,7 @@ void PreferencesDialog::update_font_selectors_(const QFont& newFont)
   QString family(newFont.family());
   QFontDatabase database;
 
+  qDebug() << "are here";
   /* update font style */
   QStringList availableStyles(database.styles(family));
   fontStyleBox_->clear();

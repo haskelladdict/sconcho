@@ -33,6 +33,7 @@
 
 /* local includes */
 #include "helperFunctions.h"
+#include "settings.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -54,7 +55,7 @@ int int_max(int a, int b)
 QFont extract_font_from_settings(const QSettings& settings)
 {
   QFont theFont;
-  theFont.fromString(settings.value("global/font").toString());
+  theFont.fromString(get_font_string(settings));
 
   return theFont;
 }

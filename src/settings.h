@@ -18,9 +18,8 @@
 *
 ****************************************************************/
 
-/** Qt headers */
-
-/** local headers */
+/* Qt includes */
+#include <QString>
 
 
 QT_BEGIN_NAMESPACE
@@ -35,6 +34,18 @@ class QSettings;
  ***********************************************************/
 void initialize_settings(QSettings& settings);
 
+
+/***********************************************************
+ * accessors for settings 
+ ***********************************************************/
+QString get_font_string(const QSettings& settings);
+
+
+
+/************************************************************
+ * setters for settings 
+ ***********************************************************/
+void set_font_string(QSettings& settings, const QString& fontString);
 
 
 QT_END_NAMESPACE

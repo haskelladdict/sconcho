@@ -22,6 +22,7 @@
 #include <QSettings>
 
 /** local headers */
+#include "basicDefs.h"
 #include "settings.h"
 
 
@@ -29,9 +30,9 @@ QT_BEGIN_NAMESPACE
 
 
 
-/***********************************************************
+/******************************************************************
  * set up the initial state of the settings 
- ***********************************************************/
+ ******************************************************************/
 void initialize_settings(QSettings& settings)
 {
   /* font properties for canvas text */
@@ -57,6 +58,27 @@ void initialize_settings(QSettings& settings)
   }
 }
 
+
+
+/*******************************************************************
+ * implementations of accessors for some settings
+ *******************************************************************/
+QString get_font_string(const QSettings& settings)
+{
+ QString preferenceFont = settings.value("global/font").toString();
+ assert( preferenceFont != "");
+ return preferenceFont;
+}
+
+
+
+/*******************************************************************
+ * implementations of setters for settings
+ ******************************************************************/
+void set_font_string(QSettings& settings, const QString& fontString)
+{
+  settings.setValue("global/font", fontString);
+}
 
 
 QT_END_NAMESPACE
