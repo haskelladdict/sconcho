@@ -149,33 +149,29 @@ bool GraphicsScene::Init()
 //-------------------------------------------------------------
 void GraphicsScene::reset_grid(const QSize& newSize)
 {
-  purge_all_canvas_items_();
+  reset_canvas_();
 
   /* generate new grid */
   numCols_ = newSize.width();
   numRows_ = newSize.height();
   create_pattern_grid_();
   create_grid_labels_();
-
-  foreach(QGraphicsView* aView, views())
-  {
-    aView->fitInView(itemsBoundingRect(),Qt::KeepAspectRatio);
-  }
+  
+  parent_->fit_in_view();
 }
 
 
 
 //-------------------------------------------------------------
-// this function nukes the current pattern grid and creates
-// a previous one as specified in the list of 
-// PatterGridItemDescriptors.
+// this function is called after a previously saved sconcho
+// project file has been read in. It nukes the present pattern
+// and re-creates the previously saved one.
 //-------------------------------------------------------------
 void GraphicsScene::reset_canvas(
     const QList<PatternGridItemDescriptor>& newItems)
 {
   assert(newItems.size() != 0);
-
-  purge_all_canvas_items_();
+  reset_canvas_();
 
   int maxCol = 0;
   int maxRow = 0;
@@ -214,10 +210,22 @@ void GraphicsScene::reset_canvas(
 
   /* add labels and rescale */
   create_grid_labels_();
-  foreach(QGraphicsView* aView, views())
+/*  foreach(QGraphicsView* aView, views())
   {
     aView->fitInView(itemsBoundingRect(),Qt::KeepAspectRatio);
-  }
+  }  */
+}
+
+
+
+//--------------------------------------------------------------
+// this function takes care of resetting the canvas, i.e.,
+// deleting items, cleaning up data structures 
+//--------------------------------------------------------------
+void GraphicsScene::reset_canvas_()
+{
+  purge_all_canvas_items_();
+  purge_legend_();
 }
 
 
@@ -485,7 +493,7 @@ void GraphicsScene::update_after_settings_change()
 // shows or hides legend items depending on their current
 // state
 //-------------------------------------------------------------
-void GraphicsScene::toggle_pattern_visibility() 
+void GraphicsScene::toggle_legend_visibility() 
 {
   if (legendIsVisible_)
   {
@@ -504,6 +512,12 @@ void GraphicsScene::toggle_pattern_visibility()
       item.second->show();
     }
     legendIsVisible_ = true;
+
+    /* make sure legend is visible */
+    foreach(QGraphicsView* aView, views())
+    {
+      aView->setSceneRect(QRectF());
+    }
   }
 }
 
@@ -1535,6 +1549,21 @@ void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
   {
     numRows_ += 1;
   }
+}
+
+
+
+//---------------------------------------------------------------
+// clean up all data structure created for the legend 
+//---------------------------------------------------------------
+void GraphicsScene::purge_legend_()
+{
+  /* purge containers */
+  legendItems_.clear();
+  symbolDescriptors_.clear();
+  usedKnittingSymbols_.clear();
+
+  legendIsVisible_ = false;
 }
 
 

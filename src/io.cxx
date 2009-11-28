@@ -279,7 +279,7 @@ bool CanvasIOReader::Init()
 
 
 //--------------------------------------------------------------
-// save content of canvas; 
+// read content of canvas; 
 // returns true on success or false on failure
 //--------------------------------------------------------------
 bool CanvasIOReader::read()
@@ -317,8 +317,9 @@ bool CanvasIOReader::read()
     node = node.nextSibling();
   }
 
-  /* as the canvas to reset itself and recreate the old scene
-   * as specified in newPatternGridItems_ */
+  /* as the canvas to reset itself and recreate the 
+   * scene specified in the file just read 
+   * (as specified in newPatternGridItems_) */
   if (!newPatternGridItems_.isEmpty())
   {
     ourScene_->reset_canvas(newPatternGridItems_);

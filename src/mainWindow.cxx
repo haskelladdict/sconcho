@@ -125,19 +125,8 @@ bool MainWindow::Init()
           canvas_,
           SLOT(update_after_settings_change())
          );
-/*
-  connect(this,
-          SIGNAL(settings_changed()),
-          patternKeyDialog_,
-          SIGNAL(settings_changed())
-         );
+         
 
-  connect(patternKeyDialog_,
-          SIGNAL(export_legend_canvas(LegendCopyContainer)),
-          canvas_,
-          SLOT(add_legend(LegendCopyContainer))
-         );
-*/
   /* set up main interface and set initial splitter sizes */
   mainSplitter_->addWidget(canvasView_);
   mainSplitter_->addWidget(propertyBox_);
@@ -153,30 +142,6 @@ bool MainWindow::Init()
  * PUBLIC SLOTS
  *
  *************************************************************/
-
-#if 0
-//-------------------------------------------------------------
-// notify the pattern key dialog that a knitting symbol
-// has been added
-//-------------------------------------------------------------
-void MainWindow::knitting_symbol_added(KnittingSymbolPtr aSymbol,
-  const QColor& aColor)
-{
-  patternKeyDialog_->add_knitting_symbol(aSymbol, aColor);
-}
-
-
-//-------------------------------------------------------------
-// notify the pattern key dialog that a knitting symbol
-// has been removed
-//-------------------------------------------------------------
-void MainWindow::knitting_symbol_removed(KnittingSymbolPtr aSymbol,
-  const QColor& aColor)
-{
-  patternKeyDialog_->remove_knitting_symbol(aSymbol, aColor);
-}
-#endif
-
 
 //-------------------------------------------------------------
 // update the display widget with the current mouse position
@@ -244,6 +209,20 @@ void MainWindow::zoom_in()
 void MainWindow::zoom_out()
 {
   canvasView_->scale(0.9,0.9);
+}
+
+
+
+//------------------------------------------------------------
+// tries to fit the current content on the canvas
+// into the active view
+//------------------------------------------------------------
+void MainWindow::fit_in_view()
+{
+  QRectF canvasRect(canvas_->sceneRect());
+  canvasRect.adjust(-30,-30,0,0);
+  canvasView_->setSceneRect(canvasRect);
+  canvasView_->centerOn(canvasRect.center());
 }
 
 
@@ -402,13 +381,6 @@ void MainWindow::pan_up_()
   canvasView_->translate(0,30);
 }
 
-
-void MainWindow::fit_in_view_()
-{
-  QRectF canvasSize(canvas_->sceneRect());
-  canvasSize.adjust(-30,-30,30,30);
-  canvasView_->fitInView(canvasSize,Qt::KeepAspectRatio);
-}
 
 
 //------------------------------------------------------------
@@ -612,7 +584,7 @@ void MainWindow::create_view_menu_()
   connect(fitAction, 
           SIGNAL(triggered()), 
           this,
-          SLOT(fit_in_view_()));
+          SLOT(fit_in_view()));
 } 
 
 
@@ -682,19 +654,6 @@ void MainWindow::create_status_bar_()
   setStatusBar(statusBar_);
 }
 
-#if 0
-//-------------------------------------------------------------
-// initialize the pattern key dialog
-//-------------------------------------------------------------
-void MainWindow::create_pattern_key_dialog_()
-{
-  patternKeyDialog_ = new PatternKeyDialog(GRID_CELL_SIZE,
-    settings_,this);
-  patternKeyDialog_->Init();
-  patternKeyDialog_->setVisible(false);
-}
-#endif
-
 
 //-------------------------------------------------------------
 // initialize all the settings
@@ -733,7 +692,7 @@ void MainWindow::create_graphics_scene_()
   canvasView_ = new PatternView(canvas_);
   canvasView_->Init();
 
-  fit_in_view_();
+  fit_in_view();
 }
 
 
@@ -816,7 +775,7 @@ void MainWindow::create_toolbar_()
   connect(resetButton,
           SIGNAL(clicked()),
           this,
-          SLOT(fit_in_view_()));
+          SLOT(fit_in_view()));
   
   toolBar->addSeparator();
  
@@ -883,7 +842,7 @@ void MainWindow::create_toolbar_()
   connect(toggleKeyButton,
           SIGNAL(clicked()),
           canvas_,
-          SLOT(toggle_pattern_visibility()));
+          SLOT(toggle_legend_visibility()));
 
   addToolBar(toolBar);
 }

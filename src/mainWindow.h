@@ -97,23 +97,17 @@ signals:
 
 
 public slots:
-#if 0
-  void knitting_symbol_added(KnittingSymbolPtr symbol,
-                             const QColor& color);
-  void knitting_symbol_removed(KnittingSymbolPtr symbol,
-                               const QColor& color);
-#endif
+  
   void update_mouse_position_display(QPointF newPos);
   void show_statusBar_message(QString msg);
   void show_statusBar_error(QString msg);
   void clear_statusBar();
   void zoom_in();
   void zoom_out();
- 
+  void fit_in_view();
 
 private slots:
 
-  void fit_in_view_();
   void pan_down_();
   void pan_left_();
   void pan_right_();
@@ -128,7 +122,6 @@ private slots:
   void show_sconcho_dialog_();
   void show_print_dialog_();
   void show_preferences_dialog_();
-//  void show_pattern_key_dialog_();
 
    
 private:

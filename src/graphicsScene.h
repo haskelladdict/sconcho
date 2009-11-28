@@ -117,7 +117,7 @@ public slots:
   void deselect_all_active_items();
   void mark_active_cells_with_rectangle();
   void update_after_settings_change();
-  void toggle_pattern_visibility();
+  void toggle_legend_visibility();
 
   
 protected:
@@ -206,8 +206,10 @@ private:
   void add_patternGridItem_(PatternGridItem* anItem);
   void remove_patternGridItem_(PatternGridItem* anItem);
 
-  /* use this to remove items from canvas */
-  void purge_all_canvas_items_();
+  /* these functions take care of resetting the canvas */
+  void reset_canvas_();
+g void purge_all_canvas_items_();
+  void purge_legend_();
   
   /* helper functions */
   void try_place_knitting_symbol_();
