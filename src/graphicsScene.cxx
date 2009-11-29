@@ -1911,14 +1911,10 @@ void GraphicsScene::notify_legend_of_item_addition_(
   {
     QString description = get_symbol_description_(symbol, colorName);
 
-    int yMax = (numRows_ + 1) * cellSize_;
-    if (yMax < height() )
-    {
-      yMax = height();
-    }
-    int yPos = yMax + cellSize_ * 0.5;
+    /* compute position for next label item */
     int xPosSym = 0;
-    int xPosLabel = (symbol->dim().width() + 1) * cellSize_;
+    int xPosLabel = (symbol->dim().width() + 0.5) * cellSize_;
+    int yPos = get_next_legend_items_y_position_();
 
     KnittingPatternItem* newLegendItem = new KnittingPatternItem(
       symbol->dim(), cellSize_, item->color());
@@ -1952,7 +1948,31 @@ void GraphicsScene::notify_legend_of_item_addition_(
     }
   }
 }
-        
+       
+
+//---------------------------------------------------------------
+// computes the best possible y position for a new legend item.
+// We try to place right under all currently exisiting legend
+// items and the pattern grid 
+//---------------------------------------------------------------
+int GraphicsScene::get_next_legend_items_y_position_()
+{
+  QList<LegendItem> allLegendItems(legendItems_.values());
+  QList<QGraphicsItem*> allLegendGraphicsItems;
+  foreach(LegendItem item, allLegendItems)
+  {
+    allLegendGraphicsItems.push_back(item.first);
+    allLegendGraphicsItems.push_back(item.second);
+  }
+
+  int yMaxLegend = static_cast<int>(
+      floor(get_max_y_coordinate(allLegendGraphicsItems)));
+  int yMaxGrid = numRows_ * cellSize_;
+  int yMax = int_max(yMaxGrid, yMaxLegend);
+ 
+  return (yMax + cellSize_ * 1.5);
+}
+
 
 //-------------------------------------------------------------
 // Remove a symbol plus description from the legend if neccessary.

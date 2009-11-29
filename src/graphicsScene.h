@@ -183,6 +183,7 @@ private:
   void notify_legend_of_item_addition_(const PatternGridItem* anItem);
   void notify_legend_of_item_removal_(const PatternGridItem* anItem);
   void update_legend_labels_();
+  int get_next_legend_items_y_position_();
 
   /* List of items in the current Legend */
   //QList<QGraphicsItem*> legendItems_;
@@ -199,7 +200,6 @@ private:
   
   /* reference count of knitting symbols currently in use */
   QMap<QString,int> usedKnittingSymbols_;
-
 
   /* use these to add/remove PatternGridItems to the scene */
   void add_patternGridItem_(PatternGridItem* anItem);
