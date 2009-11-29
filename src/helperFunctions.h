@@ -36,14 +36,9 @@
 QT_BEGIN_NAMESPACE
 
 /* forward declarations */
+class GraphicsScene;
 class QGraphicsItem;
 class QGraphicsScene;
-
-
-//---------------------------------------------------------------
-// simple integer min max function
-//---------------------------------------------------------------
-int int_max(int a, int b); 
 
 
 //---------------------------------------------------------------
@@ -65,7 +60,7 @@ QString show_file_export_dialog();
 // this functions export the content of a QGraphicsScene to
 // a file
 //---------------------------------------------------------------
-void export_scene(const QString& fileName, QGraphicsScene* theScene);
+void export_scene(const QString& fileName, GraphicsScene* theScene);
 
 
 //---------------------------------------------------------------
@@ -79,6 +74,13 @@ void print_scene(QGraphicsScene* theScene);
 // coordinate
 //---------------------------------------------------------------
 qreal get_max_y_coordinate(const QList<QGraphicsItem*> items);
+
+
+//---------------------------------------------------------------
+// given a list of QGraphicsItems returns the minimum y
+// coordinate
+//---------------------------------------------------------------
+QRectF get_bounding_rect(const QList<QGraphicsItem*> items);
 
 
 

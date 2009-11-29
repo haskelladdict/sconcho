@@ -180,8 +180,8 @@ void GraphicsScene::reset_canvas(
     int col = rawItem.location.x();
     int row = rawItem.location.y();
    
-    maxCol = int_max(col, maxCol);
-    maxRow = int_max(row, maxRow);
+    maxCol = qMax(col, maxCol);
+    maxRow = qMax(row, maxRow);
 
     PatternGridItem* item = 
         new PatternGridItem(rawItem.dimension, cellSize_, col, row, 
@@ -210,10 +210,6 @@ void GraphicsScene::reset_canvas(
 
   /* add labels and rescale */
   create_grid_labels_();
-/*  foreach(QGraphicsView* aView, views())
-  {
-    aView->fitInView(itemsBoundingRect(),Qt::KeepAspectRatio);
-  }  */
 }
 
 
@@ -275,6 +271,55 @@ void GraphicsScene::select_region(const QRectF& aRegion)
   update_active_items_();
   enable_canvas_update_();
 }
+
+
+
+//-------------------------------------------------------------
+// compute the rectangle on the canvas which is currently
+// visible depending on if the legend is turned on or not
+//-------------------------------------------------------------
+QRectF GraphicsScene::get_visible_area() const
+{
+  /* get dimensions of pattern grid which never extends
+   * above and right of the origin (0,0) */
+  int xMaxPatternGrid = (numCols_ + 1) * cellSize_;
+  int yMaxPatternGrid = (numRows_ + 1) * cellSize_;
+  
+  QPointF upperLeft(0.0,0.0);
+  QPointF lowerRight(xMaxPatternGrid, yMaxPatternGrid);
+
+  /* if the legend is also visible we need to take it
+   * into account */
+  if (legendIsVisible_)
+  {
+    QList<QGraphicsItem*> allLegendItems(get_list_of_legend_items_());
+    QRectF legendBounds(get_bounding_rect(allLegendItems));
+
+    /* adjust dimensions given by pattern grid */
+    if (legendBounds.left() < upperLeft.x())
+    {
+      upperLeft.setX(legendBounds.left());
+    }
+
+    if (legendBounds.top() < upperLeft.y())
+    {
+      upperLeft.setY(legendBounds.top());
+    }
+
+    if (legendBounds.right() > lowerRight.x())
+    {
+      lowerRight.setX(legendBounds.right());
+    }
+
+    if (legendBounds.bottom() > lowerRight.y())
+    {
+      lowerRight.setY(legendBounds.bottom());
+    }
+  }
+
+  return QRectF(upperLeft, lowerRight);
+}
+
 
 
 /**************************************************************
@@ -1955,7 +2000,24 @@ void GraphicsScene::notify_legend_of_item_addition_(
 // We try to place right under all currently exisiting legend
 // items and the pattern grid 
 //---------------------------------------------------------------
-int GraphicsScene::get_next_legend_items_y_position_()
+int GraphicsScene::get_next_legend_items_y_position_() const
+{
+  QList<QGraphicsItem*> allLegendGraphicsItems = 
+    get_list_of_legend_items_();
+
+  int yMaxLegend = static_cast<int>(
+      floor(get_max_y_coordinate(allLegendGraphicsItems)));
+  int yMaxGrid = numRows_ * cellSize_;
+  int yMax = qMax(yMaxGrid, yMaxLegend);
+ 
+  return (yMax + cellSize_ * 1.5);
+}
+
+
+//--------------------------------------------------------------
+// return a list of all QGraphicsItems currently in the legend
+//--------------------------------------------------------------
+QList<QGraphicsItem*> GraphicsScene::get_list_of_legend_items_() const
 {
   QList<LegendItem> allLegendItems(legendItems_.values());
   QList<QGraphicsItem*> allLegendGraphicsItems;
@@ -1965,12 +2027,7 @@ int GraphicsScene::get_next_legend_items_y_position_()
     allLegendGraphicsItems.push_back(item.second);
   }
 
-  int yMaxLegend = static_cast<int>(
-      floor(get_max_y_coordinate(allLegendGraphicsItems)));
-  int yMaxGrid = numRows_ * cellSize_;
-  int yMax = int_max(yMaxGrid, yMaxLegend);
- 
-  return (yMax + cellSize_ * 1.5);
+  return allLegendGraphicsItems;
 }
 
 

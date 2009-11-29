@@ -79,8 +79,6 @@ private:
 
   /* current selections */
   QFont currentFont_;
-  //bool doExportPatternGrid_;
-  //bool doExportLegend_;
 
   /* widgets */
   QTabWidget* tabWidget_;

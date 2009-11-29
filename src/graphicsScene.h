@@ -91,6 +91,7 @@ public:
   void select_region(const QRectF& region);
   void reset_grid(const QSize& newSize);
   void reset_canvas(const QList<PatternGridItemDescriptor>& newItems);
+  QRectF get_visible_area() const;
 
 
 signals:
@@ -183,7 +184,8 @@ private:
   void notify_legend_of_item_addition_(const PatternGridItem* anItem);
   void notify_legend_of_item_removal_(const PatternGridItem* anItem);
   void update_legend_labels_();
-  int get_next_legend_items_y_position_();
+  int get_next_legend_items_y_position_() const;
+  QList<QGraphicsItem*> get_list_of_legend_items_() const;
 
   /* List of items in the current Legend */
   //QList<QGraphicsItem*> legendItems_;

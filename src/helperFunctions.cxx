@@ -18,6 +18,9 @@
  *
  ****************************************************************/
 
+/* C++ includes */
+#include <float.h>
+
 /* qt includes */
 #include <QDebug>
 #include <QDir>
@@ -32,20 +35,12 @@
 #include <QPrintDialog>
 
 /* local includes */
+#include "graphicsScene.h"
 #include "helperFunctions.h"
 #include "settings.h"
 
 
 QT_BEGIN_NAMESPACE
-
-
-//---------------------------------------------------------------
-// simple integer min max function
-//---------------------------------------------------------------
-int int_max(int a, int b) 
-{ 
-  return a > b ? a : b; 
-}
 
 
 //---------------------------------------------------------------
@@ -100,12 +95,12 @@ QString show_file_export_dialog()
 // this functions export the content of a QGraphicsScene to
 // a file
 //---------------------------------------------------------------
-void export_scene(const QString& fileName, QGraphicsScene* scene)
+void export_scene(const QString& fileName, GraphicsScene* scene)
 {
   /* for now print the image in a fixed resolution 
    * NOTE: We seem to need the 1px buffer region to avoid
    *       the image being cut off */
-  QRectF theScene = scene->sceneRect();
+  QRectF theScene = scene->get_visible_area();
   theScene.adjust(-10,-10,10,10);  // need this to avoid cropping
 
   QImage finalImage(theScene.width()*3, theScene.height() *3,
@@ -148,7 +143,7 @@ void print_scene(QGraphicsScene* scene)
 //---------------------------------------------------------------
 qreal get_max_y_coordinate(const QList<QGraphicsItem*> items)
 {
-  qreal yMax = 0.0;
+  qreal yMax = -DBL_MAX;
   foreach(QGraphicsItem* anItem, items)
   {
     qreal yPos = anItem->scenePos().y();
@@ -161,6 +156,44 @@ qreal get_max_y_coordinate(const QList<QGraphicsItem*> items)
   return yMax;
 }
 
+
+//---------------------------------------------------------------
+// given a list of QGraphicsItems returns the bounding rectangle
+//---------------------------------------------------------------
+QRectF get_bounding_rect(const QList<QGraphicsItem*> items)
+{
+  qreal yMin = DBL_MAX;
+  qreal yMax = -DBL_MAX;
+  qreal xMin = DBL_MAX;
+  qreal xMax = -DBL_MAX;
+
+  foreach(QGraphicsItem* anItem, items)
+  {
+    QRectF bound(anItem->mapRectToParent(anItem->boundingRect()));
+
+    if (xMin > bound.left())
+    {
+      xMin = bound.left();
+    }
+
+    if (xMax < bound.right())
+    {
+      xMax = bound.right();
+    }
+      
+    if (yMin > bound.top())
+    {
+      yMin = bound.top();
+    }
+
+    if (yMax < bound.bottom())
+    {
+      yMax = bound.bottom();
+    }
+  }
+
+  return QRectF(xMin, yMin, (xMax - xMin), (yMax - yMin));
+}
 
 
 
