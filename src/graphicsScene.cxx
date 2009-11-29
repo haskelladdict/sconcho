@@ -614,7 +614,7 @@ void GraphicsScene::delete_col_()
       gridItems.push_back(cell);
     }
   }
-        
+       
   /* if we have less than numRows_ in deletedColCounter there
    * was at least on multi column cell in the column */
   if ( targetColCounter < numRows_ )
@@ -643,6 +643,9 @@ void GraphicsScene::delete_col_()
       cell->setPos(compute_cell_origin_(cell->col(), cell->row()));
     }
   }
+
+  /* update position of legend items */
+  shift_legend_items_horizontally_(selectedCol_, -cellSize_);
 
   /* unselect row and update row counter */
   numCols_ = numCols_ - 1;
@@ -707,6 +710,9 @@ void GraphicsScene::delete_row_()
         compute_cell_origin_(patItem->col(), patItem->row()));
     }
   }
+
+  /* update position of legend items */
+  shift_legend_items_vertically_(selectedRow_, -cellSize_);
 
   /* unselect row and update row counter */
   numRows_ = numRows_ - 1;
@@ -1584,14 +1590,16 @@ void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
     }
   }
 
-  /* adjust the row/col count */
+  /* adjust the row/col count and also shift the legend items */
   if (colPivot != NOSHIFT)
   {
+    shift_legend_items_horizontally_(colPivot, cellSize_);
     numCols_ += 1;
   }
 
   if (rowPivot != NOSHIFT)
   {
+    shift_legend_items_vertically_(rowPivot, cellSize_);
     numRows_ += 1;
   }
 }
@@ -1834,7 +1842,7 @@ bool GraphicsScene::handle_click_on_grid_labels_(
 // deliver the to be deleted/edited rectangle to the SLOT
 // via connect we have to invoke a SignalMapper involving
 // some casting downstream. Can we somehow avoid this??
-//---------------------------------------------------------------
+//--------------------------------------------------------------
 void GraphicsScene::show_rectangle_manage_menu_(
     PatternGridRectangle* rect, const QPoint& pos)
 {
@@ -2079,7 +2087,55 @@ void GraphicsScene::update_legend_labels_()
   }
 }
       
-      
+
+//-------------------------------------------------------------
+// shift all legend items below pivot by "distance" 
+// vertically
+//-------------------------------------------------------------
+void GraphicsScene::shift_legend_items_vertically_(int pivot, 
+  int distance)
+{
+  /* find all legend items below the pivot */
+  QList<QGraphicsItem*> allLegendItems = get_list_of_legend_items_();
+  QList<QGraphicsItem*> toBeShiftedItems;
+  int pivotYPos = pivot * cellSize_;
+
+  foreach(QGraphicsItem* item, allLegendItems)
+  {
+    QPointF itemPos = item->pos();
+    if (itemPos.y() > pivotYPos)
+    {
+      item->setPos(itemPos.x(), itemPos.y() + distance);
+    }
+  }
+}
+  
+
+//-------------------------------------------------------------
+// shift all legend items right of pivot by distance 
+// horizontally. Leave items that are above or below the 
+// pattern grid alone.
+//-------------------------------------------------------------
+void GraphicsScene::shift_legend_items_horizontally_(int pivot, 
+  int distance)
+{
+  /* find all legend items right of the pivot */
+  QList<QGraphicsItem*> allLegendItems = get_list_of_legend_items_();
+  QList<QGraphicsItem*> toBeShiftedItems;
+  int pivotXPos = pivot * cellSize_;
+
+  foreach(QGraphicsItem* item, allLegendItems)
+  {
+    QPointF itemPos = item->pos();
+    if (itemPos.x() > pivotXPos 
+        && itemPos.y() > 0.0 
+        && itemPos.y() < (numRows_ * cellSize_) )
+    {
+      item->setPos(itemPos.x() + distance, itemPos.y());
+    }
+  }
+}
+ 
 
   
 QT_END_NAMESPACE

@@ -183,6 +183,8 @@ private:
   bool legendIsVisible_;
   void notify_legend_of_item_addition_(const PatternGridItem* anItem);
   void notify_legend_of_item_removal_(const PatternGridItem* anItem);
+  void shift_legend_items_vertically_(int pivot, int distance);
+  void shift_legend_items_horizontally_(int pivot, int distance);
   void update_legend_labels_();
   int get_next_legend_items_y_position_() const;
   QList<QGraphicsItem*> get_list_of_legend_items_() const;
