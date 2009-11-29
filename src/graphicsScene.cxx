@@ -1967,6 +1967,7 @@ void GraphicsScene::notify_legend_of_item_addition_(
     newLegendItem->insert_knitting_symbol(symbol);
     newLegendItem->setPos(xPosSym, yPos);
     newLegendItem->setFlag(QGraphicsItem::ItemIsMovable);
+    newLegendItem->setZValue(1);
     addItem(newLegendItem);
 
     /* add label */
@@ -1977,6 +1978,7 @@ void GraphicsScene::notify_legend_of_item_addition_(
     newTextItem->setPos(xPosLabel, yPos);
     newTextItem->setFont(currentFont);
     newTextItem->setFlag(QGraphicsItem::ItemIsMovable);
+    newTextItem->setZValue(1);
     addItem(newTextItem);
     connect(newTextItem,
             SIGNAL(label_changed(QString, QString)),
