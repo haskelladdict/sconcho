@@ -66,7 +66,7 @@ void export_scene(const QString& fileName, GraphicsScene* theScene);
 //---------------------------------------------------------------
 // this function prints the content of a QGraphicsScene
 //---------------------------------------------------------------
-void print_scene(QGraphicsScene* theScene);
+void print_scene(GraphicsScene* theScene);
 
 
 //---------------------------------------------------------------

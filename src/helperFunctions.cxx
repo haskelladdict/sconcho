@@ -120,18 +120,22 @@ void export_scene(const QString& fileName, GraphicsScene* scene)
 //---------------------------------------------------------------
 // this function prints the content of a QGraphicsScene
 //---------------------------------------------------------------
-void print_scene(QGraphicsScene* scene)
+void print_scene(GraphicsScene* scene)
 {
   QPrinter aPrinter(QPrinter::HighResolution);
   QPrintDialog printDialog(&aPrinter);
   if ( printDialog.exec() == QDialog::Accepted )
   {
+    /* get size to be rendered */
+    QRectF theScene = scene->get_visible_area();
+    theScene.adjust(-10,-10,10,10);  // need this to avoid cropping  
+
     /* tell our canvas that we want to print its */
     QPainter painter(&aPrinter);
     painter.setRenderHints(QPainter::SmoothPixmapTransform);
     painter.setRenderHints(QPainter::HighQualityAntialiasing);
     painter.setRenderHints(QPainter::TextAntialiasing);
-    scene->render(&painter);
+    scene->render(&painter, QRectF(), theScene);
     painter.end();
   }
 }
