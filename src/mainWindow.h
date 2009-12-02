@@ -118,6 +118,7 @@ private slots:
   void show_file_open_dialog_();
   void show_file_save_dialog_();
   void export_canvas_dialog_();
+  void export_legend_dialog_();
   void show_sconcho_dialog_();
   void show_print_dialog_();
   void show_preferences_dialog_();

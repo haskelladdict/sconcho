@@ -93,6 +93,11 @@ public:
   void reset_canvas(const QList<PatternGridItemDescriptor>& newItems);
   QRectF get_visible_area() const;
 
+  /* legend releated stuff */
+  bool legend_is_visible() const { return legendIsVisible_; }
+  void hide_all_but_legend();
+  void show_all_items();
+  
 
 signals:
 

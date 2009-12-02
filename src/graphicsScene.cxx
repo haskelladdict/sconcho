@@ -274,6 +274,52 @@ void GraphicsScene::select_region(const QRectF& aRegion)
 
 
 
+//----------------------------------------------------------------
+// hide all but the legend items
+//----------------------------------------------------------------
+void GraphicsScene::hide_all_but_legend()
+{
+  /* get list of all items that are not part of the legend
+   * and are not svg items */
+  QList<QGraphicsItem*> allItems = items();
+
+  /* disable all non-legend items */
+  foreach (QGraphicsItem* anItem, allItems)
+  {
+    QGraphicsSvgItem* svgItem =
+      qgraphicsitem_cast<QGraphicsSvgItem*>(anItem);
+
+    if(!svgItem)
+    {
+      anItem->hide();
+    }
+  }
+
+  /* show legend items */
+  foreach (QGraphicsItem* anItem, get_list_of_legend_items_())
+  {
+    anItem->show();
+  }
+}
+
+
+//---------------------------------------------------------------
+// show all items on the canvas
+//---------------------------------------------------------------
+void GraphicsScene::show_all_items()
+{
+ /* get list of all items that are not part of the legend
+   * and are not svg items */
+  QList<QGraphicsItem*> allItems = items();
+
+  /* disable all non-legend items */
+  foreach (QGraphicsItem* anItem, allItems)
+  {
+    anItem->show();
+  }
+}
+  
+
 //-------------------------------------------------------------
 // compute the rectangle on the canvas which is currently
 // visible depending on if the legend is turned on or not

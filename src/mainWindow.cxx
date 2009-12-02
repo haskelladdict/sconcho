@@ -296,9 +296,45 @@ void MainWindow::show_file_save_dialog_()
 }
 
 
+//-------------------------------------------------------------
+// SLOT: show file export menu and then export the legend
+// only.
+//
+// NOTE: Here we have to do some tricks since the Legend
+// items can in principle be all over the canvas. First of
+// all, we only go ahead if the legend is currently
+// visible. Then we hide all but the legend items, export
+// and turn everything back on.
+//-------------------------------------------------------------
+void MainWindow::export_legend_dialog_()
+{
+  if (!canvas_->legend_is_visible())
+  {
+    QMessageBox warn(QMessageBox::Critical, tr("Error"),
+      "Legend is currently not visible. Please turn legend "
+      "on before trying to export it.", QMessageBox::Ok);
+    warn.exec();
+    return;
+  }
+  
+  QString exportFilename = show_file_export_dialog();
+  if (exportFilename.isEmpty())
+  {
+    return;
+  }
+
+  canvas_->hide_all_but_legend();
+  export_scene(exportFilename, canvas_);
+  canvas_->show_all_items();
+}
+
+
+
+
 
 //-------------------------------------------------------------
-// SLOT: show file export menu
+// SLOT: show file export menu and then export the actual
+// scene
 //-------------------------------------------------------------
 void MainWindow::export_canvas_dialog_()
 {
@@ -504,6 +540,18 @@ void MainWindow::create_file_menu_()
           SIGNAL(triggered()), 
           this,
           SLOT(export_canvas_dialog_()));
+
+
+  /* export legend only */
+  QAction* legendExportAction =
+    new QAction(QIcon(":/icons/fileexport.png"),
+                tr("&Export Legend Only"), this);
+  fileMenu->addAction(legendExportAction);
+  legendExportAction->setShortcut(tr("Ctrl+L"));
+  connect(legendExportAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(export_legend_dialog_()));
 
   /* print */
   QAction* printAction =
