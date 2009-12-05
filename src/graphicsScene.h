@@ -99,7 +99,11 @@ public:
   bool legend_is_visible() const { return legendIsVisible_; }
   void hide_all_but_legend();
   void show_all_items();
-  
+  QMap<QString,LegendEntry> get_legend_entries() const 
+  { 
+    return legendEntries_;
+  }
+
 
 signals:
 
@@ -197,8 +201,7 @@ private:
   QList<QGraphicsItem*> get_list_of_legend_items_() const;
 
   /* List of items in the current Legend */
-  //QList<QGraphicsItem*> legendItems_;
-  QMap<QString,LegendEntry> legendItems_;
+  QMap<QString,LegendEntry> legendEntries_;
 
   /* map holding the descriptor for all currently "known"
    * knitting symbols (even ones not currently shown, e.g.

@@ -589,7 +589,7 @@ void GraphicsScene::toggle_legend_visibility()
 {
   if (legendIsVisible_)
   {
-    foreach(LegendEntry item, legendItems_)
+    foreach(LegendEntry item, legendEntries_)
     {
       item.first->hide();
       item.second->hide();
@@ -598,7 +598,7 @@ void GraphicsScene::toggle_legend_visibility()
   }
   else
   {
-    foreach(LegendEntry item, legendItems_)
+    foreach(LegendEntry item, legendEntries_)
     {
       item.first->show();
       item.second->show();
@@ -1659,7 +1659,7 @@ void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
 void GraphicsScene::purge_legend_()
 {
   /* purge containers */
-  legendItems_.clear();
+  legendEntries_.clear();
   symbolDescriptors_.clear();
   usedKnittingSymbols_.clear();
 
@@ -2041,7 +2041,7 @@ void GraphicsScene::notify_legend_of_item_addition_(
             SLOT(update_key_label_text_(QString, QString))
            );
 
-    legendItems_[fullName] = LegendEntry(newLegendItem, newTextItem);
+    legendEntries_[fullName] = LegendEntry(newLegendItem, newTextItem);
 
     if (!legendIsVisible_)
     {
@@ -2076,7 +2076,7 @@ int GraphicsScene::get_next_legend_items_y_position_() const
 //--------------------------------------------------------------
 QList<QGraphicsItem*> GraphicsScene::get_list_of_legend_items_() const
 {
-  QList<LegendEntry> allLegendEntries(legendItems_.values());
+  QList<LegendEntry> allLegendEntries(legendEntries_.values());
   QList<QGraphicsItem*> allLegendGraphicsItems;
   foreach(LegendEntry item, allLegendEntries)
   {
@@ -2110,12 +2110,12 @@ void GraphicsScene::notify_legend_of_item_removal_(
   {
     usedKnittingSymbols_.remove(fullName);
 
-    LegendEntry deadItem = legendItems_[fullName];
+    LegendEntry deadItem = legendEntries_[fullName];
     removeItem(deadItem.first);
     deadItem.first->deleteLater();
     removeItem(deadItem.second);
     deadItem.second->deleteLater();
-    legendItems_.remove(fullName);
+    legendEntries_.remove(fullName);
   }
 }
         
@@ -2125,7 +2125,7 @@ void GraphicsScene::notify_legend_of_item_removal_(
 //-------------------------------------------------------------
 void GraphicsScene::update_legend_labels_()
 {
-  QList<LegendEntry> allItems(legendItems_.values());
+  QList<LegendEntry> allItems(legendEntries_.values());
   QFont currentFont = extract_font_from_settings(settings_);
   
   foreach(LegendEntry item, allItems)

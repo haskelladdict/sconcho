@@ -34,6 +34,8 @@
 #include "config.h"
 #include "basicDefs.h"
 #include "graphicsScene.h"
+#include "legendItem.h"
+#include "legendLabel.h"
 #include "patternGridItem.h"
 #include "io.h"
 
@@ -222,11 +224,12 @@ bool CanvasIOWriter::save()
 
   /* add actual canvas items */
   bool statusPatternGridItems = save_patternGridItems_(root);
+  bool statusLegendEntryPos = save_legendInfo_(root);
 
   /* write it to stream */
   writeDoc_.save(*writeStream_, 4);
 
-  return statusPatternGridItems;
+  return (statusPatternGridItems && statusLegendEntryPos);
 }
 
 
@@ -298,6 +301,70 @@ bool CanvasIOWriter::save_patternGridItems_(QDomElement& root)
   return true;
 } 
 
+
+//-------------------------------------------------------------
+// save the positions of all items in the legend
+//-------------------------------------------------------------
+bool CanvasIOWriter::save_legendInfo_(QDomElement& root)
+{
+  qDebug() << "save legend items";
+
+  /* retrieve all legend items from canvas */
+  QString helper;
+  QMap<QString,LegendEntry> allEntries(
+    ourScene_->get_legend_entries());
+
+  QMapIterator<QString,LegendEntry> iter(allEntries);
+  while (iter.hasNext()) 
+  {
+    iter.next();
+
+    QString labelID = iter.key();
+    LegendItem* item  = iter.value().first;
+    LegendLabel* label = iter.value().second;
+
+    QDomElement mainTag = writeDoc_.createElement("canvasItem");
+    root.appendChild(mainTag);
+
+    QDomElement itemTag = writeDoc_.createElement("legendEntry");
+    mainTag.appendChild(itemTag);
+
+    /* write ID tag */
+    QDomElement idTag = writeDoc_.createElement("IDTag");
+    itemTag.appendChild(idTag);
+    idTag.appendChild(writeDoc_.createTextNode(labelID));
+    
+    /* write position of legend item */
+    QDomElement itemXPosTag = writeDoc_.createElement("itemXPos");
+    itemTag.appendChild(itemXPosTag);
+    helper.setNum(item->pos().x());
+    itemXPosTag.appendChild(writeDoc_.createTextNode(helper));
+    
+    QDomElement itemYPosTag = writeDoc_.createElement("itemYPos");
+    itemTag.appendChild(itemYPosTag);
+    helper.setNum(item->pos().y());
+    itemYPosTag.appendChild(writeDoc_.createTextNode(helper));
+ 
+    /* write position of legend label */
+    QDomElement labelXPosTag = writeDoc_.createElement("labelXPos");
+    itemTag.appendChild(labelXPosTag);
+    helper.setNum(label->pos().x());
+    labelXPosTag.appendChild(writeDoc_.createTextNode(helper));
+ 
+    QDomElement labelYPosTag = writeDoc_.createElement("labelYPos");
+    itemTag.appendChild(labelYPosTag);
+    helper.setNum(label->pos().y());
+    labelYPosTag.appendChild(writeDoc_.createTextNode(helper));
+    
+    /* write text of label */
+    QDomElement labelTextTag = writeDoc_.createElement("labelText");
+    itemTag.appendChild(labelTextTag);
+    labelTextTag.appendChild(writeDoc_.createTextNode(
+          label->toPlainText()));
+  }
+
+  return true;
+}
 
 
 //---------------------------------------------------------------
@@ -399,7 +466,7 @@ bool CanvasIOReader::read()
       QDomNode theItem = node.firstChild();
       if (theItem.toElement().tagName() == "patternGridItem")
       {
-        parse_patternGridItem_(theItem);
+        parse_patternGridItems_(theItem);
       }
     }
 
@@ -428,7 +495,7 @@ bool CanvasIOReader::read()
 //-------------------------------------------------------------
 // read a single PatternGridItem from our input stream
 //-------------------------------------------------------------
-bool CanvasIOReader::parse_patternGridItem_(const QDomNode& itemNode)
+bool CanvasIOReader::parse_patternGridItems_(const QDomNode& itemNode)
 {
   qDebug() << "read patternGridItems";
 

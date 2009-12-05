@@ -104,6 +104,7 @@ private:
 
   /* helper functions */
   bool save_patternGridItems_(QDomElement& rootElement);
+  bool save_legendInfo_(QDomElement& rootElement);
 };
 
 
@@ -162,7 +163,8 @@ private:
   QList<PatternGridItemDescriptor> newPatternGridItems_;
 
   /* helper functions */
-  bool parse_patternGridItem_(const QDomNode& itemNode);
+  bool parse_patternGridItems_(const QDomNode& itemNode);
+//  bool parse_legendItems_(const QDomNode& itemNode);
 };
 
 QT_END_NAMESPACE
