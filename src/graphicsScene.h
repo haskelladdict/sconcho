@@ -41,6 +41,7 @@ QT_BEGIN_NAMESPACE
 
 
 /* a few forward declarations */
+class LegendItem;
 class LegendLabel;
 class KnittingPatternItem;
 class PatternGridItem;
@@ -60,7 +61,7 @@ namespace
   typedef QList<QPair<int, int> > RowLayout;
   typedef QList<PatternGridItem*> RowItems;
 
-  typedef QPair<KnittingPatternItem*,LegendLabel*> LegendItem;
+  typedef QPair<LegendItem*,LegendLabel*> LegendEntry;
 };
 
 
@@ -197,7 +198,7 @@ private:
 
   /* List of items in the current Legend */
   //QList<QGraphicsItem*> legendItems_;
-  QMap<QString,LegendItem> legendItems_;
+  QMap<QString,LegendEntry> legendItems_;
 
   /* map holding the descriptor for all currently "known"
    * knitting symbols (even ones not currently shown, e.g.

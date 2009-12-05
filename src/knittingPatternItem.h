@@ -62,7 +62,7 @@ class KnittingPatternItem
   
 public:
 
-  explicit KnittingPatternItem( const QSize& aDim, int scale, 
+  explicit KnittingPatternItem(const QSize& aDim, int scale, 
     const QColor& backColor = Qt::white, 
     const QPoint& loc = QPoint(0,0));
   bool Init();

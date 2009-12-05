@@ -46,6 +46,7 @@
 #include "graphicsScene.h"
 #include "helperFunctions.h"
 #include "knittingSymbol.h"
+#include "legendItem.h"
 #include "legendLabel.h"
 #include "mainWindow.h"
 #include "patternGridItem.h"
@@ -588,7 +589,7 @@ void GraphicsScene::toggle_legend_visibility()
 {
   if (legendIsVisible_)
   {
-    foreach(LegendItem item, legendItems_)
+    foreach(LegendEntry item, legendItems_)
     {
       item.first->hide();
       item.second->hide();
@@ -597,7 +598,7 @@ void GraphicsScene::toggle_legend_visibility()
   }
   else
   {
-    foreach(LegendItem item, legendItems_)
+    foreach(LegendEntry item, legendItems_)
     {
       item.first->show();
       item.second->show();
@@ -2015,8 +2016,8 @@ void GraphicsScene::notify_legend_of_item_addition_(
     int xPosLabel = (symbol->dim().width() + 0.5) * cellSize_;
     int yPos = get_next_legend_items_y_position_();
 
-    KnittingPatternItem* newLegendItem = new KnittingPatternItem(
-      symbol->dim(), cellSize_, item->color());
+    LegendItem* newLegendItem = new LegendItem(symbol->dim(), 
+      cellSize_, item->color());
     newLegendItem->Init();
     newLegendItem->insert_knitting_symbol(symbol);
     newLegendItem->setPos(xPosSym, yPos);
@@ -2040,7 +2041,7 @@ void GraphicsScene::notify_legend_of_item_addition_(
             SLOT(update_key_label_text_(QString, QString))
            );
 
-    legendItems_[fullName] = LegendItem(newLegendItem, newTextItem);
+    legendItems_[fullName] = LegendEntry(newLegendItem, newTextItem);
 
     if (!legendIsVisible_)
     {
@@ -2075,9 +2076,9 @@ int GraphicsScene::get_next_legend_items_y_position_() const
 //--------------------------------------------------------------
 QList<QGraphicsItem*> GraphicsScene::get_list_of_legend_items_() const
 {
-  QList<LegendItem> allLegendItems(legendItems_.values());
+  QList<LegendEntry> allLegendEntries(legendItems_.values());
   QList<QGraphicsItem*> allLegendGraphicsItems;
-  foreach(LegendItem item, allLegendItems)
+  foreach(LegendEntry item, allLegendEntries)
   {
     allLegendGraphicsItems.push_back(item.first);
     allLegendGraphicsItems.push_back(item.second);
@@ -2109,7 +2110,7 @@ void GraphicsScene::notify_legend_of_item_removal_(
   {
     usedKnittingSymbols_.remove(fullName);
 
-    LegendItem deadItem = legendItems_[fullName];
+    LegendEntry deadItem = legendItems_[fullName];
     removeItem(deadItem.first);
     deadItem.first->deleteLater();
     removeItem(deadItem.second);
@@ -2124,10 +2125,10 @@ void GraphicsScene::notify_legend_of_item_removal_(
 //-------------------------------------------------------------
 void GraphicsScene::update_legend_labels_()
 {
-  QList<LegendItem> allItems(legendItems_.values());
+  QList<LegendEntry> allItems(legendItems_.values());
   QFont currentFont = extract_font_from_settings(settings_);
   
-  foreach(LegendItem item, allItems)
+  foreach(LegendEntry item, allItems)
   {
     item.second->setFont(currentFont);
   }

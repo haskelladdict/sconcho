@@ -8,6 +8,7 @@ SET(SCONCHO_SRCS
   io.cxx
   knittingPatternItem.cxx
   knittingSymbol.cxx
+  legendItem.cxx
   legendLabel.cxx
   mainWindow.cxx
   patternGridItem.cxx
@@ -25,6 +26,7 @@ SET(SCONCHO_SRCS
 SET(SCONCHO_MOC_HDRS
   graphicsScene.h
   gridDimensionDialog.h
+  legendItem.h
   legendLabel.h
   mainWindow.h
   patternGridItem.h

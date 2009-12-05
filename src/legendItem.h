@@ -18,68 +18,52 @@
 *
 ****************************************************************/
 
-#ifndef LEGEND_LABEL_H
-#define LEGEND_LABEL_H
+#ifndef LEGEND_ITEM_H
+#define LEGEND_ITEM_H
 
 /* boost includes */
 #include <boost/utility.hpp>
 
 /* QT includes */
-#include <QGraphicsTextItem>
 
-/* local include */
+/* local includes */
 #include "basicDefs.h"
+#include "knittingPatternItem.h"
+
 
 QT_BEGIN_NAMESPACE
 
 
-/* a few forward declarations */
-class QKeyEvent;
-
 
 /***************************************************************
  * 
- * A LegendLabel is the description text for a certain 
- * pattern item in the legend
+ * a LegendItem is basically a KnittingPatternItem that is
+ * a seperate type so we can pick it out from the canvas
  *
  ***************************************************************/
-class LegendLabel
+class LegendItem
   :
-  public QGraphicsTextItem,
-  public boost::noncopyable
+    public KnittingPatternItem
 {
   
   Q_OBJECT
 
-    
+  
 public:
 
-  explicit LegendLabel(const QString& labelID, const QString& text, 
-    QGraphicsItem* parent=0);
+  explicit LegendItem(const QSize& aDim, 
+      int scale, const QColor& backColor = Qt::white,
+      const QPoint& loc = QPoint(0,0));
   bool Init();
- 
+
   /* return our object type; needed for qgraphicsitem_cast */
-  enum { Type = UserType + LEGEND_LABEL_TYPE };
+  enum { Type = UserType + LEGEND_ITEM_TYPE };
   int type() const;
-
-
-signals:
-
-  void label_changed(QString id, QString labelText);
-
-
-protected:
-
-  void keyPressEvent(QKeyEvent* anEvent);
-
 
 private:
 
-  /* construction status variable */
+  /* some tracking variables */
   int status_;
-
-  /* name under which upstream knows us */
-  QString IDString_; 
 };
 
 
