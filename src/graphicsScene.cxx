@@ -45,8 +45,8 @@
 #include "basicDefs.h"
 #include "graphicsScene.h"
 #include "helperFunctions.h"
-#include "keyLabelItem.h"
 #include "knittingSymbol.h"
+#include "legendLabel.h"
 #include "mainWindow.h"
 #include "patternGridItem.h"
 #include "patternGridLabel.h"
@@ -2026,8 +2026,8 @@ void GraphicsScene::notify_legend_of_item_addition_(
 
     /* add label */
     QFont currentFont = extract_font_from_settings(settings_);
-    KeyLabelItem* newTextItem = 
-      new KeyLabelItem(fullName, description);
+    LegendLabel* newTextItem = 
+      new LegendLabel(fullName, description);
     newTextItem->Init();
     newTextItem->setPos(xPosLabel, yPos);
     newTextItem->setFont(currentFont);

@@ -24,7 +24,7 @@
 
 /** local headers */
 #include "basicDefs.h"
-#include "keyLabelItem.h"
+#include "legendLabel.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -38,7 +38,7 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-KeyLabelItem::KeyLabelItem(const QString& labelID, 
+LegendLabel::LegendLabel(const QString& labelID, 
   const QString& text, QGraphicsItem* aParent)
   :
   QGraphicsTextItem(text, aParent),
@@ -57,7 +57,7 @@ KeyLabelItem::KeyLabelItem(const QString& labelID,
 //--------------------------------------------------------------
 // main initialization routine
 //--------------------------------------------------------------
-bool KeyLabelItem::Init()
+bool LegendLabel::Init()
 {
   if ( status_ != SUCCESSFULLY_CONSTRUCTED )
   {
@@ -73,7 +73,7 @@ bool KeyLabelItem::Init()
 //--------------------------------------------------------------
 // return our custom type
 //--------------------------------------------------------------
-int KeyLabelItem::type() const
+int LegendLabel::type() const
 {
   return Type;
 }
@@ -95,7 +95,7 @@ int KeyLabelItem::type() const
 // capture keypress events and make sure we send the current
 // legend text upstream to the PatternKeyDialog
 //------------------------------------------------------------
-void KeyLabelItem::keyPressEvent(QKeyEvent* anEvent)
+void LegendLabel::keyPressEvent(QKeyEvent* anEvent)
 {
   QGraphicsTextItem::keyPressEvent(anEvent);
   emit label_changed(IDString_, toPlainText());

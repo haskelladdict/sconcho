@@ -6,9 +6,9 @@ SET(SCONCHO_SRCS
   gridDimensionDialog.cxx
   helperFunctions.cxx
   io.cxx
-  keyLabelItem.cxx
   knittingPatternItem.cxx
   knittingSymbol.cxx
+  legendLabel.cxx
   mainWindow.cxx
   patternGridItem.cxx
   patternGridLabel.cxx
@@ -25,7 +25,7 @@ SET(SCONCHO_SRCS
 SET(SCONCHO_MOC_HDRS
   graphicsScene.h
   gridDimensionDialog.h
-  keyLabelItem.h
+  legendLabel.h
   mainWindow.h
   patternGridItem.h
   patternGridRectangle.h

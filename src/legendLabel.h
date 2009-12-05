@@ -39,11 +39,11 @@ class QKeyEvent;
 
 /***************************************************************
  * 
- * The GraphicsView handles sconcho's main graphics interface
- * canvas 
+ * A LegendLabel is the description text for a certain 
+ * pattern item in the legend
  *
  ***************************************************************/
-class KeyLabelItem
+class LegendLabel
   :
   public QGraphicsTextItem,
   public boost::noncopyable
@@ -54,7 +54,7 @@ class KeyLabelItem
     
 public:
 
-  explicit KeyLabelItem(const QString& labelID, const QString& text, 
+  explicit LegendLabel(const QString& labelID, const QString& text, 
     QGraphicsItem* parent=0);
   bool Init();
  

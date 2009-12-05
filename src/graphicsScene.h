@@ -41,7 +41,7 @@ QT_BEGIN_NAMESPACE
 
 
 /* a few forward declarations */
-class KeyLabelItem;
+class LegendLabel;
 class KnittingPatternItem;
 class PatternGridItem;
 class PatternGridRectangle;
@@ -60,7 +60,7 @@ namespace
   typedef QList<QPair<int, int> > RowLayout;
   typedef QList<PatternGridItem*> RowItems;
 
-  typedef QPair<KnittingPatternItem*,KeyLabelItem*> LegendItem;
+  typedef QPair<KnittingPatternItem*,LegendLabel*> LegendItem;
 };
 
 
