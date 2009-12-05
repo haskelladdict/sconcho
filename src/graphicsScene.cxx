@@ -167,7 +167,7 @@ void GraphicsScene::reset_grid(const QSize& newSize)
 // project file has been read in. It nukes the present pattern
 // and re-creates the previously saved one.
 //-------------------------------------------------------------
-void GraphicsScene::reset_canvas(
+void GraphicsScene::load_new_canvas(
     const QList<PatternGridItemDescriptor>& newItems)
 {
   assert(newItems.size() != 0);
@@ -189,9 +189,6 @@ void GraphicsScene::reset_canvas(
     item->Init();
     item->setPos(compute_cell_origin_(col, row));
 
-    /* add it to our scene */
-    add_patternGridItem_(item);
-
     /* generate a knittingSymbolPointer */
     if (rawItem.knittingSymbolName != "")
     {
@@ -202,6 +199,9 @@ void GraphicsScene::reset_canvas(
 
       item->insert_knitting_symbol(sym);
     }
+
+    /* add it to our scene */
+    add_patternGridItem_(item);
   }
   
   /* adjust dimensions */

@@ -90,7 +90,8 @@ public:
   /* helper functions */
   void select_region(const QRectF& region);
   void reset_grid(const QSize& newSize);
-  void reset_canvas(const QList<PatternGridItemDescriptor>& newItems);
+  void load_new_canvas(
+    const QList<PatternGridItemDescriptor>& newItems);
   QRectF get_visible_area() const;
 
   /* legend releated stuff */

@@ -28,10 +28,8 @@
 #define HELPER_FUNCTIONS_H
 
 /* Qt includes */
-#include <QFont>
 #include <QList>
 #include <QSettings>
-#include <QString>
 
 QT_BEGIN_NAMESPACE
 
@@ -47,26 +45,6 @@ class QGraphicsScene;
 //---------------------------------------------------------------
 QFont extract_font_from_settings(const QSettings& settings);
 
-
-//---------------------------------------------------------------
-// this functions fires up a file export dialog and returns 
-// the selected filename or an empty string if none
-// was entered
-//---------------------------------------------------------------
-QString show_file_export_dialog();
-
-
-//---------------------------------------------------------------
-// this functions export the content of a QGraphicsScene to
-// a file
-//---------------------------------------------------------------
-void export_scene(const QString& fileName, GraphicsScene* theScene);
-
-
-//---------------------------------------------------------------
-// this function prints the content of a QGraphicsScene
-//---------------------------------------------------------------
-void print_scene(GraphicsScene* theScene);
 
 
 //---------------------------------------------------------------

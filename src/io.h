@@ -46,6 +46,27 @@ class QTextStream;
 QString get_pattern_path(const QString& name);
 
 
+//---------------------------------------------------------------
+// this functions fires up a file export dialog and returns 
+// the selected filename or an empty string if none
+// was entered
+//---------------------------------------------------------------
+QString show_file_export_dialog();
+
+
+//---------------------------------------------------------------
+// this functions export the content of a QGraphicsScene to
+// a file
+//---------------------------------------------------------------
+void export_scene(const QString& fileName, GraphicsScene* theScene);
+
+
+//---------------------------------------------------------------
+// this function prints the content of a QGraphicsScene
+//---------------------------------------------------------------
+void print_scene(GraphicsScene* theScene);
+
+
 
 /*******************************************************************
  *

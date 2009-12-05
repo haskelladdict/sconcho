@@ -20,8 +20,14 @@
 
 /* Qt include */
 #include <QDebug>
+#include <QDir>
 #include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPrinter>
+#include <QPrintDialog>
 #include <QTextStream>
 
 /* local includes */
@@ -43,6 +49,89 @@ QString get_pattern_path(const QString& name)
 }
 
 
+//---------------------------------------------------------------
+// this functions a file export dialog and returns the selected
+// filename or an empty string if nothing was selected
+//---------------------------------------------------------------
+QString show_file_export_dialog()
+{
+  QString currentDirectory = QDir::currentPath();
+  QString saveFileName = QFileDialog::getSaveFileName(0,
+    QObject::tr("Export"), currentDirectory,
+    QObject::tr("Image Files (*.png *.tif *.jpg *.gif)"));
+
+  if ( saveFileName.isEmpty() )
+  {
+    return QString("");
+  }
+
+  /* extract file extension and make sure it corresponds to
+   * a supported format */
+  QFileInfo saveFileInfo(saveFileName);
+  QString extension = saveFileInfo.completeSuffix();
+
+  if ( extension != "png" && extension != "tif"
+       && extension != "jpg" && extension != "gif" )
+  {
+    QMessageBox::warning(0, QObject::tr("Warning"),
+      QObject::tr("Unknown file format ") + extension,
+      QMessageBox::Ok);
+    return QString("");
+  }
+
+  return saveFileName;
+}
+
+
+
+//---------------------------------------------------------------
+// this functions export the content of a QGraphicsScene to
+// a file
+//---------------------------------------------------------------
+void export_scene(const QString& fileName, GraphicsScene* scene)
+{
+  /* for now print the image in a fixed resolution 
+   * NOTE: We seem to need the 1px buffer region to avoid
+   *       the image being cut off */
+  QRectF theScene = scene->get_visible_area();
+  theScene.adjust(-10,-10,10,10);  // need this to avoid cropping
+
+  QImage finalImage(theScene.width()*3, theScene.height() *3,
+      QImage::Format_ARGB32_Premultiplied);
+  QPainter painter(&finalImage);
+  painter.setRenderHints(QPainter::SmoothPixmapTransform);
+  painter.setRenderHints(QPainter::HighQualityAntialiasing);
+  painter.setRenderHints(QPainter::TextAntialiasing);
+
+  scene->render(&painter, QRectF(), theScene);
+  painter.end();
+  finalImage.save(fileName);
+}
+
+
+
+//---------------------------------------------------------------
+// this function prints the content of a QGraphicsScene
+//---------------------------------------------------------------
+void print_scene(GraphicsScene* scene)
+{
+  QPrinter aPrinter(QPrinter::HighResolution);
+  QPrintDialog printDialog(&aPrinter);
+  if ( printDialog.exec() == QDialog::Accepted )
+  {
+    /* get size to be rendered */
+    QRectF theScene = scene->get_visible_area();
+    theScene.adjust(-10,-10,10,10);  // need this to avoid cropping  
+
+    /* tell our canvas that we want to print its */
+    QPainter painter(&aPrinter);
+    painter.setRenderHints(QPainter::SmoothPixmapTransform);
+    painter.setRenderHints(QPainter::HighQualityAntialiasing);
+    painter.setRenderHints(QPainter::TextAntialiasing);
+    scene->render(&painter, QRectF(), theScene);
+    painter.end();
+  }
+}
 
 
 //---------------------------------------------------------------
@@ -322,7 +411,7 @@ bool CanvasIOReader::read()
    * (as specified in newPatternGridItems_) */
   if (!newPatternGridItems_.isEmpty())
   {
-    ourScene_->reset_canvas(newPatternGridItems_);
+    ourScene_->load_new_canvas(newPatternGridItems_);
   }
 
   return true;
