@@ -150,7 +150,7 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
 {
   /* create a new knittingSymbol object */
   QString patternPath = get_pattern_path(symbolName);
-  KnittingSymbolPtr sym = KnittingSymbolPtr(
+  KnittingSymbolPtr sym(
       new KnittingSymbol(patternPath,
                          symbolName,
                          aSize,
