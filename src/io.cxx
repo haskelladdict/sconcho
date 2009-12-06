@@ -18,6 +18,9 @@
  *
  ****************************************************************/
 
+/* C++ includes */
+#include <cmath>
+
 /* Qt include */
 #include <QDebug>
 #include <QDir>
@@ -570,10 +573,10 @@ bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
 {
   /* loop over all the properties we expect for the pattern */
   QString entryID("");
-  int itemXPos = 0;
-  int itemYPos = 0;
-  int labelXPos = 0;
-  int labelYPos = 0;
+  double itemXPos = 0.0;
+  double itemYPos = 0.0;
+  double labelXPos = 0.0;
+  double labelYPos = 0.0;
   QString labelText("");
 
   QDomNode node = itemNode.firstChild();
@@ -588,25 +591,25 @@ bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
     if (node.toElement().tagName() == "itemXPos")
     {
       QDomNode childNode(node.firstChild());
-      itemXPos = childNode.toText().data().toInt();
+      itemXPos = childNode.toText().data().toDouble();
     }
 
     if (node.toElement().tagName() == "itemYPos")
     {
       QDomNode childNode(node.firstChild());
-      itemYPos = childNode.toText().data().toInt();
+      itemYPos = childNode.toText().data().toDouble();
     }
 
     if (node.toElement().tagName() == "labelXPos")
     {
       QDomNode childNode(node.firstChild());
-      labelXPos = childNode.toText().data().toInt();
+      labelXPos = childNode.toText().data().toDouble();
     }
 
     if (node.toElement().tagName() == "labelYPos")
     {
       QDomNode childNode(node.firstChild());
-      labelYPos = childNode.toText().data().toInt();
+      labelYPos = childNode.toText().data().toDouble();
     }
 
     if (node.toElement().tagName() == "labelText")
@@ -619,11 +622,12 @@ bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
   }
 
 
+  qDebug() << "read " << itemXPos << "  " << itemYPos;
   /* store parsed item in list of new LegendEntryDescriptors */
   LegendEntryDescriptorPtr currentEntry(new LegendEntryDescriptor);
   currentEntry->entryID = entryID;
-  currentEntry->itemLocation = QPoint(itemXPos, itemYPos);
-  currentEntry->labelLocation = QPoint(labelXPos, labelYPos);
+  currentEntry->itemLocation = QPointF(itemXPos, itemYPos);
+  currentEntry->labelLocation = QPointF(labelXPos, labelYPos);
   currentEntry->labelText = labelText;
   newLegendEntryDescriptors_.push_back(currentEntry);
 

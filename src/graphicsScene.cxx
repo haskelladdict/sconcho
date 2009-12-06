@@ -209,6 +209,7 @@ void GraphicsScene::load_new_canvas(
 
   /* add labels and rescale */
   create_grid_labels_();
+  parent_->fit_in_view();
 }
 
 
@@ -230,8 +231,10 @@ void GraphicsScene::place_legend_items(
     LegendEntry entry = legendEntries_[entryID];
 
     /* position item and label */
-    QPoint itemPos = entryDesc->itemLocation;
-    QPoint labelPos = entryDesc->labelLocation;
+    QPointF itemPos = entryDesc->itemLocation;
+    QPointF labelPos = entryDesc->labelLocation;
+
+    qDebug() << itemPos.x() << "  " << itemPos.y();
     entry.first->setPos(itemPos);
     entry.second->setPos(labelPos);
 
@@ -253,6 +256,13 @@ void GraphicsScene::reset_canvas_()
 {
   purge_all_canvas_items_();
   purge_legend_();
+
+  
+  /* reset all views containting us */
+  foreach(QGraphicsView* aView, views())
+  {
+    aView->resetMatrix();
+  }
 }
 
 
@@ -1040,11 +1050,13 @@ void GraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* aWheelEvent)
       && aWheelEvent->delta() > 0)
   {
     emit mouse_zoom_in();
+    aWheelEvent->accept();
   }
   else if (aWheelEvent->modifiers().testFlag(Qt::ControlModifier)
            && aWheelEvent->delta() < 0)
   {
     emit mouse_zoom_out();
+    aWheelEvent->accept();
   }
 }
 

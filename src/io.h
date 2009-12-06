@@ -139,8 +139,8 @@ typedef boost::shared_ptr<PatternGridItemDescriptor>
 struct LegendEntryDescriptor
 {
   QString entryID;
-  QPoint itemLocation;
-  QPoint labelLocation;
+  QPointF itemLocation;
+  QPointF labelLocation;
   QString labelText;
 };
 
