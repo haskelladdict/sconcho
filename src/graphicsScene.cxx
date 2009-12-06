@@ -169,34 +169,34 @@ void GraphicsScene::reset_grid(const QSize& newSize)
 // and re-creates the previously saved one.
 //-------------------------------------------------------------
 void GraphicsScene::load_new_canvas(
-    const QList<PatternGridItemDescriptor>& newItems)
+    const QList<PatternGridItemDescriptorPtr>& newItems)
 {
   assert(newItems.size() != 0);
   reset_canvas_();
 
   int maxCol = 0;
   int maxRow = 0;
-  foreach(PatternGridItemDescriptor rawItem, newItems)
+  foreach(PatternGridItemDescriptorPtr rawItem, newItems)
   {
-    int col = rawItem.location.x();
-    int row = rawItem.location.y();
+    int col = rawItem->location.x();
+    int row = rawItem->location.y();
    
     maxCol = qMax(col, maxCol);
     maxRow = qMax(row, maxRow);
 
     PatternGridItem* item = 
-        new PatternGridItem(rawItem.dimension, cellSize_, col, row, 
-          this, rawItem.backgroundColor);
+        new PatternGridItem(rawItem->dimension, cellSize_, col, row, 
+          this, rawItem->backgroundColor);
     item->Init();
     item->setPos(compute_cell_origin_(col, row));
 
     /* generate a knittingSymbolPointer */
-    if (rawItem.knittingSymbolName != "")
+    if (rawItem->knittingSymbolName != "")
     {
-      QString path = get_pattern_path(rawItem.knittingSymbolName);
+      QString path = get_pattern_path(rawItem->knittingSymbolName);
       KnittingSymbolPtr sym = 
         KnittingSymbolPtr(new KnittingSymbol(path,
-          rawItem.knittingSymbolName, rawItem.dimension,"",""));
+          rawItem->knittingSymbolName, rawItem->dimension,"",""));
 
       item->insert_knitting_symbol(sym);
     }
@@ -221,24 +221,24 @@ void GraphicsScene::load_new_canvas(
 // NOTE: This function has to be called after load new canvas
 //-------------------------------------------------------------
 void GraphicsScene::place_legend_items(
-  const QList<LegendEntryDescriptor>& newLegendEntries)
+  const QList<LegendEntryDescriptorPtr>& newLegendEntries)
 {
   assert(newLegendEntries.size() != 0);
 
-  foreach(LegendEntryDescriptor entryDesc, newLegendEntries)
+  foreach(LegendEntryDescriptorPtr entryDesc, newLegendEntries)
   {
     /* find the legend entry by entryID */
-    QString entryID = entryDesc.entryID;
+    QString entryID = entryDesc->entryID;
     LegendEntry entry = legendEntries_[entryID];
 
     /* position item and label */
-    QPoint itemPos = entryDesc.itemLocation;
-    QPoint labelPos = entryDesc.labelLocation;
+    QPoint itemPos = entryDesc->itemLocation;
+    QPoint labelPos = entryDesc->labelLocation;
     entry.first->setPos(itemPos);
     entry.second->setPos(labelPos);
 
     /* set label text and update our presently stored text */
-    QString labelText = entryDesc.labelText;
+    QString labelText = entryDesc->labelText;
     entry.second->setPlainText(labelText);
     symbolDescriptors_[entryID] = labelText;
   }

@@ -39,6 +39,7 @@
 #include "patternGridItem.h"
 #include "io.h"
 
+
 QT_BEGIN_NAMESPACE
 
 //----------------------------------------------------------------
@@ -244,8 +245,6 @@ bool CanvasIOWriter::save()
 //-------------------------------------------------------------
 bool CanvasIOWriter::save_patternGridItems_(QDomElement& root)
 {
-  qDebug() << "save patternGridItems";
-
   /* retrieve all patternGridItems from canvas */
   QString helper;
   QList<QGraphicsItem*> allItems(ourScene_->items());
@@ -307,8 +306,6 @@ bool CanvasIOWriter::save_patternGridItems_(QDomElement& root)
 //-------------------------------------------------------------
 bool CanvasIOWriter::save_legendInfo_(QDomElement& root)
 {
-  qDebug() << "save legend items";
-
   /* retrieve all legend items from canvas */
   QString helper;
   QMap<QString,LegendEntry> allEntries(
@@ -502,8 +499,6 @@ bool CanvasIOReader::read()
 //-------------------------------------------------------------
 bool CanvasIOReader::parse_patternGridItems_(const QDomNode& itemNode)
 {
-  qDebug() << "read patternGridItems";
-
   /* loop over all the properties we expect for the pattern */
   int colIndex = 0;
   int rowIndex = 0;
@@ -556,15 +551,13 @@ bool CanvasIOReader::parse_patternGridItems_(const QDomNode& itemNode)
   }
 
   /* store parsed item in list of new patternGridItems */
-  PatternGridItemDescriptor currentItem;
-  currentItem.location = QPoint(colIndex, rowIndex);
-  currentItem.dimension = QSize(width,height);
-  currentItem.backgroundColor = QColor(color);
-  currentItem.knittingSymbolName = name;
+  PatternGridItemDescriptorPtr 
+    currentItem(new PatternGridItemDescriptor);
+  currentItem->location = QPoint(colIndex, rowIndex);
+  currentItem->dimension = QSize(width,height);
+  currentItem->backgroundColor = QColor(color);
+  currentItem->knittingSymbolName = name;
   newPatternGridItems_.push_back(currentItem);
-
-  qDebug() << colIndex << " " << rowIndex << " " << width << " " <<
-    height << "  " << color << " " << name;
 
   return true;
 }
@@ -575,8 +568,6 @@ bool CanvasIOReader::parse_patternGridItems_(const QDomNode& itemNode)
 //-------------------------------------------------------------
 bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
 {
-  qDebug() << "read legend entries";
-
   /* loop over all the properties we expect for the pattern */
   QString entryID("");
   int itemXPos = 0;
@@ -629,15 +620,12 @@ bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
 
 
   /* store parsed item in list of new LegendEntryDescriptors */
-  LegendEntryDescriptor currentEntry;
-  currentEntry.entryID = entryID;
-  currentEntry.itemLocation = QPoint(itemXPos, itemYPos);
-  currentEntry.labelLocation = QPoint(labelXPos, labelYPos);
-  currentEntry.labelText = labelText;
+  LegendEntryDescriptorPtr currentEntry(new LegendEntryDescriptor);
+  currentEntry->entryID = entryID;
+  currentEntry->itemLocation = QPoint(itemXPos, itemYPos);
+  currentEntry->labelLocation = QPoint(labelXPos, labelYPos);
+  currentEntry->labelText = labelText;
   newLegendEntryDescriptors_.push_back(currentEntry);
-
-  qDebug() << entryID << " " << itemXPos << " " << itemYPos << " " <<
-    labelXPos << "  " << labelYPos << " " << labelText;
 
   return true;
 }

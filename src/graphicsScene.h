@@ -92,9 +92,9 @@ public:
   void select_region(const QRectF& region);
   void reset_grid(const QSize& newSize);
   void load_new_canvas(
-    const QList<PatternGridItemDescriptor>& newItems);
+    const QList<PatternGridItemDescriptorPtr>& newItems);
   void place_legend_items(
-    const QList<LegendEntryDescriptor>& newLegendEntries);
+    const QList<LegendEntryDescriptorPtr>& newLegendEntries);
   QRectF get_visible_area() const;
 
   /* legend releated stuff */

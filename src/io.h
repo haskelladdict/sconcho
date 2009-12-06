@@ -23,6 +23,7 @@
 
 /* boost includes */
 #include <boost/utility.hpp>
+#include <boost/shared_ptr.hpp>
 
 /* QT includes */
 #include <QString>
@@ -124,6 +125,8 @@ struct PatternGridItemDescriptor
   QString knittingSymbolName;
 };
 
+typedef boost::shared_ptr<PatternGridItemDescriptor> 
+  PatternGridItemDescriptorPtr;
 
 
 /*******************************************************************
@@ -141,6 +144,8 @@ struct LegendEntryDescriptor
   QString labelText;
 };
 
+typedef boost::shared_ptr<LegendEntryDescriptor>
+  LegendEntryDescriptorPtr;
 
 
 /*******************************************************************
@@ -177,10 +182,10 @@ private:
   QDomDocument readDoc_;
 
   /* QList of parsed patternGridItems based on input file */
-  QList<PatternGridItemDescriptor> newPatternGridItems_;
+  QList<PatternGridItemDescriptorPtr> newPatternGridItems_;
 
   /* QList of parsed legend entry descriptors */
-  QList<LegendEntryDescriptor> newLegendEntryDescriptors_;
+  QList<LegendEntryDescriptorPtr> newLegendEntryDescriptors_;
 
   /* helper functions */
   bool parse_patternGridItems_(const QDomNode& itemNode);
