@@ -101,16 +101,14 @@ public slots:
   void show_statusBar_message(QString msg);
   void show_statusBar_error(QString msg);
   void clear_statusBar();
-  void zoom_in();
-  void zoom_out();
-  void fit_in_view();
+
 
 private slots:
 
-  void pan_down_();
-  void pan_left_();
-  void pan_right_();
-  void pan_up_();
+//  void pan_down_();
+//  void pan_left_();
+//  void pan_right_();
+//  void pan_up_();
   void pick_color_();
   void quit_sconcho_();
   void reset_grid_();

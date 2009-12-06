@@ -69,7 +69,6 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
     KnittingSymbolPtr defaultSymbol, MainWindow* myParent)
   :
   QGraphicsScene(myParent),
-  parent_(myParent),
   updateActiveItems_(true),
   origin_(anOrigin),
   numCols_(gridDim.width()),
@@ -121,17 +120,6 @@ bool GraphicsScene::Init()
           parent(),
           SLOT(show_statusBar_error(QString))
          );
- 
-  connect(this,
-          SIGNAL(mouse_zoom_in()),
-          parent(),
-          SLOT(zoom_in()));
-
-  connect(this,
-          SIGNAL(mouse_zoom_out()),
-          parent(),
-          SLOT(zoom_out()));
-
   return true;
 }
 
@@ -155,8 +143,6 @@ void GraphicsScene::reset_grid(const QSize& newSize)
   numRows_ = newSize.height();
   create_pattern_grid_();
   create_grid_labels_();
-  
-  parent_->fit_in_view();
 }
 
 
@@ -209,7 +195,6 @@ void GraphicsScene::load_new_canvas(
 
   /* add labels and rescale */
   create_grid_labels_();
-  parent_->fit_in_view();
 }
 
 
@@ -234,7 +219,6 @@ void GraphicsScene::place_legend_items(
     QPointF itemPos = entryDesc->itemLocation;
     QPointF labelPos = entryDesc->labelLocation;
 
-    qDebug() << itemPos.x() << "  " << itemPos.y();
     entry.first->setPos(itemPos);
     entry.second->setPos(labelPos);
 
@@ -1040,7 +1024,7 @@ void GraphicsScene::update_key_label_text_(QString labelID,
  *
  *************************************************************/
 
-
+#if 0
 //--------------------------------------------------------------
 // event handler for mouse wheel events
 //--------------------------------------------------------------
@@ -1059,7 +1043,7 @@ void GraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* aWheelEvent)
     aWheelEvent->accept();
   }
 }
-
+#endif
 
 
 //---------------------------------------------------------------

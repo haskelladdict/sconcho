@@ -191,39 +191,6 @@ void MainWindow::clear_statusBar()
 }
 
 
-//--------------------------------------------------------------
-// zooming
-//
-// These are public since we need to call them from our canvas
-// if the user utilizes her mouse wheel for zooming in/out
-//--------------------------------------------------------------
-void MainWindow::zoom_in()
-{
-  canvasView_->scale(1.1,1.1);
-}
-
-
-void MainWindow::zoom_out()
-{
-  canvasView_->scale(0.9,0.9);
-}
-
-
-
-//------------------------------------------------------------
-// tries to fit the current content on the canvas
-// into the active view
-//------------------------------------------------------------
-void MainWindow::fit_in_view()
-{
-  QRectF canvasRect(canvas_->sceneRect());
-  canvasRect.adjust(-30,-30,0,0);
-  canvasView_->setSceneRect(canvasRect);
-  canvasView_->centerOn(canvasRect.center());
-}
-
-
-
 /**************************************************************
  *
  * PRIVATE SLOTS
@@ -387,9 +354,9 @@ void MainWindow::pick_color_()
 }
 
 
-
+#if 0
 //------------------------------------------------------------
-// SLOTS for zooming and paning
+// SLOTS for paning
 //------------------------------------------------------------
 void MainWindow::pan_down_()
 {
@@ -413,7 +380,7 @@ void MainWindow::pan_up_()
 {
   canvasView_->translate(0,30);
 }
-
+#endif
 
 
 //------------------------------------------------------------
@@ -440,6 +407,7 @@ void MainWindow::reset_grid_()
   /* ask for new grid dimensions and reset canvas */
   QSize newDimensions = show_grid_dimension_dialog_();
   canvas_->reset_grid(newDimensions);
+  canvasView_->fit_in_view();
 }
 
 
@@ -608,7 +576,7 @@ void MainWindow::create_view_menu_()
   zoomInAction->setShortcut(tr("Ctrl++"));
   connect(zoomInAction, 
           SIGNAL(triggered()), 
-          this,
+          canvasView_,
           SLOT(zoom_in()));
 
   /* zoom out */
@@ -618,7 +586,7 @@ void MainWindow::create_view_menu_()
   zoomOutAction->setShortcut(tr("Ctrl+-"));
   connect(zoomOutAction, 
           SIGNAL(triggered()), 
-          this,
+          canvasView_,
           SLOT(zoom_out()));
 
   /* zoom in */
@@ -628,7 +596,7 @@ void MainWindow::create_view_menu_()
   fitAction->setShortcut(tr("Ctrl+0"));
   connect(fitAction, 
           SIGNAL(triggered()), 
-          this,
+          canvasView_,
           SLOT(fit_in_view()));
 } 
 
@@ -722,8 +690,6 @@ void MainWindow::create_graphics_scene_()
 
   canvasView_ = new PatternView(canvas_);
   canvasView_->Init();
-
-  fit_in_view();
 }
 
 
@@ -787,7 +753,7 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(zoomInButton);
   connect(zoomInButton,
           SIGNAL(clicked()),
-          this,
+          canvasView_,
           SLOT(zoom_in()));
   
   QToolButton* zoomOutButton = new QToolButton(this);
@@ -796,7 +762,7 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(zoomOutButton);
   connect(zoomOutButton,
           SIGNAL(clicked()),
-          this,
+          canvasView_,
           SLOT(zoom_out()));
 
   QToolButton* resetButton = new QToolButton(this);
@@ -805,7 +771,7 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(resetButton);
   connect(resetButton,
           SIGNAL(clicked()),
-          this,
+          canvasView_,
           SLOT(fit_in_view()));
   
   toolBar->addSeparator();
@@ -816,8 +782,8 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(leftMoveButton);
   connect(leftMoveButton,
           SIGNAL(clicked()),
-          this,
-          SLOT(pan_left_()));
+          canvasView_,
+          SLOT(pan_left()));
   
   QToolButton* rightMoveButton = new QToolButton(this);
   rightMoveButton->setIcon(QIcon(":/icons/right.png"));
@@ -825,8 +791,8 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(rightMoveButton);
   connect(rightMoveButton,
           SIGNAL(clicked()),
-          this,
-          SLOT(pan_right_()));
+          canvasView_,
+          SLOT(pan_right()));
 
   QToolButton* upMoveButton = new QToolButton(this);
   upMoveButton->setIcon(QIcon(":/icons/up.png"));
@@ -834,8 +800,8 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(upMoveButton);
   connect(upMoveButton,
           SIGNAL(clicked()),
-          this,
-          SLOT(pan_up_()));
+          canvasView_,
+          SLOT(pan_up()));
   
   QToolButton* downMoveButton = new QToolButton(this);
   downMoveButton->setIcon(QIcon(":/icons/down.png"));
@@ -843,8 +809,8 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(downMoveButton);
   connect(downMoveButton,
           SIGNAL(clicked()),
-          this,
-          SLOT(pan_down_()));
+          canvasView_,
+          SLOT(pan_down()));
   
   toolBar->addSeparator();
 
@@ -999,6 +965,8 @@ void MainWindow::load_canvas_(const QString& fileName)
   {
     reader.read();
   }
+
+  canvasView_->fit_in_view();
 }
 
 

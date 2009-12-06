@@ -46,7 +46,7 @@ class KnittingPatternItem;
 class PatternGridItem;
 class PatternGridRectangle;
 class QGraphicsSceneMouseEvent;
-class QGraphicsSceneWheelEvent; 
+//class QGraphicsSceneWheelEvent; 
 class QKeyEvent;
 class QSettings;
 class MainWindow;
@@ -113,8 +113,6 @@ signals:
   void knitting_symbol_removed(KnittingSymbolPtr deadSymbol,
                                const QColor& color);
   void mouse_moved(QPointF position);
-  void mouse_zoom_in();
-  void mouse_zoom_out();
   void statusBar_error(QString msg); 
   void statusBar_message(QString msg);
 
@@ -136,7 +134,6 @@ protected:
 
   void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent);
   void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
-  void wheelEvent(QGraphicsSceneWheelEvent* wheelEvent);
 
 
 private slots:
@@ -156,8 +153,6 @@ private:
 
   /* construction status variable */
   int status_;
-
-  MainWindow* parent_;
 
   /* do we want active items to be updated */
   bool updateActiveItems_;

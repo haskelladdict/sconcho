@@ -23,6 +23,7 @@
 #include <QMouseEvent>
 #include <QRubberBand>
 #include <QGraphicsSceneMouseEvent>
+#include <QWheelEvent>
 
 /** local headers */
 #include "basicDefs.h"
@@ -87,6 +88,67 @@ bool PatternView::Init()
  *
  *************************************************************/
 
+//-------------------------------------------------------------
+// slot responsible for zooming into the canvas
+//-------------------------------------------------------------
+void PatternView::zoom_in()
+{
+  QPointF center(mapToScene(rect()).boundingRect().center());
+  scale(1.1,1.1);
+  centerOn(center);
+}
+
+
+//-------------------------------------------------------------
+// slot responsible for zooming out of the canvas
+//-------------------------------------------------------------
+void PatternView::zoom_out()
+{
+  QPointF center(mapToScene(rect()).boundingRect().center());
+  scale(0.9,0.9);
+  centerOn(center);
+}
+
+
+//-------------------------------------------------------------
+// slot responsible for making sure the whole scene is visible
+//-------------------------------------------------------------
+void PatternView::fit_in_view()
+{
+  QRectF canvasRect(sceneRect());
+  canvasRect.adjust(-30,-30,0,0);
+  fitInView(canvasRect, Qt::KeepAspectRatio); 
+}
+
+
+//------------------------------------------------------------
+// SLOTS for paning
+//------------------------------------------------------------
+void PatternView::pan_down()
+{
+  translate(0,-30);
+}
+
+
+void PatternView::pan_left()
+{
+  translate(30,0);
+}
+
+
+void PatternView::pan_right()
+{
+  translate(-30,0);
+}
+
+
+void PatternView::pan_up()
+{
+  translate(0,30);
+}
+
+
+
 /**************************************************************
  *
  * PROTECTED 
@@ -150,6 +212,28 @@ void PatternView::mouseMoveEvent(QMouseEvent* evt)
   }
     
   QGraphicsView::mouseMoveEvent(evt);
+}
+
+
+//--------------------------------------------------------------
+// event handler for mouse wheel events
+//--------------------------------------------------------------
+void PatternView::wheelEvent(QWheelEvent* aWheelEvent)
+{
+  if (aWheelEvent->modifiers().testFlag(Qt::ControlModifier) 
+      && aWheelEvent->delta() > 0)
+  {
+    zoom_in();
+  }
+  else if (aWheelEvent->modifiers().testFlag(Qt::ControlModifier)
+           && aWheelEvent->delta() < 0)
+  {
+    zoom_out();
+  }
+  else
+  {
+    QGraphicsView::wheelEvent(aWheelEvent);
+  }
 }
 
 

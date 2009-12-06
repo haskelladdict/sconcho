@@ -622,7 +622,6 @@ bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
   }
 
 
-  qDebug() << "read " << itemXPos << "  " << itemYPos;
   /* store parsed item in list of new LegendEntryDescriptors */
   LegendEntryDescriptorPtr currentEntry(new LegendEntryDescriptor);
   currentEntry->entryID = entryID;

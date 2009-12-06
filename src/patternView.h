@@ -34,6 +34,7 @@ QT_BEGIN_NAMESPACE
 
 /* a few forward declarations */
 class GraphicsScene;
+class QWheelEvent; 
 class QMouseEvent;
 class QRubberBand;
 
@@ -59,12 +60,25 @@ public:
   bool Init();
 
 
+public slots:
+
+  void zoom_in();
+  void zoom_out();
+  void fit_in_view();
+  void pan_down();
+  void pan_left();
+  void pan_right();
+  void pan_up();
+
+
 protected:
 
   void mousePressEvent(QMouseEvent* evt);
   void mouseReleaseEvent(QMouseEvent* evt);
   void mouseMoveEvent(QMouseEvent* evt);
-  
+  void wheelEvent(QWheelEvent* wheelEvent);
+
+
 private:
 
   /* construction status variable */
