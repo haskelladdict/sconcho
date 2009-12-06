@@ -468,6 +468,10 @@ bool CanvasIOReader::read()
       {
         parse_patternGridItems_(theItem);
       }
+      else if (theItem.toElement().tagName() == "legendEntry")
+      {
+        parse_legendItems_(theItem);
+      }
     }
 
     node = node.nextSibling();
@@ -479,6 +483,7 @@ bool CanvasIOReader::read()
   if (!newPatternGridItems_.isEmpty())
   {
     ourScene_->load_new_canvas(newPatternGridItems_);
+    ourScene_->place_legend_items(newLegendEntryDescriptors_);
   }
 
   return true;
@@ -563,5 +568,80 @@ bool CanvasIOReader::parse_patternGridItems_(const QDomNode& itemNode)
 
   return true;
 }
+
+
+//-------------------------------------------------------------
+// read a single legend entry from our input stream
+//-------------------------------------------------------------
+bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
+{
+  qDebug() << "read legend entries";
+
+  /* loop over all the properties we expect for the pattern */
+  QString entryID("");
+  int itemXPos = 0;
+  int itemYPos = 0;
+  int labelXPos = 0;
+  int labelYPos = 0;
+  QString labelText("");
+
+  QDomNode node = itemNode.firstChild();
+  while (!node.isNull())
+  {
+    if (node.toElement().tagName() == "IDTag")
+    {
+      QDomNode childNode(node.firstChild());
+      entryID = childNode.toText().data();
+    }
+
+    if (node.toElement().tagName() == "itemXPos")
+    {
+      QDomNode childNode(node.firstChild());
+      itemXPos = childNode.toText().data().toInt();
+    }
+
+    if (node.toElement().tagName() == "itemYPos")
+    {
+      QDomNode childNode(node.firstChild());
+      itemYPos = childNode.toText().data().toInt();
+    }
+
+    if (node.toElement().tagName() == "labelXPos")
+    {
+      QDomNode childNode(node.firstChild());
+      labelXPos = childNode.toText().data().toInt();
+    }
+
+    if (node.toElement().tagName() == "labelYPos")
+    {
+      QDomNode childNode(node.firstChild());
+      labelYPos = childNode.toText().data().toInt();
+    }
+
+    if (node.toElement().tagName() == "labelText")
+    {
+      QDomNode childNode(node.firstChild());
+      labelText = childNode.toText().data();
+    }
+
+    node = node.nextSibling();
+  }
+
+
+  /* store parsed item in list of new LegendEntryDescriptors */
+  LegendEntryDescriptor currentEntry;
+  currentEntry.entryID = entryID;
+  currentEntry.itemLocation = QPoint(itemXPos, itemYPos);
+  currentEntry.labelLocation = QPoint(labelXPos, labelYPos);
+  currentEntry.labelText = labelText;
+  newLegendEntryDescriptors_.push_back(currentEntry);
+
+  qDebug() << entryID << " " << itemXPos << " " << itemYPos << " " <<
+    labelXPos << "  " << labelYPos << " " << labelText;
+
+  return true;
+}
+
+
 
 QT_END_NAMESPACE

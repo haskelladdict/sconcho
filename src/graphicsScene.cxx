@@ -214,6 +214,38 @@ void GraphicsScene::load_new_canvas(
 }
 
 
+//-------------------------------------------------------------
+// this function is called after a previously saved sconcho
+// project file has been read in. It places the legend items
+// at their previously saved locations on the canvas.
+// NOTE: This function has to be called after load new canvas
+//-------------------------------------------------------------
+void GraphicsScene::place_legend_items(
+  const QList<LegendEntryDescriptor>& newLegendEntries)
+{
+  assert(newLegendEntries.size() != 0);
+
+  foreach(LegendEntryDescriptor entryDesc, newLegendEntries)
+  {
+    /* find the legend entry by entryID */
+    QString entryID = entryDesc.entryID;
+    LegendEntry entry = legendEntries_[entryID];
+
+    /* position item and label */
+    QPoint itemPos = entryDesc.itemLocation;
+    QPoint labelPos = entryDesc.labelLocation;
+    entry.first->setPos(itemPos);
+    entry.second->setPos(labelPos);
+
+    /* set label text and update our presently stored text */
+    QString labelText = entryDesc.labelText;
+    entry.second->setPlainText(labelText);
+    symbolDescriptors_[entryID] = labelText;
+  }
+}
+
+
+
 
 //--------------------------------------------------------------
 // this function takes care of resetting the canvas, i.e.,

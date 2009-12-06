@@ -93,6 +93,8 @@ public:
   void reset_grid(const QSize& newSize);
   void load_new_canvas(
     const QList<PatternGridItemDescriptor>& newItems);
+  void place_legend_items(
+    const QList<LegendEntryDescriptor>& newLegendEntries);
   QRectF get_visible_area() const;
 
   /* legend releated stuff */

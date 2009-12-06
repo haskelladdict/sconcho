@@ -128,6 +128,23 @@ struct PatternGridItemDescriptor
 
 /*******************************************************************
  *
+ * LegendEntryDescriptor is a data structure that contains
+ * all the information allowing GraphicsScene to reconstruct
+ * the position and text of legend items
+ *
+ ******************************************************************/
+struct LegendEntryDescriptor
+{
+  QString entryID;
+  QPoint itemLocation;
+  QPoint labelLocation;
+  QString labelText;
+};
+
+
+
+/*******************************************************************
+ *
  * CanvasIOReader is responsible for reading a previously stored
  * canvas content and instructing the canvas to re-build it
  *
@@ -159,12 +176,15 @@ private:
   QFile* filePtr_;
   QDomDocument readDoc_;
 
-  /* QList of generated patternGridItems based on input file */
+  /* QList of parsed patternGridItems based on input file */
   QList<PatternGridItemDescriptor> newPatternGridItems_;
+
+  /* QList of parsed legend entry descriptors */
+  QList<LegendEntryDescriptor> newLegendEntryDescriptors_;
 
   /* helper functions */
   bool parse_patternGridItems_(const QDomNode& itemNode);
-//  bool parse_legendItems_(const QDomNode& itemNode);
+  bool parse_legendItems_(const QDomNode& itemNode);
 };
 
 QT_END_NAMESPACE
