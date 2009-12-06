@@ -22,7 +22,6 @@
 #include <float.h>
 
 /* qt includes */
-#include <QDebug>
 #include <QGraphicsItem>
 
 /* local includes */

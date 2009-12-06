@@ -20,7 +20,6 @@
 
 /** Qt headers */
 #include <QDebug>
-#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QMouseEvent>
 #include <QSvgWidget>
@@ -83,8 +82,6 @@ bool SymbolSelectorItem::Init()
   QSvgWidget* symbolSvg_ = new QSvgWidget(symbol_->path());
   QSize symbolSize = unitSize_ * symbol_->dim();
   symbolSvg_->setMaximumSize(symbolSize);
-  //symbolSvg_->setMinimumSize(symbolSize);
-  //symbolSvg_->setMaximumSize(symbolSize);
 
   QHBoxLayout* svgLayout = new QHBoxLayout;
   svgLayout->setContentsMargins(0,0,0,0);

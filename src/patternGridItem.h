@@ -25,11 +25,7 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
-#include <QBrush>
 #include <QColor>
-#include <QGraphicsItem>
-#include <QPen>
-#include <QList>
 
 /* local includes */
 #include "basicDefs.h"

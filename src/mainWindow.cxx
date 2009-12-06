@@ -32,8 +32,6 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QPrinter>
-#include <QPrintDialog>
 #include <QPushButton>
 #include <QSettings>
 #include <QSplitter>

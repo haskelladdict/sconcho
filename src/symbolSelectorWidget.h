@@ -25,7 +25,6 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
-#include <QGroupBox>
 #include <QTabWidget>
 
 /* local includes */

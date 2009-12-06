@@ -25,12 +25,7 @@
 /* Qt headers */
 #include <QColor>
 #include <QDebug>
-#include <QGraphicsLineItem>
-#include <QGraphicsRectItem>
-#include <QGraphicsSvgItem>
-#include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
-#include <QPainter>
 
 /* local headers */
 #include "graphicsScene.h"

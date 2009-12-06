@@ -29,7 +29,7 @@
 
 /* Qt includes */
 #include <QList>
-#include <QSettings>
+
 
 QT_BEGIN_NAMESPACE
 
@@ -37,6 +37,7 @@ QT_BEGIN_NAMESPACE
 class GraphicsScene;
 class QGraphicsItem;
 class QGraphicsScene;
+class QSettings;
 
 
 //---------------------------------------------------------------

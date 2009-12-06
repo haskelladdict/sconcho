@@ -21,12 +21,9 @@
 /* C++ headers */
 #include <float.h>
 
-
 /* Qt headers */
 #include <QColor>
 #include <QDebug>
-#include <QGraphicsLineItem>
-#include <QGraphicsRectItem>
 #include <QGraphicsSvgItem>
 #include <QPainter>
 
@@ -81,7 +78,7 @@ bool KnittingPatternItem::Init()
 
 //--------------------------------------------------------------
 // return our custom type
-////--------------------------------------------------------------
+//--------------------------------------------------------------
 int KnittingPatternItem::type() const
 {
   return Type;

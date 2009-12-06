@@ -19,7 +19,6 @@
 ****************************************************************/
 
 /** Qt headers */
-#include <QDebug>
 #include <QKeyEvent>
 
 /** local headers */

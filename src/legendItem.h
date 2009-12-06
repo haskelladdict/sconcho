@@ -24,11 +24,10 @@
 /* boost includes */
 #include <boost/utility.hpp>
 
-/* QT includes */
-
 /* local includes */
 #include "basicDefs.h"
 #include "knittingPatternItem.h"
+
 
 
 QT_BEGIN_NAMESPACE

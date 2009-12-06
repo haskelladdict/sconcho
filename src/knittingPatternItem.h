@@ -25,7 +25,6 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
-#include <QBrush>
 #include <QColor>
 #include <QGraphicsItem>
 #include <QPen>

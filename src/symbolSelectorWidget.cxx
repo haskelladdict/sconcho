@@ -20,12 +20,9 @@
 
 /** Qt headers */
 #include <QDebug>
-#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QMouseEvent>
 #include <QScrollArea>
-#include <QSvgWidget>
 #include <QTabWidget>
 #include <QVBoxLayout>
 

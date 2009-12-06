@@ -26,7 +26,6 @@
 
 /* QT includes */
 #include <QGraphicsRectItem>
-#include <QDebug>
 #include <QObject>
 #include <QPen>
 

@@ -19,8 +19,6 @@
 ****************************************************************/
 
 /* C++ headers */
-#include <algorithm>
-#include <vector>
 #include <cmath>
 
 /* Qt headers */

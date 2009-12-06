@@ -25,7 +25,6 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
-#include <QSize>
 #include <QString>
 #include <QFrame>
 

@@ -26,7 +26,6 @@
 
 /* QT includes */
 #include <QColor>
-#include <QFont>
 #include <QGraphicsScene>
 #include <QPair>
 #include <QList>

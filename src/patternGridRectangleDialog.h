@@ -25,11 +25,12 @@
 #include <boost/utility.hpp>
 
 /* QT includes */
-#include <QDebug>
 #include <QDialog>
 #include <QPen>
 
+
 QT_BEGIN_NAMESPACE
+
 
 /* forward declarations */
 class QPushButton;

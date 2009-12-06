@@ -25,6 +25,7 @@
 /* local headers */
 #include "patternGridRectangle.h"
 
+
 QT_BEGIN_NAMESPACE
 
 
