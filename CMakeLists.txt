@@ -57,7 +57,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I./ -O2 -fomit-frame-pointer -march=nat
 
 ###################### regular build ###############################
 ELSE(NOT RELEASE)
-  SET(CMAKE_CXX_FLAGS "-I./ ${STLPORT_INCLUDES} -O0 -Wall -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wparentheses -Wshadow -Wpointer-arith -Woverloaded-virtual -Wextra -Winline -Wctor-dtor-privacy -Wnon-virtual-dtor -Wreorder -Wno-deprecated  -Wstrict-null-sentinel -Wno-non-template-friend  -Woverloaded-virtual -Wno-pmf-conversions -Wsign-promo -Wextra -pthread -g -ggdb -D_FILE_OFFSET_BITS=64 -D_STLP_DEBUG -DDEBUG")
+  SET(CMAKE_CXX_FLAGS "-I./ -O0 -Wall -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wparentheses -Wshadow -Wpointer-arith -Woverloaded-virtual -Wextra -Winline -Wctor-dtor-privacy -Wnon-virtual-dtor -Wreorder -Wno-deprecated  -Wstrict-null-sentinel -Wno-non-template-friend  -Woverloaded-virtual -Wno-pmf-conversions -Wsign-promo -Wextra -pthread -D_FILE_OFFSET_BITS=64")
 ENDIF(RELEASE)
 
 
