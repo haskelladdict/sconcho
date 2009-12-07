@@ -31,7 +31,7 @@ ENDIF(Boost_FOUND)
 # define options
 ####################################################################
 IF(NOT SVG_ROOT_PATH)
-  SET(SVG_ROOT_PATH "/usr/share/sconco/symbols")
+  SET(SVG_ROOT_PATH ${CMAKE_INSTALL_PREFIX}/share/sconcho/symbols)
 ENDIF(NOT SVG_ROOT_PATH)
 
 CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/config.h.cmake 
@@ -60,4 +60,5 @@ ELSE(NOT RELEASE)
   SET(CMAKE_CXX_FLAGS "-I./ -O0 -Wall -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wparentheses -Wshadow -Wpointer-arith -Woverloaded-virtual -Wextra -Winline -Wctor-dtor-privacy -Wnon-virtual-dtor -Wreorder -Wno-deprecated  -Wstrict-null-sentinel -Wno-non-template-friend  -Woverloaded-virtual -Wno-pmf-conversions -Wsign-promo -Wextra -pthread -D_FILE_OFFSET_BITS=64")
 ENDIF(RELEASE)
 
-
+# install symbols 
+INSTALL(DIRECTORY symbols DESTINATION share/sconcho/)
