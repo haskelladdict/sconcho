@@ -39,12 +39,25 @@ QT_BEGIN_NAMESPACE
 class GraphicsScene;
 class PatternGridItem;
 class QFile;
+class QStringList;
 class QTextStream;
 
 
-/* given the name of a knitting pattern, return the path
- * it can be found at */
+//--------------------------------------------------------------
+// given the name of a knitting pattern, return the path
+// it can be found at 
+//--------------------------------------------------------------
 QString get_pattern_path(const QString& name);
+
+
+//---------------------------------------------------------------
+// looks for a particular environmental variable in a StringList
+// of the full environment and returns its value as a QString
+// if present
+//---------------------------------------------------------------
+QString search_for_environmental_variable(const QString& item,
+  const QStringList& fullEnvironment);
+
 
 
 //---------------------------------------------------------------

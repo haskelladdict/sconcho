@@ -30,7 +30,11 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QPrinter>
+#include <QProcess>
 #include <QPrintDialog>
+#include <QRegExp>
+#include <QString>
+#include <QStringList>
 #include <QTextStream>
 
 /* local includes */
@@ -45,15 +49,64 @@
 
 QT_BEGIN_NAMESPACE
 
+
 //----------------------------------------------------------------
 // given the name of a knitting pattern, return the path
-// it can be found at 
+// it can be found at. For now, we try two locations. First,
+// the one defined at compile time via SVG_ROOT_PATH. If this
+// doesn't work we try the path given by SCONCHO_SYMBOL_PATH
+// if it exists. If both methods fail we print an error message
+// and continue.
 //----------------------------------------------------------------
 QString get_pattern_path(const QString& name)
 {
-  return SVG_ROOT_PATH + "/" + name + ".svg";
+  /* try the default path */
+  QString firstPath = SVG_ROOT_PATH + "/" + name + ".svg";
+  QFile firstFile(firstPath);
+  if (firstFile.exists())
+  {
+    return firstPath;
+  }
+
+  /* try the path set by SCONCO_SYMBOL_PATH */
+  QStringList environment = QProcess::systemEnvironment();
+  QString sconchoPath = search_for_environmental_variable(
+    "SCONCHO_SYMBOL_PATH", environment);
+  QString secondPath = sconchoPath + "/" + name + ".svg";
+  QFile secondFile(secondPath);
+  if (!secondFile.exists())
+  {
+    qDebug() << "ERROR: Failed to load svg file " << name << ".svg";
+    return QString("");
+  }
+
+  return secondPath;
 }
 
+
+//---------------------------------------------------------------
+// looks for a particular environmental variable in a StringList
+// of the full environment and returns its value as a QString
+// if present
+//---------------------------------------------------------------
+QString search_for_environmental_variable(const QString& item,
+  const QStringList& fullEnvironment)
+{
+  QString value("");
+  QStringList filteredResults = fullEnvironment.filter(QRegExp(item));
+  foreach(QString entry, filteredResults)
+  {
+    QStringList separated = entry.split("=");
+    if (separated.length() == 2 && separated[0] == item)
+    {
+      value = separated[1];
+      break;
+    }
+  }
+
+  return value;
+}
+  
 
 //---------------------------------------------------------------
 // this functions a file export dialog and returns the selected
