@@ -46,7 +46,6 @@ class KnittingPatternItem;
 class PatternGridItem;
 class PatternGridRectangle;
 class QGraphicsSceneMouseEvent;
-//class QGraphicsSceneWheelEvent; 
 class QKeyEvent;
 class QSettings;
 class MainWindow;
@@ -108,10 +107,6 @@ public:
 
 signals:
 
-  void knitting_symbol_added(KnittingSymbolPtr newSymbol,
-                             const QColor& color);
-  void knitting_symbol_removed(KnittingSymbolPtr deadSymbol,
-                               const QColor& color);
   void mouse_moved(QPointF position);
   void statusBar_error(QString msg); 
   void statusBar_message(QString msg);

@@ -68,9 +68,10 @@ bool PatternView::Init()
   setTransformationAnchor(QGraphicsView::NoAnchor);
   setDragMode(QGraphicsView::NoDrag);
   setRenderHints(QPainter::Antialiasing);
-  setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  //setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
   initialize_rubberband_();
+  fit_in_view();
   
   return true;
 }
@@ -116,7 +117,6 @@ void PatternView::zoom_out()
 void PatternView::fit_in_view()
 {
   QRectF canvasRect(sceneRect());
-  canvasRect.adjust(-30,-30,0,0);
   fitInView(canvasRect, Qt::KeepAspectRatio); 
 }
 
