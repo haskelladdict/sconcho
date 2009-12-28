@@ -217,6 +217,8 @@ private:
   
   /* helper functions */
   void try_place_knitting_symbol_();
+  void change_selected_cells_colors_();
+
   void colorize_highlighted_cells_();
   QPair<int,int> get_cell_coords_(const QPointF& mousePosition) const;
   int compute_horizontal_label_shift_(int num, int fontSize) const;

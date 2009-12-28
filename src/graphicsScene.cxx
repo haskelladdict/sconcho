@@ -1093,6 +1093,23 @@ void GraphicsScene::mousePressEvent(
  *************************************************************/
 
 //-------------------------------------------------------------
+// this function goes through all active items and changes
+// the color of each on to the one that is currently
+// selected.
+//-------------------------------------------------------------
+void GraphicsScene::change_selected_cells_colors_()
+{
+  foreach(PatternGridItem* item, activeItems_)
+  {
+    item->set_background_color(backgroundColor_);
+  }
+
+  deselect_all_active_items();
+}
+
+
+  
+//-------------------------------------------------------------
 // this function tries to place the currently active
 // knitting symbol into the selected pattern grid cells
 //-------------------------------------------------------------
@@ -1101,7 +1118,7 @@ void GraphicsScene::try_place_knitting_symbol_()
   /* check how many cells we need for the currently selected
    * knitting symbol */
   QSize size = selectedSymbol_->dim();
-  int cellsNeeded = size.width(); // * size.height();
+  int cellsNeeded = size.width(); 
 
   if (cellsNeeded == 0)
   {
@@ -1729,9 +1746,17 @@ void GraphicsScene::purge_all_canvas_items_()
 //------------------------------------------------------------
 void GraphicsScene::update_active_items_()
 {
+  /* if an actual knitting symbol is selected we have to
+   * do the full blown knitting symbol placement; if the
+   * user only wants to change the color of the selected
+   * cells things are much simpler */
   if (selectedSymbol_->fullName() != "")
   {
     try_place_knitting_symbol_();
+  }
+  else if (wantColor_)
+  {
+    change_selected_cells_colors_();
   }
 }
 
