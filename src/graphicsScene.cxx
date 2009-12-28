@@ -1101,7 +1101,14 @@ void GraphicsScene::change_selected_cells_colors_()
 {
   foreach(PatternGridItem* item, activeItems_)
   {
+    /* remove us from the legend */
+    notify_legend_of_item_removal_(item);
+    
     item->set_background_color(backgroundColor_);
+
+    /* re-add newly colored symbol to the legend */
+    notify_legend_of_item_addition_(item);
+    
   }
 
   deselect_all_active_items();
