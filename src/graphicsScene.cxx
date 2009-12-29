@@ -488,7 +488,7 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
                           this);
     item->Init();
     item->insert_knitting_symbol(defaultSymbol_);
-    item->setPos(QPoint(origin.x() + i*cellSize_, origin.y()));
+    item->setPos(compute_cell_origin_(column+i,row));
     add_patternGridItem_(item);
   }
 
