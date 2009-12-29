@@ -92,9 +92,9 @@ bool MainWindow::Init()
 
   /* populate the main interface 
    * NOTE: We NEED to first create the patterKeyDialog and
-   * symbolsWidget before we add the graphicsScence since the
-   * supply some required objects */
-  create_symbols_widget_();
+   * symbolsWidget before we add the graphicsScence */
+  allSymbols_ = load_all_symbols();
+  create_symbols_widget_(allSymbols_);
   create_graphics_scene_();
   create_toolbar_();
   create_property_widget_();
@@ -352,35 +352,6 @@ void MainWindow::pick_color_()
 
   emit color_changed(selection);
 }
-
-
-#if 0
-//------------------------------------------------------------
-// SLOTS for paning
-//------------------------------------------------------------
-void MainWindow::pan_down_()
-{
-  canvasView_->translate(0,-30);
-}
-
-
-void MainWindow::pan_left_()
-{
-  canvasView_->translate(30,0);
-}
-
-
-void MainWindow::pan_right_()
-{
-  canvasView_->translate(-30,0);
-}
-
-
-void MainWindow::pan_up_()
-{
-  canvasView_->translate(0,30);
-}
-#endif
 
 
 //------------------------------------------------------------
@@ -696,9 +667,11 @@ void MainWindow::create_graphics_scene_()
 //-------------------------------------------------------------
 // create the widget showing the available symbols 
 //-------------------------------------------------------------
-void MainWindow::create_symbols_widget_()
+void MainWindow::create_symbols_widget_(
+  const QList<KnittingSymbolPtr>& allSymbols)
 {
-  symbolSelector_ = new SymbolSelectorWidget(GRID_CELL_SIZE, this);
+  symbolSelector_ = new SymbolSelectorWidget(allSymbols,
+    GRID_CELL_SIZE, this);
   symbolSelector_->Init();
 }
 
@@ -950,7 +923,7 @@ void MainWindow::save_canvas_(const QString& fileName)
 //-------------------------------------------------------------
 void MainWindow::load_canvas_(const QString& fileName)
 {
-  CanvasIOReader reader(canvas_, fileName);
+  CanvasIOReader reader(fileName, allSymbols_);
 
   /* we need to make sure that we are able to open the file 
    * for reading */
@@ -963,7 +936,16 @@ void MainWindow::load_canvas_(const QString& fileName)
   }
   else
   {
-    reader.read();
+    if (!reader.read())
+    {
+      QMessageBox::critical(0,"Read File",
+        QString("Failed to open file\n%1\nfor reading.") 
+        .arg(fileName));
+      return;
+    }
+
+    canvas_->load_new_canvas(reader.get_pattern_items());
+    canvas_->place_legend_items(reader.get_legend_items());
   }
 
   canvasView_->fit_in_view();

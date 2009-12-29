@@ -85,7 +85,6 @@ public:
   /* accessors for properties */
   const QPoint& origin() const { return loc_; } 
   const QSize& dim() const { return dim_; }
-  const QString& get_knitting_symbol_name() const;
   const KnittingSymbolPtr get_knitting_symbol() const;
 
 

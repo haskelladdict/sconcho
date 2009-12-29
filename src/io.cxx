@@ -50,6 +50,118 @@
 QT_BEGIN_NAMESPACE
 
 
+namespace
+{
+  /* name of environmental variable that points to
+   *  * sconcho knitting symbols */
+  const QString SCONCHO_ENV("SCONCHO_SYMBOL_PATH");
+
+  /* name of file that holds the description of knitting
+   *  * symbols */
+  const QString KNITTING_SYMBOL_DESC("description");
+};
+  
+
+//--------------------------------------------------------------
+// this function attempts to load all knitting symbols it can
+// find (at the default and user defined paths), creates
+// the corresponding KnittingSymbolPtrs and returns them
+// all in a QList
+//--------------------------------------------------------------
+QList<KnittingSymbolPtr> load_all_symbols()
+{
+  QList<KnittingSymbolPtr> allSymbols;
+  QStringList symbolPaths(get_all_symbol_paths());
+  foreach(QString path, symbolPaths)
+  {
+    allSymbols.append(load_symbols_from_path(path));
+  }
+
+  return allSymbols;
+}
+
+
+
+//--------------------------------------------------------------
+// this function takes a path and looks for directories
+// containing instructions for knitting symbols
+// NOTE: We have to expect that some of the directories
+// the we examine won't contain actual symbol information
+//--------------------------------------------------------------
+QList<KnittingSymbolPtr> load_symbols_from_path(const QString& path)
+{
+  QList<KnittingSymbolPtr> allSymbols;
+  
+  QDir symbolDir(path);
+  QStringList allFiles(
+    symbolDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot));
+  foreach(QString directory, allFiles)
+  {
+    KnittingSymbolReader symbolReader(path + "/" + directory);
+    if (symbolReader.Init())
+    {
+      if (symbolReader.read())
+      {
+        allSymbols.push_back(symbolReader.get_symbol());
+      }
+    }
+  }
+  
+  return allSymbols;
+}
+
+
+
+//---------------------------------------------------------------
+// given the list of all available knitting symbols and the
+// category+name of a symbol retrieve the proper
+// KnittingSymbolPtr. Returns true on success and false otherwise
+//---------------------------------------------------------------
+bool retrieve_knitting_symbol(
+  const QList<KnittingSymbolPtr>& allSymbols,
+  const QString& cat,
+  const QString& name,
+  KnittingSymbolPtr& symbolPtr)
+{
+  foreach(KnittingSymbolPtr aSym, allSymbols)
+  {
+    if ((aSym->category() == cat) && (aSym->patternName() == name))
+    {
+      symbolPtr = aSym;
+      return true;
+    }
+  }
+
+  return false;
+}
+    
+
+
+
+//--------------------------------------------------------------
+// this function collects all paths where knitting pattern
+// symbols might be located
+//--------------------------------------------------------------
+QStringList get_all_symbol_paths()
+{
+  QStringList symbolPaths;
+  symbolPaths << SVG_ROOT_PATH;
+
+  // check if the environmental variable SCONCHO_SYMBOL_PATH
+  // is defined
+  QString sconchoPath =
+    search_for_environmental_variable(SCONCHO_ENV);
+  if (!sconchoPath.isEmpty())
+  {
+    symbolPaths << sconchoPath;
+  }
+
+  return symbolPaths;
+}
+
+  
+
+
 //----------------------------------------------------------------
 // given the name of a knitting pattern, return the path
 // it can be found at. For now, we try two locations. First,
@@ -69,9 +181,8 @@ QString get_pattern_path(const QString& name)
   }
 
   /* try the path set by SCONCO_SYMBOL_PATH */
-  QStringList environment = QProcess::systemEnvironment();
-  QString sconchoPath = search_for_environmental_variable(
-    "SCONCHO_SYMBOL_PATH", environment);
+  QString sconchoPath =
+    search_for_environmental_variable(SCONCHO_ENV);
   QString secondPath = sconchoPath + "/" + name + ".svg";
   QFile secondFile(secondPath);
   if (!secondFile.exists())
@@ -84,14 +195,15 @@ QString get_pattern_path(const QString& name)
 }
 
 
+
 //---------------------------------------------------------------
 // looks for a particular environmental variable in a StringList
 // of the full environment and returns its value as a QString
 // if present
 //---------------------------------------------------------------
-QString search_for_environmental_variable(const QString& item,
-  const QStringList& fullEnvironment)
+QString search_for_environmental_variable(const QString& item)
 {
+  QStringList fullEnvironment = QProcess::systemEnvironment();
   QString value("");
   QStringList filteredResults = fullEnvironment.filter(QRegExp(item));
   foreach(QString entry, filteredResults)
@@ -250,7 +362,6 @@ bool CanvasIOWriter::Init()
     return false;
   }
 
-  
   /* open file */
   filePtr_ = new QFile(fileName_);
   if (!filePtr_->open(QFile::WriteOnly | QFile::Truncate))
@@ -345,11 +456,20 @@ bool CanvasIOWriter::save_patternGridItems_(QDomElement& root)
      helper.setNum(cell->color().rgb());
      colorTag.appendChild(writeDoc_.createTextNode(helper));
 
+     /* write knitting symbol related info */
+     KnittingSymbolPtr symbol = cell->get_knitting_symbol();
+     
+     /* knitting symbol category */
+     QDomElement catTag = writeDoc_.createElement("patternCategory");
+     itemTag.appendChild(catTag);
+     catTag.appendChild(
+         writeDoc_.createTextNode(symbol->category()));
+     
      /* knitting symbol name */
-     QDomElement svgTag = writeDoc_.createElement("SVGSymbolName");
-     itemTag.appendChild(svgTag);
-     svgTag.appendChild(
-         writeDoc_.createTextNode(cell->get_knitting_symbol_name()));
+     QDomElement nameTag = writeDoc_.createElement("patternName");
+     itemTag.appendChild(nameTag);
+     nameTag.appendChild(
+         writeDoc_.createTextNode(symbol->patternName()));
    }
   }
 
@@ -438,11 +558,11 @@ bool CanvasIOWriter::save_legendInfo_(QDomElement& root)
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-CanvasIOReader::CanvasIOReader(GraphicsScene* scene,
-    const QString& theName)
+CanvasIOReader::CanvasIOReader(const QString& theName,
+                               const QList<KnittingSymbolPtr>& syms)
   :
-    ourScene_(scene),
-    fileName_(theName)
+    fileName_(theName),
+    allSymbols_(syms)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
   qDebug() << "canvasIOReader constructed";
@@ -510,7 +630,7 @@ bool CanvasIOReader::read()
   QDomElement root = readDoc_.documentElement();
   if ( root.tagName() != "sconcho" ) return false;
 
-  /** parse all events */
+  /* parse all events */
   QDomNode node = root.firstChild();
   while ( !node.isNull() )
   {
@@ -528,15 +648,6 @@ bool CanvasIOReader::read()
     }
 
     node = node.nextSibling();
-  }
-
-  /* as the canvas to reset itself and recreate the 
-   * scene specified in the file just read 
-   * (as specified in newPatternGridItems_) */
-  if (!newPatternGridItems_.isEmpty())
-  {
-    ourScene_->load_new_canvas(newPatternGridItems_);
-    ourScene_->place_legend_items(newLegendEntryDescriptors_);
   }
 
   return true;
@@ -561,6 +672,7 @@ bool CanvasIOReader::parse_patternGridItems_(const QDomNode& itemNode)
   int width    = 0;
   int height   = 0;
   uint color   = 0;
+  QString category("");
   QString name("");
 
   QDomNode node = itemNode.firstChild();
@@ -597,7 +709,13 @@ bool CanvasIOReader::parse_patternGridItems_(const QDomNode& itemNode)
       color = childNode.toText().data().toUInt();
     }
 
-    if (node.toElement().tagName() == "SVGSymbolName")
+    if (node.toElement().tagName() == "patternCategory")
+    {
+      QDomNode childNode(node.firstChild());
+      category = childNode.toText().data();
+    }
+    
+    if (node.toElement().tagName() == "patternName")
     {
       QDomNode childNode(node.firstChild());
       name = childNode.toText().data();
@@ -606,13 +724,24 @@ bool CanvasIOReader::parse_patternGridItems_(const QDomNode& itemNode)
     node = node.nextSibling();
   }
 
+  /* find proper knitting symbol */
+  KnittingSymbolPtr symbolPtr;
+  bool status =
+    retrieve_knitting_symbol(allSymbols_, category, name, symbolPtr);
+  if (!status)
+  {
+    qDebug() << "ERROR: failed to load symbol " << "category"
+             << "/" << name;
+    return false;
+  }
+  
   /* store parsed item in list of new patternGridItems */
   PatternGridItemDescriptorPtr 
     currentItem(new PatternGridItemDescriptor);
   currentItem->location = QPoint(colIndex, rowIndex);
   currentItem->dimension = QSize(width,height);
   currentItem->backgroundColor = QColor(color);
-  currentItem->knittingSymbolName = name;
+  currentItem->patternSymbolPtr = symbolPtr;
   newPatternGridItems_.push_back(currentItem);
 
   return true;
@@ -686,6 +815,189 @@ bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
   return true;
 }
 
+
+
+//---------------------------------------------------------------
+//
+//
+// class KnittingSymbolReader
+//
+//
+//---------------------------------------------------------------
+
+
+/**************************************************************
+ *
+ * PUBLIC FUNCTIONS 
+ *
+ **************************************************************/
+
+//-------------------------------------------------------------
+// constructor
+//-------------------------------------------------------------
+KnittingSymbolReader::KnittingSymbolReader(const QString& pathName)
+  :
+    pathName_(pathName)
+{
+  status_ = SUCCESSFULLY_CONSTRUCTED;
+  qDebug() << "KnittingSymbolReader constructed";
+}
+
+
+//-------------------------------------------------------------
+// destructor 
+//-------------------------------------------------------------
+KnittingSymbolReader::~KnittingSymbolReader()
+{
+  if (filePtr_ != 0)
+  {
+    filePtr_->close();
+    delete filePtr_;
+  }
+
+  qDebug() << "KnittingSymbolReader destroyed";
+}
+
+
+//--------------------------------------------------------------
+// main initialization routine
+//--------------------------------------------------------------
+bool KnittingSymbolReader::Init()
+{
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
+  {
+    return false;
+  }
+
+  /* open read stream */
+  descriptionFileName_ = pathName_ + "/" + KNITTING_SYMBOL_DESC;
+  filePtr_ = new QFile(descriptionFileName_);
+  if (!filePtr_->open(QFile::ReadOnly))
+  {
+    delete filePtr_;
+    filePtr_ = 0;
+    return false;
+  }
+
+  return true;
+}
+
+
+//--------------------------------------------------------------
+// read content of canvas; 
+// returns true on success or false on failure
+//--------------------------------------------------------------
+bool KnittingSymbolReader::read()
+{
+  /* parse file and make sure we can read it */
+  QString errStr;
+  int errLine;
+  int errCol;
+  if (!readDoc_.setContent(filePtr_, true, &errStr, &errLine, &errCol))
+  {
+    QMessageBox::critical(0,"sconcho DOM Parser",
+      QString("Error parsing\n%1\nat line %2 column %3; %4")
+      .arg(descriptionFileName_) .arg(errLine) .arg(errCol)
+      .arg(errStr));
+
+    return false;
+  }
+
+  /* make sure we're reading a sconcho description file */
+  QDomElement root = readDoc_.documentElement();
+  if ( root.tagName() != "sconcho" ) return false;
+
+  /* parse the description */
+  bool status = false;
+  QDomNode node = root.firstChild();
+  if (node.toElement().tagName() == "knittingSymbol")
+  {
+    status = parse_symbol_description_(node);
+  }
+
+  return status;
+}
+
+
+
+/**************************************************************
+ *
+ * PRIVATE FUNCTIONS 
+ *
+ **************************************************************/
+
+//-------------------------------------------------------------
+// read a single PatternGridItem from our input stream
+//-------------------------------------------------------------
+bool KnittingSymbolReader::parse_symbol_description_(
+  const QDomNode& itemNode)
+{
+  /* loop over all the properties we expect for the description */
+  QString svgName("");
+  QString category("");
+  QString description("");
+  QString patternName("");
+  QString patternDescription("");
+  int patternWidth = 0;
+  
+  QDomNode node = itemNode.firstChild();
+  while (!node.isNull())
+  {
+
+    if (node.toElement().tagName() == "svgName")
+    {
+      QDomNode childNode(node.firstChild());
+      svgName = childNode.toText().data();
+    }
+
+    if (node.toElement().tagName() == "category")
+    {
+      QDomNode childNode(node.firstChild());
+      category = childNode.toText().data();
+    }
+    
+    if (node.toElement().tagName() == "patternName")
+    {
+      QDomNode childNode(node.firstChild());
+      patternName = childNode.toText().data();
+    }
+
+    if (node.toElement().tagName() == "patternDescription")
+    {
+      QDomNode childNode(node.firstChild());
+      patternDescription = childNode.toText().data();
+    }
+
+    if (node.toElement().tagName() == "patternWidth")
+    {
+      QDomNode childNode(node.firstChild());
+      patternWidth = childNode.toText().data().toInt();
+    }
+
+    node = node.nextSibling();
+  }
+
+  /* make sure the svg file exists */
+  QString svgFileName = pathName_ + "/" + svgName + ".svg";
+  QFile svgFilePtr(svgFileName);
+  if (!svgFilePtr.open(QFile::ReadOnly))
+  {
+    return false;
+  }
+  
+  /* construct the knitting symbol pointer */
+  KnittingSymbolPtr newSymbol = KnittingSymbolPtr(
+    new KnittingSymbol(
+      pathName_ + "/" + svgName + ".svg",
+      patternName,
+      category,
+      QSize(patternWidth,1),
+      patternDescription));
+
+  constructedSymbol_ = newSymbol;
+
+  return true;
+}
 
 
 QT_END_NAMESPACE

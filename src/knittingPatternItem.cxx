@@ -47,7 +47,7 @@ KnittingPatternItem::KnittingPatternItem(const QSize& aDim,
     :
       QGraphicsItem(),
       svgItem_(0),
-      knittingSymbol_(new KnittingSymbol("","",QSize(0,0),"","")),
+      knittingSymbol_(new KnittingSymbol("","","",QSize(0,0),"")),
       backColor_(aBackColor),
       dim_(aDim),
       loc_(aLoc),
@@ -154,16 +154,6 @@ void KnittingPatternItem::insert_knitting_symbol(
   }
 }
  
-
-//--------------------------------------------------------------
-// return the full name of our embedded knitting symbol
-//--------------------------------------------------------------
-const QString& KnittingPatternItem::get_knitting_symbol_name() const
-{
-  return knittingSymbol_->fullName();
-}
-
-
 
 //--------------------------------------------------------------
 // return a pointer to the currently embedded knitting symbol 

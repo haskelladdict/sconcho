@@ -57,7 +57,8 @@ class SymbolSelectorWidget
     
 public:
 
-  explicit SymbolSelectorWidget(int cellSize, QWidget* myParent = 0);
+  explicit SymbolSelectorWidget(const QList<KnittingSymbolPtr>& syms,
+                                int cellSize, QWidget* myParent = 0);
   bool Init();
 
   /* access to default symbol, i.e. the one that will be 
@@ -83,6 +84,9 @@ private:
   /* size of a unit pattern symbol cell in pixels */
   int cellSize_;
 
+  /* all knitting symbols we know about */
+  const QList<KnittingSymbolPtr>& allSymbols_;
+  
   /* the currently selected symbol */
   SymbolSelectorItem* highlightedItem_;
 
@@ -91,9 +95,8 @@ private:
   KnittingSymbolPtr defaultSymbol_;
 
   /* functions */
-  QHBoxLayout* create_symbol_layout_(const QString& name, 
-      const QSize& size); 
-  
+  QHBoxLayout* create_symbol_layout_(KnittingSymbolPtr aSym);
+
   void create_tabs_();
 };
 

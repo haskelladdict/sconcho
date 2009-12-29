@@ -164,7 +164,7 @@ void GraphicsScene::load_new_canvas(
   {
     int col = rawItem->location.x();
     int row = rawItem->location.y();
-   
+    
     maxCol = qMax(col, maxCol);
     maxRow = qMax(row, maxRow);
 
@@ -173,17 +173,7 @@ void GraphicsScene::load_new_canvas(
           this, rawItem->backgroundColor);
     item->Init();
     item->setPos(compute_cell_origin_(col, row));
-
-    /* generate a knittingSymbolPointer */
-    if (rawItem->knittingSymbolName != "")
-    {
-      QString path = get_pattern_path(rawItem->knittingSymbolName);
-      KnittingSymbolPtr sym = 
-        KnittingSymbolPtr(new KnittingSymbol(path,
-          rawItem->knittingSymbolName, rawItem->dimension,"",""));
-
-      item->insert_knitting_symbol(sym);
-    }
+    item->insert_knitting_symbol(rawItem->patternSymbolPtr);
 
     /* add it to our scene */
     add_patternGridItem_(item);
@@ -196,6 +186,7 @@ void GraphicsScene::load_new_canvas(
   /* add labels and rescale */
   create_grid_labels_();
 }
+
 
 
 //-------------------------------------------------------------
@@ -1018,33 +1009,12 @@ void GraphicsScene::update_key_label_text_(QString labelID,
 }
 
 
+
 /**************************************************************
  *
  * PROTECTED 
  *
  *************************************************************/
-
-#if 0
-//--------------------------------------------------------------
-// event handler for mouse wheel events
-//--------------------------------------------------------------
-void GraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* aWheelEvent)
-{
-  if (aWheelEvent->modifiers().testFlag(Qt::ControlModifier) 
-      && aWheelEvent->delta() > 0)
-  {
-    emit mouse_zoom_in();
-    aWheelEvent->accept();
-  }
-  else if (aWheelEvent->modifiers().testFlag(Qt::ControlModifier)
-           && aWheelEvent->delta() < 0)
-  {
-    emit mouse_zoom_out();
-    aWheelEvent->accept();
-  }
-}
-#endif
-
 
 //---------------------------------------------------------------
 // event handler for mouse move events
@@ -1757,7 +1727,7 @@ void GraphicsScene::update_active_items_()
    * do the full blown knitting symbol placement; if the
    * user only wants to change the color of the selected
    * cells things are much simpler */
-  if (selectedSymbol_->fullName() != "")
+  if (selectedSymbol_->patternName() != "")
   {
     try_place_knitting_symbol_();
   }
@@ -2029,8 +1999,9 @@ void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
 QString GraphicsScene::get_symbol_description_(
   KnittingSymbolPtr aSymbol, QString colorName)
 {
-  QString description = aSymbol->baseName();
-  QString fullName = aSymbol->fullName() + colorName;
+  QString description = aSymbol->patternName();
+  QString fullName = aSymbol->category() + aSymbol->patternName() 
+                     + colorName;
   if (!symbolDescriptors_.contains(fullName))
   {
     symbolDescriptors_[fullName] = description;
@@ -2054,9 +2025,10 @@ void GraphicsScene::notify_legend_of_item_addition_(
     const PatternGridItem* item)
 {
   KnittingSymbolPtr symbol = item->get_knitting_symbol();
-  QString symbolName = symbol->fullName();
+  QString symbolName = symbol->patternName();
+  QString symbolCategory = symbol->category();
   QString colorName  = item->color().name();
-  QString fullName = symbolName + colorName;
+  QString fullName = symbolCategory + symbolName + colorName;
 
   /* update reference count */
   int currentValue = usedKnittingSymbols_[fullName] + 1;
@@ -2155,9 +2127,10 @@ void GraphicsScene::notify_legend_of_item_removal_(
   const PatternGridItem* item)
 {
   KnittingSymbolPtr symbol = item->get_knitting_symbol();
-  QString symbolName = symbol->fullName();
+  QString symbolName = symbol->patternName();
+  QString symbolCategory = symbol->category();
   QString colorName  = item->color().name();
-  QString fullName = symbolName + colorName;
+  QString fullName = symbolCategory + symbolName + colorName;
 
   int currentValue = usedKnittingSymbols_[fullName] - 1;
   assert(currentValue >= 0);

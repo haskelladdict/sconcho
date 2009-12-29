@@ -27,9 +27,14 @@
 
 /* QT includes */
 #include <QString>
+#include <QStringList>
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
 #include <QtXml/QDomNode>
+
+
+/* local includes */
+#include "knittingSymbol.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -39,8 +44,33 @@ QT_BEGIN_NAMESPACE
 class GraphicsScene;
 class PatternGridItem;
 class QFile;
-class QStringList;
 class QTextStream;
+
+
+//--------------------------------------------------------------
+// this function tries to load all knitting symbols it can
+// find (at the default and user defined paths), creates
+// the corresponding KnittingSymbolPtrs and returns them
+// all in a QList
+//--------------------------------------------------------------
+QList<KnittingSymbolPtr> load_all_symbols();
+
+
+
+//--------------------------------------------------------------
+// this function takes a path and looks for directories
+// containing instructions for knitting symbols
+//--------------------------------------------------------------
+QList<KnittingSymbolPtr> load_symbols_from_path(const QString& path);
+
+
+
+//--------------------------------------------------------------
+// this function collects all paths where knitting pattern
+// symbols might be located
+//--------------------------------------------------------------
+QStringList get_all_symbol_paths();
+
 
 
 //--------------------------------------------------------------
@@ -50,13 +80,26 @@ class QTextStream;
 QString get_pattern_path(const QString& name);
 
 
+
+//---------------------------------------------------------------
+// given the list of all available knitting symbols and the
+// category+name of a symbol retrieve the proper
+// KnittingSymbolPtr. Returns true on success and false otherwise
+//---------------------------------------------------------------
+bool retrieve_knitting_symbol(
+  const QList<KnittingSymbolPtr>& allSymbols,
+  const QString& category,
+  const QString& name,
+  KnittingSymbolPtr& symbolPtr);
+
+
+  
 //---------------------------------------------------------------
 // looks for a particular environmental variable in a StringList
 // of the full environment and returns its value as a QString
 // if present
 //---------------------------------------------------------------
-QString search_for_environmental_variable(const QString& item,
-  const QStringList& fullEnvironment);
+QString search_for_environmental_variable(const QString& item);
 
 
 
@@ -68,11 +111,13 @@ QString search_for_environmental_variable(const QString& item,
 QString show_file_export_dialog();
 
 
+
 //---------------------------------------------------------------
 // this functions export the content of a QGraphicsScene to
 // a file
 //---------------------------------------------------------------
 void export_scene(const QString& fileName, GraphicsScene* theScene);
+
 
 
 //---------------------------------------------------------------
@@ -135,7 +180,7 @@ struct PatternGridItemDescriptor
   QPoint location;
   QSize dimension;
   QColor backgroundColor;
-  QString knittingSymbolName;
+  KnittingSymbolPtr patternSymbolPtr;
 };
 
 typedef boost::shared_ptr<PatternGridItemDescriptor> 
@@ -174,13 +219,24 @@ class CanvasIOReader
 
 public:
 
-  explicit CanvasIOReader(GraphicsScene* theScene, 
-    const QString& fileName);
+  explicit CanvasIOReader(const QString& fileName,
+                          const QList<KnittingSymbolPtr>& allSymbols);
   ~CanvasIOReader();
   bool Init();
 
-  /* save content of canvas */
+  /* read content of canvas */
   bool read();
+
+  /* accessors for stuff we just read */
+  const QList<PatternGridItemDescriptorPtr>& get_pattern_items() const
+  {
+    return newPatternGridItems_;
+  }
+
+  const QList<LegendEntryDescriptorPtr>& get_legend_items() const
+  {
+    return newLegendEntryDescriptors_;
+  }
 
 
 private:
@@ -191,6 +247,7 @@ private:
   /* variables */
   GraphicsScene* ourScene_;
   QString fileName_;
+  const QList<KnittingSymbolPtr>& allSymbols_;
   QFile* filePtr_;
   QDomDocument readDoc_;
 
@@ -204,6 +261,52 @@ private:
   bool parse_patternGridItems_(const QDomNode& itemNode);
   bool parse_legendItems_(const QDomNode& itemNode);
 };
+
+
+
+/*******************************************************************
+ *
+ * KnittingSymbolReader is responsible for reading a stored knitting
+ * symbol from disc
+ *
+ ******************************************************************/
+class KnittingSymbolReader
+  :
+    public boost::noncopyable
+{
+
+public:
+
+  explicit KnittingSymbolReader(const QString& path);
+  ~KnittingSymbolReader();
+  bool Init();
+
+  /* try to load the knitting symbol */
+  bool read();
+
+  /* if reading succeeded (i.e., make sure to check the return
+   * value of read first) returns a fully constructed knitting
+   * symbol object */
+  KnittingSymbolPtr get_symbol() const { return constructedSymbol_; }
+
+
+private:
+
+  /* status variable */
+  int status_;
+
+  /* variables */
+  QString pathName_;
+  QString descriptionFileName_;
+  QFile* filePtr_;
+  QDomDocument readDoc_;
+  KnittingSymbolPtr constructedSymbol_;
+
+  /* helper functions */
+  bool parse_symbol_description_(const QDomNode& itemNode);
+};
+
+
 
 QT_END_NAMESPACE
 

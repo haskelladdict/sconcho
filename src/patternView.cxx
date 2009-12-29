@@ -163,8 +163,6 @@ void PatternView::mouseReleaseEvent(QMouseEvent* evt)
 {
   if (rubberBandOn_)
   {
-    qDebug() << "stop rubber band";
-
     /* retrieve final rubberBand geometry and pick
      * and select them */
     QRectF finalGeometry(
@@ -187,7 +185,6 @@ void PatternView::mousePressEvent(QMouseEvent* evt)
 {
   if (evt->modifiers().testFlag(Qt::ControlModifier))
   {
-    qDebug() << "start rubber band";
     rubberBandOn_ = true;
     rubberBandOrigin_ = evt->pos();
     rubberBand_->move(evt->pos());

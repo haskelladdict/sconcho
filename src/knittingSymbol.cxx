@@ -38,15 +38,16 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 KnittingSymbol::KnittingSymbol(const QString& aPath,
-  const QString& aName, const QSize& aDimension,
-  const QString& aDescription, const QString& aInstruction)
+  const QString& aPatternName, 
+  const QString& aCategory,
+  const QSize& dimension, 
+  const QString& instruction)
   :
     svgPath_(aPath),
-    fullName_(aName),
-    baseName_(aName.split("/").last()),
-    dimensions_(aDimension),
-    description_(aDescription),
-    instructions_(aInstruction)
+    patternName_(aPatternName),
+    category_(aCategory),
+    dimensions_(dimension),
+    instructions_(instruction)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }

@@ -105,10 +105,6 @@ public slots:
 
 private slots:
 
-//  void pan_down_();
-//  void pan_left_();
-//  void pan_right_();
-//  void pan_up_();
   void pick_color_();
   void quit_sconcho_();
   void reset_grid_();
@@ -138,7 +134,7 @@ private:
   void create_graphics_scene_();
   void create_property_symbol_layout_();
   void create_property_widget_();
-  void create_symbols_widget_();
+  void create_symbols_widget_(const QList<KnittingSymbolPtr>& syms);
   void create_toolbar_();
   void create_timers_();
   void create_pattern_key_dialog_();
@@ -153,6 +149,9 @@ private:
   QLabel* statusBarMessages_;
   QLabel* currentMousePosWidget_;
 
+  /* list of all knitting symbols we know about */
+  QList<KnittingSymbolPtr> allSymbols_;
+  
   /* canvas on which the actual data is being displayed */
   GraphicsScene* canvas_;
   PatternView* canvasView_;

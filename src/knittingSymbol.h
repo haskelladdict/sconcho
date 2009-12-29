@@ -43,17 +43,16 @@ class KnittingSymbol
 public:
 
   explicit KnittingSymbol(const QString& aPath,
-      const QString& aName, const QSize& aDimension,
-      const QString& aDescription, const QString& aInstruction);
+      const QString& aPatternName, const QString& aCategory,
+      const QSize& aDimension, const QString& aInstruction);
   bool Init();
 
 
   /* some basic accessors */
   const QString& path() { return svgPath_; }
-  const QString& baseName() { return baseName_; }
-  const QString& fullName() { return fullName_; }
+  const QString& patternName() { return patternName_; }
+  const QString& category() { return category_; }
   const QSize& dim() { return dimensions_; }
-  const QString& desc() { return description_; }
   const QString& instructions() { return instructions_; }
 
 
@@ -64,10 +63,9 @@ private:
   int status_;
   
   QString svgPath_;
-  QString fullName_;
-  QString baseName_;
+  QString patternName_;
+  QString category_;
   QSize dimensions_;
-  QString description_;
   QString instructions_;
 }; 
 
@@ -77,7 +75,7 @@ typedef boost::shared_ptr<KnittingSymbol> KnittingSymbolPtr;
 
 /* this is the empty knitting Symbol */
 const KnittingSymbolPtr emptyKnittingSymbol = 
-  KnittingSymbolPtr(new KnittingSymbol("","",QSize(0,0),"",""));
+  KnittingSymbolPtr(new KnittingSymbol("","","",QSize(0,0),""));
 
 
 QT_END_NAMESPACE
