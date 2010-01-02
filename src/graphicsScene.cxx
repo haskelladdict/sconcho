@@ -1999,7 +1999,8 @@ void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
 QString GraphicsScene::get_symbol_description_(
   KnittingSymbolPtr aSymbol, QString colorName)
 {
-  QString description = aSymbol->patternName();
+  QString description = 
+    aSymbol->patternName() + " = " + aSymbol->instructions();
   QString fullName = aSymbol->category() + aSymbol->patternName() 
                      + colorName;
   if (!symbolDescriptors_.contains(fullName))

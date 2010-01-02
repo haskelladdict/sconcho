@@ -47,7 +47,7 @@ KnittingPatternItem::KnittingPatternItem(const QSize& aDim,
     :
       QGraphicsItem(),
       svgItem_(0),
-      knittingSymbol_(new KnittingSymbol("","","",QSize(0,0),"")),
+      knittingSymbol_(emptyKnittingSymbol), // new KnittingSymbol("","","",QSize(0,0),"")),
       backColor_(aBackColor),
       dim_(aDim),
       loc_(aLoc),

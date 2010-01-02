@@ -52,7 +52,8 @@ SymbolSelectorWidget::SymbolSelectorWidget(
       QTabWidget(myParent),
       cellSize_(cellSize),
       allSymbols_(symbols),
-      highlightedItem_(0)
+      highlightedItem_(0),
+      defaultSymbol_(emptyKnittingSymbol)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }

@@ -88,6 +88,9 @@ bool SymbolSelectorItem::Init()
   svgLayout->addWidget(symbolSvg_);
   setLayout(svgLayout);
 
+  /* add tool tip */
+  setToolTip(symbol_->instructions());
+  
   /* connect slots */
   connect(this,
           SIGNAL(highlight_me(SymbolSelectorItem*, bool)),

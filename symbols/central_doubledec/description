@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>central_doubledec</svgName>  
+    <category>basic</category>
+    <patternName>central double decrease</patternName>
+    <patternDescription>slip 2 sts knitwise, k1 st from left needle, pass 2 slipped sts over</patternDescription>
+    <patternWidth>1</patternWidth>
+  </knittingSymbol>
+</sconcho>
+
