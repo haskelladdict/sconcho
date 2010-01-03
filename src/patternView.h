@@ -58,13 +58,13 @@ public:
 
   explicit PatternView(GraphicsScene* scene, QWidget* myParent = 0);
   bool Init();
-
+  void fit_in_view(const QPoint& theCenter, const QRectF& theArea);
+  
 
 public slots:
 
   void zoom_in();
   void zoom_out();
-  void fit_in_view();
   void pan_down();
   void pan_left();
   void pan_right();

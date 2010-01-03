@@ -65,12 +65,12 @@ bool PatternView::Init()
   }
 
   /* set some basic properties */
-  //setTransformationAnchor(QGraphicsView::NoAnchor);
   setDragMode(QGraphicsView::NoDrag);
   setRenderHints(QPainter::Antialiasing);
 
   initialize_rubberband_();
-  fit_in_view();
+  fit_in_view(canvas_->get_grid_center(),
+    canvas_->get_visible_area());
   
   return true;
 }
@@ -82,6 +82,22 @@ bool PatternView::Init()
  *
  *************************************************************/
 
+//-------------------------------------------------------------
+// function responsible for rendering the requested area
+// visible
+//-------------------------------------------------------------
+void PatternView::fit_in_view(const QPoint& theCenter,
+  const QRectF& theArea)
+{
+  // fix our view on the initial grid size; otherwise items
+  // added to the legend (even if inivisible) will cause
+  // spurious re-scalings
+  QRectF myScene = theArea;
+  myScene.adjust(-50,-50,100,100);
+  setSceneRect(myScene);
+  centerOn(theCenter);
+}
+ 
 /**************************************************************
  *
  * PUBLIC SLOTS
@@ -109,19 +125,6 @@ void PatternView::zoom_out()
   centerOn(center);
 }
 
-
-//-------------------------------------------------------------
-// slot responsible for making sure the whole scene is visible
-//-------------------------------------------------------------
-void PatternView::fit_in_view()
-{
-  // fix our view on the initial grid size; otherwise items
-  // added to the legend (even if inivisible) will cause
-  // spurious re-scalings
-  QRectF myScene = sceneRect();
-  myScene.adjust(-50,-50,100,100);
-  setSceneRect(myScene);
-}
 
 
 //------------------------------------------------------------

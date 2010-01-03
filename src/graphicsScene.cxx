@@ -324,17 +324,12 @@ void GraphicsScene::hide_all_but_legend()
 //---------------------------------------------------------------
 void GraphicsScene::show_all_items()
 {
- /* get list of all items that are not part of the legend
-   * and are not svg items */
-  QList<QGraphicsItem*> allItems = items();
-
-  /* disable all non-legend items */
-  foreach (QGraphicsItem* anItem, allItems)
+  foreach (QGraphicsItem* anItem, items())
   {
     anItem->show();
   }
 }
-  
+
 
 //-------------------------------------------------------------
 // compute the rectangle on the canvas which is currently
@@ -380,6 +375,32 @@ QRectF GraphicsScene::get_visible_area() const
   }
 
   return QRectF(upperLeft, lowerRight);
+}
+
+
+//----------------------------------------------------------------
+// compute the center of the pattern grid
+//----------------------------------------------------------------
+QPoint GraphicsScene::get_grid_center() const
+{
+  int centerRow = static_cast<int>(numRows_/2.0);
+  int centerCol = static_cast<int>(numCols_/2.0);
+
+  QPoint theCenter = compute_cell_origin_(centerRow, centerCol);
+  
+  /* shift by half a cell if the number of rows and/or cells
+   * is uneven */
+  if (numCols_ % 2 != 0)
+  {
+    theCenter.setX(theCenter.x() + cellSize_/2.0);
+  }
+
+  if (numRows_ % 2 != 0)
+  {
+    theCenter.setY(theCenter.y() + cellSize_/2.0);
+  }
+
+  return theCenter;
 }
 
 
@@ -620,11 +641,7 @@ void GraphicsScene::toggle_legend_visibility()
     }
     legendIsVisible_ = true;
 
-    /* make sure legend is visible */
-    foreach(QGraphicsView* aView, views())
-    {
-      aView->setSceneRect(QRectF());
-    }
+    emit show_whole_scene();
   }
 }
 

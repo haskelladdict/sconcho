@@ -101,7 +101,7 @@ public slots:
   void show_statusBar_message(QString msg);
   void show_statusBar_error(QString msg);
   void clear_statusBar();
-
+  
 
 private slots:
 
@@ -116,6 +116,7 @@ private slots:
   void show_sconcho_dialog_();
   void show_print_dialog_();
   void show_preferences_dialog_();
+  void fit_canvas_();
 
    
 private:

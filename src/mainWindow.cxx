@@ -122,7 +122,12 @@ bool MainWindow::Init()
           canvas_,
           SLOT(update_after_settings_change())
          );
-         
+
+  connect(canvas_,
+          SIGNAL(show_whole_scene()),
+          this,
+          SLOT(fit_canvas_())
+         ); 
 
   /* set up main interface and set initial splitter sizes */
   mainSplitter_->addWidget(canvasView_);
@@ -133,6 +138,7 @@ bool MainWindow::Init()
   setCentralWidget(mainSplitter_);
   return true;
 }
+
 
 /**************************************************************
  *
@@ -189,6 +195,9 @@ void MainWindow::clear_statusBar()
   statusBarMessages_->setPalette(aPalette);
   statusBarMessages_->setText(tr("Nice pattern!"));
 }
+
+
+
 
 
 /**************************************************************
@@ -294,9 +303,6 @@ void MainWindow::export_legend_dialog_()
 }
 
 
-
-
-
 //-------------------------------------------------------------
 // SLOT: show file export menu and then export the actual
 // scene
@@ -355,7 +361,7 @@ void MainWindow::pick_color_()
 
 
 //------------------------------------------------------------
-// this slot handles user requests to reset the pattern grid
+// SLOT: this slot handles user requests to reset the pattern grid
 // and create a new one of a certain dimension
 //------------------------------------------------------------
 void MainWindow::reset_grid_()
@@ -378,12 +384,12 @@ void MainWindow::reset_grid_()
   /* ask for new grid dimensions and reset canvas */
   QSize newDimensions = show_grid_dimension_dialog_();
   canvas_->reset_grid(newDimensions);
-  canvasView_->fit_in_view();
+  fit_canvas_();
 }
 
 
 //-------------------------------------------------------------
-// slot responsible for displaying a the default Qt info
+// SLOT responsible for displaying a the default Qt info
 // widget
 //-------------------------------------------------------------
 void MainWindow::show_about_qt_dialog_()
@@ -393,7 +399,7 @@ void MainWindow::show_about_qt_dialog_()
 
 
 //------------------------------------------------------------- 
-// slot responsible for displaying our very own personalized
+// SLOT responsible for displaying our very own personalized
 // sconcho info and copyright notice
 //------------------------------------------------------------- 
 void MainWindow::show_sconcho_dialog_() 
@@ -404,7 +410,7 @@ void MainWindow::show_sconcho_dialog_()
 
 
 //------------------------------------------------------------
-// fire up the preferences dialog
+// SLOT: fire up the preferences dialog
 //------------------------------------------------------------
 void MainWindow::show_preferences_dialog_()
 {
@@ -413,6 +419,16 @@ void MainWindow::show_preferences_dialog_()
 
   /* update all child widgets with new preferences */
   emit settings_changed();
+}
+
+
+//--------------------------------------------------------------
+// SLOT: make sure everything that's supposed to be visible is
+//--------------------------------------------------------------
+void MainWindow::fit_canvas_()
+{
+  canvasView_->fit_in_view(canvas_->get_grid_center(),
+    canvas_->get_visible_area());
 }
 
 
@@ -565,11 +581,13 @@ void MainWindow::create_view_menu_()
     new QAction(QIcon(":/icons/viewmagfit.png"),tr("&Fit view"), this);
   viewMenu->addAction(fitAction);
   fitAction->setShortcut(tr("Ctrl+0"));
-  connect(fitAction, 
-          SIGNAL(triggered()), 
-          canvasView_,
-          SLOT(fit_in_view()));
-} 
+  connect(fitAction,
+          SIGNAL(triggered()),
+          this,
+          SLOT(fit_canvas_()));
+}
+
+
 
 
 //------------------------------------------------------------
@@ -744,9 +762,9 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(resetButton);
   connect(resetButton,
           SIGNAL(clicked()),
-          canvasView_,
-          SLOT(fit_in_view()));
-  
+          this,
+          SLOT(fit_canvas_()));
+
   toolBar->addSeparator();
  
   QToolButton* leftMoveButton = new QToolButton(this);
@@ -948,7 +966,7 @@ void MainWindow::load_canvas_(const QString& fileName)
     canvas_->place_legend_items(reader.get_legend_items());
   }
 
-  canvasView_->fit_in_view();
+  fit_canvas_();
 }
 
 

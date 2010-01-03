@@ -94,6 +94,7 @@ public:
   void place_legend_items(
     const QList<LegendEntryDescriptorPtr>& newLegendEntries);
   QRectF get_visible_area() const;
+  QPoint get_grid_center() const;
 
   /* legend releated stuff */
   bool legend_is_visible() const { return legendIsVisible_; }
@@ -110,6 +111,7 @@ signals:
   void mouse_moved(QPointF position);
   void statusBar_error(QString msg); 
   void statusBar_message(QString msg);
+  void show_whole_scene();
 
 
 public slots:
