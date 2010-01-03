@@ -65,10 +65,9 @@ bool PatternView::Init()
   }
 
   /* set some basic properties */
-  setTransformationAnchor(QGraphicsView::NoAnchor);
+  //setTransformationAnchor(QGraphicsView::NoAnchor);
   setDragMode(QGraphicsView::NoDrag);
   setRenderHints(QPainter::Antialiasing);
-  //setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
   initialize_rubberband_();
   fit_in_view();
@@ -116,8 +115,12 @@ void PatternView::zoom_out()
 //-------------------------------------------------------------
 void PatternView::fit_in_view()
 {
-  QRectF canvasRect(sceneRect());
-  fitInView(canvasRect, Qt::KeepAspectRatio); 
+  // fix our view on the initial grid size; otherwise items
+  // added to the legend (even if inivisible) will cause
+  // spurious re-scalings
+  QRectF myScene = sceneRect();
+  myScene.adjust(-50,-50,100,100);
+  setSceneRect(myScene);
 }
 
 

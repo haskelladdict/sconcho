@@ -330,7 +330,6 @@ CanvasIOWriter::CanvasIOWriter(const GraphicsScene* scene,
     fileName_(theName)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
-  qDebug() << "canvasIOWriter constructed";
 }
 
 
@@ -347,8 +346,6 @@ CanvasIOWriter::~CanvasIOWriter()
     writeStream_->flush();
     delete writeStream_;
   }
-
-  qDebug() << "canvasIOWriter destroyed";
 }
 
 
@@ -565,7 +562,6 @@ CanvasIOReader::CanvasIOReader(const QString& theName,
     allSymbols_(syms)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
-  qDebug() << "canvasIOReader constructed";
 }
 
 
@@ -579,8 +575,6 @@ CanvasIOReader::~CanvasIOReader()
     filePtr_->close();
     delete filePtr_;
   }
-
-  qDebug() << "canvasIOReader destroyed";
 }
 
 
@@ -840,7 +834,6 @@ KnittingSymbolReader::KnittingSymbolReader(const QString& pathName)
     pathName_(pathName)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
-  qDebug() << "KnittingSymbolReader constructed";
 }
 
 
@@ -854,8 +847,6 @@ KnittingSymbolReader::~KnittingSymbolReader()
     filePtr_->close();
     delete filePtr_;
   }
-
-  qDebug() << "KnittingSymbolReader destroyed";
 }
 
 

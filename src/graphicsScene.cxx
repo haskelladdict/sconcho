@@ -1985,7 +1985,6 @@ void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
   
   /* delete it for good */
   anItem->deleteLater();
-
 }
 
 
