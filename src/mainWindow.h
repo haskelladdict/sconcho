@@ -105,7 +105,7 @@ public slots:
 
 private slots:
 
-  void pick_color_();
+//  void pick_color_();
   void quit_sconcho_();
   void reset_grid_();
   void show_about_qt_dialog_();
@@ -134,7 +134,7 @@ private:
   void create_status_bar_();
   void create_graphics_scene_();
   void create_property_symbol_layout_();
-  void create_property_widget_();
+  void create_color_widget_();
   void create_symbols_widget_(const QList<KnittingSymbolPtr>& syms);
   void create_toolbar_();
   void create_timers_();

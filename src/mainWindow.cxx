@@ -44,6 +44,7 @@
 /** local headers */
 #include "aboutSconcho.h"
 #include "basicDefs.h"
+#include "colorSelectorWidget.h"
 #include "graphicsScene.h"
 #include "gridDimensionDialog.h"
 #include "helperFunctions.h"
@@ -56,6 +57,7 @@
 
 
 QT_BEGIN_NAMESPACE
+
 
 /**************************************************************
  *
@@ -97,7 +99,7 @@ bool MainWindow::Init()
   create_symbols_widget_(allSymbols_);
   create_graphics_scene_();
   create_toolbar_();
-  create_property_widget_();
+  create_color_widget_();
   create_menu_bar_();
   create_status_bar_();
   create_property_symbol_layout_();
@@ -109,14 +111,7 @@ bool MainWindow::Init()
           SLOT(update_selected_symbol(const KnittingSymbolPtr)),
           Qt::DirectConnection
          );
-
-  connect(this,
-          SIGNAL(color_changed(QColor)),
-          canvas_,
-          SLOT(update_selected_background_color(QColor)),
-          Qt::DirectConnection
-         );
-
+  
   connect(this,
           SIGNAL(settings_changed()),
           canvas_,
@@ -341,22 +336,6 @@ void MainWindow::quit_sconcho_()
   {
     exit(0);
   }
-}
-
-
-//------------------------------------------------------------
-// SLOT: fire up color dialog and tell canvas about the
-// currently selected color
-//------------------------------------------------------------
-void MainWindow::pick_color_()
-{
-  QColor selection = QColorDialog::getColor(Qt::white,this,
-      "Select background color");
-
-  QPalette selectorPalette = QPalette(selection);
-  colorSelector_->setPalette(selectorPalette);
-
-  emit color_changed(selection);
 }
 
 
@@ -840,8 +819,9 @@ void MainWindow::create_toolbar_()
 // create graph property widget (color selector, line width
 // selector)
 //-------------------------------------------------------------
-void MainWindow::create_property_widget_()
+void MainWindow::create_color_widget_()
 {
+  /*
    colorSelector_ = new QPushButton(this);
    colorSelector_->setText(tr("cell color"));
    colorSelector_->setMaximumSize(70,50);
@@ -850,22 +830,20 @@ void MainWindow::create_property_widget_()
 
    QCheckBox* colorChecker = new QCheckBox("add to cell");
    colorChecker->setChecked(false);
+  */
+  colorSelectorGrouper_ = new QGroupBox("cell color");
+  ColorSelectorWidget* colorSelector = new ColorSelectorWidget(this);
+  colorSelector->Init();
+  QHBoxLayout* colorLayout = new QHBoxLayout;
+  colorLayout->addWidget(colorSelector);
+  colorSelectorGrouper_->setLayout(colorLayout);
 
-   colorSelectorGrouper_ = new QGroupBox;
-   QHBoxLayout* colorLayout = new QHBoxLayout;
-   colorLayout->addWidget(colorChecker);
-   colorLayout->addWidget(colorSelector_);
-   colorSelectorGrouper_->setLayout(colorLayout);
-
-   connect(colorChecker,
-           SIGNAL(stateChanged(int)),
-           canvas_,
-           SLOT(color_state_changed(int)));
-
-   connect(colorSelector_,
-           SIGNAL(clicked()),
-           this,
-           SLOT(pick_color_()));
+  connect(colorSelector,
+          SIGNAL(color_changed(const QColor&)),
+          canvas_,
+          SLOT(update_selected_background_color(const QColor&)),
+          Qt::DirectConnection
+         );
 }
 
 

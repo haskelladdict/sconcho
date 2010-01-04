@@ -120,7 +120,6 @@ public slots:
   void grid_item_selected(PatternGridItem* item, bool status);
   void grid_item_reset(PatternGridItem* item);
   void update_selected_background_color(const QColor& aColor);
-  void color_state_changed(int state); 
   void deselect_all_active_items();
   void mark_active_cells_with_rectangle();
   void update_after_settings_change();
@@ -176,7 +175,6 @@ private:
   KnittingSymbolPtr defaultSymbol_;
   QColor backgroundColor_;
   QColor defaultColor_;
-  bool wantColor_;
 
   /* set up functions for canvas */
   void create_pattern_grid_();
@@ -224,7 +222,6 @@ private:
   void colorize_highlighted_cells_();
   QPair<int,int> get_cell_coords_(const QPointF& mousePosition) const;
   int compute_horizontal_label_shift_(int num, int fontSize) const;
-  QColor determine_selected_cells_color_() const;
   bool sort_active_items_row_wise_(QList<RowItems>& rows) const;
   bool process_selected_items_(QList<RowLayout>& processedCellLayout,
     const QList<RowItems>& rowSelection, int targetPatternSize);
@@ -255,7 +252,6 @@ private:
 
   QPair<bool,int> is_row_contiguous_(const RowItems& items) const;
   QRect find_bounding_rectangle_(const QList<RowItems>& rows) const;
-
 };
 
 

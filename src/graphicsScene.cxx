@@ -81,7 +81,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   defaultSymbol_(defaultSymbol),
   backgroundColor_(Qt::white),
   defaultColor_(Qt::white),
-  wantColor_(false),
+//  wantColor_(false),
   legendIsVisible_(false)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -507,25 +507,6 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
   /* make sure to delect all items since the current item
    * may have been part of the active items */
   deselect_all_active_items();
-}
-
-
-
-//-------------------------------------------------------------
-// record if a user request coloring of cells or not
-//-------------------------------------------------------------
-void GraphicsScene::color_state_changed(int state)
-{
-  if (state == Qt::Checked)
-  {
-    wantColor_ = true;
-    colorize_highlighted_cells_();
-    deselect_all_active_items();
-  }
-  else
-  {
-    wantColor_ = false;
-  }
 }
 
 
@@ -1127,10 +1108,6 @@ void GraphicsScene::try_place_knitting_symbol_()
            "not a multiple of the pattern size"));
   }
 
-  /* try to come up with a proper color for the cells to
-   * be replaced */
-  QColor cellColor = determine_selected_cells_color_();
-
   /* sort selected items row wise */
   QList<RowItems> rowList;
   bool sortStatus = sort_active_items_row_wise_(rowList);
@@ -1173,7 +1150,7 @@ void GraphicsScene::try_place_knitting_symbol_()
           column,
           row,
           this,
-          cellColor);
+          backgroundColor_);
 
       anItem->Init();
       anItem->insert_knitting_symbol(selectedSymbol_);
@@ -1357,40 +1334,6 @@ void GraphicsScene::colorize_highlighted_cells_()
     anItem->set_background_color(backgroundColor_);
   }
 }
-
-
-
-//--------------------------------------------------------------
-// when placing knitting symbols in selected cells we try
-// to preserve the current cell colors. This is tricky since
-// there could be cases in which a several cell wide symbol
-// spans unit cells with multiple colors. Hence, for now we
-// only do one of two things
-//
-// 1) If all selected cells have the same color with pick it
-// 2) Otherwise we use either the default color, Qt::white,
-//    or whichever color is currently selected and active.
-//--------------------------------------------------------------
-QColor GraphicsScene::determine_selected_cells_color_() const
-{
-  QList<PatternGridItem*> cells(activeItems_.values());
-  if (wantColor_ || cells.size() == 0)
-  {
-    return backgroundColor_; 
-  }
-
-  QColor cellColor(cells.at(0)->color());
-  foreach(PatternGridItem* anItem, cells)
-  {
-    if (anItem->color() != cellColor)
-    {
-      return defaultColor_;
-    }
-  }
-
-  return cellColor;
-}
-
 
 
 //--------------------------------------------------------------
@@ -1740,17 +1683,9 @@ void GraphicsScene::purge_all_canvas_items_()
 //------------------------------------------------------------
 void GraphicsScene::update_active_items_()
 {
-  /* if an actual knitting symbol is selected we have to
-   * do the full blown knitting symbol placement; if the
-   * user only wants to change the color of the selected
-   * cells things are much simpler */
   if (selectedSymbol_->patternName() != "")
   {
     try_place_knitting_symbol_();
-  }
-  else if (wantColor_)
-  {
-    change_selected_cells_colors_();
   }
 }
 

@@ -2,6 +2,8 @@ INCLUDE(${QT_USE_FILE})
 
 SET(SCONCHO_SRCS
   aboutSconcho.cxx
+  colorSelectorItem.cxx
+  colorSelectorWidget.cxx
   graphicsScene.cxx
   gridDimensionDialog.cxx
   helperFunctions.cxx
@@ -24,6 +26,8 @@ SET(SCONCHO_SRCS
 )
 
 SET(SCONCHO_MOC_HDRS
+  colorSelectorItem.h
+  colorSelectorWidget.h
   graphicsScene.h
   gridDimensionDialog.h
   legendItem.h
