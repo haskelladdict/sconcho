@@ -1,6 +1,6 @@
 /***************************************************************
  *
- * (c) 2009 Markus Dittrich 
+ * (c) 2009-2010 Markus Dittrich 
  *
  * This program is free software; you can redistribute it 
  * and/or modify it under the terms of the GNU General Public 
@@ -57,7 +57,7 @@ void AboutSconchoWidget::setup_contents_()
   QString content = 
     "<b>sconcho</b> is a versatile and extensible knitting chart "
     "design tool capable of producing print quality charts.<br><br>"
-    "Copyright (C) 2009 Markus Dittrich<br><br>"
+    "Copyright (C) 2009-2010 Markus Dittrich<br><br>"
     "Many thanks to Susan Dittrich for continued testing, advice, "
     "support, and generation of the SVG knitting symbols.<br><br>"
     "This program is free software: you can redistribute it and/or "
