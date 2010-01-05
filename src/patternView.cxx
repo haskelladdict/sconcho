@@ -69,8 +69,7 @@ bool PatternView::Init()
   setRenderHints(QPainter::Antialiasing);
 
   initialize_rubberband_();
-  fit_in_view(canvas_->get_grid_center(),
-    canvas_->get_visible_area());
+  visible_in_view();
   
   return true;
 }
@@ -81,28 +80,41 @@ bool PatternView::Init()
  * PUBLIC FUNCTIONS
  *
  *************************************************************/
-
-//-------------------------------------------------------------
-// function responsible for rendering the requested area
-// visible
-//-------------------------------------------------------------
-void PatternView::fit_in_view(const QPoint& theCenter,
-  const QRectF& theArea)
-{
-  // fix our view on the initial grid size; otherwise items
-  // added to the legend (even if inivisible) will cause
-  // spurious re-scalings
-  QRectF myScene = theArea;
-  myScene.adjust(-50,-50,100,100);
-  setSceneRect(myScene);
-  centerOn(theCenter);
-}
  
 /**************************************************************
  *
  * PUBLIC SLOTS
  *
  *************************************************************/
+
+//-------------------------------------------------------------
+// slot responsible for making sure all graphics items
+// that should be are accesible in the view
+//-------------------------------------------------------------
+void PatternView::accessible_in_view()
+{
+  // fix our view on the initial grid size; otherwise items
+  // added to the legend (even if inivisible) will cause
+  // spurious re-scalings
+  QRectF myScene = canvas_->get_visible_area();
+  myScene.adjust(-50,-50,100,100);
+  setSceneRect(myScene);
+}
+
+
+
+//-------------------------------------------------------------
+// slot responsible for making sure all graphics items
+// that should be are visible in the view
+//-------------------------------------------------------------
+void PatternView::visible_in_view()
+{
+  accessible_in_view();
+  centerOn(canvas_->get_grid_center());
+  setMatrix(QMatrix());
+}
+
+
 
 //-------------------------------------------------------------
 // slot responsible for zooming into the canvas

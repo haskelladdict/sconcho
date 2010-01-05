@@ -119,8 +119,8 @@ bool MainWindow::Init()
 
   connect(canvas_,
           SIGNAL(show_whole_scene()),
-          this,
-          SLOT(fit_canvas_())
+          canvasView_,
+          SLOT(accessible_in_view())
          ); 
 
   /* set up main interface and set initial splitter sizes */
@@ -189,8 +189,6 @@ void MainWindow::clear_statusBar()
   statusBarMessages_->setPalette(aPalette);
   statusBarMessages_->setText(tr("Nice pattern!"));
 }
-
-
 
 
 
@@ -362,7 +360,7 @@ void MainWindow::reset_grid_()
   /* ask for new grid dimensions and reset canvas */
   QSize newDimensions = show_grid_dimension_dialog_();
   canvas_->reset_grid(newDimensions);
-  fit_canvas_();
+  canvasView_->visible_in_view();
 }
 
 
@@ -397,16 +395,6 @@ void MainWindow::show_preferences_dialog_()
 
   /* update all child widgets with new preferences */
   emit settings_changed();
-}
-
-
-//--------------------------------------------------------------
-// SLOT: make sure everything that's supposed to be visible is
-//--------------------------------------------------------------
-void MainWindow::fit_canvas_()
-{
-  canvasView_->fit_in_view(canvas_->get_grid_center(),
-    canvas_->get_visible_area());
 }
 
 
@@ -561,8 +549,8 @@ void MainWindow::create_view_menu_()
   fitAction->setShortcut(tr("Ctrl+0"));
   connect(fitAction,
           SIGNAL(triggered()),
-          this,
-          SLOT(fit_canvas_()));
+          canvasView_,
+          SLOT(visible_in_view()));
 }
 
 
@@ -740,8 +728,8 @@ void MainWindow::create_toolbar_()
   toolBar->addWidget(resetButton);
   connect(resetButton,
           SIGNAL(clicked()),
-          this,
-          SLOT(fit_canvas_()));
+          canvasView_,
+          SLOT(visible_in_view()));
 
   toolBar->addSeparator();
  
@@ -933,7 +921,7 @@ void MainWindow::load_canvas_(const QString& fileName)
     canvas_->place_legend_items(reader.get_legend_items());
   }
 
-  fit_canvas_();
+  canvasView_->visible_in_view();
 }
 
 

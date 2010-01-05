@@ -105,7 +105,6 @@ public slots:
 
 private slots:
 
-//  void pick_color_();
   void quit_sconcho_();
   void reset_grid_();
   void show_about_qt_dialog_();
@@ -116,7 +115,6 @@ private slots:
   void show_sconcho_dialog_();
   void show_print_dialog_();
   void show_preferences_dialog_();
-  void fit_canvas_();
 
    
 private:
