@@ -1470,12 +1470,23 @@ void GraphicsScene::manage_columns_rows_(const QPoint& pos,
     QAction* rowInsertBelowAction = 
       colRowMenu.addAction("insert below row " + rowString);
 
-    connect(rowDeleteAction, SIGNAL(triggered()), 
-        this, SLOT(delete_row_()));
-    connect(rowInsertAboveAction, SIGNAL(triggered()),
-        this, SLOT(insert_above_row_()));
-    connect(rowInsertBelowAction, SIGNAL(triggered()),
-        this, SLOT(insert_below_row_()));
+    connect(rowDeleteAction, 
+            SIGNAL(triggered()), 
+            this, 
+            SLOT(delete_row_())
+           );
+
+    connect(rowInsertAboveAction, 
+            SIGNAL(triggered()),
+            this, 
+            SLOT(insert_above_row_())
+           );
+
+    connect(rowInsertBelowAction, 
+            SIGNAL(triggered()),
+            this, 
+            SLOT(insert_below_row_())
+           );
 
     colRowMenu.exec(pos);
   }

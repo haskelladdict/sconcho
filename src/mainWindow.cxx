@@ -21,7 +21,6 @@
 /** Qt headers */
 #include <QAction>
 #include <QCheckBox>
-#include <QColorDialog>
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
@@ -821,16 +820,6 @@ void MainWindow::create_toolbar_()
 //-------------------------------------------------------------
 void MainWindow::create_color_widget_()
 {
-  /*
-   colorSelector_ = new QPushButton(this);
-   colorSelector_->setText(tr("cell color"));
-   colorSelector_->setMaximumSize(70,50);
-   QPalette widgetColor = QPalette(Qt::white);
-   colorSelector_->setPalette(widgetColor);
-
-   QCheckBox* colorChecker = new QCheckBox("add to cell");
-   colorChecker->setChecked(false);
-  */
   colorSelectorGrouper_ = new QGroupBox("cell color");
   ColorSelectorWidget* colorSelector = new ColorSelectorWidget(this);
   colorSelector->Init();

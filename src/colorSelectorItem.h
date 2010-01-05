@@ -68,13 +68,19 @@ public:
 signals:
   
   void highlight_me(ColorSelectorItem* us);
+  void selector_color_changed(const QColor& aColor);
 
 
 protected:
 
   void mousePressEvent(QMouseEvent* mouseEvent);
 
-    
+
+private slots:
+
+  void pick_color_();
+
+
 private:
 
   /* status variables */
@@ -85,6 +91,7 @@ private:
   /* a few helper functions */
   QString get_active_stylesheet_();
   QString get_inactive_stylesheet_();
+  void show_property_menu_(const QPoint& position);
 }; 
 
 

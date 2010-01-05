@@ -89,8 +89,6 @@ void ColorSelectorWidget::highlight_color_button(
   activeSelector_->unselect();
   activeSelector_ = newActiveItem;
   activeSelector_->select();
-
-  emit color_changed(newActiveItem->get_color());
 }
 
 
@@ -137,10 +135,11 @@ void ColorSelectorWidget::create_layout_()
     bottomSelectorLayout->addWidget(newItem);
   }
   
-  QVBoxLayout* mainLayout = new QVBoxLayout;
-  mainLayout->addLayout(topSelectorLayout);
-  mainLayout->addLayout(bottomSelectorLayout);
-  setLayout(mainLayout);
+  QVBoxLayout* selectorLayout = new QVBoxLayout;
+  selectorLayout->addLayout(topSelectorLayout);
+  selectorLayout->addLayout(bottomSelectorLayout);
+
+  setLayout(selectorLayout);
 }
 
 
