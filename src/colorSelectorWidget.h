@@ -52,8 +52,13 @@ class ColorSelectorWidget
     
 public:
 
-  explicit ColorSelectorWidget(QWidget* myParent = 0);
+  explicit ColorSelectorWidget(const QList<QColor>& colors,
+                               QWidget* myParent = 0);
   bool Init();
+
+  /* return a list of currently active colors */
+  QList<QColor> get_colors() const;
+  void set_colors(const QList<QColor>& newColors);
 
 
 signals:
@@ -71,11 +76,20 @@ private:
   /* some tracking variables */
   int status_;
 
+  /* default colors for selector */
+  QList<QColor> selectorColors_;
+
+  /* list of pointers to color selector */
+  QList<ColorSelectorItem*> colorSelectors_;
+
   /* currently highlighted color selector */
   ColorSelectorItem* activeSelector_;
   
   /* widget creation routines */
   void create_layout_();
+
+  /* helper functions */
+  void pad_colors_();
 };
 
 

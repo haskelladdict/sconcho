@@ -809,7 +809,13 @@ void MainWindow::create_toolbar_()
 void MainWindow::create_color_widget_()
 {
   colorSelectorGrouper_ = new QGroupBox("cell color");
-  ColorSelectorWidget* colorSelector = new ColorSelectorWidget(this);
+  QList<QColor> colors;
+  colors << Qt::white << Qt::red << Qt::green << Qt::blue
+         << Qt::cyan << Qt::yellow << Qt::gray << Qt::magenta
+         << Qt::darkBlue << Qt::darkMagenta;
+
+  ColorSelectorWidget* colorSelector =
+    new ColorSelectorWidget(colors,this);
   colorSelector->Init();
   QHBoxLayout* colorLayout = new QHBoxLayout;
   colorLayout->addWidget(colorSelector);
