@@ -650,6 +650,7 @@ bool CanvasIOReader::read()
   if ( root.tagName() != "sconcho" ) return false;
 
   /* parse all events */
+  bool parseStatus = true;
   QDomNode node = root.firstChild();
   while ( !node.isNull() )
   {
@@ -658,12 +659,16 @@ bool CanvasIOReader::read()
       QDomNode theItem = node.firstChild();
       if (theItem.toElement().tagName() == "patternGridItem")
       {
-        parse_patternGridItems_(theItem);
+        parseStatus &= parse_patternGridItems_(theItem);
       }
       else if (theItem.toElement().tagName() == "legendEntry")
       {
-        parse_legendItems_(theItem);
+        parseStatus &= parse_legendItems_(theItem);
       }
+    }
+    else if (node.toElement().tagName() == "projectColors")
+    {
+      parseStatus &= parse_projectColors_(node);
     }
 
     node = node.nextSibling();
@@ -833,6 +838,28 @@ bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
 
   return true;
 }
+
+
+//-------------------------------------------------------------
+// read the list of project colors (if present)
+//-------------------------------------------------------------
+bool CanvasIOReader::parse_projectColors_(const QDomNode& itemNode)
+{
+  QDomNode node = itemNode.firstChild();
+  while (!node.isNull())
+  {
+    if (node.toElement().tagName() == "color")
+    {
+      QDomNode childNode(node.firstChild());
+      projectColors_.push_back(QColor(childNode.toText().data()));
+    }
+
+    node = node.nextSibling();
+  }
+
+  return true;
+}
+
 
 
 

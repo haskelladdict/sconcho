@@ -232,7 +232,7 @@ public:
   /* read content of canvas */
   bool read();
 
-  /* accessors for stuff we just read */
+  /* accessors for parsed information */
   const QList<PatternGridItemDescriptorPtr>& get_pattern_items() const
   {
     return newPatternGridItems_;
@@ -242,6 +242,12 @@ public:
   {
     return newLegendEntryDescriptors_;
   }
+
+  const QList<QColor>& get_project_colors() const
+  {
+    return projectColors_;
+  }
+  
 
 
 private:
@@ -262,9 +268,13 @@ private:
   /* QList of parsed legend entry descriptors */
   QList<LegendEntryDescriptorPtr> newLegendEntryDescriptors_;
 
+  /* QList of selector colors */
+  QList<QColor> projectColors_;
+
   /* helper functions */
   bool parse_patternGridItems_(const QDomNode& itemNode);
   bool parse_legendItems_(const QDomNode& itemNode);
+  bool parse_projectColors_(const QDomNode& itemNode);
 };
 
 

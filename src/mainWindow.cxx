@@ -923,8 +923,13 @@ void MainWindow::load_project_(const QString& fileName)
       return;
     }
 
+    /* establish canvas */
     canvas_->load_new_canvas(reader.get_pattern_items());
     canvas_->place_legend_items(reader.get_legend_items());
+
+    /* read custom colors and apply them */
+    QList<QColor> foo(reader.get_project_colors());
+    colorSelectorWidget_->set_colors(reader.get_project_colors());
   }
 
   canvasView_->visible_in_view();
