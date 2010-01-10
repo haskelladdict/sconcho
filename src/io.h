@@ -26,6 +26,7 @@
 #include <boost/shared_ptr.hpp>
 
 /* QT includes */
+#include <QList>
 #include <QString>
 #include <QStringList>
 #include <QtXml/QDomDocument>
@@ -43,6 +44,7 @@ QT_BEGIN_NAMESPACE
 /* forward declarations */
 class GraphicsScene;
 class PatternGridItem;
+class QColor;
 class QFile;
 class QTextStream;
 
@@ -140,8 +142,9 @@ class CanvasIOWriter
 
 public:
 
-  explicit CanvasIOWriter(const GraphicsScene* theScene, 
-      const QString& fileName);
+  explicit CanvasIOWriter(const GraphicsScene* theScene,
+                          const QList<QColor>& activeColors,
+                          const QString& fileName);
   ~CanvasIOWriter();
   bool Init();
 
@@ -156,6 +159,7 @@ private:
 
   /* variables */
   const GraphicsScene* ourScene_;
+  const QList<QColor>& projectColors_;
   QString fileName_;
   QFile* filePtr_;
   QTextStream* writeStream_;
@@ -164,6 +168,7 @@ private:
   /* helper functions */
   bool save_patternGridItems_(QDomElement& rootElement);
   bool save_legendInfo_(QDomElement& rootElement);
+  bool save_colorInfo_(QDomElement& rootElement);
 };
 
 

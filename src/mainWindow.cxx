@@ -226,7 +226,7 @@ void MainWindow::show_file_open_dialog_()
     return;
   }
 
-  load_canvas_(openFileName);
+  load_project_(openFileName);
 }
 
   
@@ -258,7 +258,7 @@ void MainWindow::show_file_save_dialog_()
     return;
   }
 
-  save_canvas_(saveFileName);
+  save_project_(saveFileName);
 }
 
 
@@ -814,14 +814,13 @@ void MainWindow::create_color_widget_()
          << Qt::cyan << Qt::yellow << Qt::gray << Qt::magenta
          << Qt::darkBlue << Qt::darkMagenta;
 
-  ColorSelectorWidget* colorSelector =
-    new ColorSelectorWidget(colors,this);
-  colorSelector->Init();
+  colorSelectorWidget_ = new ColorSelectorWidget(colors,this);
+  colorSelectorWidget_->Init();
   QHBoxLayout* colorLayout = new QHBoxLayout;
-  colorLayout->addWidget(colorSelector);
+  colorLayout->addWidget(colorSelectorWidget_);
   colorSelectorGrouper_->setLayout(colorLayout);
 
-  connect(colorSelector,
+  connect(colorSelectorWidget_,
           SIGNAL(color_changed(const QColor&)),
           canvas_,
           SLOT(update_selected_background_color(const QColor&)),
@@ -878,9 +877,10 @@ QSize MainWindow::show_grid_dimension_dialog_()
 //--------------------------------------------------------------
 // save canvas to file
 //-------------------------------------------------------------
-void MainWindow::save_canvas_(const QString& fileName)
+void MainWindow::save_project_(const QString& fileName)
 {
-  CanvasIOWriter writer(canvas_, fileName);
+  QList<QColor> activeColors(colorSelectorWidget_->get_colors());
+  CanvasIOWriter writer(canvas_, activeColors, fileName);
 
   /* we need to check if we can open the file for writing */
   if (!writer.Init())
@@ -900,7 +900,7 @@ void MainWindow::save_canvas_(const QString& fileName)
 //-------------------------------------------------------------
 // load a previously saved canvas from file
 //-------------------------------------------------------------
-void MainWindow::load_canvas_(const QString& fileName)
+void MainWindow::load_project_(const QString& fileName)
 {
   CanvasIOReader reader(fileName, allSymbols_);
 

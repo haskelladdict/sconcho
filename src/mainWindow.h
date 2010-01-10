@@ -38,6 +38,7 @@ QT_BEGIN_NAMESPACE
 
 
 /* a few forward declarations */
+class ColorSelectorWidget;
 class GraphicsScene;
 class PatternView;
 class PreferencesDialog;
@@ -156,15 +157,15 @@ private:
   PatternView* canvasView_;
 
   /* widgets for selectors */
+  ColorSelectorWidget* colorSelectorWidget_;
   QGroupBox* colorSelectorGrouper_;
-  QPushButton* colorSelector_;
   QSettings settings_;
   SymbolSelectorWidget* symbolSelector_;
 
   /* helper functions */
   QSize show_grid_dimension_dialog_();
-  void save_canvas_(const QString& fileName);
-  void load_canvas_(const QString& fileName);
+  void save_project_(const QString& fileName);
+  void load_project_(const QString& fileName);
 };
 
 QT_END_NAMESPACE

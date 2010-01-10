@@ -23,6 +23,7 @@
 
 /* Qt include */
 #include <QDebug>
+#include <QColor>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -324,9 +325,11 @@ void print_scene(GraphicsScene* scene)
 // constructor
 //-------------------------------------------------------------
 CanvasIOWriter::CanvasIOWriter(const GraphicsScene* scene,
-    const QString& theName)
+                               const QList<QColor>& colors,
+                               const QString& theName)
   :
     ourScene_(scene),
+    projectColors_(colors),
     fileName_(theName)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -390,11 +393,13 @@ bool CanvasIOWriter::save()
   /* add actual canvas items */
   bool statusPatternGridItems = save_patternGridItems_(root);
   bool statusLegendEntryPos = save_legendInfo_(root);
+  bool statusColors = save_colorInfo_(root);
 
   /* write it to stream */
   writeDoc_.save(*writeStream_, 4);
 
-  return (statusPatternGridItems && statusLegendEntryPos);
+  return (statusPatternGridItems && statusLegendEntryPos
+          && statusColors);
 }
 
 
@@ -531,6 +536,26 @@ bool CanvasIOWriter::save_legendInfo_(QDomElement& root)
     itemTag.appendChild(labelTextTag);
     labelTextTag.appendChild(writeDoc_.createTextNode(
           label->toPlainText()));
+  }
+
+  return true;
+}
+
+
+//-------------------------------------------------------------
+// save the currently defined custom colors
+//-------------------------------------------------------------
+bool CanvasIOWriter::save_colorInfo_(QDomElement& root)
+{
+  QDomElement mainTag = writeDoc_.createElement("projectColors");
+  root.appendChild(mainTag);
+
+  foreach(QColor aColor, projectColors_)
+  {
+    /* write column and row info */
+    QDomElement colorTag = writeDoc_.createElement("color");
+    mainTag.appendChild(colorTag);
+    colorTag.appendChild(writeDoc_.createTextNode(aColor.name()));
   }
 
   return true;
