@@ -2,7 +2,7 @@
 <sconcho>
   <knittingSymbol>
     <svgName>knit</svgName>  
-    <category>basic</category>
+    <category>basic:1</category>
     <patternName>knit</patternName>
     <patternDescription>knit on RS; purl on WS</patternDescription>
     <patternWidth>1</patternWidth>

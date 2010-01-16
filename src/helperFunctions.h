@@ -29,6 +29,8 @@
 
 /* Qt includes */
 #include <QList>
+#include <QPair>
+#include <QString>
 
 
 QT_BEGIN_NAMESPACE
@@ -61,6 +63,15 @@ qreal get_max_y_coordinate(const QList<QGraphicsItem*> items);
 //---------------------------------------------------------------
 QRectF get_bounding_rect(const QList<QGraphicsItem*> items);
 
+
+//---------------------------------------------------------------
+// this function splits a string of the form
+// <string>[:<int>]
+// into <string> and <int> and returns them as a QPair.
+// if no <int> is present we return INT_MAX instead
+//---------------------------------------------------------------
+QPair<QString,int> split_into_category_and_position(
+  const QString& parseString);
 
 
 QT_END_NAMESPACE

@@ -20,8 +20,10 @@
 
 /* C++ includes */
 #include <float.h>
+#include <limits.h>
 
 /* qt includes */
+#include <QDebug>
 #include <QGraphicsItem>
 
 /* local includes */
@@ -104,6 +106,31 @@ QRectF get_bounding_rect(const QList<QGraphicsItem*> items)
 }
 
 
+//---------------------------------------------------------------
+// this function splits a string of the form
+// <string>[:<int>]
+// into <string> and <int> and returns them as a QPair.
+// if no <int> is present we return INT_MAX instead
+//---------------------------------------------------------------
+QPair<QString,int> split_into_category_and_position(
+  const QString& aParseString)
+{
+  QStringList result = aParseString.split(":");
+  assert(!result.isEmpty());
+  
+  bool status = false;
+  int ordering = result.last().toInt(&status);
+  if ( (result.length() < 2) || (status == false) )
+  {
+    return QPair<QString,int>(aParseString, INT_MAX);
+  }
+  else
+  {
+    result.removeLast();
+    return QPair<QString,int>(result.join(":"), ordering);
+  }
+}
+  
 
 
 QT_END_NAMESPACE

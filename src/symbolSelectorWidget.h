@@ -97,7 +97,11 @@ private:
   /* functions */
   QHBoxLayout* create_symbol_layout_(KnittingSymbolPtr aSym);
 
+  /* interface set-up routines */
   void create_tabs_();
+
+  /* helper routines */
+  void sort_tabs_(QList<QString>& tabNames);
 };
 
 

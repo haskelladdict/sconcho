@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sconcho>
   <knittingSymbol>
-    <svgName>central_doubleinc</svgName>  
-    <category>basic</category>
-    <patternName>central double increase</patternName>
+    <svgName>centered_doubleinc</svgName>  
+    <category>basic:11</category>
+    <patternName>centered double increase</patternName>
     <patternDescription>knit in back and front of same st, then pick up vertical strand that runs between those 2 sts and knit it through the back</patternDescription>
     <patternWidth>1</patternWidth>
   </knittingSymbol>

@@ -30,6 +30,7 @@
 /** local headers */
 #include "basicDefs.h"
 #include "io.h"
+#include "helperFunctions.h"
 #include "symbolSelectorItem.h"
 #include "symbolSelectorWidget.h"
 
@@ -177,21 +178,44 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
 void SymbolSelectorWidget::create_tabs_()
 {
   /* organize all knitting symbols into their categories */
-  QMultiHash<QString,KnittingSymbolPtr> symbolHash;
+  QMultiHash<QString,QPair<KnittingSymbolPtr,int> > symbolHash;
   foreach(KnittingSymbolPtr sym, allSymbols_)
   {
-    symbolHash.insert(sym->category(), sym);
+    QPair<QString,int> categoryInfo =
+      split_into_category_and_position(sym->category());
+    symbolHash.insert(categoryInfo.first,
+                      QPair<KnittingSymbolPtr,int>(sym,categoryInfo.second));
   }
 
   /* loop over all categories and greate the tabs */
   QList<QString> theKeys(symbolHash.uniqueKeys());
   QList<QString>::iterator key;
+  sort_tabs_(theKeys);
   for (key = theKeys.begin(); key != theKeys.end(); ++key)
   {
-    QVBoxLayout* symbolLayout = new QVBoxLayout;
-    foreach(KnittingSymbolPtr aSym, symbolHash.values(*key))
+    /* we use a hash to sort the symbols in each category
+     * by their requested order */
+    QMultiHash<int,KnittingSymbolPtr> orderedSymbols;
+    QList<QPair<KnittingSymbolPtr,int> > symbolList(symbolHash.values(*key));
+    QList<QPair<KnittingSymbolPtr,int> >::iterator itemPos;
+    for (itemPos = symbolList.begin(); itemPos != symbolList.end(); ++itemPos)
     {
-      symbolLayout->addLayout(create_symbol_layout_(aSym));
+      orderedSymbols.insert((*itemPos).second, (*itemPos).first);
+    }
+
+    /* sort slots */
+    QList<int> itemSlots = orderedSymbols.uniqueKeys();
+    qSort(itemSlots.begin(), itemSlots.end());
+
+    /* insert all symbols into layout in requested order */
+    QVBoxLayout* symbolLayout = new QVBoxLayout;
+    for (int entry=0; entry < itemSlots.length(); ++entry)
+    {
+      int currentKey = itemSlots[entry];
+      foreach(KnittingSymbolPtr aSym, orderedSymbols.values(currentKey))
+      {
+        symbolLayout->addLayout(create_symbol_layout_(aSym));
+      }
     }
    
     /* create the tab */
@@ -200,11 +224,22 @@ void SymbolSelectorWidget::create_tabs_()
     symbolsWidget->setLayout(symbolLayout);
     scrollArea->setWidget(symbolsWidget);
     addTab(scrollArea, *key);
+  }
+}
 
-    if (*key == "basic")
-    {
-      setCurrentWidget(scrollArea);
-    }
+
+//-------------------------------------------------------------
+// sort the tabs in some kind of order according to their name.
+// What we do for now is put the "basic" tab first and the 
+// remaining tabs then just come in alphanumeric order
+//-------------------------------------------------------------
+void SymbolSelectorWidget::sort_tabs_(QList<QString>& tabNames)
+{
+  qSort(tabNames.begin(), tabNames.end());
+  int index = tabNames.indexOf("basic");
+  if ( index != -1) 
+  {
+    tabNames.move(index,0);
   }
 }
 
