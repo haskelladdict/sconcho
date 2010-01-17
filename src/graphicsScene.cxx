@@ -2003,8 +2003,8 @@ void GraphicsScene::notify_legend_of_item_addition_(
     QString description = get_symbol_description_(symbol, colorName);
 
     /* compute position for next label item */
-    int xPosSym = 0;
-    int xPosLabel = (symbol->dim().width() + 0.5) * cellSize_;
+    int xPosSym = origin_.x();
+    int xPosLabel = (symbol->dim().width() + 0.5) * cellSize_ + origin_.x();
     int yPos = get_next_legend_items_y_position_();
 
     LegendItem* newLegendItem = new LegendItem(symbol->dim(), 
@@ -2060,7 +2060,7 @@ int GraphicsScene::get_next_legend_items_y_position_() const
 
   int yMaxLegend = static_cast<int>(
       floor(get_max_y_coordinate(allLegendGraphicsItems)));
-  int yMaxGrid = numRows_ * cellSize_;
+  int yMaxGrid = numRows_ * cellSize_ + origin_.y();
   int yMax = qMax(yMaxGrid, yMaxLegend);
  
   return (yMax + cellSize_ * 1.5);
