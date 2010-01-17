@@ -38,7 +38,6 @@
 #include <QSettings>
 #include <QSignalMapper>
 
-
 /* local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
@@ -81,7 +80,6 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
   defaultSymbol_(defaultSymbol),
   backgroundColor_(Qt::white),
   defaultColor_(Qt::white),
-//  wantColor_(false),
   legendIsVisible_(false)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -2041,6 +2039,11 @@ void GraphicsScene::notify_legend_of_item_addition_(
       newLegendItem->hide();
       newTextItem->hide();
     }
+    else
+    {
+      emit show_whole_scene();
+    }
+
   }
 }
        

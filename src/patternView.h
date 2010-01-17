@@ -58,7 +58,7 @@ public:
 
   explicit PatternView(GraphicsScene* scene, QWidget* myParent = 0);
   bool Init();
- 
+
 
 public slots:
 

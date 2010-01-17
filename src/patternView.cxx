@@ -25,6 +25,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QWheelEvent>
 
+#include <QScrollBar>
+
 /** local headers */
 #include "basicDefs.h"
 #include "graphicsScene.h"
@@ -95,10 +97,35 @@ void PatternView::accessible_in_view()
 {
   // fix our view on the initial grid size; otherwise items
   // added to the legend (even if inivisible) will cause
-  // spurious re-scalings
+  // spurious re-scaling
   QRectF myScene = canvas_->get_visible_area();
   myScene.adjust(-50,-50,100,100);
   setSceneRect(myScene);
+
+  // FIXME: this is a dirty hack; there has to be a better
+  // way. The following is happening: If we are in a view with
+  // no scrollbar and the above call to setSceneRect forces
+  // scrollbars to appear due to the scene growing, Qt will
+  // move the scrollbars such that upper left corner of the
+  // default view is (0,0) instead of the true upper left 
+  // corner of the view. Note that all is well if we already
+  // have scrollbars that are set at a given value. Hopefully,
+  // the below hack won't mess with these.
+  int horizontalScrollMin = horizontalScrollBar()->minimum();
+  int horizontalScrollVal = horizontalScrollBar()->value();
+
+  if ((horizontalScrollMin <= 0) && (horizontalScrollVal == 0))
+  {
+    horizontalScrollBar()->setValue(horizontalScrollMin);
+  }
+
+  int verticalScrollMin = verticalScrollBar()->minimum();
+  int verticalScrollVal = verticalScrollBar()->value();
+
+  if ((verticalScrollMin <= 0) && (verticalScrollVal == 0))
+  {
+    verticalScrollBar()->setValue(verticalScrollMin);
+  }
 }
 
 
@@ -110,7 +137,11 @@ void PatternView::accessible_in_view()
 void PatternView::visible_in_view()
 {
   accessible_in_view();
-  centerOn(canvas_->get_grid_center());
+
+  /* center the view on the pattern grid */
+  QPoint gridCenter = canvas_->get_grid_center();
+  centerOn(mapFromScene(gridCenter));
+
   setMatrix(QMatrix());
 }
 
