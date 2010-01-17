@@ -56,7 +56,8 @@ qreal get_max_y_coordinate(const QList<QGraphicsItem*> items)
   qreal yMax = -DBL_MAX;
   foreach(QGraphicsItem* anItem, items)
   {
-    qreal yPos = anItem->scenePos().y();
+    qreal yPos = anItem->scenePos().y() 
+      + anItem->boundingRect().height();
     if (yMax < yPos)
     {
       yMax = yPos;
@@ -131,6 +132,35 @@ QPair<QString,int> split_into_category_and_position(
   }
 }
   
+
+//---------------------------------------------------------------
+// this function takes a string, typically a pattern description
+// and tries to format them a bit nicer since they come as one
+// long string. We don't want to be fancy here and basically
+// just break possible long lines into a bunch of shorter ones.
+//---------------------------------------------------------------
+QString format_string(const QString& oldString)
+{
+  int maxLineLength = 40;
+
+  QStringList splitString = oldString.split(" ");
+  QString outString;
+  int lengthCount = 0;
+  foreach(QString item, splitString)
+  {
+    if (lengthCount > maxLineLength)
+    {
+      outString += "\n";
+      lengthCount = 0;
+    }
+
+    outString += item;
+    outString += " ";
+    lengthCount += (item.length() + 1);
+  }
+
+  return outString;
+}
 
 
 QT_END_NAMESPACE

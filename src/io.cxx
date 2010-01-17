@@ -1027,7 +1027,7 @@ bool KnittingSymbolReader::parse_symbol_description_(
   {
     return false;
   }
-  
+
   /* construct the knitting symbol pointer */
   KnittingSymbolPtr newSymbol = KnittingSymbolPtr(
     new KnittingSymbol(

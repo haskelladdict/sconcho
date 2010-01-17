@@ -1972,7 +1972,7 @@ QString GraphicsScene::get_symbol_description_(
     description = symbolDescriptors_[fullName];
   }
 
-  return description;
+  return format_string(description);
 }
  
 
@@ -2060,10 +2060,10 @@ int GraphicsScene::get_next_legend_items_y_position_() const
 
   int yMaxLegend = static_cast<int>(
       floor(get_max_y_coordinate(allLegendGraphicsItems)));
-  int yMaxGrid = numRows_ * cellSize_ + origin_.y();
+  int yMaxGrid = (numRows_ + 1) * cellSize_  + origin_.y();
   int yMax = qMax(yMaxGrid, yMaxLegend);
  
-  return (yMax + cellSize_ * 1.5);
+  return (yMax + cellSize_ * 0.5);
 }
 
 

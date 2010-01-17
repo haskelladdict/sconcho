@@ -74,6 +74,15 @@ QPair<QString,int> split_into_category_and_position(
   const QString& parseString);
 
 
+//---------------------------------------------------------------
+// this function takes a string, typically a pattern description
+// and tries to format them a bit nicer since they come as one
+// long string. We don't want to be fancy here and basically
+// just break possible long lines into a bunch of shorter ones.
+//---------------------------------------------------------------
+QString format_string(const QString& oldString);
+
+
 QT_END_NAMESPACE
 
 #endif
