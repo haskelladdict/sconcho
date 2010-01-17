@@ -674,7 +674,7 @@ bool CanvasIOReader::read()
     node = node.nextSibling();
   }
 
-  return true;
+  return parseStatus;
 }
 
 
@@ -754,8 +754,10 @@ bool CanvasIOReader::parse_patternGridItems_(const QDomNode& itemNode)
     retrieve_knitting_symbol(allSymbols_, category, name, symbolPtr);
   if (!status)
   {
-    qDebug() << "ERROR: failed to load symbol " << "category"
-             << "/" << name;
+    qDebug() << "ERROR: failed to load symbol" << name 
+             << "in category" << category;
+    qDebug() << "       at grid element (" << colIndex << "," 
+             << rowIndex << ")";
     return false;
   }
   
