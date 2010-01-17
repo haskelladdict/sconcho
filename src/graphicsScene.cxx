@@ -879,6 +879,7 @@ void GraphicsScene::insert_col_(int aCol)
 
     anItem->Init();
     anItem->setPos(compute_cell_origin_(aCol, row));  
+    anItem->insert_knitting_symbol(defaultSymbol_);
     add_patternGridItem_(anItem);
   }
 
@@ -942,6 +943,7 @@ void GraphicsScene::insert_row_(int aRow)
 
     anItem->Init();
     anItem->setPos(compute_cell_origin_(column, aRow+1)); 
+    anItem->insert_knitting_symbol(defaultSymbol_);
     add_patternGridItem_(anItem);
   }
 
