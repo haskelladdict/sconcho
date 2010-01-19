@@ -47,7 +47,7 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 SymbolSelectorWidget::SymbolSelectorWidget(
-  const QList<KnittingSymbolPtr>& symbols, int cellSize,
+  const QList<ParsedSymbol>& symbols, int cellSize,
   QWidget* myParent)
     :
       QTabWidget(myParent),
@@ -178,15 +178,13 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
 void SymbolSelectorWidget::create_tabs_()
 {
   /* organize all knitting symbols into their categories */
-  QMultiHash<QString,QPair<KnittingSymbolPtr,int> > symbolHash;
-  foreach(KnittingSymbolPtr sym, allSymbols_)
+  QMultiHash<QString,ParsedSymbol> symbolHash;
+  foreach(ParsedSymbol sym, allSymbols_)
   {
-    QPair<QString,int> categoryInfo =
-      split_into_category_and_position(sym->category());
-    symbolHash.insert(categoryInfo.first,
-                      QPair<KnittingSymbolPtr,int>(sym,categoryInfo.second));
+    symbolHash.insert(sym.first->category(), sym);
   }
 
+  
   /* loop over all categories and greate the tabs */
   QList<QString> theKeys(symbolHash.uniqueKeys());
   QList<QString>::iterator key;
@@ -196,8 +194,8 @@ void SymbolSelectorWidget::create_tabs_()
     /* we use a hash to sort the symbols in each category
      * by their requested order */
     QMultiHash<int,KnittingSymbolPtr> orderedSymbols;
-    QList<QPair<KnittingSymbolPtr,int> > symbolList(symbolHash.values(*key));
-    QList<QPair<KnittingSymbolPtr,int> >::iterator itemPos;
+    QList<ParsedSymbol> symbolList(symbolHash.values(*key));
+    QList<ParsedSymbol>::iterator itemPos;
     for (itemPos = symbolList.begin(); itemPos != symbolList.end(); ++itemPos)
     {
       orderedSymbols.insert((*itemPos).second, (*itemPos).first);

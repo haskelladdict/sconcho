@@ -49,13 +49,17 @@ class QFile;
 class QTextStream;
 
 
+/* convenience typedefs */
+typedef QPair<KnittingSymbolPtr,int> ParsedSymbol;
+
+
 //--------------------------------------------------------------
 // this function tries to load all knitting symbols it can
 // find (at the default and user defined paths), creates
 // the corresponding KnittingSymbolPtrs and returns them
 // all in a QList
 //--------------------------------------------------------------
-QList<KnittingSymbolPtr> load_all_symbols();
+QList<ParsedSymbol> load_all_symbols();
 
 
 
@@ -63,7 +67,7 @@ QList<KnittingSymbolPtr> load_all_symbols();
 // this function takes a path and looks for directories
 // containing instructions for knitting symbols
 //--------------------------------------------------------------
-QList<KnittingSymbolPtr> load_symbols_from_path(const QString& path);
+QList<ParsedSymbol> load_symbols_from_path(const QString& path);
 
 
 
@@ -300,9 +304,9 @@ public:
   bool read();
 
   /* if reading succeeded (i.e., make sure to check the return
-   * value of read first) returns a fully constructed knitting
-   * symbol object */
-  KnittingSymbolPtr get_symbol() const { return constructedSymbol_; }
+   * value of read first) returns a fully constructed pair of
+   * knitting symbol object and its position on the widget */
+  QPair<KnittingSymbolPtr,int> get_symbol() const;
 
 
 private:
@@ -315,7 +319,10 @@ private:
   QString descriptionFileName_;
   QFile* filePtr_;
   QDomDocument readDoc_;
+
+  /* final parsed results */
   KnittingSymbolPtr constructedSymbol_;
+  int interfacePosition_;
 
   /* helper functions */
   bool parse_symbol_description_(const QDomNode& itemNode);

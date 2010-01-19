@@ -94,8 +94,9 @@ bool MainWindow::Init()
   /* populate the main interface 
    * NOTE: We NEED to first create the patterKeyDialog and
    * symbolsWidget before we add the graphicsScence */
-  allSymbols_ = load_all_symbols();
-  create_symbols_widget_(allSymbols_);
+  QList<ParsedSymbol> rawSymbols = load_all_symbols();
+  initialize_symbols_(rawSymbols);
+  create_symbols_widget_(rawSymbols);
   create_graphics_scene_();
   create_toolbar_();
   create_color_widget_();
@@ -648,11 +649,25 @@ void MainWindow::create_graphics_scene_()
 }
 
 
+//------------------------------------------------------------
+// take the rawSymbols from the symbol parser and use them
+// to initialize the list of stored KnittingPointer symbols
+//------------------------------------------------------------
+void MainWindow::initialize_symbols_(
+  const QList<ParsedSymbol>& rawSymbols)
+{
+  foreach(ParsedSymbol sym, rawSymbols)
+  {
+    allSymbols_.push_back(sym.first);
+  }
+}
+
+
 //-------------------------------------------------------------
 // create the widget showing the available symbols 
 //-------------------------------------------------------------
 void MainWindow::create_symbols_widget_(
-  const QList<KnittingSymbolPtr>& allSymbols)
+  const QList<QPair<KnittingSymbolPtr,int> >& allSymbols)
 {
   symbolSelector_ = new SymbolSelectorWidget(allSymbols,
     GRID_CELL_SIZE, this);

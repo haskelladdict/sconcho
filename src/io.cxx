@@ -42,6 +42,7 @@
 #include "config.h"
 #include "basicDefs.h"
 #include "graphicsScene.h"
+#include "helperFunctions.h"
 #include "legendItem.h"
 #include "legendLabel.h"
 #include "patternGridItem.h"
@@ -69,9 +70,9 @@ namespace
 // the corresponding KnittingSymbolPtrs and returns them
 // all in a QList
 //--------------------------------------------------------------
-QList<KnittingSymbolPtr> load_all_symbols()
+QList<ParsedSymbol> load_all_symbols()
 {
-  QList<KnittingSymbolPtr> allSymbols;
+  QList<ParsedSymbol> allSymbols;
   QStringList symbolPaths(get_all_symbol_paths());
   foreach(QString path, symbolPaths)
   {
@@ -89,14 +90,14 @@ QList<KnittingSymbolPtr> load_all_symbols()
 // NOTE: We have to expect that some of the directories
 // the we examine won't contain actual symbol information
 //--------------------------------------------------------------
-QList<KnittingSymbolPtr> load_symbols_from_path(const QString& path)
+QList<ParsedSymbol> load_symbols_from_path(const QString& path)
 {
-  QList<KnittingSymbolPtr> allSymbols;
+  QList<ParsedSymbol> allSymbols;
   
   QDir symbolDir(path);
-  QStringList allFiles(
+  QStringList allDirs(
     symbolDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot));
-  foreach(QString directory, allFiles)
+  foreach(QString directory, allDirs)
   {
     KnittingSymbolReader symbolReader(path + "/" + directory);
     if (symbolReader.Init())
@@ -966,6 +967,17 @@ bool KnittingSymbolReader::read()
 
 
 /**************************************************************
+ * return a pair of fully constructed knitting symbol object
+ * and its position in the symbol widget interface
+**************************************************************/
+ParsedSymbol KnittingSymbolReader::get_symbol() const
+{
+  return ParsedSymbol(constructedSymbol_, interfacePosition_);
+}
+
+
+
+/**************************************************************
  *
  * PRIVATE FUNCTIONS 
  *
@@ -979,7 +991,7 @@ bool KnittingSymbolReader::parse_symbol_description_(
 {
   /* loop over all the properties we expect for the description */
   QString svgName("");
-  QString category("");
+  QString rawCategory("");
   QString description("");
   QString patternName("");
   QString patternDescription("");
@@ -998,7 +1010,7 @@ bool KnittingSymbolReader::parse_symbol_description_(
     if (node.toElement().tagName() == "category")
     {
       QDomNode childNode(node.firstChild());
-      category = childNode.toText().data();
+      rawCategory = childNode.toText().data();
     }
     
     if (node.toElement().tagName() == "patternName")
@@ -1030,16 +1042,20 @@ bool KnittingSymbolReader::parse_symbol_description_(
     return false;
   }
 
+  QPair<QString,int> separatedCategory =
+    split_into_category_and_position(rawCategory);
+  
   /* construct the knitting symbol pointer */
   KnittingSymbolPtr newSymbol = KnittingSymbolPtr(
     new KnittingSymbol(
       pathName_ + "/" + svgName + ".svg",
       patternName,
-      category,
+      separatedCategory.first,
       QSize(patternWidth,1),
       patternDescription));
 
   constructedSymbol_ = newSymbol;
+  interfacePosition_ = separatedCategory.second; 
 
   return true;
 }

@@ -31,6 +31,7 @@
 #include <QString>
 
 /* local includes */
+#include "io.h"
 #include "knittingSymbol.h"
 
 
@@ -125,6 +126,7 @@ private:
 
   /* interface generation functions */
   void create_menu_bar_();
+  void initialize_symbols_(const QList<ParsedSymbol>& syms);
   void create_file_menu_();
   void create_edit_menu_();
   void create_view_menu_();
@@ -134,7 +136,7 @@ private:
   void create_graphics_scene_();
   void create_property_symbol_layout_();
   void create_color_widget_();
-  void create_symbols_widget_(const QList<KnittingSymbolPtr>& syms);
+  void create_symbols_widget_(const QList<ParsedSymbol>& syms);
   void create_toolbar_();
   void create_timers_();
   void create_pattern_key_dialog_();

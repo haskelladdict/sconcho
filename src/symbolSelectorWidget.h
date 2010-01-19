@@ -57,8 +57,9 @@ class SymbolSelectorWidget
     
 public:
 
-  explicit SymbolSelectorWidget(const QList<KnittingSymbolPtr>& syms,
-                                int cellSize, QWidget* myParent = 0);
+  explicit SymbolSelectorWidget(
+    const QList<QPair<KnittingSymbolPtr,int> >& syms,
+    int cellSize, QWidget* myParent = 0);
   bool Init();
 
   /* access to default symbol, i.e. the one that will be 
@@ -85,7 +86,7 @@ private:
   int cellSize_;
 
   /* all knitting symbols we know about */
-  const QList<KnittingSymbolPtr>& allSymbols_;
+  const QList<QPair<KnittingSymbolPtr,int> >& allSymbols_;
   
   /* the currently selected symbol */
   SymbolSelectorItem* highlightedItem_;
