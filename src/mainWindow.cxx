@@ -70,6 +70,7 @@ QT_BEGIN_NAMESPACE
 MainWindow::MainWindow() 
   :
     mainSplitter_(new QSplitter),
+    projectName_(""),
     settings_("sconcho","settings")
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -192,6 +193,17 @@ void MainWindow::clear_statusBar()
 }
 
 
+//-------------------------------------------------------------
+// set the name of the current project
+//-------------------------------------------------------------
+void MainWindow::set_project_name(const QString& newName)
+{ 
+  projectName_ = newName;
+  QFileInfo info(newName);
+  setWindowTitle(info.fileName());
+}
+
+
 
 /**************************************************************
  *
@@ -227,6 +239,9 @@ void MainWindow::show_file_open_dialog_()
     return;
   }
 
+  /* update project filename */
+  set_project_name(openFileName);
+
   load_project_(openFileName);
 }
 
@@ -258,6 +273,9 @@ void MainWindow::show_file_save_dialog_()
       QMessageBox::Ok);
     return;
   }
+
+  /* update project filename */
+  set_project_name(saveFileName);
 
   save_project_(saveFileName);
 }
@@ -399,6 +417,23 @@ void MainWindow::show_preferences_dialog_()
 }
 
 
+//------------------------------------------------------------
+// SLOT: If the user has already defined a fileName just
+// save it, other wise open a save_file dialog
+//------------------------------------------------------------
+void MainWindow::save_file_()
+{
+  if (projectName_.isEmpty())
+  {
+    show_file_save_dialog_();
+  }
+  else
+  {
+    save_project_(projectName_);
+  }
+}
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -447,6 +482,16 @@ void MainWindow::create_file_menu_()
   fileMenu->addAction(saveAction);
   saveAction->setShortcut(tr("Ctrl+S"));
   connect(saveAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(save_file_()));
+
+
+  /* save as */
+  QAction* saveAsAction =
+    new QAction(QIcon(":/icons/filesave.png"),tr("Save as"), this);
+  fileMenu->addAction(saveAsAction);
+  connect(saveAsAction, 
           SIGNAL(triggered()), 
           this,
           SLOT(show_file_save_dialog_()));
@@ -697,7 +742,7 @@ void MainWindow::create_toolbar_()
   connect(saveButton,
           SIGNAL(clicked()),
           this,
-          SLOT(show_file_save_dialog_()));
+          SLOT(save_file_()));
  
   QToolButton* exportButton = new QToolButton(this);
   exportButton->setIcon(QIcon(":/icons/fileexport.png"));

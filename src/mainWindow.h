@@ -103,6 +103,7 @@ public slots:
   void show_statusBar_message(QString msg);
   void show_statusBar_error(QString msg);
   void clear_statusBar();
+  void set_project_name(const QString& newName);
   
 
 private slots:
@@ -117,6 +118,7 @@ private slots:
   void show_sconcho_dialog_();
   void show_print_dialog_();
   void show_preferences_dialog_();
+  void save_file_();
 
    
 private:
@@ -153,7 +155,10 @@ private:
 
   /* list of all knitting symbols we know about */
   QList<KnittingSymbolPtr> allSymbols_;
-  
+ 
+  /* the name of the project if any */
+  QString projectName_;
+
   /* canvas on which the actual data is being displayed */
   GraphicsScene* canvas_;
   PatternView* canvasView_;
