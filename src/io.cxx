@@ -231,7 +231,7 @@ QString show_file_export_dialog()
   QString currentDirectory = QDir::currentPath();
   QString saveFileName = QFileDialog::getSaveFileName(0,
     QObject::tr("Export"), currentDirectory,
-    QObject::tr("Image Files (*.png *.tif *.jpg *.gif)"));
+    QObject::tr("Image Files (*.png *.tif)"));
 
   if ( saveFileName.isEmpty() )
   {
@@ -243,8 +243,7 @@ QString show_file_export_dialog()
   QFileInfo saveFileInfo(saveFileName);
   QString extension = saveFileInfo.completeSuffix();
 
-  if ( extension != "png" && extension != "tif"
-       && extension != "jpg" && extension != "gif" )
+  if ( extension != "png" && extension != "tif")
   {
     QMessageBox::warning(0, QObject::tr("Warning"),
       QObject::tr("Unknown file format ") + extension,
@@ -270,11 +269,12 @@ void export_scene(const QString& fileName, GraphicsScene* scene)
   theScene.adjust(-10,-10,10,10);  // need this to avoid cropping
 
   QImage finalImage(theScene.width()*3, theScene.height() *3,
-      QImage::Format_ARGB32_Premultiplied);
+    QImage::Format_ARGB32_Premultiplied);
   QPainter painter(&finalImage);
   painter.setRenderHints(QPainter::SmoothPixmapTransform);
   painter.setRenderHints(QPainter::HighQualityAntialiasing);
   painter.setRenderHints(QPainter::TextAntialiasing);
+  painter.setBackgroundMode(Qt::TransparentMode);
 
   scene->render(&painter, QRectF(), theScene);
   painter.end();

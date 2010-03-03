@@ -471,7 +471,7 @@ void MainWindow::create_file_menu_()
   connect(newAction, 
           SIGNAL(triggered()), 
           this,
-          SLOT(reset_grid()));
+          SLOT(reset_grid_()));
 
   fileMenu->addSeparator();
 
