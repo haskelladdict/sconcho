@@ -452,7 +452,6 @@ void MainWindow::create_menu_bar_()
   create_file_menu_();
   create_edit_menu_();
   create_view_menu_();
-  create_grid_menu_();
   create_help_menu_();
 } 
 
@@ -463,6 +462,19 @@ void MainWindow::create_menu_bar_()
 void MainWindow::create_file_menu_()
 {
   QMenu* fileMenu = menuBar_->addMenu(tr("&File"));
+
+  /* new */
+  QAction* newAction =
+    new QAction(QIcon(":/icons/fileopen.png"),tr("&New"), this);
+  fileMenu->addAction(newAction);
+  newAction->setShortcut(tr("Ctrl+N"));
+  connect(newAction, 
+          SIGNAL(triggered()), 
+          this,
+          SLOT(reset_grid()));
+
+  fileMenu->addSeparator();
+
 
   /* open */
   QAction* openAction =
@@ -598,28 +610,6 @@ void MainWindow::create_view_menu_()
           canvasView_,
           SLOT(visible_in_view()));
 }
-
-
-
-
-//------------------------------------------------------------
-// create the grid menu for general pattern grid controls 
-//------------------------------------------------------------
-void MainWindow::create_grid_menu_()
-{
-  QMenu* gridMenu = menuBar_->addMenu(tr("&Grid"));
-
-  /* reset */
-  QAction* gridResetAction = 
-    new QAction(tr("&Reset Grid"), this);
-  gridMenu->addAction(gridResetAction);
-  gridResetAction->setShortcut(tr("Ctrl+R"));
-  connect(gridResetAction, 
-          SIGNAL(triggered()), 
-          this,
-          SLOT(reset_grid_()));
-} 
-
 
 
 //------------------------------------------------------------
