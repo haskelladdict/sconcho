@@ -189,7 +189,7 @@ void MainWindow::clear_statusBar()
   QPalette aPalette = statusBarMessages_->palette();
   aPalette.setBrush(QPalette::WindowText, Qt::black);
   statusBarMessages_->setPalette(aPalette);
-  statusBarMessages_->setText(tr("Nice pattern!"));
+  statusBarMessages_->setText(tr("Nice chart!"));
 }
 
 

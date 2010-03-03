@@ -232,7 +232,7 @@ void PatternView::mouseReleaseEvent(QMouseEvent* evt)
 //-------------------------------------------------------------
 void PatternView::mousePressEvent(QMouseEvent* evt)
 {
-  if (evt->modifiers().testFlag(Qt::ControlModifier))
+  if (evt->modifiers().testFlag(Qt::ShiftModifier))
   {
     rubberBandOn_ = true;
     rubberBandOrigin_ = evt->pos();
