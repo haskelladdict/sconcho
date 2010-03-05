@@ -70,7 +70,7 @@ QT_BEGIN_NAMESPACE
 MainWindow::MainWindow() 
   :
     mainSplitter_(new QSplitter),
-    projectName_(""),
+    saveFilePath_(""),
     settings_("sconcho","settings")
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -194,11 +194,11 @@ void MainWindow::clear_statusBar()
 
 
 //-------------------------------------------------------------
-// set the name of the current project
+// set the path  the current project file
 //-------------------------------------------------------------
-void MainWindow::set_project_name(const QString& newName)
+void MainWindow::set_project_file_path(const QString& newName)
 { 
-  projectName_ = newName;
+  saveFilePath_ = newName;
   QFileInfo info(newName);
   setWindowTitle(info.fileName());
 }
@@ -239,8 +239,8 @@ void MainWindow::show_file_open_dialog_()
     return;
   }
 
-  /* update project filename */
-  set_project_name(openFileName);
+  /* update path to project file */
+  set_project_file_path(openFileName);
 
   load_project_(openFileName);
 }
@@ -275,7 +275,7 @@ void MainWindow::show_file_save_dialog_()
   }
 
   /* update project filename */
-  set_project_name(saveFileName);
+  set_project_file_path(saveFileName);
 
   save_project_(saveFileName);
 }
@@ -302,7 +302,7 @@ void MainWindow::export_legend_dialog_()
     return;
   }
   
-  QString exportFilename = show_file_export_dialog();
+  QString exportFilename = show_file_export_dialog(saveFilePath_);
   if (exportFilename.isEmpty())
   {
     return;
@@ -320,7 +320,7 @@ void MainWindow::export_legend_dialog_()
 //-------------------------------------------------------------
 void MainWindow::export_canvas_dialog_()
 {
-  QString exportFilename = show_file_export_dialog();
+  QString exportFilename = show_file_export_dialog(saveFilePath_);
   if (exportFilename.isEmpty())
   {
     return;
@@ -423,13 +423,13 @@ void MainWindow::show_preferences_dialog_()
 //------------------------------------------------------------
 void MainWindow::save_file_()
 {
-  if (projectName_.isEmpty())
+  if (saveFilePath_.isEmpty())
   {
     show_file_save_dialog_();
   }
   else
   {
-    save_project_(projectName_);
+    save_project_(saveFilePath_);
   }
 }
 

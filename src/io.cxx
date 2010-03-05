@@ -226,11 +226,11 @@ QString search_for_environmental_variable(const QString& item)
 // this functions a file export dialog and returns the selected
 // filename or an empty string if nothing was selected
 //---------------------------------------------------------------
-QString show_file_export_dialog()
+QString show_file_export_dialog(const QString& filePath)
 {
-  QString currentDirectory = QDir::currentPath();
+  QFileInfo currentFileInfo(filePath);
   QString saveFileName = QFileDialog::getSaveFileName(0,
-    QObject::tr("Export"), currentDirectory,
+    QObject::tr("Export"), currentFileInfo.baseName(),
     QObject::tr("Image Files (*.png *.tif)"));
 
   if ( saveFileName.isEmpty() )

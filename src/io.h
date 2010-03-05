@@ -114,7 +114,7 @@ QString search_for_environmental_variable(const QString& item);
 // the selected filename or an empty string if none
 // was entered
 //---------------------------------------------------------------
-QString show_file_export_dialog();
+QString show_file_export_dialog(const QString& filePath);
 
 
 
