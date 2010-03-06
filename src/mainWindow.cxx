@@ -241,7 +241,7 @@ void MainWindow::show_file_save_dialog_()
 {
   QFileInfo currentFileInfo(saveFilePath_);
   QString saveFileName = QFileDialog::getSaveFileName(this,
-    tr("Save Pattern"), currentFileInfo.baseName(),
+    tr("Save Pattern"), currentFileInfo.fileName(),
     tr("sconcho pattern files (*.spf)"));
 
   if ( saveFileName.isEmpty() )
