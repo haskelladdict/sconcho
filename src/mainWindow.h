@@ -109,7 +109,7 @@ public slots:
 private slots:
 
   void quit_sconcho_();
-  void reset_grid_();
+  void new_grid_();
   void show_about_qt_dialog_();
   void show_file_open_dialog_();
   void show_file_save_dialog_();

@@ -21,6 +21,7 @@
 /** Qt headers */
 #include <QAction>
 #include <QCheckBox>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
@@ -86,6 +87,9 @@ bool MainWindow::Init()
   {
     return false;
   }
+
+  //QStringList foo = QCoreApplication::arguments();
+  //qDebug() << foo;
 
   setWindowTitle(tr("sconcho"));
   setMinimumSize(initialSize);
@@ -356,17 +360,16 @@ void MainWindow::quit_sconcho_()
 
 
 //------------------------------------------------------------
-// SLOT: this slot handles user requests to reset the pattern grid
-// and create a new one of a certain dimension
+// SLOT: this slot handles user requests to create a 
+// new chart
 //------------------------------------------------------------
-void MainWindow::reset_grid_()
+void MainWindow::new_grid_()
 {
   /* first off, let's warn the user that she is about to
    * loose all her work */
   QMessageBox warn(QMessageBox::Critical, tr("Warning"),
-      "Resetting the grid will cause the loss of "
-      "everything that is in the current pattern "
-      "grid. Is this ok?",
+      "This will erase your current pattern. Do you "
+      "want to continue?",
       QMessageBox::Ok | QMessageBox::Cancel);
 
   int status = warn.exec();
@@ -471,7 +474,7 @@ void MainWindow::create_file_menu_()
   connect(newAction, 
           SIGNAL(triggered()), 
           this,
-          SLOT(reset_grid_()));
+          SLOT(new_grid_()));
 
   fileMenu->addSeparator();
 
@@ -664,8 +667,8 @@ void MainWindow::create_status_bar_()
 //-------------------------------------------------------------
 void MainWindow::create_graphics_scene_()
 {
-  /* ask user for the grid size */
-  QSize gridSize = show_grid_dimension_dialog_();
+  /* initialize with a default grid size of (10,10) */
+  QSize gridSize(10,10);
 
   /* get default symbol from symbol selector widget */
   KnittingSymbolPtr defaultSymbol = symbolSelector_->selected_symbol();
