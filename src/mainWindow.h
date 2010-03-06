@@ -109,7 +109,7 @@ public slots:
 private slots:
 
   void quit_sconcho_();
-  void new_grid_();
+  void new_grid_dialog_();
   void show_about_qt_dialog_();
   void show_file_open_dialog_();
   void show_file_save_dialog_();
@@ -173,6 +173,8 @@ private:
   QSize show_grid_dimension_dialog_();
   void save_project_(const QString& fileName);
   void load_project_(const QString& fileName);
+  void new_grid_(const QSize& newSize);
+  void parse_command_line_();
 };
 
 QT_END_NAMESPACE

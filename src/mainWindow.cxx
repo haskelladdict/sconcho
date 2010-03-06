@@ -88,9 +88,6 @@ bool MainWindow::Init()
     return false;
   }
 
-  //QStringList foo = QCoreApplication::arguments();
-  //qDebug() << foo;
-
   setWindowTitle(tr("sconcho"));
   setMinimumSize(initialSize);
 
@@ -136,6 +133,9 @@ bool MainWindow::Init()
   sizes << 450 << 250;
   mainSplitter_->setSizes(sizes);
   setCentralWidget(mainSplitter_);
+
+  parse_command_line_();
+
   return true;
 }
 
@@ -229,22 +229,6 @@ void MainWindow::show_file_open_dialog_()
   {
     return;
   }
-
-  /* extract file extension and make sure it corresponds to
-   * a supported format */
-  QFileInfo openFileInfo(openFileName);
-  QString extension = openFileInfo.completeSuffix();
-
-  if (extension != "spf")
-  {
-    QMessageBox::warning(this, tr("Warning"),
-      tr("Can not open file with format ") + extension,
-      QMessageBox::Ok);
-    return;
-  }
-
-  /* update path to project file */
-  set_project_file_path(openFileName);
 
   load_project_(openFileName);
 }
@@ -363,7 +347,7 @@ void MainWindow::quit_sconcho_()
 // SLOT: this slot handles user requests to create a 
 // new chart
 //------------------------------------------------------------
-void MainWindow::new_grid_()
+void MainWindow::new_grid_dialog_()
 {
   /* first off, let's warn the user that she is about to
    * loose all her work */
@@ -474,7 +458,7 @@ void MainWindow::create_file_menu_()
   connect(newAction, 
           SIGNAL(triggered()), 
           this,
-          SLOT(new_grid_()));
+          SLOT(new_grid_dialog_()));
 
   fileMenu->addSeparator();
 
@@ -955,10 +939,30 @@ void MainWindow::save_project_(const QString& fileName)
 //-------------------------------------------------------------
 void MainWindow::load_project_(const QString& fileName)
 {
+  /* does file exist? */
+  QFileInfo openFile(fileName);
+  if (!openFile.exists())
+  {
+    QMessageBox::critical(this, tr("Error"),
+      tr("File ") + fileName + tr(" does not exist."),
+      QMessageBox::Ok);
+    return;
+  }
+
+  /* is the extension correct? */
+  QString extension = openFile.completeSuffix();
+  if (extension != "spf")
+  {
+    QMessageBox::critical(this, tr("Error"),
+      tr("Can not open file with format ") + extension,
+      QMessageBox::Ok);
+    return;
+  }
+
+  /* try to read it */
   CanvasIOReader reader(fileName, allSymbols_);
 
-  /* we need to make sure that we are able to open the file 
-   * for reading */
+  /* we need to make sure that we could parse the file */
   if (!reader.Init())
   {
     QMessageBox::critical(0,"Read File",
@@ -986,7 +990,65 @@ void MainWindow::load_project_(const QString& fileName)
   }
 
   canvasView_->visible_in_view();
+  set_project_file_path(fileName);
 }
+
+
+
+//-------------------------------------------------------------
+// create a new grid of the given size
+//-------------------------------------------------------------
+void MainWindow::new_grid_(const QSize& newSize)
+{
+  canvas_->reset_grid(newSize);
+  canvasView_->visible_in_view();
+}
+
+
+
+//-------------------------------------------------------------
+// parse command line for optional arguments such as
+// - an spf project file (just give a filename)
+// - an initial grid dimension (via -g xdim ydim)
+//-------------------------------------------------------------
+void MainWindow::parse_command_line_()
+{
+  QStringList cmdLine = QCoreApplication::arguments();
+  if (cmdLine.size() < 2)
+  {
+    return;
+  }
+
+  /* if the first argument is not "-g" we assume it is a filename
+   * NOTE: It is load_project_'s resonsibility to make sure what
+   * the user supplied really is a file and can be opened as a sconcho
+   * file. */
+  if (cmdLine.at(1) != "-g")
+  {
+    load_project_(cmdLine.at(1));
+  }
+  else
+  {
+    /* we need at list two more ints specifying the size */
+    if (cmdLine.size() >= 4)
+    {
+      bool xOk;
+      int xDim = cmdLine.at(2).toInt(&xOk);
+      
+      bool yOk;
+      int yDim = cmdLine.at(3).toInt(&yOk);
+
+      /* if we obtained two ints */
+      if (xOk && yOk)
+      {
+        QSize newSize(xDim, yDim);
+        new_grid_(newSize);
+      }
+    }
+  }
+}
+
+
 
 
 QT_BEGIN_NAMESPACE
