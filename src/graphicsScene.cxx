@@ -188,6 +188,21 @@ void GraphicsScene::load_new_canvas(
 
 
 //-------------------------------------------------------------
+// here we create all the extra label items, i.e., the ones
+// that are not controlled by the chart itself
+//-------------------------------------------------------------
+void GraphicsScene::instantiate_legend_items(
+    const QList<LegendEntryDescriptorPtr>& extraLegendItems)
+{
+  foreach(LegendEntryDescriptorPtr rawItem, extraLegendItems)
+  {
+    notify_legend_of_item_addition_(rawItem->patternSymbolPtr, 
+      backgroundColor_, "extraLegendItem");
+  }
+}
+
+
+//-------------------------------------------------------------
 // this function is called after a previously saved sconcho
 // project file has been read in. It places the legend items
 // at their previously saved locations on the canvas.
@@ -200,8 +215,17 @@ void GraphicsScene::place_legend_items(
 
   foreach(LegendEntryDescriptorPtr entryDesc, newLegendEntries)
   {
-    /* find the legend entry by entryID */
+    /* find the legend entry by entryID 
+     * NOTE: We need to do some careful checking here! 
+     * If we encounter a legend entry that we don't have
+     * for some reason we just skip it */
     QString entryID = entryDesc->entryID;
+    if (legendEntries_.find(entryID) == legendEntries_.end())
+    {
+      qDebug() << "Error: Problem parsing legend item " 
+               << entryID << " in input file";
+      continue;
+    }
     LegendEntry entry = legendEntries_[entryID];
 
     /* position item and label */
@@ -421,6 +445,18 @@ void GraphicsScene::update_selected_symbol(
   /* we'll also try to place the newly picked item into
    * the currently selected cells */
   update_active_items_();
+}
+
+
+
+//-------------------------------------------------------------
+// add this symbol to the legend 
+//-------------------------------------------------------------
+void GraphicsScene::add_symbol_to_legend(
+    const KnittingSymbolPtr symbol)
+{
+  notify_legend_of_item_addition_(symbol, backgroundColor_, 
+      "extraLegendItem");
 }
 
 
@@ -1070,12 +1106,14 @@ void GraphicsScene::change_selected_cells_colors_()
   foreach(PatternGridItem* item, activeItems_)
   {
     /* remove us from the legend */
-    notify_legend_of_item_removal_(item);
+    notify_legend_of_item_removal_(item->get_knitting_symbol(),
+      item->color(), "chartLegendItem");
     
     item->set_background_color(backgroundColor_);
 
     /* re-add newly colored symbol to the legend */
-    notify_legend_of_item_addition_(item);
+    notify_legend_of_item_addition_(item->get_knitting_symbol(), 
+      item->color(), "chartLegendItem");
     
   }
 
@@ -1932,7 +1970,8 @@ void GraphicsScene::show_rectangle_manage_menu_(
 void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 {
   addItem(anItem);
-  notify_legend_of_item_addition_(anItem);
+  notify_legend_of_item_addition_(anItem->get_knitting_symbol(), 
+    anItem->color(), "chartLegendItem");
 }
 
 
@@ -1944,7 +1983,8 @@ void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
 {
   removeItem(anItem);
-  notify_legend_of_item_removal_(anItem);
+  notify_legend_of_item_removal_(anItem->get_knitting_symbol(),
+    anItem->color(), "chartLegendItem");
   
   /* delete it for good */
   anItem->deleteLater();
@@ -1978,20 +2018,22 @@ QString GraphicsScene::get_symbol_description_(
 }
  
 
-
 //-------------------------------------------------------------
 // Add a symbol plus description to the legend if neccessary.
 // This function checks if the added symbol already exists
 // in the legend. If not, create it.
+// The extraTag parameter allows more fine grained control
+// of who "owns" a legend entry (e.g. the chart itself or
+// the user added it directly from the symbolSelectorWidget.
 //-------------------------------------------------------------
 void GraphicsScene::notify_legend_of_item_addition_(
-    const PatternGridItem* item)
+    const KnittingSymbolPtr symbol, QColor aColor, QString tag)
 {
-  KnittingSymbolPtr symbol = item->get_knitting_symbol();
   QString symbolName = symbol->patternName();
   QString symbolCategory = symbol->category();
-  QString colorName  = item->color().name();
-  QString fullName = symbolCategory + symbolName + colorName;
+  QString colorName  = aColor.name();
+  QString fullName = get_legend_item_name(symbolCategory,
+      symbolName, colorName, tag);
 
   /* update reference count */
   int currentValue = usedKnittingSymbols_[fullName] + 1;
@@ -2010,7 +2052,7 @@ void GraphicsScene::notify_legend_of_item_addition_(
     int yPos = get_next_legend_items_y_position_();
 
     LegendItem* newLegendItem = new LegendItem(symbol->dim(), 
-      cellSize_, item->color());
+      cellSize_, aColor);
     newLegendItem->Init();
     newLegendItem->insert_knitting_symbol(symbol);
     newLegendItem->setPos(xPosSym, yPos);
@@ -2045,10 +2087,44 @@ void GraphicsScene::notify_legend_of_item_addition_(
     {
       emit show_whole_scene();
     }
-
   }
 }
-       
+
+
+
+//-------------------------------------------------------------
+// Remove a symbol plus description from the legend if neccessary.
+// This function checks if the removed symbol is the "last of
+// its kind" and if so removed it.
+//-------------------------------------------------------------
+void GraphicsScene::notify_legend_of_item_removal_(
+  const KnittingSymbolPtr symbol, QColor aColor, QString tag)
+{
+  QString symbolName = symbol->patternName();
+  QString symbolCategory = symbol->category();
+  QString colorName  = aColor.name();
+  QString fullName = get_legend_item_name(symbolCategory,
+      symbolName, colorName, tag);
+
+  int currentValue = usedKnittingSymbols_[fullName] - 1;
+  assert(currentValue >= 0);
+  usedKnittingSymbols_[fullName] = currentValue;
+
+  /* remove symbol if reference count hits 0 */
+  if (currentValue == 0)
+  {
+    usedKnittingSymbols_.remove(fullName);
+
+    LegendEntry deadItem = legendEntries_[fullName];
+    removeItem(deadItem.first);
+    deadItem.first->deleteLater();
+    removeItem(deadItem.second);
+    deadItem.second->deleteLater();
+    legendEntries_.remove(fullName);
+  }
+}
+
+
 
 //---------------------------------------------------------------
 // computes the best possible y position for a new legend item.
@@ -2085,39 +2161,6 @@ QList<QGraphicsItem*> GraphicsScene::get_list_of_legend_items_() const
   return allLegendGraphicsItems;
 }
 
-
-//-------------------------------------------------------------
-// Remove a symbol plus description from the legend if neccessary.
-// This function checks if the removed symbol is the "last of
-// its kind" and if so removed it.
-//-------------------------------------------------------------
-void GraphicsScene::notify_legend_of_item_removal_(
-  const PatternGridItem* item)
-{
-  KnittingSymbolPtr symbol = item->get_knitting_symbol();
-  QString symbolName = symbol->patternName();
-  QString symbolCategory = symbol->category();
-  QString colorName  = item->color().name();
-  QString fullName = symbolCategory + symbolName + colorName;
-
-  int currentValue = usedKnittingSymbols_[fullName] - 1;
-  assert(currentValue >= 0);
-  usedKnittingSymbols_[fullName] = currentValue;
-
-  /* remove symbol if reference count hits 0 */
-  if (currentValue == 0)
-  {
-    usedKnittingSymbols_.remove(fullName);
-
-    LegendEntry deadItem = legendEntries_[fullName];
-    removeItem(deadItem.first);
-    deadItem.first->deleteLater();
-    removeItem(deadItem.second);
-    deadItem.second->deleteLater();
-    legendEntries_.remove(fullName);
-  }
-}
-        
 
 //-------------------------------------------------------------
 // Update the legend labels after a settings change

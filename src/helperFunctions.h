@@ -57,11 +57,13 @@ QFont extract_font_from_settings(const QSettings& settings);
 qreal get_max_y_coordinate(const QList<QGraphicsItem*> items);
 
 
+
 //---------------------------------------------------------------
 // given a list of QGraphicsItems returns the minimum y
 // coordinate
 //---------------------------------------------------------------
 QRectF get_bounding_rect(const QList<QGraphicsItem*> items);
+
 
 
 //---------------------------------------------------------------
@@ -74,6 +76,7 @@ QPair<QString,int> split_into_category_and_position(
   const QString& parseString);
 
 
+
 //---------------------------------------------------------------
 // this function takes a string, typically a pattern description
 // and tries to format them a bit nicer since they come as one
@@ -81,6 +84,42 @@ QPair<QString,int> split_into_category_and_position(
 // just break possible long lines into a bunch of shorter ones.
 //---------------------------------------------------------------
 QString format_string(const QString& oldString);
+
+
+
+//---------------------------------------------------------------
+// this function assembles the name of a legend entry from
+// the pieces.
+// NOTE: Any change to this function may break backward
+// compatibility for sconcho project files
+//---------------------------------------------------------------
+QString get_legend_item_name(const QString& symbolCategory,
+  const QString& symbolName, const QString& colorName, 
+  const QString& tag);
+
+
+
+//---------------------------------------------------------------
+// takes a legendID and returns true if the item is a widgetItem
+// (i.e. has a widgetItem identifier) and false otherwise
+//---------------------------------------------------------------
+bool is_extraLegendItem(const QString& idString);
+
+
+
+//---------------------------------------------------------------
+// takes a legendID and returns the name of described symbol
+//---------------------------------------------------------------
+QString get_legend_item_name(const QString& theID);
+
+
+
+//---------------------------------------------------------------
+// takes a legendID and returns the category of described symbol
+//---------------------------------------------------------------
+QString get_legend_item_category(const QString& theID);
+
+
 
 
 QT_END_NAMESPACE

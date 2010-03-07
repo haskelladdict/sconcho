@@ -91,6 +91,8 @@ public:
   void reset_grid(const QSize& newSize);
   void load_new_canvas(
     const QList<PatternGridItemDescriptorPtr>& newItems);
+  void instantiate_legend_items(
+    const QList<LegendEntryDescriptorPtr>& newExtraLegendItems);
   void place_legend_items(
     const QList<LegendEntryDescriptorPtr>& newLegendEntries);
   QRectF get_visible_area() const;
@@ -117,6 +119,7 @@ signals:
 public slots:
 
   void update_selected_symbol(const KnittingSymbolPtr symbol);
+  void add_symbol_to_legend(const KnittingSymbolPtr symbol);
   void grid_item_selected(PatternGridItem* item, bool status);
   void grid_item_reset(PatternGridItem* item);
   void update_selected_background_color(const QColor& aColor);
@@ -183,8 +186,10 @@ private:
 
   /* items related to the legend */
   bool legendIsVisible_;
-  void notify_legend_of_item_addition_(const PatternGridItem* anItem);
-  void notify_legend_of_item_removal_(const PatternGridItem* anItem);
+  void notify_legend_of_item_addition_(const KnittingSymbolPtr symbol, 
+    QColor color, QString extraTag);
+  void notify_legend_of_item_removal_(const KnittingSymbolPtr symbol,
+    QColor color, QString extraTag);
   void shift_legend_items_vertically_(int pivot, int distance);
   void shift_legend_items_horizontally_(int pivot, int distance);
   void update_legend_labels_();

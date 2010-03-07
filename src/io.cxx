@@ -830,14 +830,19 @@ bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
     node = node.nextSibling();
   }
 
-
-  /* store parsed item in list of new LegendEntryDescriptors */
-  LegendEntryDescriptorPtr currentEntry(new LegendEntryDescriptor);
-  currentEntry->entryID = entryID;
-  currentEntry->itemLocation = QPointF(itemXPos, itemYPos);
-  currentEntry->labelLocation = QPointF(labelXPos, labelYPos);
-  currentEntry->labelText = labelText;
-  newLegendEntryDescriptors_.push_back(currentEntry);
+  /* if the legend entry is a widgetItem we also have to retrieve
+   * the correct KnittingSymbolPtr */
+  if (is_extraLegendItem(entryID))
+  {
+    qDebug() << "found extra legend item " << entryID;
+    add_to_extraLegendItems_(entryID, itemXPos, itemYPos, labelXPos,
+      labelYPos, labelText);
+  }
+  else
+  {
+    add_to_chartLegendItems_(entryID, itemXPos, itemYPos, labelXPos,
+      labelYPos, labelText);
+  }
 
   return true;
 }
@@ -863,6 +868,55 @@ bool CanvasIOReader::parse_projectColors_(const QDomNode& itemNode)
   return true;
 }
 
+
+
+//----------------------------------------------------------------
+// add a just parsed chartLegendItem 
+//----------------------------------------------------------------
+void CanvasIOReader::add_to_chartLegendItems_(const QString& anID, 
+  double anItemXPos, double anItemYPos, double aLabelXPos, 
+  double aLabelYPos, const QString& aLabelText)
+{
+  LegendEntryDescriptorPtr currentEntry(new LegendEntryDescriptor);
+  currentEntry->entryID = anID;
+  currentEntry->itemLocation = QPointF(anItemXPos, anItemYPos);
+  currentEntry->labelLocation = QPointF(aLabelXPos, aLabelYPos);
+  currentEntry->labelText = aLabelText;
+  currentEntry->patternSymbolPtr.reset();
+  newLegendEntryDescriptors_.push_back(currentEntry);
+}
+
+
+
+//----------------------------------------------------------------
+// add a just parsed extraLegendItem 
+// NOTE: For these we also need to provide a KnittingSymbolPtr
+// because the chart won't do it for us like for chartLegendItem
+//----------------------------------------------------------------
+void CanvasIOReader::add_to_extraLegendItems_(const QString& anID, 
+  double anItemXPos, double anItemYPos, double aLabelXPos, 
+  double aLabelYPos, const QString& aLabelText)
+{
+  QString name = get_legend_item_name(anID);
+  QString category = get_legend_item_category(anID);
+
+  /* find proper knitting symbol */
+  KnittingSymbolPtr symbolPtr;
+  bool status =
+    retrieve_knitting_symbol(allSymbols_, category, name, symbolPtr);
+  if (!status)
+  {
+    qDebug() << "ERROR: failed to load symbol" << category << ":" << name;
+  }
+  
+  LegendEntryDescriptorPtr currentEntry(new LegendEntryDescriptor);
+  currentEntry->entryID = anID;
+  currentEntry->itemLocation = QPointF(anItemXPos, anItemYPos);
+  currentEntry->labelLocation = QPointF(aLabelXPos, aLabelYPos);
+  currentEntry->labelText = aLabelText;
+  currentEntry->patternSymbolPtr = symbolPtr;
+  newExtraLegendItemDescriptors_.push_back(currentEntry); 
+}
 
 
 

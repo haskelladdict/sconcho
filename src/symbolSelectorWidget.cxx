@@ -160,7 +160,13 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
   SymbolSelectorItem* symbol = 
     new SymbolSelectorItem(cellSize_, aSym, this);
   symbol->Init();
- 
+
+  connect(symbol,
+          SIGNAL(new_legend_item(const KnittingSymbolPtr)),
+          this,
+          SIGNAL(new_legend_item(const KnittingSymbolPtr))
+         );
+
   QLabel* symbolLabel = new QLabel(aSym->patternName());
   QHBoxLayout* symbolLayout = new QHBoxLayout;
   symbolLayout->addWidget(symbol);

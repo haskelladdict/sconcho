@@ -90,7 +90,6 @@ bool MainWindow::Init()
 
   setWindowTitle(tr("sconcho"));
   setMinimumSize(initialSize);
-
   initialize_settings(settings_);
 
   /* populate the main interface 
@@ -110,8 +109,13 @@ bool MainWindow::Init()
   connect(symbolSelector_,
           SIGNAL(selected_symbol_changed(const KnittingSymbolPtr)),
           canvas_,
-          SLOT(update_selected_symbol(const KnittingSymbolPtr)),
-          Qt::DirectConnection
+          SLOT(update_selected_symbol(const KnittingSymbolPtr))
+         );
+ 
+  connect(symbolSelector_,
+          SIGNAL(new_legend_item(const KnittingSymbolPtr)),
+          canvas_,
+          SLOT(add_symbol_to_legend(const KnittingSymbolPtr))
          );
   
   connect(this,
@@ -982,7 +986,9 @@ void MainWindow::load_project_(const QString& fileName)
 
     /* establish canvas */
     canvas_->load_new_canvas(reader.get_pattern_items());
+    canvas_->instantiate_legend_items(reader.get_extra_legend_items());
     canvas_->place_legend_items(reader.get_legend_items());
+    canvas_->place_legend_items(reader.get_extra_legend_items());
 
     /* read custom colors and apply them */
     QList<QColor> foo(reader.get_project_colors());

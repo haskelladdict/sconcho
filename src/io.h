@@ -200,7 +200,8 @@ typedef boost::shared_ptr<PatternGridItemDescriptor>
  *
  * LegendEntryDescriptor is a data structure that contains
  * all the information allowing GraphicsScene to reconstruct
- * the position and text of legend items
+ * the position and text of legend items derived both from the
+ * chart as well as extra items
  *
  ******************************************************************/
 struct LegendEntryDescriptor
@@ -209,11 +210,13 @@ struct LegendEntryDescriptor
   QPointF itemLocation;
   QPointF labelLocation;
   QString labelText;
+  KnittingSymbolPtr patternSymbolPtr;
 };
 
 typedef boost::shared_ptr<LegendEntryDescriptor>
   LegendEntryDescriptorPtr;
 
+ 
 
 /*******************************************************************
  *
@@ -247,6 +250,11 @@ public:
     return newLegendEntryDescriptors_;
   }
 
+  const QList<LegendEntryDescriptorPtr>& get_extra_legend_items() const
+  {
+    return newExtraLegendItemDescriptors_;
+  }
+
   const QList<QColor>& get_project_colors() const
   {
     return projectColors_;
@@ -269,8 +277,11 @@ private:
   /* QList of parsed patternGridItems based on input file */
   QList<PatternGridItemDescriptorPtr> newPatternGridItems_;
 
-  /* QList of parsed legend entry descriptors */
+  /* QList of parsed legend descriptors coming from the chart */
   QList<LegendEntryDescriptorPtr> newLegendEntryDescriptors_;
+
+  /* QList of extra parsed legend descriptors */
+  QList<LegendEntryDescriptorPtr> newExtraLegendItemDescriptors_;
 
   /* QList of selector colors */
   QList<QColor> projectColors_;
@@ -279,6 +290,12 @@ private:
   bool parse_patternGridItems_(const QDomNode& itemNode);
   bool parse_legendItems_(const QDomNode& itemNode);
   bool parse_projectColors_(const QDomNode& itemNode);
+  void add_to_extraLegendItems_(const QString& entryID, double itemXPos, 
+    double itemYPos, double labelXPos, double labelYPos, 
+    const QString& labelText);
+  void add_to_chartLegendItems_(const QString& entryID, double itemXPos, 
+    double itemYPos, double labelXPos, double labelYPos,
+    const QString& labelText);
 };
 
 

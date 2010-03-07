@@ -70,6 +70,7 @@ public:
 signals:
 
   void selected_symbol_changed(const KnittingSymbolPtr symbol);
+  void new_legend_item(const KnittingSymbolPtr newItem);
 
 
 public slots:

@@ -69,11 +69,17 @@ public:
 signals:
   
   void highlight_me(SymbolSelectorItem* us, bool state);
+  void new_legend_item(const KnittingSymbolPtr newItem);
 
 
 protected:
 
   void mousePressEvent(QMouseEvent* mouseEvent);
+
+
+private slots:
+
+  void send_legend_item_();
 
     
 private:
@@ -90,6 +96,9 @@ private:
   /* object holding all the info about the underlying 
    * knitting symbol */
   KnittingSymbolPtr symbol_;
+
+  /* helper functions */
+  void show_symbol_menu_(const QPoint& aPos) const;
 }; 
 
 

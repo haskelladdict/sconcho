@@ -21,6 +21,7 @@
 /** Qt headers */
 #include <QDebug>
 #include <QHBoxLayout>
+#include <QMenu>
 #include <QMouseEvent>
 #include <QSvgWidget>
 
@@ -154,15 +155,21 @@ const KnittingSymbolPtr SymbolSelectorItem::symbol_info() const
 //---------------------------------------------------------------
 void SymbolSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
 {
-  Q_UNUSED(mouseEvent)
-
-  if (selected_)
+  /* a right button click opens up a menu for further action */
+  if (mouseEvent->button() == Qt::RightButton)
   {
-    emit highlight_me(this, false);
+    show_symbol_menu_(mouseEvent->globalPos());
   }
   else
   {
-    emit highlight_me(this, true);
+    if (selected_)
+    {
+      emit highlight_me(this, false);
+    }
+    else
+    {
+      emit highlight_me(this, true);
+    }
   }
 
   repaint();
@@ -177,10 +184,41 @@ void SymbolSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
  *
  *************************************************************/
 
+//------------------------------------------------------------
+// send our KnittingSymbol to our parent widget so it can
+// be added to the legend
+//------------------------------------------------------------
+void SymbolSelectorItem::send_legend_item_()
+{
+  emit new_legend_item(symbol_);
+}
+
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
  *
  *************************************************************/
+
+//---------------------------------------------------------------
+// open a simple menu with further actions possible for 
+// knitting symbol items (like adding them to the legend)
+//---------------------------------------------------------------
+void SymbolSelectorItem::show_symbol_menu_(const QPoint& symPos) const
+{
+  QMenu symbolMenu;
+  QAction* addToLegendAction = symbolMenu.addAction("add to legend");
+
+  connect(addToLegendAction,
+          SIGNAL(triggered()),
+          this,
+          SLOT(send_legend_item_())
+         );
+
+  symbolMenu.exec(symPos);
+}
+
+
 
 QT_END_NAMESPACE

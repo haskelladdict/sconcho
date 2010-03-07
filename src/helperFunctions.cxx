@@ -163,4 +163,71 @@ QString format_string(const QString& oldString)
 }
 
 
+//---------------------------------------------------------------
+// this function assembles the name of a legend entry from
+// the pieces.
+// NOTE: Any change to this function may break backward
+// compatibility for sconcho project files
+//---------------------------------------------------------------
+QString get_legend_item_name(const QString& aSymbolCategory,
+  const QString& aSymbolName, const QString& aColorName, 
+  const QString& aTag)
+{
+  return aSymbolCategory + ":" + aSymbolName + ":" + aColorName 
+         + ":" + aTag;
+}
+
+
+
+//---------------------------------------------------------------
+// takes a legendID and returns true if the item is a widgetItem
+// (i.e. has a widgetItem identifier) and false otherwise
+//---------------------------------------------------------------
+bool is_extraLegendItem(const QString& idString)
+{
+  QStringList splitString = idString.split(":");
+  return (splitString.last() == "extraLegendItem");
+}
+
+
+
+//---------------------------------------------------------------
+// takes a legendID and returns the name of described symbol
+//---------------------------------------------------------------
+QString get_legend_item_name(const QString& idString)
+{
+  QStringList splitString = idString.split(":");
+  if (splitString.length() > 1)
+  { 
+    return splitString.at(1);
+  }
+  else
+  {
+    return "";
+  }
+}
+
+
+
+
+//---------------------------------------------------------------
+// takes a legendID and returns the category of described symbol
+//---------------------------------------------------------------
+QString get_legend_item_category(const QString& idString)
+{
+  QStringList splitString = idString.split(":");
+  if (splitString.length() > 0)
+  { 
+    qDebug() << splitString;
+    return splitString.at(0);
+  }
+  else
+  {
+    return "";
+  }
+}
+
+
+
+
 QT_END_NAMESPACE
