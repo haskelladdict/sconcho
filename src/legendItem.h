@@ -29,6 +29,9 @@
 #include "knittingPatternItem.h"
 
 
+/* forward declarations */
+class QGraphicsSceneMouseEvent;
+
 
 QT_BEGIN_NAMESPACE
 
@@ -50,7 +53,7 @@ class LegendItem
   
 public:
 
-  explicit LegendItem(const QSize& aDim, 
+  explicit LegendItem(const QSize& aDim, const QString& idTag, 
       int scale, const QColor& backColor = Qt::white,
       const QPoint& loc = QPoint(0,0));
   bool Init();
@@ -59,10 +62,31 @@ public:
   enum { Type = UserType + LEGEND_ITEM_TYPE };
   int type() const;
 
+
+signals:
+
+  void delete_from_legend(KnittingSymbolPtr ptr, QColor aColor,
+    const QString& aTag);
+
+
+protected:
+
+  void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent);
+
+
+private slots:
+
+  void delete_me_();
+
+
 private:
 
   /* some tracking variables */
   int status_;
+  QString idTag_;
+
+  /* private functions */
+  void show_options_menu_(const QPoint& symPos) const;
 };
 
 

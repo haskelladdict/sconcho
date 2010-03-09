@@ -932,6 +932,7 @@ void GraphicsScene::insert_col_(int aCol)
 }
 
 
+
 //-------------------------------------------------------------
 // insert new rows into grid
 //-------------------------------------------------------------
@@ -1012,6 +1013,7 @@ void GraphicsScene::mark_rectangle_for_deletion_(QObject* rectObj)
 }
 
 
+
 //--------------------------------------------------------------
 // this slot fires up a customization dialog to change the
 // properties of the selected rectangle 
@@ -1032,6 +1034,7 @@ void GraphicsScene::customize_rectangle_(QObject* rectObj)
 }
 
 
+
 //-------------------------------------------------------------
 // this slot update the text we store for a particular
 // legend label
@@ -1040,6 +1043,119 @@ void GraphicsScene::update_key_label_text_(QString labelID,
   QString newLabelText)
 {
   symbolDescriptors_[labelID] = newLabelText;
+}
+
+
+
+//-------------------------------------------------------------
+// Add a symbol plus description to the legend if neccessary.
+// This function checks if the added symbol already exists
+// in the legend. If not, create it.
+// The extraTag parameter allows more fine grained control
+// of who "owns" a legend entry (e.g. the chart itself or
+// the user added it directly from the symbolSelectorWidget.
+//-------------------------------------------------------------
+void GraphicsScene::notify_legend_of_item_addition_(
+    const KnittingSymbolPtr symbol, QColor aColor, QString tag)
+{
+  QString symbolName = symbol->patternName();
+  QString symbolCategory = symbol->category();
+  QString colorName  = aColor.name();
+  QString fullName = get_legend_item_name(symbolCategory,
+      symbolName, colorName, tag);
+
+  /* update reference count */
+  int currentValue = usedKnittingSymbols_[fullName] + 1;
+  assert(currentValue > 0);
+  usedKnittingSymbols_[fullName] = currentValue;
+
+  /* if the symbol got newly added we add a description unless
+   * it already existed previously and show it in the legend */
+  if (currentValue == 1)
+  {
+    /* compute position for next label item */
+    int xPosSym = origin_.x();
+    int yPos = get_next_legend_items_y_position_();
+
+    LegendItem* newLegendItem = new LegendItem(symbol->dim(), tag,
+      cellSize_, aColor);
+    connect(newLegendItem,
+            SIGNAL(delete_from_legend(KnittingSymbolPtr, QColor, QString)),
+            this,
+            SLOT(notify_legend_of_item_removal_(KnittingSymbolPtr, QColor, QString))
+           );
+    newLegendItem->Init();
+    newLegendItem->insert_knitting_symbol(symbol);
+    newLegendItem->setPos(xPosSym, yPos);
+    newLegendItem->setFlag(QGraphicsItem::ItemIsMovable);
+    newLegendItem->setZValue(1);
+    addItem(newLegendItem);
+
+    /* add label */
+    QString description = get_symbol_description_(symbol, colorName);
+    int xPosLabel = (symbol->dim().width() + 0.5) * cellSize_ + origin_.x();
+    QFont currentFont = extract_font_from_settings(settings_);
+    
+    LegendLabel* newTextItem = 
+      new LegendLabel(fullName, description);
+    newTextItem->Init();
+    newTextItem->setPos(xPosLabel, yPos);
+    newTextItem->setFont(currentFont);
+    newTextItem->setFlag(QGraphicsItem::ItemIsMovable);
+    newTextItem->setZValue(1);
+    addItem(newTextItem);
+    connect(newTextItem,
+            SIGNAL(label_changed(QString, QString)),
+            this,
+            SLOT(update_key_label_text_(QString, QString))
+           );
+
+    legendEntries_[fullName] = LegendEntry(newLegendItem, newTextItem);
+
+    if (!legendIsVisible_)
+    {
+      newLegendItem->hide();
+      newTextItem->hide();
+    }
+    else
+    {
+      emit show_whole_scene();
+    }
+  }
+}
+
+
+
+//-------------------------------------------------------------
+// Remove a symbol plus description from the legend if neccessary.
+// This function checks if the removed symbol is the "last of
+// its kind" and if so removed it.
+//-------------------------------------------------------------
+void GraphicsScene::notify_legend_of_item_removal_(
+  const KnittingSymbolPtr symbol, QColor aColor, QString tag)
+{
+  QString symbolName = symbol->patternName();
+  QString symbolCategory = symbol->category();
+  QString colorName  = aColor.name();
+  QString fullName = get_legend_item_name(symbolCategory,
+      symbolName, colorName, tag);
+
+  int currentValue = usedKnittingSymbols_[fullName] - 1;
+  assert(currentValue >= 0);
+  usedKnittingSymbols_[fullName] = currentValue;
+
+  /* remove symbol if reference count hits 0 */
+  if (currentValue == 0)
+  {
+    usedKnittingSymbols_.remove(fullName);
+
+    LegendEntry deadItem = legendEntries_[fullName];
+    removeItem(deadItem.first);
+    deadItem.first->deleteLater();
+    removeItem(deadItem.second);
+    deadItem.second->deleteLater();
+    legendEntries_.remove(fullName);
+  }
 }
 
 
@@ -2017,113 +2133,6 @@ QString GraphicsScene::get_symbol_description_(
   return format_string(description);
 }
  
-
-//-------------------------------------------------------------
-// Add a symbol plus description to the legend if neccessary.
-// This function checks if the added symbol already exists
-// in the legend. If not, create it.
-// The extraTag parameter allows more fine grained control
-// of who "owns" a legend entry (e.g. the chart itself or
-// the user added it directly from the symbolSelectorWidget.
-//-------------------------------------------------------------
-void GraphicsScene::notify_legend_of_item_addition_(
-    const KnittingSymbolPtr symbol, QColor aColor, QString tag)
-{
-  QString symbolName = symbol->patternName();
-  QString symbolCategory = symbol->category();
-  QString colorName  = aColor.name();
-  QString fullName = get_legend_item_name(symbolCategory,
-      symbolName, colorName, tag);
-
-  /* update reference count */
-  int currentValue = usedKnittingSymbols_[fullName] + 1;
-  assert(currentValue > 0);
-  usedKnittingSymbols_[fullName] = currentValue;
-
-  /* if the symbol got newly added we add a description unless
-   * it already existed previously and show it in the legend */
-  if (currentValue == 1)
-  {
-    QString description = get_symbol_description_(symbol, colorName);
-
-    /* compute position for next label item */
-    int xPosSym = origin_.x();
-    int xPosLabel = (symbol->dim().width() + 0.5) * cellSize_ + origin_.x();
-    int yPos = get_next_legend_items_y_position_();
-
-    LegendItem* newLegendItem = new LegendItem(symbol->dim(), 
-      cellSize_, aColor);
-    newLegendItem->Init();
-    newLegendItem->insert_knitting_symbol(symbol);
-    newLegendItem->setPos(xPosSym, yPos);
-    newLegendItem->setFlag(QGraphicsItem::ItemIsMovable);
-    newLegendItem->setZValue(1);
-    addItem(newLegendItem);
-
-    /* add label */
-    QFont currentFont = extract_font_from_settings(settings_);
-    LegendLabel* newTextItem = 
-      new LegendLabel(fullName, description);
-    newTextItem->Init();
-    newTextItem->setPos(xPosLabel, yPos);
-    newTextItem->setFont(currentFont);
-    newTextItem->setFlag(QGraphicsItem::ItemIsMovable);
-    newTextItem->setZValue(1);
-    addItem(newTextItem);
-    connect(newTextItem,
-            SIGNAL(label_changed(QString, QString)),
-            this,
-            SLOT(update_key_label_text_(QString, QString))
-           );
-
-    legendEntries_[fullName] = LegendEntry(newLegendItem, newTextItem);
-
-    if (!legendIsVisible_)
-    {
-      newLegendItem->hide();
-      newTextItem->hide();
-    }
-    else
-    {
-      emit show_whole_scene();
-    }
-  }
-}
-
-
-
-//-------------------------------------------------------------
-// Remove a symbol plus description from the legend if neccessary.
-// This function checks if the removed symbol is the "last of
-// its kind" and if so removed it.
-//-------------------------------------------------------------
-void GraphicsScene::notify_legend_of_item_removal_(
-  const KnittingSymbolPtr symbol, QColor aColor, QString tag)
-{
-  QString symbolName = symbol->patternName();
-  QString symbolCategory = symbol->category();
-  QString colorName  = aColor.name();
-  QString fullName = get_legend_item_name(symbolCategory,
-      symbolName, colorName, tag);
-
-  int currentValue = usedKnittingSymbols_[fullName] - 1;
-  assert(currentValue >= 0);
-  usedKnittingSymbols_[fullName] = currentValue;
-
-  /* remove symbol if reference count hits 0 */
-  if (currentValue == 0)
-  {
-    usedKnittingSymbols_.remove(fullName);
-
-    LegendEntry deadItem = legendEntries_[fullName];
-    removeItem(deadItem.first);
-    deadItem.first->deleteLater();
-    removeItem(deadItem.second);
-    deadItem.second->deleteLater();
-    legendEntries_.remove(fullName);
-  }
-}
-
 
 
 //---------------------------------------------------------------

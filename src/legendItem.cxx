@@ -18,6 +18,11 @@
 *
 ****************************************************************/
 
+/* Qt headers */
+#include <QDebug>
+#include <QGraphicsSceneMouseEvent>
+#include <QMenu>
+
 /* local headers */
 #include "legendItem.h"
 
@@ -33,10 +38,11 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-LegendItem::LegendItem(const QSize& aDim, int aScale, 
-  const QColor& aBackColor,const QPoint& aLoc)
+LegendItem::LegendItem(const QSize& aDim, const QString& tag,
+  int aScale, const QColor& aBackColor,const QPoint& aLoc)
     :
-      KnittingPatternItem(aDim, aScale, aBackColor, aLoc)
+      KnittingPatternItem(aDim, aScale, aBackColor, aLoc),
+      idTag_(tag)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -87,16 +93,71 @@ int LegendItem::type() const
  *
  *************************************************************/
 
+//-------------------------------------------------------------
+// event handler for mouse press event
+//-------------------------------------------------------------
+void LegendItem::mousePressEvent(
+  QGraphicsSceneMouseEvent* mouseEvent)
+{
+  /* a right button click opens up a menu with further actions */
+  if (mouseEvent->button() == Qt::RightButton)
+  {
+    show_options_menu_(mouseEvent->screenPos());
+  }
+
+  KnittingPatternItem::mousePressEvent(mouseEvent);
+}
+
+  
+  
 /**************************************************************
  *
  * PRIVATE SLOTS
  *
  *************************************************************/
 
+//-------------------------------------------------------------
+// gets everything ready for deleting ourselved ans sends
+// a signal to canvas once done
+//-------------------------------------------------------------
+void LegendItem::delete_me_()
+{
+  emit delete_from_legend(get_knitting_symbol(), color(),
+    idTag_);
+}
+
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
  *
  *************************************************************/
+
+//-------------------------------------------------------------
+// menu with options available through right clicking on the
+// symbol
+//-------------------------------------------------------------
+void LegendItem::show_options_menu_(const QPoint& symPos) const
+{
+  QMenu legendItemMenu;
+  QAction* deleteItemAction = legendItemMenu.addAction("delete");
+
+  /* grey action out unless we are an extra item */
+  if (idTag_ != "extraLegendItem")
+  {
+    deleteItemAction->setDisabled(true);
+  }
+
+  connect(deleteItemAction,
+          SIGNAL(triggered()),
+          this,
+          SLOT(delete_me_())
+         );
+
+  legendItemMenu.exec(symPos);
+}
+
+
 
 QT_END_NAMESPACE

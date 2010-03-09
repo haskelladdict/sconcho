@@ -146,6 +146,10 @@ private slots:
   void mark_rectangle_for_deletion_(QObject* foo);
   void customize_rectangle_(QObject* foo);
   void update_key_label_text_(QString, QString);
+  void notify_legend_of_item_addition_(const KnittingSymbolPtr symbol, 
+    QColor color, QString extraTag);
+  void notify_legend_of_item_removal_(const KnittingSymbolPtr symbol, 
+    QColor color, QString extraTag);
 
   
 private:
@@ -186,10 +190,6 @@ private:
 
   /* items related to the legend */
   bool legendIsVisible_;
-  void notify_legend_of_item_addition_(const KnittingSymbolPtr symbol, 
-    QColor color, QString extraTag);
-  void notify_legend_of_item_removal_(const KnittingSymbolPtr symbol,
-    QColor color, QString extraTag);
   void shift_legend_items_vertically_(int pivot, int distance);
   void shift_legend_items_horizontally_(int pivot, int distance);
   void update_legend_labels_();

@@ -18,14 +18,14 @@
 *
 ****************************************************************/
 
-/** Qt headers */
+/* Qt headers */
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QMenu>
 #include <QMouseEvent>
 #include <QSvgWidget>
 
-/** local headers */
+/* local headers */
 #include "basicDefs.h"
 #include "symbolSelectorItem.h"
 
@@ -151,7 +151,7 @@ const KnittingSymbolPtr SymbolSelectorItem::symbol_info() const
  *************************************************************/
 
 //---------------------------------------------------------------
-// event handler for mouse move events
+// event handler for mouse press events
 //---------------------------------------------------------------
 void SymbolSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
 {
