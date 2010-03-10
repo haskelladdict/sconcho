@@ -834,7 +834,6 @@ bool CanvasIOReader::parse_legendItems_(const QDomNode& itemNode)
    * the correct KnittingSymbolPtr */
   if (is_extraLegendItem(entryID))
   {
-    qDebug() << "found extra legend item " << entryID;
     add_to_extraLegendItems_(entryID, itemXPos, itemYPos, labelXPos,
       labelYPos, labelText);
   }
@@ -1049,6 +1048,7 @@ bool KnittingSymbolReader::parse_symbol_description_(
   QString description("");
   QString patternName("");
   QString patternDescription("");
+  QString backgroundColorName("");
   int patternWidth = 0;
   
   QDomNode node = itemNode.firstChild();
@@ -1085,6 +1085,12 @@ bool KnittingSymbolReader::parse_symbol_description_(
       patternWidth = childNode.toText().data().toInt();
     }
 
+    if (node.toElement().tagName() == "backgroundColor")
+    {
+      QDomNode childNode(node.firstChild());
+      backgroundColorName = childNode.toText().data();
+    }
+
     node = node.nextSibling();
   }
 
@@ -1106,7 +1112,8 @@ bool KnittingSymbolReader::parse_symbol_description_(
       patternName,
       separatedCategory.first,
       QSize(patternWidth,1),
-      patternDescription));
+      patternDescription,
+      backgroundColorName));
 
   constructedSymbol_ = newSymbol;
   interfacePosition_ = separatedCategory.second; 

@@ -41,13 +41,15 @@ KnittingSymbol::KnittingSymbol(const QString& aPath,
   const QString& aPatternName, 
   const QString& aCategory,
   const QSize& dimension, 
-  const QString& instruction)
+  const QString& instruction,
+  const QString& colorName)
   :
     svgPath_(aPath),
     patternName_(aPatternName),
     category_(aCategory),
     dimensions_(dimension),
-    instructions_(instruction)
+    instructions_(instruction),
+    color_(colorName)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }

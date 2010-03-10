@@ -65,18 +65,7 @@ bool SymbolSelectorItem::Init()
     return false;
   }
 
-  /* define style sheets */
-  selectedStyleSheet_ = "border-width: 1px;"
-                        "border-style: solid;"
-                        "border-color: red;"
-                        "background-color: lightblue;";
-
-
-  unselectedStyleSheet_ = "border-width: 1px;"
-                          "border-style: solid;"
-                          "border-color: black;"
-                          "background-color: white;";
-
+  generate_stylesheets_();
   setStyleSheet(unselectedStyleSheet_);
   
   /* create and adjust our QSvgWidget */
@@ -217,6 +206,36 @@ void SymbolSelectorItem::show_symbol_menu_(const QPoint& symPos) const
          );
 
   symbolMenu.exec(symPos);
+}
+
+
+//---------------------------------------------------------------
+// generate the stylesheets used for selected/unselected 
+// selector items
+//---------------------------------------------------------------
+void SymbolSelectorItem::generate_stylesheets_()
+{
+  /* define selected style sheet */
+  selectedStyleSheet_ = "border-width: 1px;"
+                        "border-style: solid;"
+                        "border-color: red;"
+                        "background-color: lightblue;";
+
+  /* define unselected style sheet; if the symbol has
+   * a default background color we use it and white 
+   * otherwise*/
+  unselectedStyleSheet_ = "border-width: 1px;"
+                          "border-style: solid;"
+                          "border-color: black;";
+  if (symbol_->color_name() != "")
+  {
+    unselectedStyleSheet_ += "background-color: ";
+    unselectedStyleSheet_ += symbol_->color_name();
+  }
+  else
+  {
+    unselectedStyleSheet_ += "background-color: white;";
+  }
 }
 
 

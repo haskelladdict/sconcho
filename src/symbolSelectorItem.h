@@ -99,6 +99,7 @@ private:
 
   /* helper functions */
   void show_symbol_menu_(const QPoint& aPos) const;
+  void generate_stylesheets_();
 }; 
 
 

@@ -158,7 +158,6 @@ void PreferencesDialog::update_font_selectors_(const QFont& newFont)
   QString family(newFont.family());
   QFontDatabase database;
 
-  qDebug() << "are here";
   /* update font style */
   QStringList availableStyles(database.styles(family));
   fontStyleBox_->clear();

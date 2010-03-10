@@ -47,7 +47,7 @@ KnittingPatternItem::KnittingPatternItem(const QSize& aDim,
     :
       QGraphicsItem(),
       svgItem_(0),
-      knittingSymbol_(emptyKnittingSymbol), // new KnittingSymbol("","","",QSize(0,0),"")),
+      knittingSymbol_(emptyKnittingSymbol), 
       backColor_(aBackColor),
       dim_(aDim),
       loc_(aLoc),
@@ -151,6 +151,14 @@ void KnittingPatternItem::insert_knitting_symbol(
   { 
     svgItem_ = new QGraphicsSvgItem(symbolPath,this);
     fit_svg_();
+  }
+
+  /* if the knitting symbol provides a backgroundColor we use 
+   * it */
+  if (knittingSymbol_->color_name() != "")
+  {
+    set_background_color(knittingSymbol_->color_name());
+    set_up_pens_brushes_();
   }
 }
  
