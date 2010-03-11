@@ -142,7 +142,7 @@ void KnittingPatternItem::insert_knitting_symbol(
 
   /* delete the previous svgItem if there was one */
   if ( svgItem_ != 0 ) 
-   {
+  {
     delete svgItem_;
     svgItem_ = 0;
   }
@@ -218,6 +218,8 @@ void KnittingPatternItem::fit_svg_()
 
   svgItem_->scale(scaleX, scaleY);
 }
+
+
 
 
 /**************************************************************

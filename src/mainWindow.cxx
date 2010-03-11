@@ -285,24 +285,30 @@ void MainWindow::show_file_save_dialog_()
 //-------------------------------------------------------------
 void MainWindow::export_legend_dialog_()
 {
-  if (!canvas_->legend_is_visible())
-  {
-    QMessageBox warn(QMessageBox::Critical, tr("Error"),
-      "Legend is currently not visible. Please turn legend "
-      "on before trying to export it.", QMessageBox::Ok);
-    warn.exec();
-    return;
-  }
-  
   QString exportFilename = show_file_export_dialog(saveFilePath_);
   if (exportFilename.isEmpty())
   {
     return;
   }
 
+  bool legendWasVisible = true;
+  if (!canvas_->legend_is_visible())
+  {
+    canvas_->toggle_legend_visibility();
+    legendWasVisible = false;
+  }
+  
   canvas_->hide_all_but_legend();
   export_scene(exportFilename, canvas_);
   canvas_->show_all_items();
+
+  /* hide legend again */
+  if (!legendWasVisible)
+  {
+    canvas_->toggle_legend_visibility();
+  }
+
+
 }
 
 

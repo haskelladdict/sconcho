@@ -319,10 +319,10 @@ void GraphicsScene::hide_all_but_legend()
 {
   /* get list of all items that are not part of the legend
    * and are not svg items */
-  QList<QGraphicsItem*> allItems = items();
+  //QList<QGraphicsItem*> allItems = items();
 
   /* disable all non-legend items */
-  foreach (QGraphicsItem* anItem, allItems)
+  foreach (QGraphicsItem* anItem, items())
   {
     QGraphicsSvgItem* svgItem =
       qgraphicsitem_cast<QGraphicsSvgItem*>(anItem);
@@ -359,45 +359,21 @@ void GraphicsScene::show_all_items()
 //-------------------------------------------------------------
 QRectF GraphicsScene::get_visible_area() const
 {
-  /* get dimensions of pattern grid which never extends
-   * above and right of the origin (0,0) */
-  int xMaxPatternGrid = (numCols_ + 1) * cellSize_;
-  int yMaxPatternGrid = (numRows_ + 1) * cellSize_;
-  
-  QPointF upperLeft(0.0,0.0);
-  QPointF lowerRight(xMaxPatternGrid, yMaxPatternGrid);
-
-  /* if the legend is also visible we need to take it
-   * into account */
-  if (legendIsVisible_)
+  QList<QGraphicsItem*> visibleItems;
+  foreach(QGraphicsItem* anItem, items())
   {
-    QList<QGraphicsItem*> allLegendItems(get_list_of_legend_items_());
-    QRectF legendBounds(get_bounding_rect(allLegendItems));
+    QGraphicsSvgItem* svgItem =
+      qgraphicsitem_cast<QGraphicsSvgItem*>(anItem);
 
-    /* adjust dimensions given by pattern grid */
-    if (legendBounds.left() < upperLeft.x())
+    if(!svgItem && anItem->isVisible())
     {
-      upperLeft.setX(legendBounds.left());
-    }
-
-    if (legendBounds.top() < upperLeft.y())
-    {
-      upperLeft.setY(legendBounds.top());
-    }
-
-    if (legendBounds.right() > lowerRight.x())
-    {
-      lowerRight.setX(legendBounds.right());
-    }
-
-    if (legendBounds.bottom() > lowerRight.y())
-    {
-      lowerRight.setY(legendBounds.bottom());
+      visibleItems.push_back(anItem);
     }
   }
 
-  return QRectF(upperLeft, lowerRight);
+  return get_bounding_rect(visibleItems);
 }
+
 
 
 //----------------------------------------------------------------
