@@ -55,7 +55,9 @@ const int LEGEND_LABEL_TYPE = 6;
 const int LEGEND_ITEM_TYPE = 7;
 
 /* the size (in pixels) of a grid cell */
-const int GRID_CELL_SIZE = 30;
+const int GRID_CELL_SIZE   = 30;
+const int GRID_CELL_WIDTH  = 30;
+const int GRID_CELL_HEIGHT = 30;
 
 
 #endif

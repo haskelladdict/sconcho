@@ -43,7 +43,8 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 KnittingPatternItem::KnittingPatternItem(const QSize& aDim, 
-  int aScale, const QColor& aBackColor, const QPoint& aLoc) 
+  const QSize& aspectRatio, const QColor& aBackColor, 
+  const QPoint& aLoc) 
     :
       QGraphicsItem(),
       svgItem_(0),
@@ -51,7 +52,7 @@ KnittingPatternItem::KnittingPatternItem(const QSize& aDim,
       backColor_(aBackColor),
       dim_(aDim),
       loc_(aLoc),
-      scaling_(aScale)
+      cellAspectRatio_(aspectRatio)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -107,8 +108,8 @@ QRectF KnittingPatternItem::boundingRect() const
 {
   return QRectF(loc_.x() - pen_.width() * 0.5, 
                 loc_.y() - pen_.width() * 0.5,
-                scaling_ * dim_.width() + pen_.width() * 0.5,
-                scaling_ * dim_.height() + pen_.width() * 0.5);
+                cellAspectRatio_.width() * dim_.width() + pen_.width() * 0.5,
+                cellAspectRatio_.height() * dim_.height() + pen_.width() * 0.5);
 }
   
   
@@ -126,7 +127,9 @@ void KnittingPatternItem::paint(QPainter *painter,
   QBrush aBrush(currentColor_);
   painter->setBrush(aBrush);
 
-  painter->drawRect(QRectF(loc_, scaling_*dim_));
+  painter->drawRect(QRectF(loc_, 
+                    QSize(cellAspectRatio_.width() * dim_.width(),
+                          cellAspectRatio_.height() * dim_.height())));
 }
 
 

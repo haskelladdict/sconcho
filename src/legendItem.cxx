@@ -39,9 +39,9 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 LegendItem::LegendItem(const QSize& aDim, const QString& tag,
-  int aScale, const QColor& aBackColor,const QPoint& aLoc)
+  const QSize& aspectRatio, const QColor& aBackColor,const QPoint& aLoc)
     :
-      KnittingPatternItem(aDim, aScale, aBackColor, aLoc),
+      KnittingPatternItem(aDim, aspectRatio, aBackColor, aLoc),
       idTag_(tag)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;

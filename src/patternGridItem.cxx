@@ -43,11 +43,12 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-PatternGridItem::PatternGridItem( const QSize& aDim, int aScale, 
-  int aCol, int aRow, GraphicsScene* myParent, 
-  const QColor& aBackColor,const QPoint& aLoc)
+PatternGridItem::PatternGridItem( const QSize& aDim, 
+  const QSize& aspectRatio, int aCol, int aRow, 
+  GraphicsScene* myParent, const QColor& aBackColor,
+  const QPoint& aLoc)
     :
-      KnittingPatternItem(aDim, aScale, aBackColor, aLoc),
+      KnittingPatternItem(aDim, aspectRatio, aBackColor, aLoc),
       selected_(false),
       parent_(myParent),
       columnIndex_(aCol),

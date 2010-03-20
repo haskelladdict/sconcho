@@ -64,15 +64,17 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 GraphicsScene::GraphicsScene(const QPoint& anOrigin, 
-    const QSize& gridDim, int aSize, const QSettings& aSetting,
-    KnittingSymbolPtr defaultSymbol, MainWindow* myParent)
+    const QSize& gridDim, const QSize& aspectRatio, 
+    const QSettings& aSetting, KnittingSymbolPtr defaultSymbol, 
+    MainWindow* myParent)
   :
   QGraphicsScene(myParent),
   updateActiveItems_(true),
   origin_(anOrigin),
   numCols_(gridDim.width()),
   numRows_(gridDim.height()),
-  cellSize_(aSize),
+  cellSize_(aspectRatio.width()),
+  cellAspectRatio_(aspectRatio),
   selectedCol_(UNSELECTED),
   selectedRow_(UNSELECTED),
   settings_(aSetting),
@@ -167,7 +169,7 @@ void GraphicsScene::load_new_canvas(
     maxRow = qMax(row, maxRow);
 
     PatternGridItem* item = 
-        new PatternGridItem(rawItem->dimension, cellSize_, col, row, 
+        new PatternGridItem(rawItem->dimension, cellAspectRatio_, col, row, 
           this, rawItem->backgroundColor);
     item->Init();
     item->setPos(compute_cell_origin_(col, row));
@@ -502,12 +504,8 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
   int numNewCells = dim.width();
   for (int i = 0; i < numNewCells; ++i)
   {
-    PatternGridItem* item = 
-      new PatternGridItem(QSize(1,1), 
-                          cellSize_, 
-                          column+i, 
-                          row, 
-                          this);
+    PatternGridItem* item = new PatternGridItem(QSize(1,1), cellAspectRatio_, 
+                                                column+i, row, this);
     item->Init();
     item->insert_knitting_symbol(defaultSymbol_);
     item->setPos(compute_cell_origin_(column+i,row));
@@ -883,7 +881,7 @@ void GraphicsScene::insert_col_(int aCol)
   {
     PatternGridItem* anItem = new PatternGridItem (
           QSize(1,1),
-          cellSize_,
+          cellAspectRatio_,
           aCol,
           row,
           this,
@@ -948,7 +946,7 @@ void GraphicsScene::insert_row_(int aRow)
   {
     PatternGridItem* anItem = new PatternGridItem (
           QSize(1,1),
-          cellSize_,
+          cellAspectRatio_,
           column,
           aRow+1,
           this,
@@ -1054,7 +1052,7 @@ void GraphicsScene::notify_legend_of_item_addition_(
     int yPos = get_next_legend_items_y_position_();
 
     LegendItem* newLegendItem = new LegendItem(symbol->dim(), tag,
-      cellSize_, aColor);
+      cellAspectRatio_, aColor);
     connect(newLegendItem,
             SIGNAL(delete_from_legend(KnittingSymbolPtr, QColor, QString)),
             this,
@@ -1276,7 +1274,7 @@ void GraphicsScene::try_place_knitting_symbol_()
 
       PatternGridItem* anItem = new PatternGridItem (
           QSize(aWidth,1),
-          cellSize_,
+          cellAspectRatio_,
           column,
           row,
           this,
@@ -1634,7 +1632,7 @@ void GraphicsScene::create_pattern_grid_()
     for (int row=0; row < numRows_; ++row)
     {
       PatternGridItem* item = 
-        new PatternGridItem(QSize(1,1), cellSize_, col, row, this);
+        new PatternGridItem(QSize(1,1), cellAspectRatio_, col, row, this);
       item->Init();
       item->setPos(compute_cell_origin_(col, row)); 
       item->insert_knitting_symbol(defaultSymbol_);

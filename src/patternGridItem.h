@@ -61,7 +61,7 @@ class PatternGridItem
 public:
 
   explicit PatternGridItem(const QSize& aDim, 
-      int scale, int columnID, int rowID, 
+      const QSize& aspectRatio, int columnID, int rowID, 
       GraphicsScene* myParent = 0,
       const QColor& backColor = Qt::white,
       const QPoint& loc = QPoint(0,0));

@@ -82,7 +82,7 @@ class GraphicsScene
 public:
 
   explicit GraphicsScene(const QPoint& origin, const QSize& gridsize, 
-    int cellSize, const QSettings& settings, 
+    const QSize& cellSize, const QSettings& settings, 
     KnittingSymbolPtr defaultSymbol, MainWindow* myParent = 0);
   bool Init();
 
@@ -165,6 +165,8 @@ private:
   int numCols_;
   int numRows_;
   int cellSize_;
+  QSize cellAspectRatio_; 
+  
 
   /* holds the index of the currently selected column/row if any */
   int selectedCol_;

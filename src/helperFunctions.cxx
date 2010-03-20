@@ -218,7 +218,6 @@ QString get_legend_item_category(const QString& idString)
   QStringList splitString = idString.split(":");
   if (splitString.length() > 0)
   { 
-    qDebug() << splitString;
     return splitString.at(0);
   }
   else

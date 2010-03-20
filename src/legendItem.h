@@ -54,7 +54,7 @@ class LegendItem
 public:
 
   explicit LegendItem(const QSize& aDim, const QString& idTag, 
-      int scale, const QColor& backColor = Qt::white,
+      const QSize& aspectRatio, const QColor& backColor = Qt::white,
       const QPoint& loc = QPoint(0,0));
   bool Init();
 
