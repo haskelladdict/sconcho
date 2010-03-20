@@ -47,11 +47,11 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 SymbolSelectorWidget::SymbolSelectorWidget(
-  const QList<ParsedSymbol>& symbols, int cellSize,
+  const QList<ParsedSymbol>& symbols, const QSize& aspectRatio,
   QWidget* myParent)
     :
       QTabWidget(myParent),
-      cellSize_(cellSize),
+      cellAspectRatio_(aspectRatio),
       allSymbols_(symbols),
       highlightedItem_(0),
       defaultSymbol_(emptyKnittingSymbol)
@@ -158,7 +158,7 @@ QHBoxLayout* SymbolSelectorWidget::create_symbol_layout_(
   }
 
   SymbolSelectorItem* symbol = 
-    new SymbolSelectorItem(cellSize_, aSym, this);
+    new SymbolSelectorItem(cellAspectRatio_, aSym, this);
   symbol->Init();
 
   connect(symbol,

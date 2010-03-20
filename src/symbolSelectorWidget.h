@@ -59,7 +59,7 @@ public:
 
   explicit SymbolSelectorWidget(
     const QList<QPair<KnittingSymbolPtr,int> >& syms,
-    int cellSize, QWidget* myParent = 0);
+    const QSize& aspectRatio, QWidget* myParent = 0);
   bool Init();
 
   /* access to default symbol, i.e. the one that will be 
@@ -84,7 +84,7 @@ private:
   int status_;
 
   /* size of a unit pattern symbol cell in pixels */
-  int cellSize_;
+  QSize cellAspectRatio_;
 
   /* all knitting symbols we know about */
   const QList<QPair<KnittingSymbolPtr,int> >& allSymbols_;

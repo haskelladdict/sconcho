@@ -42,12 +42,13 @@ QT_BEGIN_NAMESPACE
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-SymbolSelectorItem::SymbolSelectorItem(int cellSize,
+SymbolSelectorItem::SymbolSelectorItem(const QSize& aspectRatio,
   KnittingSymbolPtr symbol, QWidget* myParent)
   :
     QFrame(myParent),
     selected_(false),
-    unitSize_(cellSize),
+    unitSize_(aspectRatio.width()),
+    cellAspectRatio_(aspectRatio),
     symbol_(symbol)
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -70,7 +71,9 @@ bool SymbolSelectorItem::Init()
   
   /* create and adjust our QSvgWidget */
   QSvgWidget* symbolSvg_ = new QSvgWidget(symbol_->path());
-  QSize symbolSize = unitSize_ * symbol_->dim();
+  QSize dimension = symbol_->dim();
+  QSize symbolSize = QSize(cellAspectRatio_.width() * dimension.width(),
+                           cellAspectRatio_.height() * dimension.height());
   symbolSvg_->setMaximumSize(symbolSize);
 
   QHBoxLayout* svgLayout = new QHBoxLayout;

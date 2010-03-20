@@ -702,7 +702,7 @@ void MainWindow::create_symbols_widget_(
   const QList<QPair<KnittingSymbolPtr,int> >& allSymbols)
 {
   symbolSelector_ = new SymbolSelectorWidget(allSymbols,
-    GRID_CELL_SIZE, this);
+    QSize(GRID_CELL_WIDTH, GRID_CELL_HEIGHT), this);
   symbolSelector_->Init();
 }
 

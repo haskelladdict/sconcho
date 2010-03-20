@@ -106,8 +106,8 @@ int KnittingPatternItem::type() const
 //------------------------------------------------------------
 QRectF KnittingPatternItem::boundingRect() const
 {
-  return QRectF(loc_.x() - pen_.width() * 0.5, 
-                loc_.y() - pen_.width() * 0.5,
+  return QRectF(loc_.x() - pen_.width() * 0.25, 
+                loc_.y() - pen_.width() * 0.25,
                 cellAspectRatio_.width() * dim_.width() + pen_.width() * 0.5,
                 cellAspectRatio_.height() * dim_.height() + pen_.width() * 0.5);
 }

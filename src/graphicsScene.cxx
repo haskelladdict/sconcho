@@ -1,19 +1,19 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
@@ -56,33 +56,33 @@ QT_BEGIN_NAMESPACE
 
 /**************************************************************
  *
- * PUBLIC FUNCTIONS 
+ * PUBLIC FUNCTIONS
  *
  **************************************************************/
 
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-GraphicsScene::GraphicsScene(const QPoint& anOrigin, 
-    const QSize& gridDim, const QSize& aspectRatio, 
-    const QSettings& aSetting, KnittingSymbolPtr defaultSymbol, 
-    MainWindow* myParent)
-  :
-  QGraphicsScene(myParent),
-  updateActiveItems_(true),
-  origin_(anOrigin),
-  numCols_(gridDim.width()),
-  numRows_(gridDim.height()),
-  cellSize_(aspectRatio.width()),
-  cellAspectRatio_(aspectRatio),
-  selectedCol_(UNSELECTED),
-  selectedRow_(UNSELECTED),
-  settings_(aSetting),
-  selectedSymbol_(emptyKnittingSymbol),
-  defaultSymbol_(defaultSymbol),
-  backgroundColor_(Qt::white),
-  defaultColor_(Qt::white),
-  legendIsVisible_(false)
+GraphicsScene::GraphicsScene( const QPoint& anOrigin,
+                              const QSize& gridDim, const QSize& aspectRatio,
+                              const QSettings& aSetting,
+                              KnittingSymbolPtr defaultSymbol,
+                              MainWindow* myParent )
+    :
+    QGraphicsScene( myParent ),
+    updateActiveItems_( true ),
+    origin_( anOrigin ),
+    numCols_( gridDim.width() ),
+    numRows_( gridDim.height() ),
+    cellAspectRatio_( aspectRatio ),
+    selectedCol_( UNSELECTED ),
+    selectedRow_( UNSELECTED ),
+    settings_( aSetting ),
+    selectedSymbol_( emptyKnittingSymbol ),
+    defaultSymbol_( defaultSymbol ),
+    backgroundColor_( Qt::white ),
+    defaultColor_( Qt::white ),
+    legendIsVisible_( false )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -93,8 +93,7 @@ GraphicsScene::GraphicsScene(const QPoint& anOrigin,
 //--------------------------------------------------------------
 bool GraphicsScene::Init()
 {
-  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
-  {
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED ) {
     return false;
   }
 
@@ -103,22 +102,22 @@ bool GraphicsScene::Init()
   create_grid_labels_();
 
   /* install signal handlers */
-  connect(this,
-          SIGNAL(mouse_moved(QPointF)),
-          parent(),
-          SLOT(update_mouse_position_display(QPointF))
+  connect( this,
+           SIGNAL( mouse_moved( QPointF ) ),
+           parent(),
+           SLOT( update_mouse_position_display( QPointF ) )
          );
 
-  connect(this,
-          SIGNAL(statusBar_message(QString)),
-          parent(),
-          SLOT(show_statusBar_message(QString))
+  connect( this,
+           SIGNAL( statusBar_message( QString ) ),
+           parent(),
+           SLOT( show_statusBar_message( QString ) )
          );
- 
-  connect(this,
-          SIGNAL(statusBar_error(QString)),
-          parent(),
-          SLOT(show_statusBar_error(QString))
+
+  connect( this,
+           SIGNAL( statusBar_error( QString ) ),
+           parent(),
+           SLOT( show_statusBar_error( QString ) )
          );
   return true;
 }
@@ -132,9 +131,9 @@ bool GraphicsScene::Init()
 
 //-------------------------------------------------------------
 // this function nukes the current pattern grid and creates
-// a brand new one 
+// a brand new one
 //-------------------------------------------------------------
-void GraphicsScene::reset_grid(const QSize& newSize)
+void GraphicsScene::reset_grid( const QSize& newSize )
 {
   reset_canvas_();
 
@@ -153,32 +152,31 @@ void GraphicsScene::reset_grid(const QSize& newSize)
 // and re-creates the previously saved one.
 //-------------------------------------------------------------
 void GraphicsScene::load_new_canvas(
-    const QList<PatternGridItemDescriptorPtr>& newItems)
+  const QList<PatternGridItemDescriptorPtr>& newItems )
 {
-  assert(newItems.size() != 0);
+  assert( newItems.size() != 0 );
   reset_canvas_();
 
   int maxCol = 0;
   int maxRow = 0;
-  foreach(PatternGridItemDescriptorPtr rawItem, newItems)
-  {
+  foreach( PatternGridItemDescriptorPtr rawItem, newItems ) {
     int col = rawItem->location.x();
     int row = rawItem->location.y();
-    
-    maxCol = qMax(col, maxCol);
-    maxRow = qMax(row, maxRow);
 
-    PatternGridItem* item = 
-        new PatternGridItem(rawItem->dimension, cellAspectRatio_, col, row, 
-          this, rawItem->backgroundColor);
+    maxCol = qMax( col, maxCol );
+    maxRow = qMax( row, maxRow );
+
+    PatternGridItem* item =
+      new PatternGridItem( rawItem->dimension, cellAspectRatio_, col, row,
+                           this, rawItem->backgroundColor );
     item->Init();
-    item->setPos(compute_cell_origin_(col, row));
-    item->insert_knitting_symbol(rawItem->patternSymbolPtr);
+    item->setPos( compute_cell_origin_( col, row ) );
+    item->insert_knitting_symbol( rawItem->patternSymbolPtr );
 
     /* add it to our scene */
-    add_patternGridItem_(item);
+    add_patternGridItem_( item );
   }
-  
+
   /* adjust dimensions */
   numCols_ = maxCol + 1;
   numRows_ = maxRow + 1;
@@ -194,12 +192,11 @@ void GraphicsScene::load_new_canvas(
 // that are not controlled by the chart itself
 //-------------------------------------------------------------
 void GraphicsScene::instantiate_legend_items(
-    const QList<LegendEntryDescriptorPtr>& extraLegendItems)
+  const QList<LegendEntryDescriptorPtr>& extraLegendItems )
 {
-  foreach(LegendEntryDescriptorPtr rawItem, extraLegendItems)
-  {
-    notify_legend_of_item_addition_(rawItem->patternSymbolPtr, 
-      backgroundColor_, "extraLegendItem");
+  foreach( LegendEntryDescriptorPtr rawItem, extraLegendItems ) {
+    notify_legend_of_item_addition_( rawItem->patternSymbolPtr,
+                                     backgroundColor_, "extraLegendItem" );
   }
 }
 
@@ -211,21 +208,19 @@ void GraphicsScene::instantiate_legend_items(
 // NOTE: This function has to be called after load new canvas
 //-------------------------------------------------------------
 void GraphicsScene::place_legend_items(
-  const QList<LegendEntryDescriptorPtr>& newLegendEntries)
+  const QList<LegendEntryDescriptorPtr>& newLegendEntries )
 {
-  assert(newLegendEntries.size() != 0);
+  assert( newLegendEntries.size() != 0 );
 
-  foreach(LegendEntryDescriptorPtr entryDesc, newLegendEntries)
-  {
-    /* find the legend entry by entryID 
-     * NOTE: We need to do some careful checking here! 
+  foreach( LegendEntryDescriptorPtr entryDesc, newLegendEntries ) {
+    /* find the legend entry by entryID
+     * NOTE: We need to do some careful checking here!
      * If we encounter a legend entry that we don't have
      * for some reason we just skip it */
     QString entryID = entryDesc->entryID;
-    if (legendEntries_.find(entryID) == legendEntries_.end())
-    {
-      qDebug() << "Error: Problem parsing legend item " 
-               << entryID << " in input file";
+    if ( legendEntries_.find( entryID ) == legendEntries_.end() ) {
+      qDebug() << "Error: Problem parsing legend item "
+      << entryID << " in input file";
       continue;
     }
     LegendEntry entry = legendEntries_[entryID];
@@ -234,12 +229,12 @@ void GraphicsScene::place_legend_items(
     QPointF itemPos = entryDesc->itemLocation;
     QPointF labelPos = entryDesc->labelLocation;
 
-    entry.first->setPos(itemPos);
-    entry.second->setPos(labelPos);
+    entry.first->setPos( itemPos );
+    entry.second->setPos( labelPos );
 
     /* set label text and update our presently stored text */
     QString labelText = entryDesc->labelText;
-    entry.second->setPlainText(labelText);
+    entry.second->setPlainText( labelText );
     symbolDescriptors_[entryID] = labelText;
   }
 }
@@ -249,17 +244,16 @@ void GraphicsScene::place_legend_items(
 
 //--------------------------------------------------------------
 // this function takes care of resetting the canvas, i.e.,
-// deleting items, cleaning up data structures 
+// deleting items, cleaning up data structures
 //--------------------------------------------------------------
 void GraphicsScene::reset_canvas_()
 {
   purge_all_canvas_items_();
   purge_legend_();
 
-  
+
   /* reset all views containting us */
-  foreach(QGraphicsView* aView, views())
-  {
+  foreach( QGraphicsView* aView, views() ) {
     aView->resetMatrix();
   }
 }
@@ -275,25 +269,23 @@ void GraphicsScene::reset_canvas_()
 // QRect passed in inside GraphicsScene should cast
 // fine into a QRectF so thats probably an ok think to do.
 //--------------------------------------------------------------
-void GraphicsScene::select_region(const QRectF& aRegion)
+void GraphicsScene::select_region( const QRectF& aRegion )
 {
-  QList<QGraphicsItem*> allItems(items(aRegion));
+  QList<QGraphicsItem*> allItems( items( aRegion ) );
 
-  /* grab PatterGridItems and select them 
+  /* grab PatterGridItems and select them
    * NOTE: We can not just select the cells as we find
    * them among all items since their order is arbitrary
    * causing the selected area to be filled improperly
    * for larger symbols (just like randomly selecting
    * cells in the region would). Hence we sort all cells
    * first by index and then select them in order */
-  QMap<int,PatternGridItem*> gridItems;
-  foreach(QGraphicsItem* anItem, allItems)
-  {
-    PatternGridItem* cell = 
-      qgraphicsitem_cast<PatternGridItem*>(anItem);
-    if (cell != 0)
-    {
-      int cellIndex = compute_cell_index_(cell);
+  QMap<int, PatternGridItem*> gridItems;
+  foreach( QGraphicsItem* anItem, allItems ) {
+    PatternGridItem* cell =
+      qgraphicsitem_cast<PatternGridItem*>( anItem );
+    if ( cell != 0 ) {
+      int cellIndex = compute_cell_index_( cell );
       gridItems[cellIndex] = cell;
     }
   }
@@ -302,9 +294,8 @@ void GraphicsScene::select_region(const QRectF& aRegion)
    * then we update and re-enable*/
   disable_canvas_update_();
 
-  QList<PatternGridItem*> sortedItems(gridItems.values());
-  foreach(PatternGridItem* cell, sortedItems)
-  {
+  QList<PatternGridItem*> sortedItems( gridItems.values() );
+  foreach( PatternGridItem* cell, sortedItems ) {
     cell->select();
   }
 
@@ -324,20 +315,17 @@ void GraphicsScene::hide_all_but_legend()
   //QList<QGraphicsItem*> allItems = items();
 
   /* disable all non-legend items */
-  foreach (QGraphicsItem* anItem, items())
-  {
+  foreach( QGraphicsItem* anItem, items() ) {
     QGraphicsSvgItem* svgItem =
-      qgraphicsitem_cast<QGraphicsSvgItem*>(anItem);
+      qgraphicsitem_cast<QGraphicsSvgItem*>( anItem );
 
-    if(!svgItem)
-    {
+    if ( !svgItem ) {
       anItem->hide();
     }
   }
 
   /* show legend items */
-  foreach (QGraphicsItem* anItem, get_list_of_legend_items_())
-  {
+  foreach( QGraphicsItem* anItem, get_list_of_legend_items_() ) {
     anItem->show();
   }
 }
@@ -348,8 +336,7 @@ void GraphicsScene::hide_all_but_legend()
 //---------------------------------------------------------------
 void GraphicsScene::show_all_items()
 {
-  foreach (QGraphicsItem* anItem, items())
-  {
+  foreach( QGraphicsItem* anItem, items() ) {
     anItem->show();
   }
 }
@@ -362,18 +349,16 @@ void GraphicsScene::show_all_items()
 QRectF GraphicsScene::get_visible_area() const
 {
   QList<QGraphicsItem*> visibleItems;
-  foreach(QGraphicsItem* anItem, items())
-  {
+  foreach( QGraphicsItem* anItem, items() ) {
     QGraphicsSvgItem* svgItem =
-      qgraphicsitem_cast<QGraphicsSvgItem*>(anItem);
+      qgraphicsitem_cast<QGraphicsSvgItem*>( anItem );
 
-    if(!svgItem && anItem->isVisible())
-    {
-      visibleItems.push_back(anItem);
+    if ( !svgItem && anItem->isVisible() ) {
+      visibleItems.push_back( anItem );
     }
   }
 
-  return get_bounding_rect(visibleItems);
+  return get_bounding_rect( visibleItems );
 }
 
 
@@ -383,21 +368,19 @@ QRectF GraphicsScene::get_visible_area() const
 //----------------------------------------------------------------
 QPoint GraphicsScene::get_grid_center() const
 {
-  int centerRow = static_cast<int>(numRows_/2.0);
-  int centerCol = static_cast<int>(numCols_/2.0);
+  int centerRow = static_cast<int>( numRows_ / 2.0 );
+  int centerCol = static_cast<int>( numCols_ / 2.0 );
 
-  QPoint theCenter = compute_cell_origin_(centerRow, centerCol);
-  
+  QPoint theCenter = compute_cell_origin_( centerRow, centerCol );
+
   /* shift by half a cell if the number of rows and/or cells
    * is uneven */
-  if (numCols_ % 2 != 0)
-  {
-    theCenter.setX(theCenter.x() + cellSize_/2.0);
+  if ( numCols_ % 2 != 0 ) {
+    theCenter.setX( theCenter.x() + cellAspectRatio_.width() / 2.0 );
   }
 
-  if (numRows_ % 2 != 0)
-  {
-    theCenter.setY(theCenter.y() + cellSize_/2.0);
+  if ( numRows_ % 2 != 0 ) {
+    theCenter.setY( theCenter.y() + cellAspectRatio_.height() / 2.0 );
   }
 
   return theCenter;
@@ -416,7 +399,7 @@ QPoint GraphicsScene::get_grid_center() const
 // symbol
 //-------------------------------------------------------------
 void GraphicsScene::update_selected_symbol(
-    const KnittingSymbolPtr symbol)
+  const KnittingSymbolPtr symbol )
 {
   selectedSymbol_ = symbol;
 
@@ -428,13 +411,13 @@ void GraphicsScene::update_selected_symbol(
 
 
 //-------------------------------------------------------------
-// add this symbol to the legend 
+// add this symbol to the legend
 //-------------------------------------------------------------
 void GraphicsScene::add_symbol_to_legend(
-    const KnittingSymbolPtr symbol)
+  const KnittingSymbolPtr symbol )
 {
-  notify_legend_of_item_addition_(symbol, backgroundColor_, 
-      "extraLegendItem");
+  notify_legend_of_item_addition_( symbol, backgroundColor_,
+                                   "extraLegendItem" );
 }
 
 
@@ -444,30 +427,26 @@ void GraphicsScene::add_symbol_to_legend(
 // knitting symbol and they are adjacent we either try
 // placing the symbol or color the cells.
 //
-// NOTE: placement can be temporarty disabled, e.g., if we are 
-// selecting a whole range of items (e.g., via rubberband or 
+// NOTE: placement can be temporarty disabled, e.g., if we are
+// selecting a whole range of items (e.g., via rubberband or
 // row/column wise) in order to avoid premature placement of
 // knitting symbols that don't really fit into the total
 // available space.
 //--------------------------------------------------------------
-void GraphicsScene::grid_item_selected(PatternGridItem* anItem, 
-    bool status)
+void GraphicsScene::grid_item_selected( PatternGridItem* anItem,
+                                        bool status )
 {
   /* compute index based on row and col */
-  int index = compute_cell_index_(anItem);
+  int index = compute_cell_index_( anItem );
 
   /* first update our list of currently selected items */
-  if (status)
-  {
-    activeItems_[index]= anItem;
-  }
-  else
-  {
-    activeItems_.remove(index);
+  if ( status ) {
+    activeItems_[index] = anItem;
+  } else {
+    activeItems_.remove( index );
   }
 
-  if (updateActiveItems_)
-  {
+  if ( updateActiveItems_ ) {
     update_active_items_();
   }
 
@@ -478,7 +457,7 @@ void GraphicsScene::grid_item_selected(PatternGridItem* anItem,
 //------------------------------------------------------------
 //------------------------------------------------------------
 void GraphicsScene::update_selected_background_color(
-    const QColor& aColor)
+  const QColor& aColor )
 {
   backgroundColor_ = aColor;
 }
@@ -488,28 +467,27 @@ void GraphicsScene::update_selected_background_color(
 // rest a grid item to its original state, i.e., convert
 // it back into empty single unit cells
 //------------------------------------------------------------
-void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
+void GraphicsScene::grid_item_reset( PatternGridItem* anItem )
 {
   /* figure out where item is and how many cells it spans */
-  QPoint origin(anItem->origin());
-  QSize dim(anItem->dim());
+  QPoint origin( anItem->origin() );
+  QSize dim( anItem->dim() );
   int column = anItem->col();
   int row = anItem->row();
 
   /* get rid of the old cell making sure that we punt if from
    * the set of activeItems if present */
-  remove_patternGridItem_(anItem);
+  remove_patternGridItem_( anItem );
 
   /* start filling the hole with new cells */
   int numNewCells = dim.width();
-  for (int i = 0; i < numNewCells; ++i)
-  {
-    PatternGridItem* item = new PatternGridItem(QSize(1,1), cellAspectRatio_, 
-                                                column+i, row, this);
+  for ( int i = 0; i < numNewCells; ++i ) {
+    PatternGridItem* item = new PatternGridItem( QSize( 1, 1 ), cellAspectRatio_,
+        column + i, row, this );
     item->Init();
-    item->insert_knitting_symbol(defaultSymbol_);
-    item->setPos(compute_cell_origin_(column+i,row));
-    add_patternGridItem_(item);
+    item->insert_knitting_symbol( defaultSymbol_ );
+    item->setPos( compute_cell_origin_( column + i, row ) );
+    add_patternGridItem_( item );
   }
 
   /* make sure to delect all items since the current item
@@ -524,8 +502,7 @@ void GraphicsScene::grid_item_reset(PatternGridItem* anItem)
 void GraphicsScene::deselect_all_active_items()
 {
   disable_canvas_update_();
-  foreach(PatternGridItem* anItem, activeItems_)
-  {
+  foreach( PatternGridItem* anItem, activeItems_ ) {
     anItem->select();
   }
   activeItems_.clear();
@@ -537,61 +514,55 @@ void GraphicsScene::deselect_all_active_items()
 // this slot requests that all currently active grid cells
 // be surrounded by a rectangle
 //-------------------------------------------------------------
-void GraphicsScene::mark_active_cells_with_rectangle() 
+void GraphicsScene::mark_active_cells_with_rectangle()
 {
-  if (activeItems_.empty())
-  {
-    emit statusBar_error("Nothing selected");
+  if ( activeItems_.empty() ) {
+    emit statusBar_error( "Nothing selected" );
     return;
   }
 
   /* first make sure the user selected a complete rectangle */
   QList<RowItems> rowList;
-  sort_active_items_row_wise_(rowList);
+  sort_active_items_row_wise_( rowList );
 
   /* remove the top and bottom empty rows */
-  while (rowList.first().empty())
-  {
+  while ( rowList.first().empty() ) {
     rowList.pop_front();
   }
 
-  while (rowList.last().empty())
-  {
+  while ( rowList.last().empty() ) {
     rowList.pop_back();
   }
-  assert(!rowList.empty());
+  assert( !rowList.empty() );
 
-  QPair<bool,int> initialStatus = is_row_contiguous_(rowList.at(0));
+  QPair<bool, int> initialStatus = is_row_contiguous_( rowList.at( 0 ) );
   bool status = initialStatus.first;
-  for(int index = 1; index < rowList.size(); ++index)
-  {
-    QPair<bool,int> currentStatus = 
-      is_row_contiguous_(rowList.at(index));
-    if (currentStatus != initialStatus)
-    {
+  for ( int index = 1; index < rowList.size(); ++index ) {
+    QPair<bool, int> currentStatus =
+      is_row_contiguous_( rowList.at( index ) );
+    if ( currentStatus != initialStatus ) {
       status = false;
     }
   }
 
-  if (!status)
-  {
-    emit statusBar_error("Selected cells don't form a rectangle");
+  if ( !status ) {
+    emit statusBar_error( "Selected cells don't form a rectangle" );
     return;
   }
 
   /* find bounding rectangle and create rectangle */
-  QRect boundingRect = find_bounding_rectangle_(rowList);
+  QRect boundingRect = find_bounding_rectangle_( rowList );
 
   /* fire up dialog for customizing pattern grid rectangles */
-  PatternGridRectangleDialog rectangleDialog; 
+  PatternGridRectangleDialog rectangleDialog;
   rectangleDialog.Init();
   QPen rectanglePen = rectangleDialog.pen();
 
-  PatternGridRectangle* marker = new PatternGridRectangle(boundingRect,
-      rectanglePen);
+  PatternGridRectangle* marker = new PatternGridRectangle( boundingRect,
+      rectanglePen );
   marker->Init();
-  marker->setZValue(1.0);
-  addItem(marker);
+  marker->setZValue( 1.0 );
+  addItem( marker );
   deselect_all_active_items();
 }
 
@@ -610,21 +581,16 @@ void GraphicsScene::update_after_settings_change()
 // shows or hides legend items depending on their current
 // state
 //-------------------------------------------------------------
-void GraphicsScene::toggle_legend_visibility() 
+void GraphicsScene::toggle_legend_visibility()
 {
-  if (legendIsVisible_)
-  {
-    foreach(LegendEntry item, legendEntries_)
-    {
+  if ( legendIsVisible_ ) {
+    foreach( LegendEntry item, legendEntries_ ) {
       item.first->hide();
       item.second->hide();
     }
     legendIsVisible_ = false;
-  }
-  else
-  {
-    foreach(LegendEntry item, legendEntries_)
-    {
+  } else {
+    foreach( LegendEntry item, legendEntries_ ) {
       item.first->show();
       item.second->show();
     }
@@ -649,46 +615,41 @@ void GraphicsScene::toggle_legend_visibility()
 //-------------------------------------------------------------
 void GraphicsScene::delete_col_()
 {
-  assert(selectedCol_ >= 0);
-  assert(selectedCol_ < numCols_);
+  assert( selectedCol_ >= 0 );
+  assert( selectedCol_ < numCols_ );
 
-  if (selectedCol_ == UNSELECTED)
-  {
+  if ( selectedCol_ == UNSELECTED ) {
     return;
   }
-  
+
   deselect_all_active_items();
 
-  QList<QGraphicsItem*> allItems(items());
+  QList<QGraphicsItem*> allItems( items() );
   QList<PatternGridItem*> gridItems;
 
   /* go through all items and make sure that the cells
    * of the selected rows are all unit cells and don't
    * span multiple columns */
   int targetColCounter = 0;
-  foreach(QGraphicsItem* anItem, allItems)
-  {
-    PatternGridItem* cell = 
-      qgraphicsitem_cast<PatternGridItem*>(anItem);
+  foreach( QGraphicsItem* anItem, allItems ) {
+    PatternGridItem* cell =
+      qgraphicsitem_cast<PatternGridItem*>( anItem );
 
-    if (cell != 0)
-    {
-      if (cell->col() == selectedCol_ &&
-          cell->dim().width() == 1)
-      {
+    if ( cell != 0 ) {
+      if ( cell->col() == selectedCol_ &&
+           cell->dim().width() == 1 ) {
         targetColCounter += 1;
       }
-      
-      gridItems.push_back(cell);
+
+      gridItems.push_back( cell );
     }
   }
-       
+
   /* if we have less than numRows_ in deletedColCounter there
    * was at least on multi column cell in the column */
-  if ( targetColCounter < numRows_ )
-  {
-    emit statusBar_error("cannot delete columns with "
-      "cells that span multiple columns");
+  if ( targetColCounter < numRows_ ) {
+    emit statusBar_error( "cannot delete columns with "
+                          "cells that span multiple columns" );
     selectedCol_ = UNSELECTED;
     return;
   }
@@ -699,21 +660,17 @@ void GraphicsScene::delete_col_()
    * - shift the ones in a row greater than selectedRow_
    *   up by one
    */
-  foreach(PatternGridItem* cell, gridItems)
-  {
-    if (cell->col() == selectedCol_)
-    {
-      remove_patternGridItem_(cell);
-    }
-    else if (cell->col() > selectedCol_)
-    {
-      cell->reseat(cell->col() - 1, cell->row());
-      cell->setPos(compute_cell_origin_(cell->col(), cell->row()));
+  foreach( PatternGridItem* cell, gridItems ) {
+    if ( cell->col() == selectedCol_ ) {
+      remove_patternGridItem_( cell );
+    } else if ( cell->col() > selectedCol_ ) {
+      cell->reseat( cell->col() - 1, cell->row() );
+      cell->setPos( compute_cell_origin_( cell->col(), cell->row() ) );
     }
   }
 
   /* update position of legend items */
-  shift_legend_items_horizontally_(selectedCol_, -cellSize_);
+  shift_legend_items_horizontally_( selectedCol_, -cellAspectRatio_.width() );
 
   /* unselect row and update row counter */
   numCols_ = numCols_ - 1;
@@ -722,9 +679,9 @@ void GraphicsScene::delete_col_()
   /* redraw the labels */
   create_grid_labels_();
 
-  /* update sceneRect 
+  /* update sceneRect
    * NOTE: This may be a bottleneck for large grids */
-  setSceneRect(itemsBoundingRect());
+  setSceneRect( itemsBoundingRect() );
 }
 
 
@@ -733,11 +690,10 @@ void GraphicsScene::delete_col_()
 //-------------------------------------------------------------
 void GraphicsScene::delete_row_()
 {
-  assert(selectedRow_ >= 0);
-  assert(selectedRow_ < numRows_); 
+  assert( selectedRow_ >= 0 );
+  assert( selectedRow_ < numRows_ );
 
-  if (selectedRow_ == UNSELECTED)
-  {
+  if ( selectedRow_ == UNSELECTED ) {
     return;
   }
 
@@ -748,39 +704,33 @@ void GraphicsScene::delete_row_()
    * - shift the ones in a row greater than selectedRow_
    *   up by one
    *
-   * Important: We can't just delete as we go since 
-   * this also nukes the svg item children which 
+   * Important: We can't just delete as we go since
+   * this also nukes the svg item children which
    * we are also iterating over
    */
-  QList<QGraphicsItem*> allItems(items());
+  QList<QGraphicsItem*> allItems( items() );
   QList<PatternGridItem*> patternItems;
-  foreach(QGraphicsItem* anItem, allItems)
-  {
-    PatternGridItem* cell = 
-      qgraphicsitem_cast<PatternGridItem*>(anItem);
-    
-    if (cell != 0)
-    {
-      patternItems.push_back(cell);
+  foreach( QGraphicsItem* anItem, allItems ) {
+    PatternGridItem* cell =
+      qgraphicsitem_cast<PatternGridItem*>( anItem );
+
+    if ( cell != 0 ) {
+      patternItems.push_back( cell );
     }
   }
 
-  foreach(PatternGridItem* patItem, patternItems)
-  {
-    if (patItem->row() == selectedRow_)
-    {
-      remove_patternGridItem_(patItem);
-    }
-    else if (patItem->row() > selectedRow_)
-    {
-      patItem->reseat(patItem->col(), patItem->row() - 1);
+  foreach( PatternGridItem* patItem, patternItems ) {
+    if ( patItem->row() == selectedRow_ ) {
+      remove_patternGridItem_( patItem );
+    } else if ( patItem->row() > selectedRow_ ) {
+      patItem->reseat( patItem->col(), patItem->row() - 1 );
       patItem->setPos(
-        compute_cell_origin_(patItem->col(), patItem->row()));
+        compute_cell_origin_( patItem->col(), patItem->row() ) );
     }
   }
 
   /* update position of legend items */
-  shift_legend_items_vertically_(selectedRow_, -cellSize_);
+  shift_legend_items_vertically_( selectedRow_, -cellAspectRatio_.height() );
 
   /* unselect row and update row counter */
   numRows_ = numRows_ - 1;
@@ -789,9 +739,9 @@ void GraphicsScene::delete_row_()
   /* redraw the labels */
   create_grid_labels_();
 
-  /* update sceneRect 
+  /* update sceneRect
    * NOTE: This may be a bottleneck for large grids */
-  setSceneRect(itemsBoundingRect());
+  setSceneRect( itemsBoundingRect() );
 }
 
 
@@ -801,60 +751,54 @@ void GraphicsScene::delete_row_()
 //-------------------------------------------------------------
 void GraphicsScene::insert_left_of_col_()
 {
-  if (selectedCol_ == UNSELECTED)
-  {
+  if ( selectedCol_ == UNSELECTED ) {
     return;
   }
 
-  insert_col_(selectedCol_);
+  insert_col_( selectedCol_ );
 }
 
 
 void GraphicsScene::insert_right_of_col_()
 {
-  if (selectedCol_ == UNSELECTED)
-  {
+  if ( selectedCol_ == UNSELECTED ) {
     return;
   }
 
-  insert_col_(selectedCol_ + 1);
+  insert_col_( selectedCol_ + 1 );
 }
 
 
 
-void GraphicsScene::insert_col_(int aCol)
+void GraphicsScene::insert_col_( int aCol )
 {
   deselect_all_active_items();
 
   /* go through all items and make sure that that
    * inserting the columns won't cut through any
-   * multy row cells 
-   * NOTE: The special case here is adding a column at the 
-   * right or left of the pattern grid in which case we're 
+   * multy row cells
+   * NOTE: The special case here is adding a column at the
+   * right or left of the pattern grid in which case we're
    * always in good shape and the below test will actually
    * fail when adding at the right */
-  if (aCol != 0 && aCol != numCols_)
-  {
+  if ( aCol != 0 && aCol != numCols_ ) {
     int targetColCounter = 0;
-    QList<QGraphicsItem*> allItems(items());
-    foreach(QGraphicsItem* anItem, allItems)
-    {
-      PatternGridItem* cell = 
-        qgraphicsitem_cast<PatternGridItem*>(anItem);
+    QList<QGraphicsItem*> allItems( items() );
+    foreach( QGraphicsItem* anItem, allItems ) {
+      PatternGridItem* cell =
+        qgraphicsitem_cast<PatternGridItem*>( anItem );
 
-      if (cell != 0)
-      {
+      if ( cell != 0 ) {
         /* in order to make sure we won't cut through
          * a wide cell, we check if the origin of the cell
          * is in the current cell. If not, it will surely
          * start in the cell to the left and we would cut
          * it in this case */
-        QPointF actualOrigin(cell->scenePos());
-        QPointF neededOrigin(compute_cell_origin_(aCol, cell->row()));
+        QPointF actualOrigin( cell->scenePos() );
+        QPointF neededOrigin( compute_cell_origin_( aCol, cell->row() ) );
 
         /* FIXME: we shouldn't be comparing QPointFs !!! */
-        if (cell->col() == aCol && actualOrigin == neededOrigin )
-        {
+        if ( cell->col() == aCol && actualOrigin == neededOrigin ) {
           targetColCounter += 1;
         }
       }
@@ -862,10 +806,9 @@ void GraphicsScene::insert_col_(int aCol)
 
     /* if we have less than numCols_ in deletedColCounter there
      * was at least on multi column cell in the column */
-    if ( targetColCounter < numRows_ )
-    {
-      emit statusBar_error("cannot insert column in between "
-          "cells that span multiple columns");
+    if ( targetColCounter < numRows_ ) {
+      emit statusBar_error( "cannot insert column in between "
+                            "cells that span multiple columns" );
       selectedCol_ = UNSELECTED;
       return;
     }
@@ -873,24 +816,23 @@ void GraphicsScene::insert_col_(int aCol)
 
 
   /* expand the grid to make space */
-  expand_grid_(aCol, NOSHIFT);
+  expand_grid_( aCol, NOSHIFT );
 
 
   /* now insert the new column */
-  for (int row = 0; row < numRows_; ++row)
-  {
-    PatternGridItem* anItem = new PatternGridItem (
-          QSize(1,1),
-          cellAspectRatio_,
-          aCol,
-          row,
-          this,
-          defaultColor_);
+  for ( int row = 0; row < numRows_; ++row ) {
+    PatternGridItem* anItem = new PatternGridItem(
+      QSize( 1, 1 ),
+      cellAspectRatio_,
+      aCol,
+      row,
+      this,
+      defaultColor_ );
 
     anItem->Init();
-    anItem->setPos(compute_cell_origin_(aCol, row));  
-    anItem->insert_knitting_symbol(defaultSymbol_);
-    add_patternGridItem_(anItem);
+    anItem->setPos( compute_cell_origin_( aCol, row ) );
+    anItem->insert_knitting_symbol( defaultSymbol_ );
+    add_patternGridItem_( anItem );
   }
 
 
@@ -900,9 +842,9 @@ void GraphicsScene::insert_col_(int aCol)
   /* redraw the labels */
   create_grid_labels_();
 
-  /* update sceneRect 
+  /* update sceneRect
    * NOTE: This may be a bottleneck for large grids */
-  setSceneRect(itemsBoundingRect());
+  setSceneRect( itemsBoundingRect() );
 }
 
 
@@ -912,50 +854,47 @@ void GraphicsScene::insert_col_(int aCol)
 //-------------------------------------------------------------
 void GraphicsScene::insert_above_row_()
 {
-  if (selectedRow_ == UNSELECTED)
-  {
+  if ( selectedRow_ == UNSELECTED ) {
     return;
   }
 
-  insert_row_(selectedRow_ - 1);
+  insert_row_( selectedRow_ - 1 );
 }
 
 
 
 void GraphicsScene::insert_below_row_()
 {
-  if (selectedRow_ == UNSELECTED)
-  {
+  if ( selectedRow_ == UNSELECTED ) {
     return;
   }
 
-  insert_row_(selectedRow_);
+  insert_row_( selectedRow_ );
 }
 
 
 
-void GraphicsScene::insert_row_(int aRow)
+void GraphicsScene::insert_row_( int aRow )
 {
   deselect_all_active_items();
 
   /* shift rows to make space */
-  expand_grid_(NOSHIFT, aRow);
+  expand_grid_( NOSHIFT, aRow );
 
   /* now insert the new row */
-  for (int column = 0; column < numCols_; ++column)
-  {
-    PatternGridItem* anItem = new PatternGridItem (
-          QSize(1,1),
-          cellAspectRatio_,
-          column,
-          aRow+1,
-          this,
-          defaultColor_);
+  for ( int column = 0; column < numCols_; ++column ) {
+    PatternGridItem* anItem = new PatternGridItem(
+      QSize( 1, 1 ),
+      cellAspectRatio_,
+      column,
+      aRow + 1,
+      this,
+      defaultColor_ );
 
     anItem->Init();
-    anItem->setPos(compute_cell_origin_(column, aRow+1)); 
-    anItem->insert_knitting_symbol(defaultSymbol_);
-    add_patternGridItem_(anItem);
+    anItem->setPos( compute_cell_origin_( column, aRow + 1 ) );
+    anItem->insert_knitting_symbol( defaultSymbol_ );
+    add_patternGridItem_( anItem );
   }
 
 
@@ -965,9 +904,9 @@ void GraphicsScene::insert_row_(int aRow)
   /* redraw the labels */
   create_grid_labels_();
 
-  /* update sceneRect 
+  /* update sceneRect
    * NOTE: This may be a bottleneck for large grids */
-  setSceneRect(itemsBoundingRect());
+  setSceneRect( itemsBoundingRect() );
 }
 
 
@@ -978,33 +917,33 @@ void GraphicsScene::insert_row_(int aRow)
 // Since this SLOT is filled via a signal we can only
 // deliver a QObject via QSignalMapper
 //--------------------------------------------------------------
-void GraphicsScene::mark_rectangle_for_deletion_(QObject* rectObj) 
-{ 
-    PatternGridRectangle* rect = 
-      qobject_cast<PatternGridRectangle*>(rectObj);
-    removeItem(rect);
-    rect->deleteLater();
+void GraphicsScene::mark_rectangle_for_deletion_( QObject* rectObj )
+{
+  PatternGridRectangle* rect =
+    qobject_cast<PatternGridRectangle*>( rectObj );
+  removeItem( rect );
+  rect->deleteLater();
 }
 
 
 
 //--------------------------------------------------------------
 // this slot fires up a customization dialog to change the
-// properties of the selected rectangle 
+// properties of the selected rectangle
 // FIXME: The casting is a bit nasty - can we get rid of it.
 // Since this SLOT is filled via a signal we can only
 // deliver a QObject via QSignalMapper
 //--------------------------------------------------------------
-void GraphicsScene::customize_rectangle_(QObject* rectObj) 
-{ 
-  PatternGridRectangle* rect = 
-    qobject_cast<PatternGridRectangle*>(rectObj);
+void GraphicsScene::customize_rectangle_( QObject* rectObj )
+{
+  PatternGridRectangle* rect =
+    qobject_cast<PatternGridRectangle*>( rectObj );
 
-  PatternGridRectangleDialog rectangleDialog; 
+  PatternGridRectangleDialog rectangleDialog;
   rectangleDialog.Init();
   QPen rectanglePen = rectangleDialog.pen();
 
-  rect->set_pen(rectanglePen);
+  rect->set_pen( rectanglePen );
 }
 
 
@@ -1013,8 +952,8 @@ void GraphicsScene::customize_rectangle_(QObject* rectObj)
 // this slot update the text we store for a particular
 // legend label
 //-------------------------------------------------------------
-void GraphicsScene::update_key_label_text_(QString labelID, 
-  QString newLabelText)
+void GraphicsScene::update_key_label_text_( QString labelID,
+    QString newLabelText )
 {
   symbolDescriptors_[labelID] = newLabelText;
 }
@@ -1030,69 +969,67 @@ void GraphicsScene::update_key_label_text_(QString labelID,
 // the user added it directly from the symbolSelectorWidget.
 //-------------------------------------------------------------
 void GraphicsScene::notify_legend_of_item_addition_(
-    const KnittingSymbolPtr symbol, QColor aColor, QString tag)
+  const KnittingSymbolPtr symbol, QColor aColor, QString tag )
 {
   QString symbolName = symbol->patternName();
   QString symbolCategory = symbol->category();
   QString colorName  = aColor.name();
-  QString fullName = get_legend_item_name(symbolCategory,
-      symbolName, colorName, tag);
+  QString fullName = get_legend_item_name( symbolCategory,
+                     symbolName, colorName, tag );
 
   /* update reference count */
   int currentValue = usedKnittingSymbols_[fullName] + 1;
-  assert(currentValue > 0);
+  assert( currentValue > 0 );
   usedKnittingSymbols_[fullName] = currentValue;
 
   /* if the symbol got newly added we add a description unless
    * it already existed previously and show it in the legend */
-  if (currentValue == 1)
-  {
+  if ( currentValue == 1 ) {
     /* compute position for next label item */
     int xPosSym = origin_.x();
     int yPos = get_next_legend_items_y_position_();
 
-    LegendItem* newLegendItem = new LegendItem(symbol->dim(), tag,
-      cellAspectRatio_, aColor);
-    connect(newLegendItem,
-            SIGNAL(delete_from_legend(KnittingSymbolPtr, QColor, QString)),
-            this,
-            SLOT(notify_legend_of_item_removal_(KnittingSymbolPtr, QColor, QString))
+    LegendItem* newLegendItem = new LegendItem( symbol->dim(), tag,
+        cellAspectRatio_, aColor );
+    connect( newLegendItem,
+             SIGNAL( delete_from_legend( KnittingSymbolPtr, QColor, QString ) ),
+             this,
+             SLOT( notify_legend_of_item_removal_( KnittingSymbolPtr, QColor, 
+                 QString ) )
            );
     newLegendItem->Init();
-    newLegendItem->insert_knitting_symbol(symbol);
-    newLegendItem->setPos(xPosSym, yPos);
-    newLegendItem->setFlag(QGraphicsItem::ItemIsMovable);
-    newLegendItem->setZValue(1);
-    addItem(newLegendItem);
+    newLegendItem->insert_knitting_symbol( symbol );
+    newLegendItem->setPos( xPosSym, yPos );
+    newLegendItem->setFlag( QGraphicsItem::ItemIsMovable );
+    newLegendItem->setZValue( 1 );
+    addItem( newLegendItem );
 
     /* add label */
-    QString description = get_symbol_description_(symbol, colorName);
-    int xPosLabel = (symbol->dim().width() + 0.5) * cellSize_ + origin_.x();
-    QFont currentFont = extract_font_from_settings(settings_);
-    
-    LegendLabel* newTextItem = 
-      new LegendLabel(fullName, description);
+    QString description = get_symbol_description_( symbol, colorName );
+    int xPosLabel = ( symbol->dim().width() + 0.5 ) * cellAspectRatio_.width()
+                    + origin_.x();
+    QFont currentFont = extract_font_from_settings( settings_ );
+
+    LegendLabel* newTextItem =
+      new LegendLabel( fullName, description );
     newTextItem->Init();
-    newTextItem->setPos(xPosLabel, yPos);
-    newTextItem->setFont(currentFont);
-    newTextItem->setFlag(QGraphicsItem::ItemIsMovable);
-    newTextItem->setZValue(1);
-    addItem(newTextItem);
-    connect(newTextItem,
-            SIGNAL(label_changed(QString, QString)),
-            this,
-            SLOT(update_key_label_text_(QString, QString))
+    newTextItem->setPos( xPosLabel, yPos );
+    newTextItem->setFont( currentFont );
+    newTextItem->setFlag( QGraphicsItem::ItemIsMovable );
+    newTextItem->setZValue( 1 );
+    addItem( newTextItem );
+    connect( newTextItem,
+             SIGNAL( label_changed( QString, QString ) ),
+             this,
+             SLOT( update_key_label_text_( QString, QString ) )
            );
 
-    legendEntries_[fullName] = LegendEntry(newLegendItem, newTextItem);
+    legendEntries_[fullName] = LegendEntry( newLegendItem, newTextItem );
 
-    if (!legendIsVisible_)
-    {
+    if ( !legendIsVisible_ ) {
       newLegendItem->hide();
       newTextItem->hide();
-    }
-    else
-    {
+    } else {
       emit show_whole_scene();
     }
   }
@@ -1106,29 +1043,28 @@ void GraphicsScene::notify_legend_of_item_addition_(
 // its kind" and if so removed it.
 //-------------------------------------------------------------
 void GraphicsScene::notify_legend_of_item_removal_(
-  const KnittingSymbolPtr symbol, QColor aColor, QString tag)
+  const KnittingSymbolPtr symbol, QColor aColor, QString tag )
 {
   QString symbolName = symbol->patternName();
   QString symbolCategory = symbol->category();
   QString colorName  = aColor.name();
-  QString fullName = get_legend_item_name(symbolCategory,
-      symbolName, colorName, tag);
+  QString fullName = get_legend_item_name( symbolCategory,
+                     symbolName, colorName, tag );
 
   int currentValue = usedKnittingSymbols_[fullName] - 1;
-  assert(currentValue >= 0);
+  assert( currentValue >= 0 );
   usedKnittingSymbols_[fullName] = currentValue;
 
   /* remove symbol if reference count hits 0 */
-  if (currentValue == 0)
-  {
-    usedKnittingSymbols_.remove(fullName);
+  if ( currentValue == 0 ) {
+    usedKnittingSymbols_.remove( fullName );
 
     LegendEntry deadItem = legendEntries_[fullName];
-    removeItem(deadItem.first);
+    removeItem( deadItem.first );
     deadItem.first->deleteLater();
-    removeItem(deadItem.second);
+    removeItem( deadItem.second );
     deadItem.second->deleteLater();
-    legendEntries_.remove(fullName);
+    legendEntries_.remove( fullName );
   }
 }
 
@@ -1136,7 +1072,7 @@ void GraphicsScene::notify_legend_of_item_removal_(
 
 /**************************************************************
  *
- * PROTECTED 
+ * PROTECTED
  *
  *************************************************************/
 
@@ -1144,14 +1080,14 @@ void GraphicsScene::notify_legend_of_item_removal_(
 // event handler for mouse move events
 //---------------------------------------------------------------
 void GraphicsScene::mouseMoveEvent(
-    QGraphicsSceneMouseEvent* mouseEvent)
+  QGraphicsSceneMouseEvent* mouseEvent )
 {
   QPointF currentPos = mouseEvent->scenePos();
 
   /* let our parent know that we moved */
-  emit mouse_moved(currentPos);
+  emit mouse_moved( currentPos );
 
-  return QGraphicsScene::mouseMoveEvent(mouseEvent);
+  return QGraphicsScene::mouseMoveEvent( mouseEvent );
 }
 
 
@@ -1159,23 +1095,19 @@ void GraphicsScene::mouseMoveEvent(
 // event handler for mouse press events
 //---------------------------------------------------------------
 void GraphicsScene::mousePressEvent(
-    QGraphicsSceneMouseEvent* mouseEvent)
+  QGraphicsSceneMouseEvent* mouseEvent )
 {
-  if (mouseEvent->button() == Qt::RightButton)
-  {
-    bool handled = handle_click_on_marker_rectangle_(mouseEvent);
+  if ( mouseEvent->button() == Qt::RightButton ) {
+    bool handled = handle_click_on_marker_rectangle_( mouseEvent );
 
-    if (!handled)
-    {
-      handle_click_on_grid_array_(mouseEvent);
+    if ( !handled ) {
+      handle_click_on_grid_array_( mouseEvent );
     }
-  }
-  else
-  {
-    handle_click_on_grid_labels_(mouseEvent);
+  } else {
+    handle_click_on_grid_labels_( mouseEvent );
   }
 
-  return QGraphicsScene::mousePressEvent(mouseEvent);
+  return QGraphicsScene::mousePressEvent( mouseEvent );
 }
 
 
@@ -1193,25 +1125,24 @@ void GraphicsScene::mousePressEvent(
 //-------------------------------------------------------------
 void GraphicsScene::change_selected_cells_colors_()
 {
-  foreach(PatternGridItem* item, activeItems_)
-  {
+  foreach( PatternGridItem* item, activeItems_ ) {
     /* remove us from the legend */
-    notify_legend_of_item_removal_(item->get_knitting_symbol(),
-      item->color(), "chartLegendItem");
-    
-    item->set_background_color(backgroundColor_);
+    notify_legend_of_item_removal_( item->get_knitting_symbol(),
+                                    item->color(), "chartLegendItem" );
+
+    item->set_background_color( backgroundColor_ );
 
     /* re-add newly colored symbol to the legend */
-    notify_legend_of_item_addition_(item->get_knitting_symbol(), 
-      item->color(), "chartLegendItem");
-    
+    notify_legend_of_item_addition_( item->get_knitting_symbol(),
+                                     item->color(), "chartLegendItem" );
+
   }
 
   deselect_all_active_items();
 }
 
 
-  
+
 //-------------------------------------------------------------
 // this function tries to place the currently active
 // knitting symbol into the selected pattern grid cells
@@ -1221,69 +1152,62 @@ void GraphicsScene::try_place_knitting_symbol_()
   /* check how many cells we need for the currently selected
    * knitting symbol */
   QSize size = selectedSymbol_->dim();
-  int cellsNeeded = size.width(); 
+  int cellsNeeded = size.width();
 
-  if (cellsNeeded == 0)
-  {
+  if ( cellsNeeded == 0 ) {
     return;
   }
 
   /* make sure the number of selected items is an integer multiple
    * of the required item size */
-  if ( activeItems_.size() % cellsNeeded != 0 )
-  {
-    emit statusBar_error(tr("Number of selected cells is"
-           "not a multiple of the pattern size"));
+  if ( activeItems_.size() % cellsNeeded != 0 ) {
+    emit statusBar_error( tr( "Number of selected cells is"
+                              "not a multiple of the pattern size" ) );
   }
 
   /* sort selected items row wise */
   QList<RowItems> rowList;
-  bool sortStatus = sort_active_items_row_wise_(rowList);
-  if (!sortStatus)
-  { 
+  bool sortStatus = sort_active_items_row_wise_( rowList );
+  if ( !sortStatus ) {
     return;
   }
 
-  /* check if each row has the proper arrangement of 
+  /* check if each row has the proper arrangement of
    * highlighted cells to fit the selected pattern item */
   QList<RowLayout> replacementCells;
-  bool finalStatus = process_selected_items_(replacementCells, 
-    rowList, cellsNeeded);
-  if (!finalStatus)
-  {
+  bool finalStatus = process_selected_items_( replacementCells,
+                     rowList, cellsNeeded );
+  if ( !finalStatus ) {
     return;
   }
 
-  
+
   /* delete previously highligthed cells */
-  QList<PatternGridItem*> deadItems(activeItems_.values()); 
-  foreach(PatternGridItem* item, deadItems)
-  {
-    remove_patternGridItem_(item);
+  QList<PatternGridItem*> deadItems( activeItems_.values() );
+  foreach( PatternGridItem* item, deadItems ) {
+    remove_patternGridItem_( item );
   }
 
 
   /* at this point all rows are in the proper shape to be
    * replaced by the current symbol */
-  for (int row=0; row < replacementCells.size(); ++row)
-  {
-    for (int cell=0; cell < replacementCells.at(row).size(); ++cell)
-    {
-      int column = replacementCells.at(row)[cell].first;
-      int aWidth  = replacementCells.at(row)[cell].second;
+  for ( int row = 0; row < replacementCells.size(); ++row ) {
+    for ( int cell = 0; cell < replacementCells.at( row ).size(); ++cell ) {
+      int column = replacementCells.at( row )[cell].first;
+      int aWidth  = replacementCells.at( row )[cell].second;
 
-      PatternGridItem* anItem = new PatternGridItem (
-          QSize(aWidth,1),
-          cellAspectRatio_,
-          column,
-          row,
-          this,
-          backgroundColor_);
+      PatternGridItem* anItem = new PatternGridItem(
+        QSize( aWidth, 1 ),
+        cellAspectRatio_,
+        column,
+        row,
+        this,
+        backgroundColor_ );
 
       anItem->Init();
-      anItem->insert_knitting_symbol(selectedSymbol_);
-      anItem->setPos(compute_cell_origin_(column, row));  
-      add_patternGridItem_(anItem);
+      anItem->insert_knitting_symbol( selectedSymbol_ );
+      anItem->setPos( compute_cell_origin_( column, row ) );
+      add_patternGridItem_( anItem );
     }
   }
 
@@ -1296,26 +1220,21 @@ void GraphicsScene::try_place_knitting_symbol_()
 // compute the shift for horizontal labels so they are centered
 // in each grid cell
 //-----------------------------------------------------------------
-int GraphicsScene::compute_horizontal_label_shift_(int aNum, 
-    int fontSize) const
+int GraphicsScene::compute_horizontal_label_shift_( int aNum,
+    int fontSize ) const
 {
-  double size = cellSize_ * 0.5;
+  double size = cellAspectRatio_.width() * 0.5;
   double numWidth = fontSize * 0.5;
   double count = 0;
-  if (aNum < 10)
-  {
+  if ( aNum < 10 ) {
     count = 1.5;
-  }
-  else if (aNum < 100)
-  {
+  } else if ( aNum < 100 ) {
     count = 2.0;
-  }
-  else
-  {
+  } else {
     count = 3;
   }
 
-  return static_cast<int>(size - numWidth * count);
+  return static_cast<int>( size - numWidth * count );
 }
 
 
@@ -1324,20 +1243,18 @@ int GraphicsScene::compute_horizontal_label_shift_(int aNum,
 // returns true on success and false on failure
 //----------------------------------------------------------------
 bool GraphicsScene::sort_active_items_row_wise_(
-  QList<RowItems>& theRows) const
+  QList<RowItems>& theRows ) const
 {
-  for (int i=0; i < numRows_; ++i)
-  {
+  for ( int i = 0; i < numRows_; ++i ) {
     RowItems tempList;
-    theRows.push_back(tempList);
+    theRows.push_back( tempList );
   }
 
-  QMap<int, PatternGridItem*>::const_iterator iter = 
+  QMap<int, PatternGridItem*>::const_iterator iter =
     activeItems_.constBegin();
-  while (iter != activeItems_.constEnd()) 
-  {
-    int row = static_cast<int>(iter.key()/numCols_); 
-    theRows[row].push_back(iter.value());
+  while ( iter != activeItems_.constEnd() ) {
+    int row = static_cast<int>( iter.key() / numCols_ );
+    theRows[row].push_back( iter.value() );
     ++iter;
   }
 
@@ -1346,99 +1263,83 @@ bool GraphicsScene::sort_active_items_row_wise_(
 
 
 //--------------------------------------------------------------
-// check if each row has the proper arrangement of 
+// check if each row has the proper arrangement of
 // highlighted cells to fit the selected pattern item and
 // arrange highlighted cells in bunches of targetPatternSize
 // NOTE: selectedPatternSize is expected to be non-zero
 //--------------------------------------------------------------
 bool GraphicsScene::process_selected_items_(
-  QList<RowLayout>& finalCellLayout, const QList<RowItems>& rowLayout, 
-  int selectedPatternSize) 
+  QList<RowLayout>& finalCellLayout, const QList<RowItems>& rowLayout,
+  int selectedPatternSize )
 {
-  for (int row=0; row < rowLayout.size(); ++row)
-  {
-    RowItems rowItem = rowLayout.at(row);
+  for ( int row = 0; row < rowLayout.size(); ++row ) {
+    RowItems rowItem = rowLayout.at( row );
 
     int rowLength = 0;
-    foreach(PatternGridItem* anItem, rowItem)
-    {
-      rowLength += (anItem->dim()).width();
+    foreach( PatternGridItem* anItem, rowItem ) {
+      rowLength += ( anItem->dim() ).width();
     }
-    
+
     /* if the rowLength is not divisible by cellsNeeded we
      * are done */
-    if (rowLength % selectedPatternSize != 0)
-    {
-      emit statusBar_error(tr("Improper total number of cells."));
+    if ( rowLength % selectedPatternSize != 0 ) {
+      emit statusBar_error( tr( "Improper total number of cells." ) );
       return false;
     }
 
     RowLayout cellBounds;
-    foreach(PatternGridItem* anItem, rowItem)
-    {
-      int curStart = (anItem->col());
-      int curWidth = (anItem->dim()).width();
+    foreach( PatternGridItem* anItem, rowItem ) {
+      int curStart = ( anItem->col() );
+      int curWidth = ( anItem->dim() ).width();
 
-      if (!cellBounds.empty())
-      {
+      if ( !cellBounds.empty() ) {
         int lastStart = cellBounds.back().first;
         int lastWidth = cellBounds.back().second;
 
         /* see if we are extending the last cell */
-        if ( lastStart + lastWidth == curStart )
-        {
+        if ( lastStart + lastWidth == curStart ) {
           cellBounds.pop_back();
           cellBounds.push_back(
-            QPair<int,int>(lastStart, lastWidth+curWidth));
+            QPair<int, int>( lastStart, lastWidth + curWidth ) );
+        } else {
+          cellBounds.push_back( QPair<int, int>( curStart, curWidth ) );
         }
-        else
-        {
-          cellBounds.push_back(QPair<int,int>(curStart, curWidth));
-        }
-      }
-      else
-      {
-        cellBounds.push_back(QPair<int,int>(curStart, curWidth));
+      } else {
+        cellBounds.push_back( QPair<int, int>( curStart, curWidth ) );
       }
     }
 
-    
+
     /* generate row message String */
     QString rowIndex;
-    rowIndex.setNum(row+1);
-    QString rowMsg("row " + rowIndex + ": ");
- 
+    rowIndex.setNum( row + 1 );
+    QString rowMsg( "row " + rowIndex + ": " );
+
     RowLayout finalCells;
     /* reorganize all blocks into multiples of selectedPatternSize */
-    for (int i=0; i < cellBounds.size(); ++i)
-    {
-      int currentOrigin = cellBounds.at(i).first;
-      int currentWidth = cellBounds.at(i).second;
+    for ( int i = 0; i < cellBounds.size(); ++i ) {
+      int currentOrigin = cellBounds.at( i ).first;
+      int currentWidth = cellBounds.at( i ).second;
 
-      div_t multiple = div(currentWidth, selectedPatternSize);
-      if (multiple.rem != 0)
-      {
-        emit statusBar_error(rowMsg + "non-matching block size");
+      div_t multiple = div( currentWidth, selectedPatternSize );
+      if ( multiple.rem != 0 ) {
+        emit statusBar_error( rowMsg + "non-matching block size" );
         return false;
       }
 
-      if (multiple.quot != 1)
-      {
-        for (int cell=0; cell < multiple.quot; ++cell)
-        {
-          finalCells.push_back(QPair<int,int>(
-              currentOrigin + cell*selectedPatternSize,
-              selectedPatternSize));
+      if ( multiple.quot != 1 ) {
+        for ( int cell = 0; cell < multiple.quot; ++cell ) {
+          finalCells.push_back( QPair<int, int>(
+                                  currentOrigin + cell*selectedPatternSize,
+                                  selectedPatternSize ) );
         }
-      }
-      else
-      {
-        finalCells.push_back(cellBounds.at(i));
+      } else {
+        finalCells.push_back( cellBounds.at( i ) );
       }
     }
 
     /* this row checks out */
-    finalCellLayout.push_back(finalCells);
+    finalCellLayout.push_back( finalCells );
   }
 
   return true;
@@ -1456,76 +1357,81 @@ void GraphicsScene::colorize_highlighted_cells_()
 {
   /* if coloring is selected we set the color of all
    * curently active Items */
-  QList<PatternGridItem*> patternItems(activeItems_.values());
-  foreach(PatternGridItem* anItem, patternItems)
-  {
-    anItem->set_background_color(backgroundColor_);
+  QList<PatternGridItem*> patternItems( activeItems_.values() );
+  foreach( PatternGridItem* anItem, patternItems ) {
+    anItem->set_background_color( backgroundColor_ );
   }
 }
 
 
 //--------------------------------------------------------------
 // given a point on the canvas, determines which column/row the
-// click was in. 
+// click was in.
 // NOTE: the point does not have to be in the actual pattern
 // grid and the caller is responsible to make sense out of
 // what ever column/row pair it receives
 //---------------------------------------------------------------
-QPair<int,int> GraphicsScene::get_cell_coords_(
-    const QPointF& mousePos) const
+QPair<int, int> GraphicsScene::get_cell_coords_(
+  const QPointF& mousePos ) const
 {
   qreal xPosRel = mousePos.x() - origin_.x();
   qreal yPosRel = mousePos.y() - origin_.y();
 
-  int column = static_cast<int>(floor(xPosRel/cellSize_));
-  int row    = static_cast<int>(floor(yPosRel/cellSize_));
+  int column = static_cast<int>( floor( xPosRel / cellAspectRatio_.width() ) );
+  int row    = static_cast<int>( floor( yPosRel / cellAspectRatio_.height() ) );
 
-  return QPair<int,int>(column,row);
+  return QPair<int, int>( column, row );
 }
- 
+
 
 
 //-------------------------------------------------------------
 // activate a complete row
-// In order to accomplish this we create a rectangle that 
+// In order to accomplish this we create a rectangle that
 // covers all cells in the row, then get all the items and
-// the select them all. 
+// the select them all.
 // NOTE: This is simular to what we do with the RubberBand.
 //-------------------------------------------------------------
-void GraphicsScene::select_row_(int rowId)
+void GraphicsScene::select_row_( int rowId )
 {
   /* selector box dimensions */
-  int shift    = static_cast<int>(cellSize_*0.25);
-  int halfCell = static_cast<int>(cellSize_*0.5);
+  int xShift    = static_cast<int>( cellAspectRatio_.width() * 0.25 );
+  int yShift    = static_cast<int>( cellAspectRatio_.height() * 0.25 );
+  int xHalfCell = static_cast<int>( cellAspectRatio_.width() * 0.5 );
+  int yHalfCell = static_cast<int>( cellAspectRatio_.height() * 0.5 );
 
-  QPoint boxOrigin(origin_.x() + shift,
-                   rowId * cellSize_ + shift);
+  QPoint boxOrigin( origin_.x() + xShift,
+                    rowId * cellAspectRatio_.height() + yShift );
 
-  QSize boxDim((numCols_ - 1) * cellSize_ + halfCell, halfCell);
+  QSize boxDim(( numCols_ - 1 ) * cellAspectRatio_.width() + xHalfCell,
+               yHalfCell );
 
-  select_region(QRect(boxOrigin, boxDim));
+  select_region( QRect( boxOrigin, boxDim ) );
 }
 
 
 
 //-------------------------------------------------------------
 // activate a complete column
-// In order to accomplish this we create a rectangle that 
+// In order to accomplish this we create a rectangle that
 // covers all cells in the column, then get all the items and
-// the select them all. 
+// the select them all.
 // NOTE: This is simular to what we do with the RubberBand.
 //-------------------------------------------------------------
-void GraphicsScene::select_column_(int colId)
+void GraphicsScene::select_column_( int colId )
 {
   /* selector box dimensions */
-  int shift    = static_cast<int>(cellSize_*0.25);
-  int halfCell = static_cast<int>(cellSize_*0.5);
+  int xShift    = static_cast<int>( cellAspectRatio_.width() * 0.25 );
+  int yShift    = static_cast<int>( cellAspectRatio_.height() * 0.25 );
+  int xHalfCell = static_cast<int>( cellAspectRatio_.width() * 0.5 );
+  int yHalfCell = static_cast<int>( cellAspectRatio_.height() * 0.5 );
 
-  QPoint boxOrigin(colId * cellSize_ + shift, shift);
-  QSize boxDim(halfCell, (numRows_ - 1) * cellSize_ + halfCell);
+  QPoint boxOrigin( colId * cellAspectRatio_.width() + xShift, yShift );
+  QSize boxDim( xHalfCell, ( numRows_ - 1 ) * cellAspectRatio_.height()
+                + yHalfCell );
 
   /* select items */
-  select_region(QRect(boxOrigin, boxDim));
+  select_region( QRect( boxOrigin, boxDim ) );
 }
 
 
@@ -1535,10 +1441,10 @@ void GraphicsScene::select_column_(int colId)
 // compute the origin of a grid cell based on its column and
 // row index
 //----------------------------------------------------------------
-QPoint GraphicsScene::compute_cell_origin_(int col, int row) const
+QPoint GraphicsScene::compute_cell_origin_( int col, int row ) const
 {
-  return QPoint(origin_.x() + col * cellSize_, 
-                origin_.y() + row * cellSize_);
+  return QPoint( origin_.x() + col * cellAspectRatio_.width(),
+                 origin_.y() + row * cellAspectRatio_.height() );
 }
 
 
@@ -1547,9 +1453,9 @@ QPoint GraphicsScene::compute_cell_origin_(int col, int row) const
 // compute the index of a given cell based on its present row
 // and column
 //-----------------------------------------------------------------
-int GraphicsScene::compute_cell_index_(PatternGridItem* anItem) const
+int GraphicsScene::compute_cell_index_( PatternGridItem* anItem ) const
 {
-  return (anItem->row() * numCols_) + anItem->col();
+  return ( anItem->row() * numCols_ ) + anItem->col();
 }
 
 
@@ -1558,68 +1464,67 @@ int GraphicsScene::compute_cell_index_(PatternGridItem* anItem) const
 // the user to delete/insert/add rows and initiates the necessary
 // steps according to the selection
 //-----------------------------------------------------------------
-void GraphicsScene::manage_columns_rows_(const QPoint& pos, 
-    int colID, int rowID)
+void GraphicsScene::manage_columns_rows_( const QPoint& pos,
+    int colID, int rowID )
 {
   QMenu colRowMenu;
 
   /* show menu only if we're inside the pattern grid */
-  if (colID >= 0 && colID < numCols_ &&
-      rowID >= 0 && rowID < numRows_)
-  {
+  if ( colID >= 0 && colID < numCols_ &&
+       rowID >= 0 && rowID < numRows_ ) {
     /* column related entries */
     QString colString;
-    colString.setNum(numCols_ - colID);
+    colString.setNum( numCols_ - colID );
 
-    QAction* colDeleteAction = 
-      colRowMenu.addAction("delete column " + colString);
-    QAction* colInsertLeftOfAction = 
-      colRowMenu.addAction("insert left of column " + colString);
-    QAction* colInsertRightOfAction = 
-      colRowMenu.addAction("insert right of column " + colString);
-    
-    connect(colDeleteAction, SIGNAL(triggered()), 
-      this, SLOT(delete_col_()));
-    connect(colInsertLeftOfAction, SIGNAL(triggered()),
-      this, SLOT(insert_left_of_col_()));
-    connect(colInsertRightOfAction, SIGNAL(triggered()),
-      this, SLOT(insert_right_of_col_()));
+    QAction* colDeleteAction =
+      colRowMenu.addAction( "delete column " + colString );
+    QAction* colInsertLeftOfAction =
+      colRowMenu.addAction( "insert left of column " + colString );
+    QAction* colInsertRightOfAction =
+      colRowMenu.addAction( "insert right of column " + colString );
+
+    connect( colDeleteAction, SIGNAL( triggered() ),
+             this, SLOT( delete_col_() ) );
+    connect( colInsertLeftOfAction, SIGNAL( triggered() ),
+             this, SLOT( insert_left_of_col_() ) );
+    connect( colInsertRightOfAction, SIGNAL( triggered() ),
+             this, SLOT( insert_right_of_col_() ) );
 
     colRowMenu.addSeparator();
- 
+
     /* row related entries */
     QString rowString;
-    rowString.setNum(numRows_ - rowID);
+    rowString.setNum( numRows_ - rowID );
 
-    QAction* rowDeleteAction = 
-      colRowMenu.addAction("delete row " + rowString);
-    QAction* rowInsertAboveAction = 
-      colRowMenu.addAction("insert above row " + rowString);
-    QAction* rowInsertBelowAction = 
-      colRowMenu.addAction("insert below row " + rowString);
+    QAction* rowDeleteAction =
+      colRowMenu.addAction( "delete row " + rowString );
+    QAction* rowInsertAboveAction =
+      colRowMenu.addAction( "insert above row " + rowString );
+    QAction* rowInsertBelowAction =
+      colRowMenu.addAction( "insert below row " + rowString );
 
-    connect(rowDeleteAction, 
-            SIGNAL(triggered()), 
-            this, 
-            SLOT(delete_row_())
+    connect( rowDeleteAction,
+             SIGNAL( triggered() ),
+             this,
+             SLOT( delete_row_() )
            );
 
-    connect(rowInsertAboveAction, 
-            SIGNAL(triggered()),
-            this, 
-            SLOT(insert_above_row_())
+    connect( rowInsertAboveAction,
+             SIGNAL( triggered() ),
+             this,
+             SLOT( insert_above_row_() )
            );
 
-    connect(rowInsertBelowAction, 
-            SIGNAL(triggered()),
-            this, 
-            SLOT(insert_below_row_())
+    connect( rowInsertBelowAction,
+             SIGNAL( triggered() ),
+             this,
+             SLOT( insert_below_row_() )
            );
 
-    colRowMenu.exec(pos);
+    colRowMenu.exec( pos );
   }
 }
-  
+
 
 //-------------------------------------------------------------
 // create the grid
@@ -1627,18 +1532,16 @@ void GraphicsScene::manage_columns_rows_(const QPoint& pos,
 void GraphicsScene::create_pattern_grid_()
 {
   /* grid */
-  for (int col=0; col < numCols_; ++col)
-  {
-    for (int row=0; row < numRows_; ++row)
-    {
-      PatternGridItem* item = 
-        new PatternGridItem(QSize(1,1), cellAspectRatio_, col, row, this);
+  for ( int col = 0; col < numCols_; ++col ) {
+    for ( int row = 0; row < numRows_; ++row ) {
+      PatternGridItem* item =
+        new PatternGridItem( QSize( 1, 1 ), cellAspectRatio_, col, row, this );
       item->Init();
-      item->setPos(compute_cell_origin_(col, row)); 
-      item->insert_knitting_symbol(defaultSymbol_);
+      item->setPos( compute_cell_origin_( col, row ) );
+      item->insert_knitting_symbol( defaultSymbol_ );
 
       /* add it to our scene */
-      add_patternGridItem_(item);
+      add_patternGridItem_( item );
     }
   }
 }
@@ -1651,64 +1554,61 @@ void GraphicsScene::create_pattern_grid_()
 void GraphicsScene::create_grid_labels_()
 {
   /* retrieve current canvas font */
-  QFont currentFont = extract_font_from_settings(settings_);
+  QFont currentFont = extract_font_from_settings( settings_ );
 
   /* remove all existing labels if there are any */
-  QList<QGraphicsItem*> allItems(items());
+  QList<QGraphicsItem*> allItems( items() );
   QList<PatternGridLabel*> allLabels;
-  foreach(QGraphicsItem* aLabel, allItems)
-  {
-    PatternGridLabel* label = 
-      qgraphicsitem_cast<PatternGridLabel*>(aLabel);
+  foreach( QGraphicsItem* aLabel, allItems ) {
+    PatternGridLabel* label =
+      qgraphicsitem_cast<PatternGridLabel*>( aLabel );
 
-    if (label != 0)
-    {
-      allLabels.push_back(label);
+    if ( label != 0 ) {
+      allLabels.push_back( label );
     }
-  }  
+  }
 
-  foreach(PatternGridLabel* aLabel, allLabels)
-  {
-    removeItem(aLabel);
+  foreach( PatternGridLabel* aLabel, allLabels ) {
+    removeItem( aLabel );
     aLabel->deleteLater();
   }
 
   /* add new column labels */
   QString label;
-  qreal yPos = origin_.y() + numRows_ * cellSize_ + 1; 
+  qreal yPos = origin_.y() + numRows_ * cellAspectRatio_.height() + 1;
 
-  for (int col=0; col < numCols_; ++col)
-  {
+  for ( int col = 0; col < numCols_; ++col ) {
     int colNum = numCols_ - col;
     PatternGridLabel* text = new PatternGridLabel(
-        label.setNum(colNum), 
-        PatternGridLabel::ColLabel
-        );
+      label.setNum( colNum ),
+      PatternGridLabel::ColLabel
+    );
 
-    int shift = 
-      compute_horizontal_label_shift_(colNum, currentFont.pointSize());
-    text->setPos(origin_.x() + col*cellSize_ + shift, yPos); 
-    text->setFont(currentFont);
-    addItem(text);
+    int shift =
+      compute_horizontal_label_shift_( colNum, currentFont.pointSize() );
+    text->setPos( origin_.x() + col*cellAspectRatio_.width() + shift, yPos );
+    text->setFont( currentFont );
+    addItem( text );
   }
 
 
-  /* add new row labels 
+  /* add new row labels
    * FIXME: the exact placement of the labels is hand-tuned
    * and probably not very robust */
-  QFontMetrics metric(currentFont);
+  QFontMetrics metric( currentFont );
   int fontHeight = metric.ascent();
-  for (int row=0; row < numRows_; ++row)
-  {
-    PatternGridLabel* text= new PatternGridLabel(
-        label.setNum(numRows_ - row),
-        PatternGridLabel::RowLabel
-        );
+  for ( int row = 0; row < numRows_; ++row ) {
+    PatternGridLabel* text = new PatternGridLabel(
+      label.setNum( numRows_ - row ),
+      PatternGridLabel::RowLabel
+    );
 
-    text->setPos(origin_.x() + (numCols_*cellSize_) + 0.1*cellSize_, 
-      origin_.y() + row*cellSize_ + 0.5*(cellSize_ - 1.8*fontHeight));
-    text->setFont(currentFont);
-    addItem(text);
+    text->setPos( origin_.x() + ( numCols_*cellAspectRatio_.width() )
+                  + 0.1*cellAspectRatio_.width(),
+                  origin_.y() + row*cellAspectRatio_.height()
+                  + 0.5*( cellAspectRatio_.height() - 1.8*fontHeight ) );
+    text->setFont( currentFont );
+    addItem( text );
   }
 }
 
@@ -1718,54 +1618,46 @@ void GraphicsScene::create_grid_labels_()
 // at the specified column and row indices.
 // This is mainly used when inserting/deleting columns/rows
 //--------------------------------------------------------------
-void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
+void GraphicsScene::expand_grid_( int colPivot, int rowPivot )
 {
-  QList<QGraphicsItem*> allItems(items());
+  QList<QGraphicsItem*> allItems( items() );
 
   /* go through all items and make sure that that
    * inserting the columns won't cut through any
    * multy row cells */
-  foreach(QGraphicsItem* anItem, allItems)
-  {
-    PatternGridItem* cell = 
-      qgraphicsitem_cast<PatternGridItem*>(anItem);
+  foreach( QGraphicsItem* anItem, allItems ) {
+    PatternGridItem* cell =
+      qgraphicsitem_cast<PatternGridItem*>( anItem );
 
-    if (cell != 0)
-    {
+    if ( cell != 0 ) {
       /* do we want to shift the columns */
-      if (colPivot != NOSHIFT)
-      {
-        if (cell->col() >= colPivot)
-        {
-          cell->reseat(cell->col() + 1,cell->row());
-          cell->setPos(compute_cell_origin_(cell->col(), cell->row()));
+      if ( colPivot != NOSHIFT ) {
+        if ( cell->col() >= colPivot ) {
+          cell->reseat( cell->col() + 1, cell->row() );
+          cell->setPos( compute_cell_origin_( cell->col(), cell->row() ) );
         }
       }
 
       /* do we want to shift the rows */
-      if (rowPivot != NOSHIFT)
-      {
-        if (cell->row() > rowPivot)
-        {
+      if ( rowPivot != NOSHIFT ) {
+        if ( cell->row() > rowPivot ) {
           /* Note: we shift the cell first and can the just
            * use its new position, i.e. no row()+1 in set Pos */
-          cell->reseat(cell->col(),cell->row() + 1);
-          cell->setPos(compute_cell_origin_(cell->col(), cell->row()));
+          cell->reseat( cell->col(), cell->row() + 1 );
+          cell->setPos( compute_cell_origin_( cell->col(), cell->row() ) );
         }
       }
     }
   }
 
   /* adjust the row/col count and also shift the legend items */
-  if (colPivot != NOSHIFT)
-  {
-    shift_legend_items_horizontally_(colPivot, cellSize_);
+  if ( colPivot != NOSHIFT ) {
+    shift_legend_items_horizontally_( colPivot, cellAspectRatio_.width() );
     numCols_ += 1;
   }
 
-  if (rowPivot != NOSHIFT)
-  {
-    shift_legend_items_vertically_(rowPivot, cellSize_);
+  if ( rowPivot != NOSHIFT ) {
+    shift_legend_items_vertically_( rowPivot, cellAspectRatio_.height() );
     numRows_ += 1;
   }
 }
@@ -1773,7 +1665,7 @@ void GraphicsScene::expand_grid_(int colPivot, int rowPivot)
 
 
 //---------------------------------------------------------------
-// clean up all data structure created for the legend 
+// clean up all data structure created for the legend
 //---------------------------------------------------------------
 void GraphicsScene::purge_legend_()
 {
@@ -1787,7 +1679,7 @@ void GraphicsScene::purge_legend_()
 
 
 //---------------------------------------------------------------
-// remove all items on canvas 
+// remove all items on canvas
 //
 // NOTE: Since the SVGItems are owned by each PatternGridItem
 // we have to make sure we don't remove them explicitly.
@@ -1798,32 +1690,28 @@ void GraphicsScene::purge_legend_()
 void GraphicsScene::purge_all_canvas_items_()
 {
   /* collect all non svgItems first */
-  QList<QGraphicsItem*> allItems(items());
+  QList<QGraphicsItem*> allItems( items() );
   QList<QGraphicsItem*> nonSvgItems;
-  foreach(QGraphicsItem* anItem, allItems)
-  {
-    if (anItem->type() != QGraphicsSvgItem::Type)
-    {
-      nonSvgItems.push_back(anItem);
+  foreach( QGraphicsItem* anItem, allItems ) {
+    if ( anItem->type() != QGraphicsSvgItem::Type ) {
+      nonSvgItems.push_back( anItem );
     }
   }
 
-  foreach(QGraphicsItem* finalItem, nonSvgItems)
-  {
-    removeItem(finalItem);
+  foreach( QGraphicsItem* finalItem, nonSvgItems ) {
+    removeItem( finalItem );
     delete finalItem;
-  } 
+  }
 }
 
 
 //------------------------------------------------------------
-// update the canvas, i.e., add the currently selected 
+// update the canvas, i.e., add the currently selected
 // knitting symbol/color to all active items.
 //------------------------------------------------------------
 void GraphicsScene::update_active_items_()
 {
-  if (selectedSymbol_->patternName() != "")
-  {
+  if ( selectedSymbol_->patternName() != "" ) {
     try_place_knitting_symbol_();
   }
 }
@@ -1834,71 +1722,71 @@ void GraphicsScene::update_active_items_()
 // there are no holes, and the number of unit cells covered
 // by the row (holes not counted)
 //-----------------------------------------------------------
-QPair<bool,int> GraphicsScene::is_row_contiguous_(
-    const RowItems& aRow) const
+QPair<bool, int> GraphicsScene::is_row_contiguous_(
+  const RowItems& aRow ) const
 {
   /* an empty row is contiguous */
-  if (aRow.empty())
-  {
-    return QPair<bool,int>(true,0);
+  if ( aRow.empty() ) {
+    return QPair<bool, int>( true, 0 );
   }
 
-  int currentCol = aRow.at(0)->col();
-  int rowWidth   = aRow.at(0)->dim().width();
+  int currentCol = aRow.at( 0 )->col();
+  int rowWidth   = aRow.at( 0 )->dim().width();
   int totalWidth = 0;
   bool status    = true;
-  for (int index = 1; index < aRow.size(); ++index)
-  {
-    int rowCol   = aRow.at(index)->col();
-    if ((currentCol + rowWidth) != rowCol)
-    {
+  for ( int index = 1; index < aRow.size(); ++index ) {
+    int rowCol   = aRow.at( index )->col();
+    if (( currentCol + rowWidth ) != rowCol ) {
       status = false;
     }
 
     currentCol = rowCol;
     totalWidth += rowWidth;
-    rowWidth = aRow.at(index)->dim().width();
+    rowWidth = aRow.at( index )->dim().width();
   }
 
-  return QPair<bool,int>(status, totalWidth);
+  return QPair<bool, int>( status, totalWidth );
 }
 
 
 //-------------------------------------------------------------
-// given a list of RowItems, determines the size of the 
+// given a list of RowItems, determines the size of the
 // rectangle that bounds them all. The rows are assumed
 // to be in increasing order of y with respect to the
 // origin
 //-------------------------------------------------------------
 QRect GraphicsScene::find_bounding_rectangle_(
-    const QList<RowItems>& rows) const
+  const QList<RowItems>& rows ) const
 {
-  assert(!rows.empty());
+  assert( !rows.empty() );
 
   /* get index of upper left corner */
   RowItems firstRow = rows.first();
-  assert(!firstRow.empty());
+  assert( !firstRow.empty() );
   int upperLeftColIndex = firstRow.first()->col();
   int upperLeftRowIndex = firstRow.first()->row();
 
   /* get index of lower right corner */
   RowItems lastRow = rows.last();
-  assert(!lastRow.empty());
+  assert( !lastRow.empty() );
   int lowerRightColIndex  = lastRow.last()->col();
   int lowerRightRowIndex  = lastRow.last()->row();
   int lowerRightCellWidth = lastRow.last()->dim().width();
   int lowerRightCellHeight = lastRow.last()->dim().height();
 
   /* compute coordinates */
-  QPoint upperLeftCorner(origin_.x() + upperLeftColIndex * cellSize_,
-    origin_.y() + upperLeftRowIndex * cellSize_);
-  
-  QPoint lowerRightCorner(origin_.x() - 1
-    + (lowerRightColIndex + lowerRightCellWidth) * cellSize_,
-    origin_.y() - 1
-    + (lowerRightRowIndex + lowerRightCellHeight) * cellSize_); 
+  QPoint upperLeftCorner( origin_.x() + upperLeftColIndex * cellAspectRatio_.width(),
+                          origin_.y() + upperLeftRowIndex
+                          * cellAspectRatio_.height() );
 
-  return QRect(upperLeftCorner, lowerRightCorner);
+  QPoint lowerRightCorner( origin_.x() - 1
+                           + ( lowerRightColIndex + lowerRightCellWidth )
+                           * cellAspectRatio_.width(),
+                           origin_.y() - 1
+                           + ( lowerRightRowIndex + lowerRightCellHeight )
+                           * cellAspectRatio_.height() );
+
+  return QRect( upperLeftCorner, lowerRightCorner );
 }
 
 
@@ -1907,42 +1795,37 @@ QRect GraphicsScene::find_bounding_rectangle_(
 // rectangles
 //--------------------------------------------------------------
 bool GraphicsScene::handle_click_on_marker_rectangle_(
-    const QGraphicsSceneMouseEvent* mouseEvent) 
+  const QGraphicsSceneMouseEvent* mouseEvent )
 {
   /* get all items at pos and grab all patternGridRectangles
    * if any */
-  QPointF mousePos(mouseEvent->scenePos());
-  QList<QGraphicsItem*> itemsUnderMouse = items(mousePos);
+  QPointF mousePos( mouseEvent->scenePos() );
+  QList<QGraphicsItem*> itemsUnderMouse = items( mousePos );
 
   QList<PatternGridRectangle*> rectangles;
-  foreach(QGraphicsItem* anItem, itemsUnderMouse)
-  {
-    PatternGridRectangle* rectAngle = 
-      qgraphicsitem_cast<PatternGridRectangle*>(anItem);
-    if (rectAngle != 0)
-    {
-      if (rectAngle->selected(mousePos))
-      {
-        rectangles.push_back(rectAngle);
+  foreach( QGraphicsItem* anItem, itemsUnderMouse ) {
+    PatternGridRectangle* rectAngle =
+      qgraphicsitem_cast<PatternGridRectangle*>( anItem );
+    if ( rectAngle != 0 ) {
+      if ( rectAngle->selected( mousePos ) ) {
+        rectangles.push_back( rectAngle );
       }
     }
   }
 
-  if (!rectangles.empty())
-  {
+  if ( !rectangles.empty() ) {
     /* we allow only one rectangle to be selected at a time */
-    if (rectangles.size() > 1)
-    {
-      emit statusBar_error(tr("Multiple rectangles selected."));
+    if ( rectangles.size() > 1 ) {
+      emit statusBar_error( tr( "Multiple rectangles selected." ) );
       return false;
     }
 
-    show_rectangle_manage_menu_(rectangles.front(),
-        mouseEvent->screenPos());
+    show_rectangle_manage_menu_( rectangles.front(),
+                                 mouseEvent->screenPos() );
 
     return true;
   }
- 
+
   return false;
 }
 
@@ -1952,9 +1835,9 @@ bool GraphicsScene::handle_click_on_marker_rectangle_(
 // handle mouse clicks inside the grid array
 //--------------------------------------------------------------
 bool GraphicsScene::handle_click_on_grid_array_(
-    const QGraphicsSceneMouseEvent* mouseEvent)
+  const QGraphicsSceneMouseEvent* mouseEvent )
 {
-  QPair<int,int> arrayIndex(get_cell_coords_(mouseEvent->scenePos()));
+  QPair<int, int> arrayIndex( get_cell_coords_( mouseEvent->scenePos() ) );
   int column = arrayIndex.first;
   int row    = arrayIndex.second;
 
@@ -1965,12 +1848,11 @@ bool GraphicsScene::handle_click_on_grid_array_(
    *
    * Also we show the menu only if we're inside the pattern
    * grid plus a margin of a single cellSize_ in all directions */
-  if ( row > -1 || row < (numRows_ + 1) || column > -1 
-       || column < (numCols_ + 1)) 
-  { 
+  if ( row > -1 || row < ( numRows_ + 1 ) || column > -1
+       || column < ( numCols_ + 1 ) ) {
     selectedCol_ = column;
     selectedRow_ = row;
-    manage_columns_rows_(mouseEvent->screenPos(), column, row);
+    manage_columns_rows_( mouseEvent->screenPos(), column, row );
   }
 
   return true;
@@ -1981,20 +1863,17 @@ bool GraphicsScene::handle_click_on_grid_array_(
 // handle mouse clicks on the grid labels
 //----------------------------------------------------------------
 bool GraphicsScene::handle_click_on_grid_labels_(
-    const QGraphicsSceneMouseEvent* mouseEvent)
+  const QGraphicsSceneMouseEvent* mouseEvent )
 {
   QPointF currentPos = mouseEvent->scenePos();
-  QPair<int,int> arrayIndex(get_cell_coords_(currentPos));
+  QPair<int, int> arrayIndex( get_cell_coords_( currentPos ) );
   int column = arrayIndex.first;
   int row    = arrayIndex.second;
 
-  if (column == numCols_)
-  {
-    select_row_(row);
-  }
-  else if (row == numRows_)
-  {
-    select_column_(column);
+  if ( column == numCols_ ) {
+    select_row_( row );
+  } else if ( row == numRows_ ) {
+    select_column_( column );
   }
 
   return true;
@@ -2003,51 +1882,51 @@ bool GraphicsScene::handle_click_on_grid_labels_(
 
 //---------------------------------------------------------------
 // generate a menu allowing the user to customize or delete
-// a pattern grid rectangle 
+// a pattern grid rectangle
 // FIXME: This function uses a bit of a hack. In order to
 // deliver the to be deleted/edited rectangle to the SLOT
 // via connect we have to invoke a SignalMapper involving
 // some casting downstream. Can we somehow avoid this??
 //--------------------------------------------------------------
 void GraphicsScene::show_rectangle_manage_menu_(
-    PatternGridRectangle* rect, const QPoint& pos)
+  PatternGridRectangle* rect, const QPoint& pos )
 {
-  
+
   QMenu rectangleMenu;
 
-  QAction* deleteRectAction = 
-    rectangleMenu.addAction(tr("delete rectangle"));
-  QSignalMapper* rectangleDeleter = new QSignalMapper(this);
-  rectangleDeleter->setMapping(deleteRectAction, rect);
-  
-  connect(deleteRectAction,
-          SIGNAL(triggered()),
-          rectangleDeleter,
-          SLOT(map()));
+  QAction* deleteRectAction =
+    rectangleMenu.addAction( tr( "delete rectangle" ) );
+  QSignalMapper* rectangleDeleter = new QSignalMapper( this );
+  rectangleDeleter->setMapping( deleteRectAction, rect );
 
-  connect(rectangleDeleter,
-          SIGNAL(mapped(QObject*)),
-          this,
-          SLOT(mark_rectangle_for_deletion_(QObject*)));
+  connect( deleteRectAction,
+           SIGNAL( triggered() ),
+           rectangleDeleter,
+           SLOT( map() ) );
+
+  connect( rectangleDeleter,
+           SIGNAL( mapped( QObject* ) ),
+           this,
+           SLOT( mark_rectangle_for_deletion_( QObject* ) ) );
 
 
   QAction* customizeRectAction =
-    rectangleMenu.addAction(tr("customize rectangle"));
-  QSignalMapper* rectangleCustomizer = new QSignalMapper(this);
-  rectangleCustomizer->setMapping(customizeRectAction, rect);
+    rectangleMenu.addAction( tr( "customize rectangle" ) );
+  QSignalMapper* rectangleCustomizer = new QSignalMapper( this );
+  rectangleCustomizer->setMapping( customizeRectAction, rect );
 
-  connect(customizeRectAction,
-          SIGNAL(triggered()),
-          rectangleCustomizer,
-          SLOT(map()));
+  connect( customizeRectAction,
+           SIGNAL( triggered() ),
+           rectangleCustomizer,
+           SLOT( map() ) );
 
-  connect(rectangleCustomizer,
-          SIGNAL(mapped(QObject*)),
-          this,
-          SLOT(customize_rectangle_(QObject*)));
+  connect( rectangleCustomizer,
+           SIGNAL( mapped( QObject* ) ),
+           this,
+           SLOT( customize_rectangle_( QObject* ) ) );
 
 
-  rectangleMenu.exec(pos);
+  rectangleMenu.exec( pos );
 }
 
 
@@ -2057,11 +1936,11 @@ void GraphicsScene::show_rectangle_manage_menu_(
 // In addition to that we also update the referene count of
 // currently active knitting symbols
 //-------------------------------------------------------------
-void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
+void GraphicsScene::add_patternGridItem_( PatternGridItem* anItem )
 {
-  addItem(anItem);
-  notify_legend_of_item_addition_(anItem->get_knitting_symbol(), 
-    anItem->color(), "chartLegendItem");
+  addItem( anItem );
+  notify_legend_of_item_addition_( anItem->get_knitting_symbol(),
+                                   anItem->color(), "chartLegendItem" );
 }
 
 
@@ -2070,12 +1949,12 @@ void GraphicsScene::add_patternGridItem_(PatternGridItem* anItem)
 // In addition to that we also update the referene count of
 // currently active knitting symbols
 //-------------------------------------------------------------
-void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
+void GraphicsScene::remove_patternGridItem_( PatternGridItem* anItem )
 {
-  removeItem(anItem);
-  notify_legend_of_item_removal_(anItem->get_knitting_symbol(),
-    anItem->color(), "chartLegendItem");
-  
+  removeItem( anItem );
+  notify_legend_of_item_removal_( anItem->get_knitting_symbol(),
+                                  anItem->color(), "chartLegendItem" );
+
   /* delete it for good */
   anItem->deleteLater();
 }
@@ -2089,42 +1968,39 @@ void GraphicsScene::remove_patternGridItem_(PatternGridItem* anItem)
 // from now one
 //-------------------------------------------------------------
 QString GraphicsScene::get_symbol_description_(
-  KnittingSymbolPtr aSymbol, QString colorName)
+  KnittingSymbolPtr aSymbol, QString colorName )
 {
-  QString description = 
+  QString description =
     aSymbol->patternName() + " = " + aSymbol->instructions();
-  QString fullName = aSymbol->category() + aSymbol->patternName() 
+  QString fullName = aSymbol->category() + aSymbol->patternName()
                      + colorName;
-  if (!symbolDescriptors_.contains(fullName))
-  {
+  if ( !symbolDescriptors_.contains( fullName ) ) {
     symbolDescriptors_[fullName] = description;
-  }
-  else
-  {
+  } else {
     description = symbolDescriptors_[fullName];
   }
 
-  return format_string(description);
+  return format_string( description );
 }
- 
+
 
 
 //---------------------------------------------------------------
 // computes the best possible y position for a new legend item.
 // We try to place right under all currently exisiting legend
-// items and the pattern grid 
+// items and the pattern grid
 //---------------------------------------------------------------
 int GraphicsScene::get_next_legend_items_y_position_() const
 {
-  QList<QGraphicsItem*> allLegendGraphicsItems = 
+  QList<QGraphicsItem*> allLegendGraphicsItems =
     get_list_of_legend_items_();
 
   int yMaxLegend = static_cast<int>(
-      floor(get_max_y_coordinate(allLegendGraphicsItems)));
-  int yMaxGrid = (numRows_ + 1) * cellSize_  + origin_.y();
-  int yMax = qMax(yMaxGrid, yMaxLegend);
- 
-  return (yMax + cellSize_ * 0.5);
+                     floor( get_max_y_coordinate( allLegendGraphicsItems ) ) );
+  int yMaxGrid = ( numRows_ + 1 ) * cellAspectRatio_.height()  + origin_.y();
+  int yMax = qMax( yMaxGrid, yMaxLegend );
+
+  return ( yMax + cellAspectRatio_.width() * 0.5 );
 }
 
 
@@ -2133,12 +2009,11 @@ int GraphicsScene::get_next_legend_items_y_position_() const
 //--------------------------------------------------------------
 QList<QGraphicsItem*> GraphicsScene::get_list_of_legend_items_() const
 {
-  QList<LegendEntry> allLegendEntries(legendEntries_.values());
+  QList<LegendEntry> allLegendEntries( legendEntries_.values() );
   QList<QGraphicsItem*> allLegendGraphicsItems;
-  foreach(LegendEntry item, allLegendEntries)
-  {
-    allLegendGraphicsItems.push_back(item.first);
-    allLegendGraphicsItems.push_back(item.second);
+  foreach( LegendEntry item, allLegendEntries ) {
+    allLegendGraphicsItems.push_back( item.first );
+    allLegendGraphicsItems.push_back( item.second );
   }
 
   return allLegendGraphicsItems;
@@ -2150,64 +2025,59 @@ QList<QGraphicsItem*> GraphicsScene::get_list_of_legend_items_() const
 //-------------------------------------------------------------
 void GraphicsScene::update_legend_labels_()
 {
-  QList<LegendEntry> allItems(legendEntries_.values());
-  QFont currentFont = extract_font_from_settings(settings_);
-  
-  foreach(LegendEntry item, allItems)
-  {
-    item.second->setFont(currentFont);
+  QList<LegendEntry> allItems( legendEntries_.values() );
+  QFont currentFont = extract_font_from_settings( settings_ );
+
+  foreach( LegendEntry item, allItems ) {
+    item.second->setFont( currentFont );
   }
 }
-      
+
 
 //-------------------------------------------------------------
-// shift all legend items below pivot by "distance" 
+// shift all legend items below pivot by "distance"
 // vertically
 //-------------------------------------------------------------
-void GraphicsScene::shift_legend_items_vertically_(int pivot, 
-  int distance)
+void GraphicsScene::shift_legend_items_vertically_( int pivot,
+    int distance )
 {
   /* find all legend items below the pivot */
   QList<QGraphicsItem*> allLegendItems = get_list_of_legend_items_();
   QList<QGraphicsItem*> toBeShiftedItems;
-  int pivotYPos = pivot * cellSize_;
+  int pivotYPos = pivot * cellAspectRatio_.height();
 
-  foreach(QGraphicsItem* item, allLegendItems)
-  {
+  foreach( QGraphicsItem* item, allLegendItems ) {
     QPointF itemPos = item->pos();
-    if (itemPos.y() > pivotYPos)
-    {
-      item->setPos(itemPos.x(), itemPos.y() + distance);
+    if ( itemPos.y() > pivotYPos ) {
+      item->setPos( itemPos.x(), itemPos.y() + distance );
     }
   }
 }
-  
+
 
 //-------------------------------------------------------------
-// shift all legend items right of pivot by distance 
-// horizontally. Leave items that are above or below the 
+// shift all legend items right of pivot by distance
+// horizontally. Leave items that are above or below the
 // pattern grid alone.
 //-------------------------------------------------------------
-void GraphicsScene::shift_legend_items_horizontally_(int pivot, 
-  int distance)
+void GraphicsScene::shift_legend_items_horizontally_( int pivot,
+    int distance )
 {
   /* find all legend items right of the pivot */
   QList<QGraphicsItem*> allLegendItems = get_list_of_legend_items_();
   QList<QGraphicsItem*> toBeShiftedItems;
-  int pivotXPos = pivot * cellSize_;
+  int pivotXPos = pivot * cellAspectRatio_.width();
 
-  foreach(QGraphicsItem* item, allLegendItems)
-  {
+  foreach( QGraphicsItem* item, allLegendItems ) {
     QPointF itemPos = item->pos();
-    if (itemPos.x() > pivotXPos 
-        && itemPos.y() > 0.0 
-        && itemPos.y() < (numRows_ * cellSize_) )
-    {
-      item->setPos(itemPos.x() + distance, itemPos.y());
+    if ( itemPos.x() > pivotXPos
+         && itemPos.y() > 0.0
+         && itemPos.y() < ( numRows_ * cellAspectRatio_.height() ) ) {
+      item->setPos( itemPos.x() + distance, itemPos.y() );
     }
   }
 }
- 
 
-  
+
+
 QT_END_NAMESPACE

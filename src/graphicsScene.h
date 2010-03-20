@@ -1,25 +1,25 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
 
-#ifndef GRAPHICS_SCENE_H 
-#define GRAPHICS_SCENE_H 
+#ifndef GRAPHICS_SCENE_H
+#define GRAPHICS_SCENE_H
 
 /* boost includes */
 #include <boost/utility.hpp>
@@ -50,51 +50,52 @@ class QKeyEvent;
 class QSettings;
 class MainWindow;
 
-namespace 
+namespace
 {
-  /* convenience constants */ const int UNSELECTED = -100;
-  const int NOSHIFT    = -101;
+/* convenience constants */
+const int UNSELECTED = -100;
+const int NOSHIFT    = -101;
 
-  /* convenience typedefs */
-  typedef QList<QPair<int, int> > RowLayout;
-  typedef QList<PatternGridItem*> RowItems;
+/* convenience typedefs */
+typedef QList<QPair<int, int> > RowLayout;
+typedef QList<PatternGridItem*> RowItems;
 
-  typedef QPair<LegendItem*,LegendLabel*> LegendEntry;
+typedef QPair<LegendItem*, LegendLabel*> LegendEntry;
 };
 
 
 /***************************************************************
- * 
+ *
  * The GraphicsScene handles the sconcho's main drawing
- * canvas 
+ * canvas
  *
  ***************************************************************/
 class GraphicsScene
-  :
-  public QGraphicsScene,
-  public boost::noncopyable
+    :
+    public QGraphicsScene,
+    public boost::noncopyable
 {
-  
+
   Q_OBJECT
 
-   
+
 
 public:
 
-  explicit GraphicsScene(const QPoint& origin, const QSize& gridsize, 
-    const QSize& cellSize, const QSettings& settings, 
-    KnittingSymbolPtr defaultSymbol, MainWindow* myParent = 0);
+  explicit GraphicsScene( const QPoint& origin, const QSize& gridsize,
+                          const QSize& cellSize, const QSettings& settings,
+                          KnittingSymbolPtr defaultSymbol, MainWindow* myParent = 0 );
   bool Init();
 
   /* helper functions */
-  void select_region(const QRectF& region);
-  void reset_grid(const QSize& newSize);
+  void select_region( const QRectF& region );
+  void reset_grid( const QSize& newSize );
   void load_new_canvas(
-    const QList<PatternGridItemDescriptorPtr>& newItems);
+    const QList<PatternGridItemDescriptorPtr>& newItems );
   void instantiate_legend_items(
-    const QList<LegendEntryDescriptorPtr>& newExtraLegendItems);
+    const QList<LegendEntryDescriptorPtr>& newExtraLegendItems );
   void place_legend_items(
-    const QList<LegendEntryDescriptorPtr>& newLegendEntries);
+    const QList<LegendEntryDescriptorPtr>& newLegendEntries );
   QRectF get_visible_area() const;
   QPoint get_grid_center() const;
 
@@ -102,37 +103,36 @@ public:
   bool legend_is_visible() const { return legendIsVisible_; }
   void hide_all_but_legend();
   void show_all_items();
-  QMap<QString,LegendEntry> get_legend_entries() const 
-  { 
+  QMap<QString, LegendEntry> get_legend_entries() const {
     return legendEntries_;
   }
 
 
 signals:
 
-  void mouse_moved(QPointF position);
-  void statusBar_error(QString msg); 
-  void statusBar_message(QString msg);
+  void mouse_moved( QPointF position );
+  void statusBar_error( QString msg );
+  void statusBar_message( QString msg );
   void show_whole_scene();
 
 
 public slots:
 
-  void update_selected_symbol(const KnittingSymbolPtr symbol);
-  void add_symbol_to_legend(const KnittingSymbolPtr symbol);
-  void grid_item_selected(PatternGridItem* item, bool status);
-  void grid_item_reset(PatternGridItem* item);
-  void update_selected_background_color(const QColor& aColor);
+  void update_selected_symbol( const KnittingSymbolPtr symbol );
+  void add_symbol_to_legend( const KnittingSymbolPtr symbol );
+  void grid_item_selected( PatternGridItem* item, bool status );
+  void grid_item_reset( PatternGridItem* item );
+  void update_selected_background_color( const QColor& aColor );
   void deselect_all_active_items();
   void mark_active_cells_with_rectangle();
   void update_after_settings_change();
   void toggle_legend_visibility();
 
-  
+
 protected:
 
-  void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent);
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
+  void mousePressEvent( QGraphicsSceneMouseEvent* mouseEvent );
+  void mouseMoveEvent( QGraphicsSceneMouseEvent* mouseEvent );
 
 
 private slots:
@@ -143,15 +143,15 @@ private slots:
   void insert_right_of_col_();
   void insert_above_row_();
   void insert_below_row_();
-  void mark_rectangle_for_deletion_(QObject* foo);
-  void customize_rectangle_(QObject* foo);
-  void update_key_label_text_(QString, QString);
-  void notify_legend_of_item_addition_(const KnittingSymbolPtr symbol, 
-    QColor color, QString extraTag);
-  void notify_legend_of_item_removal_(const KnittingSymbolPtr symbol, 
-    QColor color, QString extraTag);
+  void mark_rectangle_for_deletion_( QObject* foo );
+  void customize_rectangle_( QObject* foo );
+  void update_key_label_text_( QString, QString );
+  void notify_legend_of_item_addition_( const KnittingSymbolPtr symbol,
+                                        QColor color, QString extraTag );
+  void notify_legend_of_item_removal_( const KnittingSymbolPtr symbol,
+                                       QColor color, QString extraTag );
 
-  
+
 private:
 
   /* construction status variable */
@@ -164,9 +164,8 @@ private:
   QPoint origin_;
   int numCols_;
   int numRows_;
-  int cellSize_;
-  QSize cellAspectRatio_; 
-  
+  QSize cellAspectRatio_;
+
 
   /* holds the index of the currently selected column/row if any */
   int selectedCol_;
@@ -176,7 +175,7 @@ private:
   const QSettings& settings_;
 
   /* list of currenly selected items */
-  QMap<int,PatternGridItem*> activeItems_;
+  QMap<int, PatternGridItem*> activeItems_;
 
   /* pointers to current user selections (knitting symbol,
    * color, pen size ..) */
@@ -192,73 +191,74 @@ private:
 
   /* items related to the legend */
   bool legendIsVisible_;
-  void shift_legend_items_vertically_(int pivot, int distance);
-  void shift_legend_items_horizontally_(int pivot, int distance);
+  void shift_legend_items_vertically_( int pivot, int distance );
+  void shift_legend_items_horizontally_( int pivot, int distance );
   void update_legend_labels_();
   int get_next_legend_items_y_position_() const;
   QList<QGraphicsItem*> get_list_of_legend_items_() const;
 
   /* List of items in the current Legend */
-  QMap<QString,LegendEntry> legendEntries_;
+  QMap<QString, LegendEntry> legendEntries_;
 
   /* map holding the descriptor for all currently "known"
    * knitting symbols (even ones not currently shown, e.g.
-   * for symbols that were previously visible, had their 
+   * for symbols that were previously visible, had their
    * text changed and then disappered again since the user
    * removed all instances of the symbol from the pattern) */
-  QMap<QString,QString> symbolDescriptors_;
-  QString get_symbol_description_(KnittingSymbolPtr aSymbol,
-    QString aColorName);
-  
+  QMap<QString, QString> symbolDescriptors_;
+  QString get_symbol_description_( KnittingSymbolPtr aSymbol,
+                                   QString aColorName );
+
   /* reference count of knitting symbols currently in use */
-  QMap<QString,int> usedKnittingSymbols_;
+  QMap<QString, int> usedKnittingSymbols_;
 
   /* use these to add/remove PatternGridItems to the scene */
-  void add_patternGridItem_(PatternGridItem* anItem);
-  void remove_patternGridItem_(PatternGridItem* anItem);
+  void add_patternGridItem_( PatternGridItem* anItem );
+  void remove_patternGridItem_( PatternGridItem* anItem );
 
   /* these functions take care of resetting the canvas */
   void reset_canvas_();
   void purge_all_canvas_items_();
   void purge_legend_();
-  
+
   /* helper functions */
   void try_place_knitting_symbol_();
   void change_selected_cells_colors_();
 
   void colorize_highlighted_cells_();
-  QPair<int,int> get_cell_coords_(const QPointF& mousePosition) const;
-  int compute_horizontal_label_shift_(int num, int fontSize) const;
-  bool sort_active_items_row_wise_(QList<RowItems>& rows) const;
-  bool process_selected_items_(QList<RowLayout>& processedCellLayout,
-    const QList<RowItems>& rowSelection, int targetPatternSize);
+  QPair<int, int> get_cell_coords_( const QPointF& mousePosition ) const;
+  int compute_horizontal_label_shift_( int num, int fontSize ) const;
+  bool sort_active_items_row_wise_( QList<RowItems>& rows ) const;
+  bool process_selected_items_( QList<RowLayout>& processedCellLayout,
+                                const QList<RowItems>& rowSelection, 
+                                int targetPatternSize );
 
-  void select_column_(int col);
-  void select_row_(int row);
-  void insert_col_(int col);
-  void insert_row_(int row);
-  void expand_grid_(int colStart, int rowStart);
-  void manage_columns_rows_(const QPoint& pos, int col, int row);
+  void select_column_( int col );
+  void select_row_( int row );
+  void insert_col_( int col );
+  void insert_row_( int row );
+  void expand_grid_( int colStart, int rowStart );
+  void manage_columns_rows_( const QPoint& pos, int col, int row );
 
   void enable_canvas_update_() { updateActiveItems_ = true; }
   void disable_canvas_update_() { updateActiveItems_ = false; }
   void update_active_items_();
 
-  QPoint compute_cell_origin_(int col, int row) const;
-  int compute_cell_index_(PatternGridItem* anItem) const;
+  QPoint compute_cell_origin_( int col, int row ) const;
+  int compute_cell_index_( PatternGridItem* anItem ) const;
 
   bool handle_click_on_marker_rectangle_(
-    const QGraphicsSceneMouseEvent* mouseEvent); 
-  void show_rectangle_manage_menu_(PatternGridRectangle* aRect,
-      const QPoint& pos);
+    const QGraphicsSceneMouseEvent* mouseEvent );
+  void show_rectangle_manage_menu_( PatternGridRectangle* aRect,
+                                    const QPoint& pos );
 
   bool handle_click_on_grid_array_(
-    const QGraphicsSceneMouseEvent* mouseEvent);
+    const QGraphicsSceneMouseEvent* mouseEvent );
   bool handle_click_on_grid_labels_(
-    const QGraphicsSceneMouseEvent* mouseEvent);
+    const QGraphicsSceneMouseEvent* mouseEvent );
 
-  QPair<bool,int> is_row_contiguous_(const RowItems& items) const;
-  QRect find_bounding_rectangle_(const QList<RowItems>& rows) const;
+  QPair<bool, int> is_row_contiguous_( const RowItems& items ) const;
+  QRect find_bounding_rectangle_( const QList<RowItems>& rows ) const;
 };
 
 

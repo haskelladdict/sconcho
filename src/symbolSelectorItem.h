@@ -55,7 +55,7 @@ class SymbolSelectorItem
 
 public:
 
-  explicit SymbolSelectorItem(int cellSize, KnittingSymbolPtr name, 
+  explicit SymbolSelectorItem(const QSize& aspectRatio, KnittingSymbolPtr name, 
     QWidget* myParent = 0);
   bool Init();
 
@@ -91,7 +91,8 @@ private:
   QString unselectedStyleSheet_;
 
   /* size (in px) for display purposes of a single symbol unit */
-  int unitSize_;  
+  int unitSize_; 
+  QSize cellAspectRatio_;
 
   /* object holding all the info about the underlying 
    * knitting symbol */
