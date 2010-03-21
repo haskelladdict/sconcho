@@ -994,8 +994,8 @@ void GraphicsScene::notify_legend_of_item_addition_(
     connect( newLegendItem,
              SIGNAL( delete_from_legend( KnittingSymbolPtr, QColor, QString ) ),
              this,
-             SLOT( notify_legend_of_item_removal_( KnittingSymbolPtr, QColor, 
-                 QString ) )
+             SLOT( notify_legend_of_item_removal_( KnittingSymbolPtr, QColor,
+                                                   QString ) )
            );
     newLegendItem->Init();
     newLegendItem->insert_knitting_symbol( symbol );

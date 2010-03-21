@@ -1,19 +1,19 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
@@ -26,18 +26,18 @@ QT_BEGIN_NAMESPACE
 
 /**************************************************************
  *
- * PUBLIC FUNCTIONS 
+ * PUBLIC FUNCTIONS
  *
  **************************************************************/
 
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-PatternGridLabel::PatternGridLabel(const QString& aText, 
-  int labelType, QGraphicsItem* aParent)
+PatternGridLabel::PatternGridLabel( const QString& aText,
+                                    int labelType, QGraphicsItem* aParent )
     :
-      QGraphicsTextItem(aText, aParent),
-      labelType_(labelType)
+    QGraphicsTextItem( aText, aParent ),
+    labelType_( labelType )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -48,8 +48,7 @@ PatternGridLabel::PatternGridLabel(const QString& aText,
 //--------------------------------------------------------------
 bool PatternGridLabel::Init()
 {
-  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
-  {
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED ) {
     return false;
   }
 
@@ -59,7 +58,7 @@ bool PatternGridLabel::Init()
 
 //--------------------------------------------------------------
 // return our custom object type
-// so we can cast via 
+// so we can cast via
 //--------------------------------------------------------------
 int PatternGridLabel::type() const
 {
@@ -93,7 +92,7 @@ int PatternGridLabel::label_type() const
 
 /**************************************************************
  *
- * PROTECTED MEMBER FUNCTIONS 
+ * PROTECTED MEMBER FUNCTIONS
  *
  *************************************************************/
 

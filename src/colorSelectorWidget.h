@@ -1,25 +1,25 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
 
-#ifndef COLOR_SELECTOR_WIDGET_H 
-#define COLOR_SELECTOR_WIDGET_H 
+#ifndef COLOR_SELECTOR_WIDGET_H
+#define COLOR_SELECTOR_WIDGET_H
 
 /* boost includes */
 #include <boost/utility.hpp>
@@ -37,40 +37,40 @@ class ColorSelectorItem;
 QT_BEGIN_NAMESPACE
 
 /***************************************************************
- * 
+ *
  * This widget provides sconcho's color selecting ability
  *
  ***************************************************************/
 class ColorSelectorWidget
-  : 
+    :
     public QWidget,
     public boost::noncopyable
 {
-  
+
   Q_OBJECT
 
-    
+
 public:
 
-  explicit ColorSelectorWidget(const QList<QColor>& colors,
-                               QWidget* myParent = 0);
+  explicit ColorSelectorWidget( const QList<QColor>& colors,
+                                QWidget* myParent = 0 );
   bool Init();
 
   /* return a list of currently active colors */
   QList<QColor> get_colors() const;
-  void set_colors(const QList<QColor>& newColors);
+  void set_colors( const QList<QColor>& newColors );
 
 
 signals:
 
-  void color_changed(const QColor& newColor);
+  void color_changed( const QColor& newColor );
 
-  
+
 public slots:
 
-  void highlight_color_button(ColorSelectorItem* newActiveItem);
+  void highlight_color_button( ColorSelectorItem* newActiveItem );
 
-   
+
 private:
 
   /* some tracking variables */
@@ -84,7 +84,7 @@ private:
 
   /* currently highlighted color selector */
   ColorSelectorItem* activeSelector_;
-  
+
   /* widget creation routines */
   void create_layout_();
 

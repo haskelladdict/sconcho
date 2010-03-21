@@ -1,25 +1,25 @@
 /***************************************************************
  *
- * (c) 2009-2010 Markus Dittrich 
+ * (c) 2009-2010 Markus Dittrich
  *
- * This program is free software; you can redistribute it 
- * and/or modify it under the terms of the GNU General Public 
- * License Version 3 as published by the Free Software Foundation. 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public
+ * License Version 3 as published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License Version 3 for more details.
  *
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
- * Software Foundation, Inc., 59 Temple Place - Suite 330, 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
  ****************************************************************/
 
-#ifndef IO_H 
-#define IO_H 
+#ifndef IO_H
+#define IO_H
 
 /* boost includes */
 #include <boost/utility.hpp>
@@ -50,7 +50,7 @@ class QTextStream;
 
 
 /* convenience typedefs */
-typedef QPair<KnittingSymbolPtr,int> ParsedSymbol;
+typedef QPair<KnittingSymbolPtr, int> ParsedSymbol;
 
 
 //--------------------------------------------------------------
@@ -67,7 +67,7 @@ QList<ParsedSymbol> load_all_symbols();
 // this function takes a path and looks for directories
 // containing instructions for knitting symbols
 //--------------------------------------------------------------
-QList<ParsedSymbol> load_symbols_from_path(const QString& path);
+QList<ParsedSymbol> load_symbols_from_path( const QString& path );
 
 
 
@@ -81,9 +81,9 @@ QStringList get_all_symbol_paths();
 
 //--------------------------------------------------------------
 // given the name of a knitting pattern, return the path
-// it can be found at 
+// it can be found at
 //--------------------------------------------------------------
-QString get_pattern_path(const QString& name);
+QString get_pattern_path( const QString& name );
 
 
 
@@ -96,25 +96,25 @@ bool retrieve_knitting_symbol(
   const QList<KnittingSymbolPtr>& allSymbols,
   const QString& category,
   const QString& name,
-  KnittingSymbolPtr& symbolPtr);
+  KnittingSymbolPtr& symbolPtr );
 
 
-  
+
 //---------------------------------------------------------------
 // looks for a particular environmental variable in a StringList
 // of the full environment and returns its value as a QString
 // if present
 //---------------------------------------------------------------
-QString search_for_environmental_variable(const QString& item);
+QString search_for_environmental_variable( const QString& item );
 
 
 
 //---------------------------------------------------------------
-// this functions fires up a file export dialog and returns 
+// this functions fires up a file export dialog and returns
 // the selected filename or an empty string if none
 // was entered
 //---------------------------------------------------------------
-QString show_file_export_dialog(const QString& filePath);
+QString show_file_export_dialog( const QString& filePath );
 
 
 
@@ -122,14 +122,14 @@ QString show_file_export_dialog(const QString& filePath);
 // this functions export the content of a QGraphicsScene to
 // a file
 //---------------------------------------------------------------
-void export_scene(const QString& fileName, GraphicsScene* theScene);
+void export_scene( const QString& fileName, GraphicsScene* theScene );
 
 
 
 //---------------------------------------------------------------
 // this function prints the content of a QGraphicsScene
 //---------------------------------------------------------------
-void print_scene(GraphicsScene* theScene);
+void print_scene( GraphicsScene* theScene );
 
 
 
@@ -140,15 +140,15 @@ void print_scene(GraphicsScene* theScene);
  *
  ******************************************************************/
 class CanvasIOWriter
-  :
+    :
     public boost::noncopyable
 {
 
 public:
 
-  explicit CanvasIOWriter(const GraphicsScene* theScene,
-                          const QList<QColor>& activeColors,
-                          const QString& fileName);
+  explicit CanvasIOWriter( const GraphicsScene* theScene,
+                           const QList<QColor>& activeColors,
+                           const QString& fileName );
   ~CanvasIOWriter();
   bool Init();
 
@@ -170,9 +170,9 @@ private:
   QDomDocument writeDoc_;
 
   /* helper functions */
-  bool save_patternGridItems_(QDomElement& rootElement);
-  bool save_legendInfo_(QDomElement& rootElement);
-  bool save_colorInfo_(QDomElement& rootElement);
+  bool save_patternGridItems_( QDomElement& rootElement );
+  bool save_legendInfo_( QDomElement& rootElement );
+  bool save_colorInfo_( QDomElement& rootElement );
 };
 
 
@@ -184,16 +184,15 @@ private:
  * a previous view loaded from a file
  *
  ******************************************************************/
-struct PatternGridItemDescriptor
-{
+struct PatternGridItemDescriptor {
   QPoint location;
   QSize dimension;
   QColor backgroundColor;
   KnittingSymbolPtr patternSymbolPtr;
 };
 
-typedef boost::shared_ptr<PatternGridItemDescriptor> 
-  PatternGridItemDescriptorPtr;
+typedef boost::shared_ptr<PatternGridItemDescriptor>
+PatternGridItemDescriptorPtr;
 
 
 /*******************************************************************
@@ -204,8 +203,7 @@ typedef boost::shared_ptr<PatternGridItemDescriptor>
  * chart as well as extra items
  *
  ******************************************************************/
-struct LegendEntryDescriptor
-{
+struct LegendEntryDescriptor {
   QString entryID;
   QPointF itemLocation;
   QPointF labelLocation;
@@ -214,9 +212,9 @@ struct LegendEntryDescriptor
 };
 
 typedef boost::shared_ptr<LegendEntryDescriptor>
-  LegendEntryDescriptorPtr;
+LegendEntryDescriptorPtr;
 
- 
+
 
 /*******************************************************************
  *
@@ -225,14 +223,14 @@ typedef boost::shared_ptr<LegendEntryDescriptor>
  *
  ******************************************************************/
 class CanvasIOReader
-  :
+    :
     public boost::noncopyable
 {
 
 public:
 
-  explicit CanvasIOReader(const QString& fileName,
-                          const QList<KnittingSymbolPtr>& allSymbols);
+  explicit CanvasIOReader( const QString& fileName,
+                           const QList<KnittingSymbolPtr>& allSymbols );
   ~CanvasIOReader();
   bool Init();
 
@@ -240,26 +238,22 @@ public:
   bool read();
 
   /* accessors for parsed information */
-  const QList<PatternGridItemDescriptorPtr>& get_pattern_items() const
-  {
+  const QList<PatternGridItemDescriptorPtr>& get_pattern_items() const {
     return newPatternGridItems_;
   }
 
-  const QList<LegendEntryDescriptorPtr>& get_legend_items() const
-  {
+  const QList<LegendEntryDescriptorPtr>& get_legend_items() const {
     return newLegendEntryDescriptors_;
   }
 
-  const QList<LegendEntryDescriptorPtr>& get_extra_legend_items() const
-  {
+  const QList<LegendEntryDescriptorPtr>& get_extra_legend_items() const {
     return newExtraLegendItemDescriptors_;
   }
 
-  const QList<QColor>& get_project_colors() const
-  {
+  const QList<QColor>& get_project_colors() const {
     return projectColors_;
   }
-  
+
 
 
 private:
@@ -287,15 +281,15 @@ private:
   QList<QColor> projectColors_;
 
   /* helper functions */
-  bool parse_patternGridItems_(const QDomNode& itemNode);
-  bool parse_legendItems_(const QDomNode& itemNode);
-  bool parse_projectColors_(const QDomNode& itemNode);
-  void add_to_extraLegendItems_(const QString& entryID, double itemXPos, 
-    double itemYPos, double labelXPos, double labelYPos, 
-    const QString& labelText);
-  void add_to_chartLegendItems_(const QString& entryID, double itemXPos, 
-    double itemYPos, double labelXPos, double labelYPos,
-    const QString& labelText);
+  bool parse_patternGridItems_( const QDomNode& itemNode );
+  bool parse_legendItems_( const QDomNode& itemNode );
+  bool parse_projectColors_( const QDomNode& itemNode );
+  void add_to_extraLegendItems_( const QString& entryID, double itemXPos,
+                                 double itemYPos, double labelXPos, double labelYPos,
+                                 const QString& labelText );
+  void add_to_chartLegendItems_( const QString& entryID, double itemXPos,
+                                 double itemYPos, double labelXPos, double labelYPos,
+                                 const QString& labelText );
 };
 
 
@@ -307,13 +301,13 @@ private:
  *
  ******************************************************************/
 class KnittingSymbolReader
-  :
+    :
     public boost::noncopyable
 {
 
 public:
 
-  explicit KnittingSymbolReader(const QString& path);
+  explicit KnittingSymbolReader( const QString& path );
   ~KnittingSymbolReader();
   bool Init();
 
@@ -323,7 +317,7 @@ public:
   /* if reading succeeded (i.e., make sure to check the return
    * value of read first) returns a fully constructed pair of
    * knitting symbol object and its position on the widget */
-  QPair<KnittingSymbolPtr,int> get_symbol() const;
+  QPair<KnittingSymbolPtr, int> get_symbol() const;
 
 
 private:
@@ -342,7 +336,7 @@ private:
   int interfacePosition_;
 
   /* helper functions */
-  bool parse_symbol_description_(const QDomNode& itemNode);
+  bool parse_symbol_description_( const QDomNode& itemNode );
 };
 
 

@@ -1,19 +1,19 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
@@ -41,18 +41,18 @@ const int NUM_BOTTOM_COLORSELECTORS = 5;
 
 /**************************************************************
  *
- * PUBLIC FUNCTIONS 
+ * PUBLIC FUNCTIONS
  *
  **************************************************************/
 
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-ColorSelectorWidget::ColorSelectorWidget(const QList<QColor>& colors,
-                                         QWidget* myParent)
-  :
-    QWidget(myParent),
-    selectorColors_(colors)
+ColorSelectorWidget::ColorSelectorWidget( const QList<QColor>& colors,
+    QWidget* myParent )
+    :
+    QWidget( myParent ),
+    selectorColors_( colors )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -63,8 +63,7 @@ ColorSelectorWidget::ColorSelectorWidget(const QList<QColor>& colors,
 //--------------------------------------------------------------
 bool ColorSelectorWidget::Init()
 {
-  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
-  {
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED ) {
     return false;
   }
 
@@ -88,9 +87,8 @@ bool ColorSelectorWidget::Init()
 QList<QColor> ColorSelectorWidget::get_colors() const
 {
   QList<QColor> allColors;
-  foreach(ColorSelectorItem* item, colorSelectors_)
-  {
-    allColors.push_back(item->get_color());
+  foreach( ColorSelectorItem* item, colorSelectors_ ) {
+    allColors.push_back( item->get_color() );
   }
 
   return allColors;
@@ -104,21 +102,20 @@ QList<QColor> ColorSelectorWidget::get_colors() const
 // the superfluous colors are ignored.
 //-------------------------------------------------------------
 void ColorSelectorWidget::set_colors(
-  const QList<QColor>& newColors)
+  const QList<QColor>& newColors )
 {
   selectorColors_ = newColors;
   pad_colors_();
 
-  assert(selectorColors_.length() == colorSelectors_.length());
+  assert( selectorColors_.length() == colorSelectors_.length() );
 
   int count = 0;
-  foreach(ColorSelectorItem* item, colorSelectors_)
-  {
-    item->set_color(selectorColors_[count]);
+  foreach( ColorSelectorItem* item, colorSelectors_ ) {
+    item->set_color( selectorColors_[count] );
     ++count;
   }
 }
-  
+
 
 
 /**************************************************************
@@ -132,7 +129,7 @@ void ColorSelectorWidget::set_colors(
 // selected one
 //-------------------------------------------------------------
 void ColorSelectorWidget::highlight_color_button(
-  ColorSelectorItem* newActiveItem)
+  ColorSelectorItem* newActiveItem )
 {
   activeSelector_->unselect();
   activeSelector_ = newActiveItem;
@@ -157,41 +154,38 @@ void ColorSelectorWidget::create_layout_()
 {
   /* set up the top selector layout */
   QHBoxLayout* topSelectorLayout = new QHBoxLayout;
-  for (int topCount=0; topCount < NUM_TOP_COLORSELECTORS; ++topCount)
-  {
+  for ( int topCount = 0; topCount < NUM_TOP_COLORSELECTORS; ++topCount ) {
     ColorSelectorItem* newItem =
-      new ColorSelectorItem(selectorColors_[topCount],this);
+      new ColorSelectorItem( selectorColors_[topCount], this );
     newItem ->Init();
-    topSelectorLayout->addWidget(newItem);
-    colorSelectors_.push_back(newItem);
+    topSelectorLayout->addWidget( newItem );
+    colorSelectors_.push_back( newItem );
 
     /* activate first color as default */
-    if ( topCount == 0 )
-    {
+    if ( topCount == 0 ) {
       newItem->select();
       activeSelector_ = newItem;
     }
   }
-    
-  
+
+
   /* set up the bottom selector layout */
   QHBoxLayout* bottomSelectorLayout = new QHBoxLayout;
-  for (int bottomCount=NUM_TOP_COLORSELECTORS;
-       bottomCount < (NUM_TOP_COLORSELECTORS + NUM_BOTTOM_COLORSELECTORS);
-       ++bottomCount)
-  {
+  for ( int bottomCount = NUM_TOP_COLORSELECTORS;
+        bottomCount < ( NUM_TOP_COLORSELECTORS + NUM_BOTTOM_COLORSELECTORS );
+        ++bottomCount ) {
     ColorSelectorItem* newItem =
-      new ColorSelectorItem(selectorColors_[bottomCount],this);
+      new ColorSelectorItem( selectorColors_[bottomCount], this );
     newItem ->Init();
-    bottomSelectorLayout->addWidget(newItem);
-    colorSelectors_.push_back(newItem);
+    bottomSelectorLayout->addWidget( newItem );
+    colorSelectors_.push_back( newItem );
   }
-  
-  QVBoxLayout* selectorLayout = new QVBoxLayout;
-  selectorLayout->addLayout(topSelectorLayout);
-  selectorLayout->addLayout(bottomSelectorLayout);
 
-  setLayout(selectorLayout);
+  QVBoxLayout* selectorLayout = new QVBoxLayout;
+  selectorLayout->addLayout( topSelectorLayout );
+  selectorLayout->addLayout( bottomSelectorLayout );
+
+  setLayout( selectorLayout );
 }
 
 
@@ -201,12 +195,11 @@ void ColorSelectorWidget::create_layout_()
 //-----------------------------------------------------------------------
 void ColorSelectorWidget::pad_colors_()
 {
- /* pad list to 10 if necessary */
+  /* pad list to 10 if necessary */
   int neededColors = NUM_TOP_COLORSELECTORS + NUM_BOTTOM_COLORSELECTORS
-    - selectorColors_.length();
-  for (int count = 0; count < neededColors; ++count)
-  {
-    selectorColors_.push_back(DEFAULT_COLOR);
+                     - selectorColors_.length();
+  for ( int count = 0; count < neededColors; ++count ) {
+    selectorColors_.push_back( DEFAULT_COLOR );
   }
 }
 

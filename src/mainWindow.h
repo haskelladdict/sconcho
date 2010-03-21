@@ -1,19 +1,19 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
@@ -55,32 +55,33 @@ class SymbolSelectorWidget;
 
 
 /* convenience typedefs and constants */
-const QSize initialSize(700,500);
+const QSize initialSize( 700, 500 );
 
 
 /* use anonymous namespace to define some constants */
-namespace {
-  const QString NAME = "sconcho";
-  const QString VERSION = "0.0";
-  const QString IDENTIFIER = NAME + " v" + VERSION;
+namespace
+{
+const QString NAME = "sconcho";
+const QString VERSION = "0.0";
+const QString IDENTIFIER = NAME + " v" + VERSION;
 }
 
 
 /***************************************************************
- * 
+ *
  * The MainWindow class organizes the layout of sconcho's main
  * window
  *
  ***************************************************************/
-class MainWindow 
-  : 
+class MainWindow
+    :
     public QMainWindow,
     public boost::noncopyable
 {
-  
+
   Q_OBJECT
 
-    
+
 public:
 
   explicit MainWindow();
@@ -93,18 +94,18 @@ public:
 
 signals:
 
-  void color_changed(QColor aColor);
+  void color_changed( QColor aColor );
   void settings_changed();
 
 
 public slots:
-  
-  void update_mouse_position_display(QPointF newPos);
-  void show_statusBar_message(QString msg);
-  void show_statusBar_error(QString msg);
+
+  void update_mouse_position_display( QPointF newPos );
+  void show_statusBar_message( QString msg );
+  void show_statusBar_error( QString msg );
   void clear_statusBar();
-  void set_project_file_path(const QString& newName);
-  
+  void set_project_file_path( const QString& newName );
+
 
 private slots:
 
@@ -120,7 +121,7 @@ private slots:
   void show_preferences_dialog_();
   void save_file_();
 
-   
+
 private:
 
   /* status variable */
@@ -128,7 +129,7 @@ private:
 
   /* interface generation functions */
   void create_menu_bar_();
-  void initialize_symbols_(const QList<ParsedSymbol>& syms);
+  void initialize_symbols_( const QList<ParsedSymbol>& syms );
   void create_file_menu_();
   void create_edit_menu_();
   void create_view_menu_();
@@ -138,7 +139,7 @@ private:
   void create_graphics_scene_();
   void create_property_symbol_layout_();
   void create_color_widget_();
-  void create_symbols_widget_(const QList<ParsedSymbol>& syms);
+  void create_symbols_widget_( const QList<ParsedSymbol>& syms );
   void create_toolbar_();
   void create_timers_();
   void create_pattern_key_dialog_();
@@ -155,7 +156,7 @@ private:
 
   /* list of all knitting symbols we know about */
   QList<KnittingSymbolPtr> allSymbols_;
- 
+
   /* path to were current project file resides */
   QString saveFilePath_;
 
@@ -171,9 +172,9 @@ private:
 
   /* helper functions */
   QSize show_grid_dimension_dialog_();
-  void save_project_(const QString& fileName);
-  void load_project_(const QString& fileName);
-  void new_grid_(const QSize& newSize);
+  void save_project_( const QString& fileName );
+  void load_project_( const QString& fileName );
+  void new_grid_( const QSize& newSize );
   void parse_command_line_();
 };
 

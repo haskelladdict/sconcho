@@ -1,19 +1,19 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
@@ -33,19 +33,19 @@ QT_BEGIN_NAMESPACE
 
 
 /***************************************************************
- * 
+ *
  * KnittingSymbol manages a single knitting symbol
  *
  ***************************************************************/
-class KnittingSymbol 
+class KnittingSymbol
 {
-  
+
 public:
 
-  explicit KnittingSymbol(const QString& aPath,
-      const QString& aPatternName, const QString& aCategory,
-      const QSize& aDimension, const QString& aInstruction,
-      const QString& aColorName);
+  explicit KnittingSymbol( const QString& aPath,
+                           const QString& aPatternName, const QString& aCategory,
+                           const QSize& aDimension, const QString& aInstruction,
+                           const QString& aColorName );
   bool Init();
 
 
@@ -63,22 +63,22 @@ private:
 
   /* some tracking variables */
   int status_;
-  
+
   QString svgPath_;
   QString patternName_;
   QString category_;
   QSize dimensions_;
   QString instructions_;
   QString color_;
-}; 
+};
 
 
 /* convenience typedef */
 typedef boost::shared_ptr<KnittingSymbol> KnittingSymbolPtr;
 
 /* this is the empty knitting Symbol */
-const KnittingSymbolPtr emptyKnittingSymbol = 
-  KnittingSymbolPtr(new KnittingSymbol("","","",QSize(0,0),"",""));
+const KnittingSymbolPtr emptyKnittingSymbol =
+  KnittingSymbolPtr( new KnittingSymbol( "", "", "", QSize( 0, 0 ), "", "" ) );
 
 
 QT_END_NAMESPACE

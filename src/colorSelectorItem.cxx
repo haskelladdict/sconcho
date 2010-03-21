@@ -1,19 +1,19 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
@@ -36,19 +36,19 @@ QT_BEGIN_NAMESPACE
 
 /**************************************************************
  *
- * PUBLIC FUNCTIONS 
+ * PUBLIC FUNCTIONS
  *
  **************************************************************/
 
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-ColorSelectorItem::ColorSelectorItem(const QColor& aColor,
-  QWidget* myParent)
-  :
-    QLabel(myParent),
-    selected_(false),
-    color_(aColor)
+ColorSelectorItem::ColorSelectorItem( const QColor& aColor,
+                                      QWidget* myParent )
+    :
+    QLabel( myParent ),
+    selected_( false ),
+    color_( aColor )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -60,24 +60,23 @@ ColorSelectorItem::ColorSelectorItem(const QColor& aColor,
 //--------------------------------------------------------------
 bool ColorSelectorItem::Init()
 {
-  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
-  {
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED ) {
     return false;
   }
 
-  setStyleSheet(get_inactive_stylesheet_());
-  
+  setStyleSheet( get_inactive_stylesheet_() );
+
   /* connect slots */
-  connect(this,
-          SIGNAL(highlight_me(ColorSelectorItem*)),
-          parent(),
-          SLOT(highlight_color_button(ColorSelectorItem*))
+  connect( this,
+           SIGNAL( highlight_me( ColorSelectorItem* ) ),
+           parent(),
+           SLOT( highlight_color_button( ColorSelectorItem* ) )
          );
 
-  connect(this,
-          SIGNAL(selector_color_changed(const QColor&)),
-          parent(),
-          SIGNAL(color_changed(const QColor&))
+  connect( this,
+           SIGNAL( selector_color_changed( const QColor& ) ),
+           parent(),
+           SIGNAL( color_changed( const QColor& ) )
          );
 
   return true;
@@ -90,56 +89,50 @@ bool ColorSelectorItem::Init()
 void ColorSelectorItem::select()
 {
   selected_ = true;
-  setStyleSheet(get_active_stylesheet_());
-  emit selector_color_changed(color_);
+  setStyleSheet( get_active_stylesheet_() );
+  emit selector_color_changed( color_ );
 }
 
 
 void ColorSelectorItem::unselect()
 {
   selected_ = false;
-  setStyleSheet(get_inactive_stylesheet_());
+  setStyleSheet( get_inactive_stylesheet_() );
 }
 
 
 //-------------------------------------------------------------
 // update the current color
 //-------------------------------------------------------------
-void ColorSelectorItem::set_color(const QColor& aColor)
+void ColorSelectorItem::set_color( const QColor& aColor )
 {
   color_ = aColor;
 
   /* update the background */
-  if (selected_)
-  {
-    setStyleSheet(get_active_stylesheet_());
-  }
-  else
-  {
-    setStyleSheet(get_inactive_stylesheet_());
+  if ( selected_ ) {
+    setStyleSheet( get_active_stylesheet_() );
+  } else {
+    setStyleSheet( get_inactive_stylesheet_() );
   }
 }
-    
+
 
 
 /**************************************************************
  *
- * PROTECTED MEMBER FUNCTIONS 
+ * PROTECTED MEMBER FUNCTIONS
  *
  *************************************************************/
 
 //---------------------------------------------------------------
 // event handler for mouse move events
 //---------------------------------------------------------------
-void ColorSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
+void ColorSelectorItem::mousePressEvent( QMouseEvent* mouseEvent )
 {
-  if ((mouseEvent->button() == Qt::LeftButton) && !selected_)
-  {
-    emit highlight_me(this);
-  }
-  else if (mouseEvent->button() == Qt::RightButton)
-  {
-    show_property_menu_(mouseEvent->globalPos());
+  if (( mouseEvent->button() == Qt::LeftButton ) && !selected_ ) {
+    emit highlight_me( this );
+  } else if ( mouseEvent->button() == Qt::RightButton ) {
+    show_property_menu_( mouseEvent->globalPos() );
   }
 
   repaint();
@@ -159,11 +152,11 @@ void ColorSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
 //------------------------------------------------------------
 void ColorSelectorItem::pick_color_()
 {
-  QColor selection = QColorDialog::getColor(color_ , 0,
-    "Select custom color");
-  
-  set_color(selection);
-  emit selector_color_changed(color_);
+  QColor selection = QColorDialog::getColor( color_ , 0,
+                     "Select custom color" );
+
+  set_color( selection );
+  emit selector_color_changed( color_ );
 }
 
 
@@ -220,19 +213,19 @@ QString ColorSelectorItem::get_inactive_stylesheet_()
 //--------------------------------------------------------------
 // show menu to allow user to customize the our color
 //--------------------------------------------------------------
-void ColorSelectorItem::show_property_menu_(const QPoint& aPos)
+void ColorSelectorItem::show_property_menu_( const QPoint& aPos )
 {
   QMenu propertyMenu;
-  QAction* customizeColorAction =  
-    propertyMenu.addAction("customize color");
+  QAction* customizeColorAction =
+    propertyMenu.addAction( "customize color" );
 
-  connect(customizeColorAction,
-          SIGNAL(triggered()),
-          this,
-          SLOT(pick_color_())
+  connect( customizeColorAction,
+           SIGNAL( triggered() ),
+           this,
+           SLOT( pick_color_() )
          );
 
-  propertyMenu.exec(aPos);
+  propertyMenu.exec( aPos );
 }
 
 

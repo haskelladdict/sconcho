@@ -1,25 +1,25 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
 
-#ifndef SYMBOL_SELECTOR_ITEM_H 
-#define SYMBOL_SELECTOR_ITEM_H 
+#ifndef SYMBOL_SELECTOR_ITEM_H
+#define SYMBOL_SELECTOR_ITEM_H
 
 /* boost includes */
 #include <boost/utility.hpp>
@@ -41,22 +41,22 @@ class QSvgWidget;
 QT_BEGIN_NAMESPACE
 
 /***************************************************************
- * 
+ *
  * SymbolSelectorItem manages a single symbol selector widget
  *
  ***************************************************************/
-class SymbolSelectorItem 
-  :
+class SymbolSelectorItem
+    :
     public QFrame,
     public boost::noncopyable
 {
-  
+
   Q_OBJECT
 
 public:
 
-  explicit SymbolSelectorItem(const QSize& aspectRatio, KnittingSymbolPtr name, 
-    QWidget* myParent = 0);
+  explicit SymbolSelectorItem( const QSize& aspectRatio, KnittingSymbolPtr name,
+                               QWidget* myParent = 0 );
   bool Init();
 
 
@@ -67,21 +67,21 @@ public:
 
 
 signals:
-  
-  void highlight_me(SymbolSelectorItem* us, bool state);
-  void new_legend_item(const KnittingSymbolPtr newItem);
+
+  void highlight_me( SymbolSelectorItem* us, bool state );
+  void new_legend_item( const KnittingSymbolPtr newItem );
 
 
 protected:
 
-  void mousePressEvent(QMouseEvent* mouseEvent);
+  void mousePressEvent( QMouseEvent* mouseEvent );
 
 
 private slots:
 
   void send_legend_item_();
 
-    
+
 private:
 
   /* status variables */
@@ -91,17 +91,17 @@ private:
   QString unselectedStyleSheet_;
 
   /* size (in px) for display purposes of a single symbol unit */
-  int unitSize_; 
+  int unitSize_;
   QSize cellAspectRatio_;
 
-  /* object holding all the info about the underlying 
+  /* object holding all the info about the underlying
    * knitting symbol */
   KnittingSymbolPtr symbol_;
 
   /* helper functions */
-  void show_symbol_menu_(const QPoint& aPos) const;
+  void show_symbol_menu_( const QPoint& aPos ) const;
   void generate_stylesheets_();
-}; 
+};
 
 
 QT_END_NAMESPACE

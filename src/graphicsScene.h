@@ -230,7 +230,7 @@ private:
   int compute_horizontal_label_shift_( int num, int fontSize ) const;
   bool sort_active_items_row_wise_( QList<RowItems>& rows ) const;
   bool process_selected_items_( QList<RowLayout>& processedCellLayout,
-                                const QList<RowItems>& rowSelection, 
+                                const QList<RowItems>& rowSelection,
                                 int targetPatternSize );
 
   void select_column_( int col );

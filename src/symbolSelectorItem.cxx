@@ -1,19 +1,19 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
@@ -35,21 +35,21 @@ QT_BEGIN_NAMESPACE
 
 /**************************************************************
  *
- * PUBLIC FUNCTIONS 
+ * PUBLIC FUNCTIONS
  *
  **************************************************************/
 
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-SymbolSelectorItem::SymbolSelectorItem(const QSize& aspectRatio,
-  KnittingSymbolPtr symbol, QWidget* myParent)
-  :
-    QFrame(myParent),
-    selected_(false),
-    unitSize_(aspectRatio.width()),
-    cellAspectRatio_(aspectRatio),
-    symbol_(symbol)
+SymbolSelectorItem::SymbolSelectorItem( const QSize& aspectRatio,
+                                        KnittingSymbolPtr symbol, QWidget* myParent )
+    :
+    QFrame( myParent ),
+    selected_( false ),
+    unitSize_( aspectRatio.width() ),
+    cellAspectRatio_( aspectRatio ),
+    symbol_( symbol )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -61,34 +61,33 @@ SymbolSelectorItem::SymbolSelectorItem(const QSize& aspectRatio,
 //--------------------------------------------------------------
 bool SymbolSelectorItem::Init()
 {
-  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
-  {
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED ) {
     return false;
   }
 
   generate_stylesheets_();
-  setStyleSheet(unselectedStyleSheet_);
-  
+  setStyleSheet( unselectedStyleSheet_ );
+
   /* create and adjust our QSvgWidget */
-  QSvgWidget* symbolSvg_ = new QSvgWidget(symbol_->path());
+  QSvgWidget* symbolSvg_ = new QSvgWidget( symbol_->path() );
   QSize dimension = symbol_->dim();
-  QSize symbolSize = QSize(cellAspectRatio_.width() * dimension.width(),
-                           cellAspectRatio_.height() * dimension.height());
-  symbolSvg_->setMaximumSize(symbolSize);
+  QSize symbolSize = QSize( cellAspectRatio_.width() * dimension.width(),
+                            cellAspectRatio_.height() * dimension.height() );
+  symbolSvg_->setMaximumSize( symbolSize );
 
   QHBoxLayout* svgLayout = new QHBoxLayout;
-  svgLayout->setContentsMargins(0,0,0,0);
-  svgLayout->addWidget(symbolSvg_);
-  setLayout(svgLayout);
+  svgLayout->setContentsMargins( 0, 0, 0, 0 );
+  svgLayout->addWidget( symbolSvg_ );
+  setLayout( svgLayout );
 
   /* add tool tip */
-  setToolTip(symbol_->instructions());
-  
+  setToolTip( symbol_->instructions() );
+
   /* connect slots */
-  connect(this,
-          SIGNAL(highlight_me(SymbolSelectorItem*, bool)),
-          parent(),
-          SLOT(change_highlighted_item(SymbolSelectorItem*,bool))
+  connect( this,
+           SIGNAL( highlight_me( SymbolSelectorItem*, bool ) ),
+           parent(),
+           SLOT( change_highlighted_item( SymbolSelectorItem*, bool ) )
          );
 
   return true;
@@ -101,19 +100,19 @@ bool SymbolSelectorItem::Init()
 void SymbolSelectorItem::select()
 {
   selected_ = true;
-  setStyleSheet(selectedStyleSheet_);
+  setStyleSheet( selectedStyleSheet_ );
 }
 
 
 void SymbolSelectorItem::unselect()
 {
   selected_ = false;
-  setStyleSheet(unselectedStyleSheet_);
+  setStyleSheet( unselectedStyleSheet_ );
 }
 
 
 //------------------------------------------------------------
-// return our name 
+// return our name
 //------------------------------------------------------------
 const KnittingSymbolPtr SymbolSelectorItem::symbol_info() const
 {
@@ -138,29 +137,23 @@ const KnittingSymbolPtr SymbolSelectorItem::symbol_info() const
 
 /**************************************************************
  *
- * PROTECTED MEMBER FUNCTIONS 
+ * PROTECTED MEMBER FUNCTIONS
  *
  *************************************************************/
 
 //---------------------------------------------------------------
 // event handler for mouse press events
 //---------------------------------------------------------------
-void SymbolSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
+void SymbolSelectorItem::mousePressEvent( QMouseEvent* mouseEvent )
 {
   /* a right button click opens up a menu for further action */
-  if (mouseEvent->button() == Qt::RightButton)
-  {
-    show_symbol_menu_(mouseEvent->globalPos());
-  }
-  else
-  {
-    if (selected_)
-    {
-      emit highlight_me(this, false);
-    }
-    else
-    {
-      emit highlight_me(this, true);
+  if ( mouseEvent->button() == Qt::RightButton ) {
+    show_symbol_menu_( mouseEvent->globalPos() );
+  } else {
+    if ( selected_ ) {
+      emit highlight_me( this, false );
+    } else {
+      emit highlight_me( this, true );
     }
   }
 
@@ -182,7 +175,7 @@ void SymbolSelectorItem::mousePressEvent(QMouseEvent* mouseEvent)
 //------------------------------------------------------------
 void SymbolSelectorItem::send_legend_item_()
 {
-  emit new_legend_item(symbol_);
+  emit new_legend_item( symbol_ );
 }
 
 
@@ -194,26 +187,26 @@ void SymbolSelectorItem::send_legend_item_()
  *************************************************************/
 
 //---------------------------------------------------------------
-// open a simple menu with further actions possible for 
+// open a simple menu with further actions possible for
 // knitting symbol items (like adding them to the legend)
 //---------------------------------------------------------------
-void SymbolSelectorItem::show_symbol_menu_(const QPoint& symPos) const
+void SymbolSelectorItem::show_symbol_menu_( const QPoint& symPos ) const
 {
   QMenu symbolMenu;
-  QAction* addToLegendAction = symbolMenu.addAction("add to legend");
+  QAction* addToLegendAction = symbolMenu.addAction( "add to legend" );
 
-  connect(addToLegendAction,
-          SIGNAL(triggered()),
-          this,
-          SLOT(send_legend_item_())
+  connect( addToLegendAction,
+           SIGNAL( triggered() ),
+           this,
+           SLOT( send_legend_item_() )
          );
 
-  symbolMenu.exec(symPos);
+  symbolMenu.exec( symPos );
 }
 
 
 //---------------------------------------------------------------
-// generate the stylesheets used for selected/unselected 
+// generate the stylesheets used for selected/unselected
 // selector items
 //---------------------------------------------------------------
 void SymbolSelectorItem::generate_stylesheets_()
@@ -225,18 +218,15 @@ void SymbolSelectorItem::generate_stylesheets_()
                         "background-color: lightblue;";
 
   /* define unselected style sheet; if the symbol has
-   * a default background color we use it and white 
+   * a default background color we use it and white
    * otherwise*/
   unselectedStyleSheet_ = "border-width: 1px;"
                           "border-style: solid;"
                           "border-color: black;";
-  if (symbol_->color_name() != "")
-  {
+  if ( symbol_->color_name() != "" ) {
     unselectedStyleSheet_ += "background-color: ";
     unselectedStyleSheet_ += symbol_->color_name();
-  }
-  else
-  {
+  } else {
     unselectedStyleSheet_ += "background-color: white;";
   }
 }

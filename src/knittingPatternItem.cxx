@@ -1,19 +1,19 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
@@ -35,24 +35,24 @@ QT_BEGIN_NAMESPACE
 
 /**************************************************************
  *
- * PUBLIC FUNCTIONS 
+ * PUBLIC FUNCTIONS
  *
  **************************************************************/
 
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-KnittingPatternItem::KnittingPatternItem(const QSize& aDim, 
-  const QSize& aspectRatio, const QColor& aBackColor, 
-  const QPoint& aLoc) 
+KnittingPatternItem::KnittingPatternItem( const QSize& aDim,
+    const QSize& aspectRatio, const QColor& aBackColor,
+    const QPoint& aLoc )
     :
-      QGraphicsItem(),
-      svgItem_(0),
-      knittingSymbol_(emptyKnittingSymbol), 
-      backColor_(aBackColor),
-      dim_(aDim),
-      loc_(aLoc),
-      cellAspectRatio_(aspectRatio)
+    QGraphicsItem(),
+    svgItem_( 0 ),
+    knittingSymbol_( emptyKnittingSymbol ),
+    backColor_( aBackColor ),
+    dim_( aDim ),
+    loc_( aLoc ),
+    cellAspectRatio_( aspectRatio )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -63,14 +63,13 @@ KnittingPatternItem::KnittingPatternItem(const QSize& aDim,
 //--------------------------------------------------------------
 bool KnittingPatternItem::Init()
 {
-  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
-  {
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED ) {
     return false;
   }
 
   /* set up some properties */
-  setFlags(QGraphicsItem::ItemClipsChildrenToShape);
-  
+  setFlags( QGraphicsItem::ItemClipsChildrenToShape );
+
   /* call individual initialization routines */
   set_up_pens_brushes_();
 
@@ -106,30 +105,30 @@ int KnittingPatternItem::type() const
 //------------------------------------------------------------
 QRectF KnittingPatternItem::boundingRect() const
 {
-  return QRectF(loc_.x() - pen_.width() * 0.25, 
-                loc_.y() - pen_.width() * 0.25,
-                cellAspectRatio_.width() * dim_.width() + pen_.width() * 0.5,
-                cellAspectRatio_.height() * dim_.height() + pen_.width() * 0.5);
+  return QRectF( loc_.x() - pen_.width() * 0.25,
+                 loc_.y() - pen_.width() * 0.25,
+                 cellAspectRatio_.width() * dim_.width() + pen_.width() * 0.5,
+                 cellAspectRatio_.height() * dim_.height() + pen_.width() * 0.5 );
 }
-  
-  
+
+
 //------------------------------------------------------------
-// overload pure virtual base class function painting 
+// overload pure virtual base class function painting
 // ourselves
 //------------------------------------------------------------
-void KnittingPatternItem::paint(QPainter *painter, 
-  const QStyleOptionGraphicsItem *option, QWidget *widget)
+void KnittingPatternItem::paint( QPainter *painter,
+                                 const QStyleOptionGraphicsItem *option, QWidget *widget )
 {
-  Q_UNUSED(widget);
-  Q_UNUSED(option);
-  
-  painter->setPen(pen_);
-  QBrush aBrush(currentColor_);
-  painter->setBrush(aBrush);
+  Q_UNUSED( widget );
+  Q_UNUSED( option );
 
-  painter->drawRect(QRectF(loc_, 
-                    QSize(cellAspectRatio_.width() * dim_.width(),
-                          cellAspectRatio_.height() * dim_.height())));
+  painter->setPen( pen_ );
+  QBrush aBrush( currentColor_ );
+  painter->setBrush( aBrush );
+
+  painter->drawRect( QRectF( loc_,
+                             QSize( cellAspectRatio_.width() * dim_.width(),
+                                    cellAspectRatio_.height() * dim_.height() ) ) );
 }
 
 
@@ -137,40 +136,37 @@ void KnittingPatternItem::paint(QPainter *painter,
 // insert a new knitting symbol
 //-------------------------------------------------------------
 void KnittingPatternItem::insert_knitting_symbol(
-  KnittingSymbolPtr aSymbol)
+  KnittingSymbolPtr aSymbol )
 {
   /* update pointers */
   knittingSymbol_ = aSymbol;
-  QString symbolPath(aSymbol->path());
+  QString symbolPath( aSymbol->path() );
 
   /* delete the previous svgItem if there was one */
-  if ( svgItem_ != 0 ) 
-  {
+  if ( svgItem_ != 0 ) {
     delete svgItem_;
     svgItem_ = 0;
   }
 
-  if (symbolPath != "")
-  { 
-    svgItem_ = new QGraphicsSvgItem(symbolPath,this);
+  if ( symbolPath != "" ) {
+    svgItem_ = new QGraphicsSvgItem( symbolPath, this );
     fit_svg_();
   }
 
-  /* if the knitting symbol provides a backgroundColor we use 
+  /* if the knitting symbol provides a backgroundColor we use
    * it */
-  if (knittingSymbol_->color_name() != "")
-  {
-    set_background_color(knittingSymbol_->color_name());
+  if ( knittingSymbol_->color_name() != "" ) {
+    set_background_color( knittingSymbol_->color_name() );
     set_up_pens_brushes_();
   }
 }
- 
+
 
 //--------------------------------------------------------------
-// return a pointer to the currently embedded knitting symbol 
+// return a pointer to the currently embedded knitting symbol
 //--------------------------------------------------------------
 const KnittingSymbolPtr KnittingPatternItem::get_knitting_symbol()
-  const
+const
 {
   return knittingSymbol_;
 }
@@ -179,7 +175,7 @@ const KnittingSymbolPtr KnittingPatternItem::get_knitting_symbol()
 //-------------------------------------------------------------
 // change the background color
 //-------------------------------------------------------------
-void KnittingPatternItem::set_background_color(const QColor& newColor)
+void KnittingPatternItem::set_background_color( const QColor& newColor )
 {
   backColor_ = newColor;
 }
@@ -187,18 +183,17 @@ void KnittingPatternItem::set_background_color(const QColor& newColor)
 
 /**************************************************************
  *
- * PROTECTED MEMBER FUNCTIONS 
+ * PROTECTED MEMBER FUNCTIONS
  *
  *************************************************************/
 
 //---------------------------------------------------------------
-// scale and shift svg item so it fits into our bounding 
+// scale and shift svg item so it fits into our bounding
 // box
 //---------------------------------------------------------------
 void KnittingPatternItem::fit_svg_()
 {
-  if (svgItem_ == 0)
-  {
+  if ( svgItem_ == 0 ) {
     return;
   }
 
@@ -208,18 +203,16 @@ void KnittingPatternItem::fit_svg_()
 
   /* scale */
   double scaleX = 1.0;
-  if ( svgRect.width() > DBL_EPSILON )
-  {
-    scaleX = boxRect.width()/svgRect.width();
+  if ( svgRect.width() > DBL_EPSILON ) {
+    scaleX = boxRect.width() / svgRect.width();
   }
 
   double scaleY = 1.0;
-  if ( svgRect.height() > DBL_EPSILON )
-  {
-    scaleY = boxRect.height()/svgRect.height();
+  if ( svgRect.height() > DBL_EPSILON ) {
+    scaleY = boxRect.height() / svgRect.height();
   }
 
-  svgItem_->scale(scaleX, scaleY);
+  svgItem_->scale( scaleX, scaleY );
 }
 
 
@@ -243,11 +236,11 @@ void KnittingPatternItem::fit_svg_()
 void KnittingPatternItem::set_up_pens_brushes_()
 {
   /* pen used */
-  pen_.setWidthF(1.0);
-  pen_.setColor(Qt::black);
+  pen_.setWidthF( 1.0 );
+  pen_.setColor( Qt::black );
 
   /* set up highlight color */
-  highlightColor_ = QColor(Qt::gray);
+  highlightColor_ = QColor( Qt::gray );
 
   currentColor_ = backColor_;
 }

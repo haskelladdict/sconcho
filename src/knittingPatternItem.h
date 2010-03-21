@@ -1,19 +1,19 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
@@ -47,23 +47,23 @@ class QStyleOptionGraphicsItem;
 
 
 /***************************************************************
- * 
+ *
  * The GraphicsScene handles the sconcho's main drawing
- * canvas 
+ * canvas
  *
  ***************************************************************/
 class KnittingPatternItem
-  :
+    :
     public QObject,
     public QGraphicsItem,
     public boost::noncopyable
 {
-  
+
 public:
 
-  explicit KnittingPatternItem(const QSize& aDim, 
-    const QSize& aspectRatio, const QColor& backColor = Qt::white, 
-    const QPoint& loc = QPoint(0,0));
+  explicit KnittingPatternItem( const QSize& aDim,
+                                const QSize& aspectRatio, const QColor& backColor = Qt::white,
+                                const QPoint& loc = QPoint( 0, 0 ) );
   bool Init();
 
   /* return our object type; needed for qgraphicsitem_cast */
@@ -72,18 +72,18 @@ public:
 
   /* reimplement pure virtual base class methods */
   QRectF boundingRect() const;
-  void paint(QPainter *painter,
-    const QStyleOptionGraphicsItem *option, QWidget *widget);
+  void paint( QPainter *painter,
+              const QStyleOptionGraphicsItem *option, QWidget *widget );
 
   /* insert a new knitting symbol to be displayed */
-  void insert_knitting_symbol(KnittingSymbolPtr symbol);
+  void insert_knitting_symbol( KnittingSymbolPtr symbol );
 
   /* color related functions */
-  void set_background_color(const QColor& newColor);
-  const QColor& color() const { return backColor_; }  
-  
+  void set_background_color( const QColor& newColor );
+  const QColor& color() const { return backColor_; }
+
   /* accessors for properties */
-  const QPoint& origin() const { return loc_; } 
+  const QPoint& origin() const { return loc_; }
   const QSize& dim() const { return dim_; }
   const KnittingSymbolPtr get_knitting_symbol() const;
 
@@ -97,7 +97,7 @@ protected:
   /* fit the svg item snug into our frame */
   void fit_svg_();
 
-  
+
 private:
 
   /* some tracking variables */
@@ -117,7 +117,7 @@ private:
   QSize dim_;
   QPoint loc_;
   QSize cellAspectRatio_;
- 
+
   /* functions */
   void set_up_pens_brushes_();
 };

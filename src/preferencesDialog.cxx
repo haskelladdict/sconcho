@@ -1,19 +1,19 @@
 /***************************************************************
 *
-* (c) 2009-2010 Markus Dittrich 
+* (c) 2009-2010 Markus Dittrich
 *
-* This program is free software; you can redistribute it 
-* and/or modify it under the terms of the GNU General Public 
-* License Version 3 as published by the Free Software Foundation. 
+* This program is free software; you can redistribute it
+* and/or modify it under the terms of the GNU General Public
+* License Version 3 as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License Version 3 for more details.
 *
-* You should have received a copy of the GNU General Public 
-* License along with this program; if not, write to the Free 
-* Software Foundation, Inc., 59 Temple Place - Suite 330, 
+* You should have received a copy of the GNU General Public
+* License along with this program; if not, write to the Free
+* Software Foundation, Inc., 59 Temple Place - Suite 330,
 * Boston, MA 02111-1307, USA.
 *
 ****************************************************************/
@@ -45,24 +45,24 @@ QT_BEGIN_NAMESPACE
 
 /**************************************************************
  *
- * PUBLIC FUNCTIONS 
+ * PUBLIC FUNCTIONS
  *
  **************************************************************/
 
 //-------------------------------------------------------------
 // constructor
 //-------------------------------------------------------------
-PreferencesDialog::PreferencesDialog(QSettings& theSettings,
-  QWidget* myParent)
+PreferencesDialog::PreferencesDialog( QSettings& theSettings,
+                                      QWidget* myParent )
     :
-      QDialog(myParent),
-      settings_(theSettings),
-      currentFont_(extract_font_from_settings(theSettings)),
-      tabWidget_(new QTabWidget),
-      fontFamilyBox_(new QFontComboBox),
-      fontStyleBox_(new QComboBox),
-      fontSizeBox_(new QComboBox),
-      exampleText_(new QLineEdit)
+    QDialog( myParent ),
+    settings_( theSettings ),
+    currentFont_( extract_font_from_settings( theSettings ) ),
+    tabWidget_( new QTabWidget ),
+    fontFamilyBox_( new QFontComboBox ),
+    fontStyleBox_( new QComboBox ),
+    fontSizeBox_( new QComboBox ),
+    exampleText_( new QLineEdit )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -73,14 +73,13 @@ PreferencesDialog::PreferencesDialog(QSettings& theSettings,
 //--------------------------------------------------------------
 bool PreferencesDialog::Init()
 {
-  if ( status_ != SUCCESSFULLY_CONSTRUCTED )
-  {
+  if ( status_ != SUCCESSFULLY_CONSTRUCTED ) {
     return false;
   }
 
   /* call individual initialization routines */
-  setModal(true);
-  setWindowTitle(tr("Preferences"));
+  setModal( true );
+  setWindowTitle( tr( "Preferences" ) );
 
   /* create the interface */
   create_main_layout_();
@@ -107,7 +106,7 @@ bool PreferencesDialog::Init()
 
 /**************************************************************
  *
- * PROTECTED MEMBER FUNCTIONS 
+ * PROTECTED MEMBER FUNCTIONS
  *
  *************************************************************/
 
@@ -123,7 +122,7 @@ bool PreferencesDialog::Init()
 //-------------------------------------------------------------
 void PreferencesDialog::ok_clicked_()
 {
-  set_font_string(settings_, currentFont_.toString());
+  set_font_string( settings_, currentFont_.toString() );
   close();
 }
 
@@ -135,16 +134,16 @@ void PreferencesDialog::ok_clicked_()
 //-------------------------------------------------------------
 void PreferencesDialog::update_current_font_()
 {
-  QString fontFamily(fontFamilyBox_->currentFont().family());
-  QString fontStyle(fontStyleBox_->currentText());
+  QString fontFamily( fontFamilyBox_->currentFont().family() );
+  QString fontStyle( fontStyleBox_->currentText() );
   int fontSizeSelection = fontSizeBox_->currentIndex();
-  int fontSize = fontSizeBox_->itemData(fontSizeSelection).toInt();
+  int fontSize = fontSizeBox_->itemData( fontSizeSelection ).toInt();
 
   QFontDatabase dataBase;
-  currentFont_ = dataBase.font(fontFamily, fontStyle, fontSize);
+  currentFont_ = dataBase.font( fontFamily, fontStyle, fontSize );
 
   qDebug() << currentFont_.toString();
-  exampleText_->setFont(currentFont_);
+  exampleText_->setFont( currentFont_ );
 }
 
 
@@ -153,45 +152,41 @@ void PreferencesDialog::update_current_font_()
 // update the font style, point size and example text widgets
 // if the user changes the font family
 //-------------------------------------------------------------
-void PreferencesDialog::update_font_selectors_(const QFont& newFont)
+void PreferencesDialog::update_font_selectors_( const QFont& newFont )
 {
-  QString family(newFont.family());
+  QString family( newFont.family() );
   QFontDatabase database;
 
   /* update font style */
-  QStringList availableStyles(database.styles(family));
+  QStringList availableStyles( database.styles( family ) );
   fontStyleBox_->clear();
-  QString targetStyle(database.styleString(newFont));
+  QString targetStyle( database.styleString( newFont ) );
   int targetIndex = 0;
-  for (int index = 0; index < availableStyles.size(); ++index)
-  {
-    if (availableStyles.at(index) == targetStyle)
-    {
+  for ( int index = 0; index < availableStyles.size(); ++index ) {
+    if ( availableStyles.at( index ) == targetStyle ) {
       targetIndex = index;
     }
 
-    fontStyleBox_->addItem(availableStyles.at(index));
+    fontStyleBox_->addItem( availableStyles.at( index ) );
   }
-  fontStyleBox_->setCurrentIndex(targetIndex);
+  fontStyleBox_->setCurrentIndex( targetIndex );
 
- 
+
   /* update font size */
-  QList<int> availableSizes(database.pointSizes(family));
+  QList<int> availableSizes( database.pointSizes( family ) );
   QString helper;
   fontSizeBox_->clear();
-  int targetSize(newFont.pointSize());
+  int targetSize( newFont.pointSize() );
   targetIndex = 0;
-  for (int index = 0; index < availableSizes.size(); ++index)
-  {
-    if (availableSizes.at(index) == targetSize)
-    {
+  for ( int index = 0; index < availableSizes.size(); ++index ) {
+    if ( availableSizes.at( index ) == targetSize ) {
       targetIndex = index;
     }
 
-    fontSizeBox_->addItem(helper.setNum(availableSizes.at(index)),
-        QVariant(availableSizes.at(index)));
+    fontSizeBox_->addItem( helper.setNum( availableSizes.at( index ) ),
+                           QVariant( availableSizes.at( index ) ) );
   }
-  fontSizeBox_->setCurrentIndex(targetIndex);
+  fontSizeBox_->setCurrentIndex( targetIndex );
 }
 
 
@@ -209,27 +204,27 @@ void PreferencesDialog::create_main_layout_()
   QVBoxLayout* mainLayout = new QVBoxLayout;
 
   QHBoxLayout* buttonLayout = new QHBoxLayout;
-  QPushButton* okButton = new QPushButton(tr("Ok"),this);
-  QPushButton* cancelButton = new QPushButton(tr("Cancel"),this);
-  buttonLayout->addStretch(1);
-  buttonLayout->addWidget(okButton);
-  buttonLayout->addWidget(cancelButton);
+  QPushButton* okButton = new QPushButton( tr( "Ok" ), this );
+  QPushButton* cancelButton = new QPushButton( tr( "Cancel" ), this );
+  buttonLayout->addStretch( 1 );
+  buttonLayout->addWidget( okButton );
+  buttonLayout->addWidget( cancelButton );
 
-  connect(okButton,
-          SIGNAL(clicked()),
-          this,
-          SLOT(ok_clicked_()));
+  connect( okButton,
+           SIGNAL( clicked() ),
+           this,
+           SLOT( ok_clicked_() ) );
 
-  connect(cancelButton,
-          SIGNAL(clicked()),
-          this,
-          SLOT(close()));
+  connect( cancelButton,
+           SIGNAL( clicked() ),
+           this,
+           SLOT( close() ) );
 
 
-  mainLayout->addWidget(tabWidget_);
-  mainLayout->addLayout(buttonLayout);
+  mainLayout->addWidget( tabWidget_ );
+  mainLayout->addLayout( buttonLayout );
 
-  setLayout(mainLayout);
+  setLayout( mainLayout );
 }
 
 
@@ -238,68 +233,68 @@ void PreferencesDialog::create_main_layout_()
 //------------------------------------------------------------
 void PreferencesDialog::create_font_tab_()
 {
-  QGroupBox* fontWidget = new QGroupBox(this); 
+  QGroupBox* fontWidget = new QGroupBox( this );
   QVBoxLayout *mainLayout = new QVBoxLayout;
 
   /* font family selector */
   QHBoxLayout *fontFamilyLayout = new QHBoxLayout;
-  QLabel* fontFamilyLabel = new QLabel(tr("Family"));
-  fontFamilyBox_->setWritingSystem(QFontDatabase::Latin);
-  fontFamilyBox_->setCurrentFont(currentFont_);
-  fontFamilyLayout->addWidget(fontFamilyLabel);
-  fontFamilyLayout->addWidget(fontFamilyBox_);
+  QLabel* fontFamilyLabel = new QLabel( tr( "Family" ) );
+  fontFamilyBox_->setWritingSystem( QFontDatabase::Latin );
+  fontFamilyBox_->setCurrentFont( currentFont_ );
+  fontFamilyLayout->addWidget( fontFamilyLabel );
+  fontFamilyLayout->addWidget( fontFamilyBox_ );
 
-  connect(fontFamilyBox_, 
-          SIGNAL(currentFontChanged(const QFont&)),
-          this,
-          SLOT(update_font_selectors_(const QFont&)));
+  connect( fontFamilyBox_,
+           SIGNAL( currentFontChanged( const QFont& ) ),
+           this,
+           SLOT( update_font_selectors_( const QFont& ) ) );
 
-  connect(fontFamilyBox_,
-          SIGNAL(currentFontChanged(const QFont&)),
-          this,
-          SLOT(update_current_font_()));
+  connect( fontFamilyBox_,
+           SIGNAL( currentFontChanged( const QFont& ) ),
+           this,
+           SLOT( update_current_font_() ) );
 
 
   /* font style selector */
   QHBoxLayout *fontStyleLayout = new QHBoxLayout;
-  QLabel* fontStyleLabel =  new QLabel(tr("Style"));
-  fontStyleLayout->addWidget(fontStyleLabel);
-  fontStyleLayout->addWidget(fontStyleBox_);
+  QLabel* fontStyleLabel =  new QLabel( tr( "Style" ) );
+  fontStyleLayout->addWidget( fontStyleLabel );
+  fontStyleLayout->addWidget( fontStyleBox_ );
 
-  connect(fontStyleBox_,
-          SIGNAL(activated(int)),
-          this,
-          SLOT(update_current_font_()));
+  connect( fontStyleBox_,
+           SIGNAL( activated( int ) ),
+           this,
+           SLOT( update_current_font_() ) );
 
 
   /* font size selector */
   QHBoxLayout *fontSizeLayout = new QHBoxLayout;
-  QLabel* fontSizeLabel =  new QLabel(tr("Point size"));
-  fontSizeLayout->addWidget(fontSizeLabel);
-  fontSizeLayout->addWidget(fontSizeBox_);
+  QLabel* fontSizeLabel =  new QLabel( tr( "Point size" ) );
+  fontSizeLayout->addWidget( fontSizeLabel );
+  fontSizeLayout->addWidget( fontSizeBox_ );
 
-  connect(fontSizeBox_,
-          SIGNAL(activated(int)),
-          this,
-          SLOT(update_current_font_()));
+  connect( fontSizeBox_,
+           SIGNAL( activated( int ) ),
+           this,
+           SLOT( update_current_font_() ) );
 
 
   /* example String */
-  exampleText_->setReadOnly(true);
+  exampleText_->setReadOnly( true );
 //  exampleText_->setFixedHeight(50);
-  exampleText_->setFont(currentFont_);
-  exampleText_->setText("Thanks for sharing!");
-  
-  mainLayout->addLayout(fontFamilyLayout);
-  mainLayout->addLayout(fontStyleLayout);  
-  mainLayout->addLayout(fontSizeLayout);
-  mainLayout->addWidget(exampleText_);
-  
-  fontWidget->setLayout(mainLayout);
-  tabWidget_->addTab(fontWidget, tr("Canvas Font"));
+  exampleText_->setFont( currentFont_ );
+  exampleText_->setText( "Thanks for sharing!" );
+
+  mainLayout->addLayout( fontFamilyLayout );
+  mainLayout->addLayout( fontStyleLayout );
+  mainLayout->addLayout( fontSizeLayout );
+  mainLayout->addWidget( exampleText_ );
+
+  fontWidget->setLayout( mainLayout );
+  tabWidget_->addTab( fontWidget, tr( "Canvas Font" ) );
 
   /* initialize the whole bunch */
-  update_font_selectors_(currentFont_);
+  update_font_selectors_( currentFont_ );
 }
 
 
