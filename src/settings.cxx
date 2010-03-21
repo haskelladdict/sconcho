@@ -37,7 +37,7 @@ void initialize_settings(QSettings& settings)
 {
   /* font properties for canvas text */
   QString preferenceFont = settings.value("global/font").toString();
-  if (preferenceFont == "")
+  if (preferenceFont.isEmpty())
   {
     settings.setValue("global/font","Arial,10,-1,5,50,0,0,0,0,0");
   }
@@ -56,6 +56,13 @@ void initialize_settings(QSettings& settings)
   {
     settings.setValue("global/export_legend","true");
   }
+
+  /* default settings for aspect ratio of grid cells */
+//  QString cellAspectRatioWidth = 
+//    settings.value("global/cell_aspect_ratio_width").toString();
+//  if (cellAspectRatioWidth == "")
+//  {
+
 }
 
 
