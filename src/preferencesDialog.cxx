@@ -30,13 +30,14 @@
 #include <QList>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSpinBox>
 #include <QString>
 #include <QStringList>
 #include <QVBoxLayout>
 
 /** local headers */
 #include "basicDefs.h"
-#include "helperFunctions.h"
+//#include "helperFunctions.h"
 #include "preferencesDialog.h"
 #include "settings.h"
 
@@ -58,6 +59,8 @@ PreferencesDialog::PreferencesDialog( QSettings& theSettings,
     QDialog( myParent ),
     settings_( theSettings ),
     currentFont_( extract_font_from_settings( theSettings ) ),
+    currentCellDimensions_( extract_cell_dimensions_from_settings(
+                              theSettings ) ),
     tabWidget_( new QTabWidget ),
     fontFamilyBox_( new QFontComboBox ),
     fontStyleBox_( new QComboBox ),
@@ -84,6 +87,7 @@ bool PreferencesDialog::Init()
   /* create the interface */
   create_main_layout_();
   create_font_tab_();
+  create_cell_dimensions_tab_();
 
   exec();
   return true;
@@ -122,7 +126,13 @@ bool PreferencesDialog::Init()
 //-------------------------------------------------------------
 void PreferencesDialog::ok_clicked_()
 {
+  /* update font */
   set_font_string( settings_, currentFont_.toString() );
+
+  /* update cell dimensions */
+  set_cell_dimensions( settings_, QSize( cellWidthSelector_->value(),
+                                         cellHeightSelector_->value() ) );
+
   close();
 }
 
@@ -142,7 +152,6 @@ void PreferencesDialog::update_current_font_()
   QFontDatabase dataBase;
   currentFont_ = dataBase.font( fontFamily, fontStyle, fontSize );
 
-  qDebug() << currentFont_.toString();
   exampleText_->setFont( currentFont_ );
 }
 
@@ -234,7 +243,7 @@ void PreferencesDialog::create_main_layout_()
 void PreferencesDialog::create_font_tab_()
 {
   QGroupBox* fontWidget = new QGroupBox( this );
-  QVBoxLayout *mainLayout = new QVBoxLayout;
+  QVBoxLayout* mainLayout = new QVBoxLayout;
 
   /* font family selector */
   QHBoxLayout *fontFamilyLayout = new QHBoxLayout;
@@ -281,7 +290,6 @@ void PreferencesDialog::create_font_tab_()
 
   /* example String */
   exampleText_->setReadOnly( true );
-//  exampleText_->setFixedHeight(50);
   exampleText_->setFont( currentFont_ );
   exampleText_->setText( "Thanks for sharing!" );
 
@@ -297,6 +305,45 @@ void PreferencesDialog::create_font_tab_()
   update_font_selectors_( currentFont_ );
 }
 
+
+
+//------------------------------------------------------------
+// create a tab for selecting the cell width and height
+//------------------------------------------------------------
+void PreferencesDialog::create_cell_dimensions_tab_()
+{
+  QGroupBox* cellDimWidget = new QGroupBox( this );
+  QVBoxLayout* mainLayout = new QVBoxLayout;
+
+  /* cell dimension selector */
+  QHBoxLayout* cellWidthLayout = new QHBoxLayout;
+  QLabel* cellWidthLabel = new QLabel( tr( "grid cell width" ) );
+  cellWidthSelector_ = new QSpinBox;
+  cellWidthSelector_->setRange( 0, 400 );
+  cellWidthSelector_->setValue( currentCellDimensions_.width() );
+
+  cellWidthLayout->addWidget( cellWidthLabel );
+  cellWidthLayout->addStretch( 1 );
+  cellWidthLayout->addWidget( cellWidthSelector_ );
+
+  QHBoxLayout* cellHeightLayout = new QHBoxLayout;
+  QLabel* cellHeightLabel = new QLabel( tr( "grid cell height" ) );
+  cellHeightSelector_ = new QSpinBox;
+  cellHeightSelector_->setRange( 0, 400 );
+  cellHeightSelector_->setValue( currentCellDimensions_.height() );
+
+  cellHeightLayout->addWidget( cellHeightLabel );
+  cellHeightLayout->addStretch( 1 );
+  cellHeightLayout->addWidget( cellHeightSelector_ );
+
+  /* assemble layout */
+  mainLayout->addLayout( cellWidthLayout );
+  mainLayout->addLayout( cellHeightLayout );
+  mainLayout->addStretch( 1 );
+
+  cellDimWidget->setLayout( mainLayout );
+  tabWidget_->addTab( cellDimWidget, tr( "Cell Dimensions" ) );
+}
 
 
 

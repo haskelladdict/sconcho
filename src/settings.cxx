@@ -72,13 +72,32 @@ void initialize_settings( QSettings& settings )
 
 
 /*******************************************************************
- * implementations of accessors for some settings
+ * accessor function for font settings
  *******************************************************************/
-QString get_font_string( const QSettings& settings )
+QFont extract_font_from_settings( const QSettings& settings )
 {
   QString preferenceFont = settings.value( "global/font" ).toString();
-  assert( preferenceFont != "" );
-  return preferenceFont;
+  assert( !preferenceFont.isNull );
+
+  QFont theFont;
+  theFont.fromString( preferenceFont );
+  return theFont;
+}
+
+
+
+/*******************************************************************
+ * accessor function for cell dimension settings
+ *******************************************************************/
+QSize extract_cell_dimensions_from_settings( const QSettings& settings )
+{
+  QString cellWidth = settings.value( "global/cell_width" ).toString();
+  assert( !cellWidth.isNull() );
+
+  QString cellHeight = settings.value( "global/cell_height" ).toString();
+  assert( !cellHeight.isNull() );
+
+  return QSize( cellWidth.toInt(), cellHeight.toInt() );
 }
 
 
@@ -90,6 +109,23 @@ void set_font_string( QSettings& settings, const QString& fontString )
 {
   settings.setValue( "global/font", fontString );
 }
+
+
+
+/************************************************************
+ * set new cell dimensions
+ ***********************************************************/
+void set_cell_dimensions( QSettings& settings, const QSize& cellSize )
+{
+  QString cellWidth;
+  cellWidth.setNum( cellSize.width() );
+  settings.setValue( "global/cell_width", cellWidth );
+
+  QString cellHeight;
+  cellHeight.setNum( cellSize.height() );
+  settings.setValue( "global/cell_height", cellHeight );
+}
+
 
 
 QT_END_NAMESPACE

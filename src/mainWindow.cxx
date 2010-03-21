@@ -657,7 +657,8 @@ void MainWindow::create_graphics_scene_()
   /* create canvas */
   QPoint origin( 0, 0 );
   canvas_ = new GraphicsScene( origin, gridSize,
-                               QSize( GRID_CELL_WIDTH, GRID_CELL_HEIGHT ), settings_, defaultSymbol, this );
+                               extract_cell_dimensions_from_settings( settings_ ),
+                               settings_, defaultSymbol, this );
   if ( !canvas_->Init() ) {
     qDebug() << "Failed to initialize canvas";
   }

@@ -19,7 +19,9 @@
 ****************************************************************/
 
 /* Qt includes */
+#include <QFont>
 #include <QString>
+#include <QSize>
 
 
 QT_BEGIN_NAMESPACE
@@ -35,17 +37,31 @@ class QSettings;
 void initialize_settings( QSettings& settings );
 
 
-/***********************************************************
- * accessors for settings
+
+/*******************************************************************
+ * accessor function for font settings
+ *******************************************************************/
+QFont extract_font_from_settings( const QSettings& settings );
+
+
+
+/*******************************************************************
+ * accessor function for cell dimension settings
+ *******************************************************************/
+QSize extract_cell_dimensions_from_settings( const QSettings& settings );
+
+
+/************************************************************
+ * set a new font string
  ***********************************************************/
-QString get_font_string( const QSettings& settings );
+void set_font_string( QSettings& settings, const QString& fontString );
 
 
 
 /************************************************************
- * setters for settings
+ * set new cell dimensions
  ***********************************************************/
-void set_font_string( QSettings& settings, const QString& fontString );
+void set_cell_dimensions( QSettings& settings, const QSize& cellSize );
 
 
 QT_END_NAMESPACE

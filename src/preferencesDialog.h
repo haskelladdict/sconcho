@@ -37,6 +37,7 @@ class QFont;
 class QFontComboBox;
 class QTabWidget;
 class QLineEdit;
+class QSpinBox;
 
 
 /**************************************************************
@@ -79,6 +80,7 @@ private:
 
   /* current selections */
   QFont currentFont_;
+  QSize currentCellDimensions_;
 
   /* widgets */
   QTabWidget* tabWidget_;
@@ -86,10 +88,13 @@ private:
   QComboBox* fontStyleBox_;
   QComboBox* fontSizeBox_;
   QLineEdit* exampleText_;
+  QSpinBox* cellWidthSelector_;
+  QSpinBox* cellHeightSelector_;
 
   /* interface creation functions */
   void create_main_layout_();
   void create_font_tab_();
+  void create_cell_dimensions_tab_();
 };
 
 

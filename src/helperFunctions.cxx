@@ -34,7 +34,7 @@
 
 QT_BEGIN_NAMESPACE
 
-
+#if 0
 //---------------------------------------------------------------
 // this function returns a QFont object with the currently
 // selected font
@@ -46,6 +46,7 @@ QFont extract_font_from_settings( const QSettings& settings )
 
   return theFont;
 }
+#endif
 
 //---------------------------------------------------------------
 // given a list of QGraphicsItems returns the maximum y

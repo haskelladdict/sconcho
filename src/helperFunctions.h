@@ -41,14 +41,13 @@ class QGraphicsItem;
 class QGraphicsScene;
 class QSettings;
 
-
+#if 0
 //---------------------------------------------------------------
 // this function returns a QFont object with the currently
 // selected font
 //---------------------------------------------------------------
 QFont extract_font_from_settings( const QSettings& settings );
-
-
+#endif
 
 //---------------------------------------------------------------
 // given a list of QGraphicsItems returns the maximum y
