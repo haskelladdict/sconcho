@@ -126,7 +126,7 @@ bool MainWindow::Init()
   connect( this,
            SIGNAL( settings_changed() ),
            canvasView_,
-           SLOT( update() )
+           SLOT( repaint() )
          );
 
   connect( canvas_,

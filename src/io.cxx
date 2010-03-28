@@ -320,7 +320,7 @@ CanvasIOWriter::CanvasIOWriter( const GraphicsScene* scene,
     :
     ourScene_( scene ),
     projectColors_( colors ),
-    settings_(settings),
+    settings_( settings ),
     fileName_( theName )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -389,7 +389,7 @@ bool CanvasIOWriter::save()
   writeDoc_.save( *writeStream_, 4 );
 
   return ( statusPatternGridItems && statusLegendEntryPos
-           && statusColors && statusCellDimensions 
+           && statusColors && statusCellDimensions
            && statusTextFont );
 }
 
@@ -558,8 +558,8 @@ bool CanvasIOWriter::save_gridCellDimensions_( QDomElement& root )
   QDomElement mainTag = writeDoc_.createElement( "gridCellDimensions" );
   root.appendChild( mainTag );
 
-  QSize cellDimensions = extract_cell_dimensions_from_settings(settings_);
-  
+  QSize cellDimensions = extract_cell_dimensions_from_settings( settings_ );
+
   // write width
   QDomElement widthTag = writeDoc_.createElement( "width" );
   mainTag.appendChild( widthTag );
@@ -585,15 +585,15 @@ bool CanvasIOWriter::save_textFont_( QDomElement& root )
   QDomElement mainTag = writeDoc_.createElement( "textFont" );
   root.appendChild( mainTag );
 
-  QFont theFont = extract_font_from_settings(settings_);
-  
+  QFont theFont = extract_font_from_settings( settings_ );
+
   QDomElement fontTag = writeDoc_.createElement( "name" );
   mainTag.appendChild( fontTag );
   fontTag.appendChild( writeDoc_.createTextNode( theFont.toString() ) );
 
   return true;
 }
- 
+
 
 
 //---------------------------------------------------------------
@@ -672,7 +672,7 @@ bool CanvasIOReader::read()
   if ( !readDoc_.setContent( filePtr_, true, &errStr, &errLine, &errCol ) ) {
     QMessageBox::critical( 0, "sconcho DOM Parser",
                            QString( "Error parsing\n%1\nat line %2 column %3; %4" )
-                           .arg( fileName_ ) .arg( errLine ) .arg( errCol ) 
+                           .arg( fileName_ ) .arg( errLine ) .arg( errCol )
                            .arg( errStr ) );
 
     return false;
@@ -881,8 +881,8 @@ bool CanvasIOReader::parse_projectColors_( const QDomNode& itemNode )
 //-------------------------------------------------------------
 // read the list of dimensions of the grid cells (if present)
 //-------------------------------------------------------------
-bool CanvasIOReader::parse_gridCellDimensions_( 
-    const QDomNode& itemNode )
+bool CanvasIOReader::parse_gridCellDimensions_(
+  const QDomNode& itemNode )
 {
   int width    = 0;
   int height   = 0;
@@ -894,7 +894,7 @@ bool CanvasIOReader::parse_gridCellDimensions_(
       QDomNode childNode( node.firstChild() );
       width = childNode.toText().data().toInt();
       allFound++;
-    } else if ( node.toElement().tagName() == "height" ) { 
+    } else if ( node.toElement().tagName() == "height" ) {
       QDomNode childNode( node.firstChild() );
       height = childNode.toText().data().toInt();
       allFound++;
@@ -906,7 +906,7 @@ bool CanvasIOReader::parse_gridCellDimensions_(
   /* only adjust dimensions if we found one width and
    * height */
   if ( allFound == 2 ) {
-    set_cell_dimensions(settings_, QSize(width, height)); 
+    set_cell_dimensions( settings_, QSize( width, height ) );
   }
 
   return true;
@@ -923,7 +923,7 @@ bool CanvasIOReader::parse_textFont_( const QDomNode& itemNode )
   while ( !node.isNull() ) {
     if ( node.toElement().tagName() == "name" ) {
       QDomNode childNode( node.firstChild() );
-      set_font_string(settings_, childNode.toText().data() );
+      set_font_string( settings_, childNode.toText().data() );
     }
 
     node = node.nextSibling();
