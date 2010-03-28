@@ -34,6 +34,7 @@
 #include <QProcess>
 #include <QPrintDialog>
 #include <QRegExp>
+#include <QSettings>
 #include <QString>
 #include <QStringList>
 #include <QTextStream>
@@ -43,10 +44,11 @@
 #include "basicDefs.h"
 #include "graphicsScene.h"
 #include "helperFunctions.h"
+#include "io.h"
 #include "legendItem.h"
 #include "legendLabel.h"
 #include "patternGridItem.h"
-#include "io.h"
+#include "settings.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -313,10 +315,12 @@ void print_scene( GraphicsScene* scene )
 //-------------------------------------------------------------
 CanvasIOWriter::CanvasIOWriter( const GraphicsScene* scene,
                                 const QList<QColor>& colors,
+                                const QSettings& settings,
                                 const QString& theName )
     :
     ourScene_( scene ),
     projectColors_( colors ),
+    settings_(settings),
     fileName_( theName )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
@@ -376,14 +380,15 @@ bool CanvasIOWriter::save()
 
   /* add actual canvas items */
   bool statusPatternGridItems = save_patternGridItems_( root );
-  bool statusLegendEntryPos = save_legendInfo_( root );
-  bool statusColors = save_colorInfo_( root );
+  bool statusLegendEntryPos   = save_legendInfo_( root );
+  bool statusColors           = save_colorInfo_( root );
+  bool statusCellDimensions   = save_gridCellDimensions_( root );
 
   /* write it to stream */
   writeDoc_.save( *writeStream_, 4 );
 
   return ( statusPatternGridItems && statusLegendEntryPos
-           && statusColors );
+           && statusColors && statusCellDimensions );
 }
 
 
@@ -542,6 +547,34 @@ bool CanvasIOWriter::save_colorInfo_( QDomElement& root )
 }
 
 
+//-------------------------------------------------------------
+// save the currently defined custom grid cell dimensions
+//-------------------------------------------------------------
+bool CanvasIOWriter::save_gridCellDimensions_( QDomElement& root )
+{
+  QDomElement mainTag = writeDoc_.createElement( "gridCellDimensions" );
+  root.appendChild( mainTag );
+
+  QSize cellDimensions = extract_cell_dimensions_from_settings(settings_);
+  
+  // write width
+  QDomElement widthTag = writeDoc_.createElement( "width" );
+  mainTag.appendChild( widthTag );
+  QString helper;
+  helper.setNum( cellDimensions.width() );
+  widthTag.appendChild( writeDoc_.createTextNode( helper ) );
+
+  // write height
+  QDomElement heightTag = writeDoc_.createElement( "height" );
+  mainTag.appendChild( heightTag );
+  helper.setNum( cellDimensions.height() );
+  heightTag.appendChild( writeDoc_.createTextNode( helper ) );
+
+  return true;
+}
+
+
+
 //---------------------------------------------------------------
 //
 //
@@ -561,10 +594,12 @@ bool CanvasIOWriter::save_colorInfo_( QDomElement& root )
 // constructor
 //-------------------------------------------------------------
 CanvasIOReader::CanvasIOReader( const QString& theName,
-                                const QList<KnittingSymbolPtr>& syms )
+                                const QList<KnittingSymbolPtr>& syms,
+                                QSettings& settings )
     :
     fileName_( theName ),
-    allSymbols_( syms )
+    allSymbols_( syms ),
+    settings_( settings )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -638,6 +673,8 @@ bool CanvasIOReader::read()
       }
     } else if ( node.toElement().tagName() == "projectColors" ) {
       parseStatus &= parse_projectColors_( node );
+    } else if ( node.toElement().tagName() == "gridCellDimensions" ) {
+      parseStatus &= parse_gridCellDimensions_( node );
     }
 
     node = node.nextSibling();
@@ -809,6 +846,42 @@ bool CanvasIOReader::parse_projectColors_( const QDomNode& itemNode )
     }
 
     node = node.nextSibling();
+  }
+
+  return true;
+}
+
+
+
+//-------------------------------------------------------------
+// read the list of dimensions of the grid cells (if present)
+//-------------------------------------------------------------
+bool CanvasIOReader::parse_gridCellDimensions_( 
+    const QDomNode& itemNode )
+{
+  int width    = 0;
+  int height   = 0;
+  int allFound = 0;
+
+  QDomNode node = itemNode.firstChild();
+  while ( !node.isNull() ) {
+    if ( node.toElement().tagName() == "width" ) {
+      QDomNode childNode( node.firstChild() );
+      width = childNode.toText().data().toInt();
+      allFound++;
+    } else if ( node.toElement().tagName() == "height" ) { 
+      QDomNode childNode( node.firstChild() );
+      height = childNode.toText().data().toInt();
+      allFound++;
+    }
+
+    node = node.nextSibling();
+  }
+
+  /* only adjust dimensions if we found one width and
+   * height */
+  if ( allFound == 2 ) {
+    set_cell_dimensions(settings_, QSize(width, height)); 
   }
 
   return true;

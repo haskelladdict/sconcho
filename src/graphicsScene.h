@@ -128,6 +128,7 @@ public slots:
   void mark_active_cells_with_rectangle();
   void update_after_settings_change();
   void toggle_legend_visibility();
+  void load_settings();
 
 
 protected:
@@ -165,7 +166,8 @@ private:
   QPoint origin_;
   int numCols_;
   int numRows_;
-  QSize cellAspectRatio_;
+  QSize gridCellDimensions_;
+  QFont textFont_;
 
 
   /* holds the index of the currently selected column/row if any */

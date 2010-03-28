@@ -75,7 +75,8 @@ GraphicsScene::GraphicsScene( const QPoint& anOrigin,
     origin_( anOrigin ),
     numCols_( gridDim.width() ),
     numRows_( gridDim.height() ),
-    cellAspectRatio_( extract_cell_dimensions_from_settings( aSetting ) ),
+    gridCellDimensions_( extract_cell_dimensions_from_settings( aSetting ) ),
+    textFont_( extract_font_from_settings( aSetting ) ),
     selectedCol_( UNSELECTED ),
     selectedRow_( UNSELECTED ),
     settings_( aSetting ),
@@ -169,7 +170,7 @@ void GraphicsScene::load_new_canvas(
     maxRow = qMax( row, maxRow );
 
     PatternGridItem* item =
-      new PatternGridItem( rawItem->dimension, cellAspectRatio_, col, row,
+      new PatternGridItem( rawItem->dimension, gridCellDimensions_, col, row,
                            this, rawItem->backgroundColor );
     item->Init();
     item->setPos( compute_cell_origin_( col, row ) );
@@ -378,11 +379,11 @@ QPoint GraphicsScene::get_grid_center() const
   /* shift by half a cell if the number of rows and/or cells
    * is uneven */
   if ( numCols_ % 2 != 0 ) {
-    theCenter.setX( theCenter.x() + cellAspectRatio_.width() / 2.0 );
+    theCenter.setX( theCenter.x() + gridCellDimensions_.width() / 2.0 );
   }
 
   if ( numRows_ % 2 != 0 ) {
-    theCenter.setY( theCenter.y() + cellAspectRatio_.height() / 2.0 );
+    theCenter.setY( theCenter.y() + gridCellDimensions_.height() / 2.0 );
   }
 
   return theCenter;
@@ -486,7 +487,7 @@ void GraphicsScene::grid_item_reset( PatternGridItem* anItem )
   /* start filling the hole with new cells */
   int numNewCells = dim.width();
   for ( int i = 0; i < numNewCells; ++i ) {
-    PatternGridItem* item = new PatternGridItem( QSize( 1, 1 ), cellAspectRatio_,
+    PatternGridItem* item = new PatternGridItem( QSize( 1, 1 ), gridCellDimensions_,
         column + i, row, this );
     item->Init();
     item->insert_knitting_symbol( defaultSymbol_ );
@@ -575,15 +576,23 @@ void GraphicsScene::mark_active_cells_with_rectangle()
 
 
 //------------------------------------------------------------
+// load canvas' chache with updated settings
+//------------------------------------------------------------
+void GraphicsScene::load_settings()
+{
+  gridCellDimensions_ = extract_cell_dimensions_from_settings( settings_ );
+  textFont_ = extract_font_from_settings( settings_ );
+}
+
+
+
+//------------------------------------------------------------
 // update our current canvas after a change in settings
 //------------------------------------------------------------
 void GraphicsScene::update_after_settings_change()
 {
-  int oldCellHeight = cellAspectRatio_.height();
-
-  /* update the aspect ratio and redraw all existing grid cells
-   * so they pick up their correct size */
-  cellAspectRatio_ = extract_cell_dimensions_from_settings( settings_ );
+  int oldCellHeight = gridCellDimensions_.height();
+  load_settings();
 
   QList<QGraphicsItem*> allItems( items() );
   foreach( QGraphicsItem* anItem, allItems ) {
@@ -596,7 +605,7 @@ void GraphicsScene::update_after_settings_change()
   }
 
   /* shift all legend items and rescale the svg containing items */
-  int cellHeightChange = cellAspectRatio_.height() - oldCellHeight;
+  int cellHeightChange = gridCellDimensions_.height() - oldCellHeight;
   shift_legend_items_vertically_( 0, cellHeightChange*numRows_, cellHeightChange );
   foreach( QGraphicsItem* anItem, get_all_svg_legend_items_() ) {
     LegendItem* cell = qgraphicsitem_cast<LegendItem*>( anItem );
@@ -706,7 +715,7 @@ void GraphicsScene::delete_col_()
   }
 
   /* update position of legend items */
-  shift_legend_items_horizontally_( selectedCol_, -cellAspectRatio_.width() );
+  shift_legend_items_horizontally_( selectedCol_, -gridCellDimensions_.width() );
 
   /* unselect row and update row counter */
   numCols_ = numCols_ - 1;
@@ -766,7 +775,7 @@ void GraphicsScene::delete_row_()
   }
 
   /* update position of legend items */
-  shift_legend_items_vertically_( selectedRow_, -cellAspectRatio_.height() );
+  shift_legend_items_vertically_( selectedRow_, -gridCellDimensions_.height() );
 
   /* unselect row and update row counter */
   numRows_ = numRows_ - 1;
@@ -859,7 +868,7 @@ void GraphicsScene::insert_col_( int aCol )
   for ( int row = 0; row < numRows_; ++row ) {
     PatternGridItem* anItem = new PatternGridItem(
       QSize( 1, 1 ),
-      cellAspectRatio_,
+      gridCellDimensions_,
       aCol,
       row,
       this,
@@ -921,7 +930,7 @@ void GraphicsScene::insert_row_( int aRow )
   for ( int column = 0; column < numCols_; ++column ) {
     PatternGridItem* anItem = new PatternGridItem(
       QSize( 1, 1 ),
-      cellAspectRatio_,
+      gridCellDimensions_,
       column,
       aRow + 1,
       this,
@@ -1026,7 +1035,7 @@ void GraphicsScene::notify_legend_of_item_addition_(
     int yPos = get_next_legend_items_y_position_();
 
     LegendItem* newLegendItem = new LegendItem( symbol->dim(), tag,
-        cellAspectRatio_, aColor );
+        gridCellDimensions_, aColor );
     connect( newLegendItem,
              SIGNAL( delete_from_legend( KnittingSymbolPtr, QColor, QString ) ),
              this,
@@ -1042,15 +1051,14 @@ void GraphicsScene::notify_legend_of_item_addition_(
 
     /* add label */
     QString description = get_symbol_description_( symbol, colorName );
-    int xPosLabel = ( symbol->dim().width() + 0.5 ) * cellAspectRatio_.width()
+    int xPosLabel = ( symbol->dim().width() + 0.5 ) * gridCellDimensions_.width()
                     + origin_.x();
-    QFont currentFont = extract_font_from_settings( settings_ );
 
     LegendLabel* newTextItem =
       new LegendLabel( fullName, description );
     newTextItem->Init();
     newTextItem->setPos( xPosLabel, yPos );
-    newTextItem->setFont( currentFont );
+    newTextItem->setFont( textFont_ );
     newTextItem->setFlag( QGraphicsItem::ItemIsMovable );
     newTextItem->setZValue( 1 );
     addItem( newTextItem );
@@ -1235,7 +1243,7 @@ void GraphicsScene::try_place_knitting_symbol_()
 
       PatternGridItem* anItem = new PatternGridItem(
         QSize( aWidth, 1 ),
-        cellAspectRatio_,
+        gridCellDimensions_,
         column,
         row,
         this,
@@ -1261,7 +1269,7 @@ void GraphicsScene::try_place_knitting_symbol_()
 int GraphicsScene::compute_horizontal_label_shift_( int aNum,
     int fontSize ) const
 {
-  double size = cellAspectRatio_.width() * 0.5;
+  double size = gridCellDimensions_.width() * 0.5;
   double numWidth = fontSize * 0.5;
   double count = 0;
   if ( aNum < 10 ) {
@@ -1417,8 +1425,8 @@ QPair<int, int> GraphicsScene::get_cell_coords_(
   qreal xPosRel = mousePos.x() - origin_.x();
   qreal yPosRel = mousePos.y() - origin_.y();
 
-  int column = static_cast<int>( floor( xPosRel / cellAspectRatio_.width() ) );
-  int row    = static_cast<int>( floor( yPosRel / cellAspectRatio_.height() ) );
+  int column = static_cast<int>( floor( xPosRel / gridCellDimensions_.width() ) );
+  int row    = static_cast<int>( floor( yPosRel / gridCellDimensions_.height() ) );
 
   return QPair<int, int>( column, row );
 }
@@ -1435,15 +1443,15 @@ QPair<int, int> GraphicsScene::get_cell_coords_(
 void GraphicsScene::select_row_( int rowId )
 {
   /* selector box dimensions */
-  int xShift    = static_cast<int>( cellAspectRatio_.width() * 0.25 );
-  int yShift    = static_cast<int>( cellAspectRatio_.height() * 0.25 );
-  int xHalfCell = static_cast<int>( cellAspectRatio_.width() * 0.5 );
-  int yHalfCell = static_cast<int>( cellAspectRatio_.height() * 0.5 );
+  int xShift    = static_cast<int>( gridCellDimensions_.width() * 0.25 );
+  int yShift    = static_cast<int>( gridCellDimensions_.height() * 0.25 );
+  int xHalfCell = static_cast<int>( gridCellDimensions_.width() * 0.5 );
+  int yHalfCell = static_cast<int>( gridCellDimensions_.height() * 0.5 );
 
   QPoint boxOrigin( origin_.x() + xShift,
-                    rowId * cellAspectRatio_.height() + yShift );
+                    rowId * gridCellDimensions_.height() + yShift );
 
-  QSize boxDim(( numCols_ - 1 ) * cellAspectRatio_.width() + xHalfCell,
+  QSize boxDim(( numCols_ - 1 ) * gridCellDimensions_.width() + xHalfCell,
                yHalfCell );
 
   select_region( QRect( boxOrigin, boxDim ) );
@@ -1461,13 +1469,13 @@ void GraphicsScene::select_row_( int rowId )
 void GraphicsScene::select_column_( int colId )
 {
   /* selector box dimensions */
-  int xShift    = static_cast<int>( cellAspectRatio_.width() * 0.25 );
-  int yShift    = static_cast<int>( cellAspectRatio_.height() * 0.25 );
-  int xHalfCell = static_cast<int>( cellAspectRatio_.width() * 0.5 );
-  int yHalfCell = static_cast<int>( cellAspectRatio_.height() * 0.5 );
+  int xShift    = static_cast<int>( gridCellDimensions_.width() * 0.25 );
+  int yShift    = static_cast<int>( gridCellDimensions_.height() * 0.25 );
+  int xHalfCell = static_cast<int>( gridCellDimensions_.width() * 0.5 );
+  int yHalfCell = static_cast<int>( gridCellDimensions_.height() * 0.5 );
 
-  QPoint boxOrigin( colId * cellAspectRatio_.width() + xShift, yShift );
-  QSize boxDim( xHalfCell, ( numRows_ - 1 ) * cellAspectRatio_.height()
+  QPoint boxOrigin( colId * gridCellDimensions_.width() + xShift, yShift );
+  QSize boxDim( xHalfCell, ( numRows_ - 1 ) * gridCellDimensions_.height()
                 + yHalfCell );
 
   /* select items */
@@ -1482,8 +1490,8 @@ void GraphicsScene::select_column_( int colId )
 //----------------------------------------------------------------
 QPoint GraphicsScene::compute_cell_origin_( int col, int row ) const
 {
-  return QPoint( origin_.x() + col * cellAspectRatio_.width(),
-                 origin_.y() + row * cellAspectRatio_.height() );
+  return QPoint( origin_.x() + col * gridCellDimensions_.width(),
+                 origin_.y() + row * gridCellDimensions_.height() );
 }
 
 
@@ -1576,7 +1584,7 @@ void GraphicsScene::create_pattern_grid_()
   for ( int col = 0; col < numCols_; ++col ) {
     for ( int row = 0; row < numRows_; ++row ) {
       PatternGridItem* item =
-        new PatternGridItem( QSize( 1, 1 ), cellAspectRatio_, col, row, this );
+        new PatternGridItem( QSize( 1, 1 ), gridCellDimensions_, col, row, this );
       item->Init();
       item->setPos( compute_cell_origin_( col, row ) );
       item->insert_knitting_symbol( defaultSymbol_ );
@@ -1594,9 +1602,6 @@ void GraphicsScene::create_pattern_grid_()
 //-------------------------------------------------------------
 void GraphicsScene::create_grid_labels_()
 {
-  /* retrieve current canvas font */
-  QFont currentFont = extract_font_from_settings( settings_ );
-
   /* remove all existing labels if there are any */
   QList<QGraphicsItem*> allItems( items() );
   QList<PatternGridLabel*> allLabels;
@@ -1616,7 +1621,7 @@ void GraphicsScene::create_grid_labels_()
 
   /* add new column labels */
   QString label;
-  qreal yPos = origin_.y() + numRows_ * cellAspectRatio_.height() + 1;
+  qreal yPos = origin_.y() + numRows_ * gridCellDimensions_.height() + 1;
 
   for ( int col = 0; col < numCols_; ++col ) {
     int colNum = numCols_ - col;
@@ -1626,9 +1631,9 @@ void GraphicsScene::create_grid_labels_()
     );
 
     int shift =
-      compute_horizontal_label_shift_( colNum, currentFont.pointSize() );
-    text->setPos( origin_.x() + col*cellAspectRatio_.width() + shift, yPos );
-    text->setFont( currentFont );
+      compute_horizontal_label_shift_( colNum, textFont_.pointSize() );
+    text->setPos( origin_.x() + col*gridCellDimensions_.width() + shift, yPos );
+    text->setFont( textFont_ );
     addItem( text );
   }
 
@@ -1636,7 +1641,7 @@ void GraphicsScene::create_grid_labels_()
   /* add new row labels
    * FIXME: the exact placement of the labels is hand-tuned
    * and probably not very robust */
-  QFontMetrics metric( currentFont );
+  QFontMetrics metric( textFont_ );
   int fontHeight = metric.ascent();
   for ( int row = 0; row < numRows_; ++row ) {
     PatternGridLabel* text = new PatternGridLabel(
@@ -1644,11 +1649,11 @@ void GraphicsScene::create_grid_labels_()
       PatternGridLabel::RowLabel
     );
 
-    text->setPos( origin_.x() + ( numCols_*cellAspectRatio_.width() )
-                  + 0.1*cellAspectRatio_.width(),
-                  origin_.y() + row*cellAspectRatio_.height()
-                  + 0.5*( cellAspectRatio_.height() - 1.8*fontHeight ) );
-    text->setFont( currentFont );
+    text->setPos( origin_.x() + ( numCols_*gridCellDimensions_.width() )
+                  + 0.1*gridCellDimensions_.width(),
+                  origin_.y() + row*gridCellDimensions_.height()
+                  + 0.5*( gridCellDimensions_.height() - 1.8*fontHeight ) );
+    text->setFont( textFont_ );
     addItem( text );
   }
 }
@@ -1694,12 +1699,12 @@ void GraphicsScene::expand_grid_( int colPivot, int rowPivot )
 
   /* adjust the row/col count and also shift the legend items */
   if ( colPivot != NOSHIFT ) {
-    shift_legend_items_horizontally_( colPivot, cellAspectRatio_.width() );
+    shift_legend_items_horizontally_( colPivot, gridCellDimensions_.width() );
     numCols_ += 1;
   }
 
   if ( rowPivot != NOSHIFT ) {
-    shift_legend_items_vertically_( rowPivot, cellAspectRatio_.height() );
+    shift_legend_items_vertically_( rowPivot, gridCellDimensions_.height() );
     numRows_ += 1;
   }
 }
@@ -1820,16 +1825,16 @@ QRect GraphicsScene::find_bounding_rectangle_(
   int lowerRightCellHeight = lastRow.last()->dim().height();
 
   /* compute coordinates */
-  QPoint upperLeftCorner( origin_.x() + upperLeftColIndex * cellAspectRatio_.width(),
+  QPoint upperLeftCorner( origin_.x() + upperLeftColIndex * gridCellDimensions_.width(),
                           origin_.y() + upperLeftRowIndex
-                          * cellAspectRatio_.height() );
+                          * gridCellDimensions_.height() );
 
   QPoint lowerRightCorner( origin_.x() - 1
                            + ( lowerRightColIndex + lowerRightCellWidth )
-                           * cellAspectRatio_.width(),
+                           * gridCellDimensions_.width(),
                            origin_.y() - 1
                            + ( lowerRightRowIndex + lowerRightCellHeight )
-                           * cellAspectRatio_.height() );
+                           * gridCellDimensions_.height() );
 
   return QRect( upperLeftCorner, lowerRightCorner );
 }
@@ -2046,10 +2051,10 @@ int GraphicsScene::get_next_legend_items_y_position_() const
 
   int yMaxLegend = static_cast<int>(
                      floor( get_max_y_coordinate( allLegendGraphicsItems ) ) );
-  int yMaxGrid = ( numRows_ + 1 ) * cellAspectRatio_.height()  + origin_.y();
+  int yMaxGrid = ( numRows_ + 1 ) * gridCellDimensions_.height()  + origin_.y();
   int yMax = qMax( yMaxGrid, yMaxLegend );
 
-  return ( yMax + cellAspectRatio_.width() * 0.5 );
+  return ( yMax + gridCellDimensions_.width() * 0.5 );
 }
 
 
@@ -2104,10 +2109,9 @@ QList<QGraphicsItem*> GraphicsScene::get_all_svg_legend_items_() const
 void GraphicsScene::update_legend_labels_()
 {
   QList<LegendEntry> allItems( legendEntries_.values() );
-  QFont currentFont = extract_font_from_settings( settings_ );
 
   foreach( LegendEntry item, allItems ) {
-    item.second->setFont( currentFont );
+    item.second->setFont( textFont_ );
   }
 }
 
@@ -2120,7 +2124,7 @@ void GraphicsScene::update_legend_labels_()
 void GraphicsScene::shift_legend_items_vertically_( int pivot,
     int globalDistance, int perItemDistance )
 {
-  int pivotYPos = pivot * cellAspectRatio_.height();
+  int pivotYPos = pivot * gridCellDimensions_.height();
 
   /* shift all svg legend items; use a QMultimap for sorting
    * legend items by y position */
@@ -2145,7 +2149,7 @@ void GraphicsScene::shift_legend_items_vertically_( int pivot,
 void GraphicsScene::shift_legend_items_horizontally_( int pivot,
     int distance )
 {
-  int pivotXPos = pivot * cellAspectRatio_.width();
+  int pivotXPos = pivot * gridCellDimensions_.width();
 
   /* find all legend items right of the pivot */
   QList<QGraphicsItem*> allLegendItems = get_all_legend_items_();
@@ -2154,7 +2158,7 @@ void GraphicsScene::shift_legend_items_horizontally_( int pivot,
     QPointF itemPos = item->pos();
     if ( itemPos.x() > pivotXPos
          && itemPos.y() > 0.0
-         && itemPos.y() < ( numRows_ * cellAspectRatio_.height() ) ) {
+         && itemPos.y() < ( numRows_ * gridCellDimensions_.height() ) ) {
       item->setPos( itemPos.x() + distance, itemPos.y() );
     }
   }

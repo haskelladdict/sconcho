@@ -46,6 +46,7 @@ class GraphicsScene;
 class PatternGridItem;
 class QColor;
 class QFile;
+class QSettings;
 class QTextStream;
 
 
@@ -148,6 +149,7 @@ public:
 
   explicit CanvasIOWriter( const GraphicsScene* theScene,
                            const QList<QColor>& activeColors,
+                           const QSettings& settings,
                            const QString& fileName );
   ~CanvasIOWriter();
   bool Init();
@@ -164,6 +166,7 @@ private:
   /* variables */
   const GraphicsScene* ourScene_;
   const QList<QColor>& projectColors_;
+  const QSettings& settings_;
   QString fileName_;
   QFile* filePtr_;
   QTextStream* writeStream_;
@@ -173,6 +176,7 @@ private:
   bool save_patternGridItems_( QDomElement& rootElement );
   bool save_legendInfo_( QDomElement& rootElement );
   bool save_colorInfo_( QDomElement& rootElement );
+  bool save_gridCellDimensions_( QDomElement& rootElement );
 };
 
 
@@ -230,7 +234,8 @@ class CanvasIOReader
 public:
 
   explicit CanvasIOReader( const QString& fileName,
-                           const QList<KnittingSymbolPtr>& allSymbols );
+                           const QList<KnittingSymbolPtr>& allSymbols,
+                           QSettings& settings_ );
   ~CanvasIOReader();
   bool Init();
 
@@ -262,9 +267,9 @@ private:
   int status_;
 
   /* variables */
-  GraphicsScene* ourScene_;
   QString fileName_;
   const QList<KnittingSymbolPtr>& allSymbols_;
+  QSettings& settings_;
   QFile* filePtr_;
   QDomDocument readDoc_;
 
@@ -284,6 +289,7 @@ private:
   bool parse_patternGridItems_( const QDomNode& itemNode );
   bool parse_legendItems_( const QDomNode& itemNode );
   bool parse_projectColors_( const QDomNode& itemNode );
+  bool parse_gridCellDimensions_( const QDomNode& itemNode );
   void add_to_extraLegendItems_( const QString& entryID, double itemXPos,
                                  double itemYPos, double labelXPos, double labelYPos,
                                  const QString& labelText );

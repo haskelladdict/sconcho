@@ -928,7 +928,7 @@ QSize MainWindow::show_grid_dimension_dialog_()
 void MainWindow::save_project_( const QString& fileName )
 {
   QList<QColor> activeColors( colorSelectorWidget_->get_colors() );
-  CanvasIOWriter writer( canvas_, activeColors, fileName );
+  CanvasIOWriter writer( canvas_, activeColors, settings_, fileName );
 
   /* we need to check if we can open the file for writing */
   if ( !writer.Init() ) {
@@ -966,7 +966,7 @@ void MainWindow::load_project_( const QString& fileName )
   }
 
   /* try to read it */
-  CanvasIOReader reader( fileName, allSymbols_ );
+  CanvasIOReader reader( fileName, allSymbols_, settings_ );
 
   /* we need to make sure that we could parse the file */
   if ( !reader.Init() ) {
@@ -981,6 +981,9 @@ void MainWindow::load_project_( const QString& fileName )
                              .arg( fileName ) );
       return;
     }
+
+    /* load canvas with new settings */
+    canvas_->load_settings();
 
     /* establish canvas */
     canvas_->load_new_canvas( reader.get_pattern_items() );
