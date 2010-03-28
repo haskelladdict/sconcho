@@ -123,6 +123,12 @@ bool MainWindow::Init()
            SLOT( update_after_settings_change() )
          );
 
+  connect( this,
+           SIGNAL( settings_changed() ),
+           canvasView_,
+           SLOT( update() )
+         );
+
   connect( canvas_,
            SIGNAL( show_whole_scene() ),
            canvasView_,
@@ -407,7 +413,6 @@ void MainWindow::show_preferences_dialog_()
   /* update all child widgets with new preferences and redraw
    * the view */
   emit settings_changed();
-//  canvasView_->update();
 }
 
 
