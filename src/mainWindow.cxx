@@ -334,9 +334,11 @@ void MainWindow::show_print_dialog_()
 //-------------------------------------------------------------
 void MainWindow::quit_sconcho_()
 {
-  QMessageBox::StandardButton answer = QMessageBox::warning( this,
-                                       tr( "Warning" ), tr( "Are you sure you want to quit?" ),
-                                       QMessageBox::Yes | QMessageBox::No );
+  QMessageBox::StandardButton answer =
+    QMessageBox::warning( this,
+                          tr( "Warning" ),
+                          tr( "Are you sure you want to quit?" ),
+                          QMessageBox::Yes | QMessageBox::No );
 
   if ( answer == QMessageBox::Yes ) {
     exit( 0 );
@@ -370,6 +372,7 @@ void MainWindow::new_grid_dialog_()
 }
 
 
+
 //-------------------------------------------------------------
 // SLOT responsible for displaying a the default Qt info
 // widget
@@ -378,6 +381,7 @@ void MainWindow::show_about_qt_dialog_()
 {
   QMessageBox::aboutQt( this, tr( "About Qt" ) );
 }
+
 
 
 //-------------------------------------------------------------
@@ -391,6 +395,7 @@ void MainWindow::show_sconcho_dialog_()
 }
 
 
+
 //------------------------------------------------------------
 // SLOT: fire up the preferences dialog
 //------------------------------------------------------------
@@ -399,9 +404,12 @@ void MainWindow::show_preferences_dialog_()
   PreferencesDialog prefDialog( settings_ );
   prefDialog.Init();
 
-  /* update all child widgets with new preferences */
+  /* update all child widgets with new preferences and redraw
+   * the view */
   emit settings_changed();
+//  canvasView_->update();
 }
+
 
 
 //------------------------------------------------------------
@@ -416,6 +424,7 @@ void MainWindow::save_file_()
     save_project_( saveFilePath_ );
   }
 }
+
 
 
 /*************************************************************
@@ -596,6 +605,7 @@ void MainWindow::create_view_menu_()
 }
 
 
+
 //------------------------------------------------------------
 // create the grid menu for general pattern grid controls
 //------------------------------------------------------------
@@ -643,6 +653,7 @@ void MainWindow::create_status_bar_()
 }
 
 
+
 //-------------------------------------------------------------
 // create the main GraphicsScene widget
 //-------------------------------------------------------------
@@ -656,9 +667,7 @@ void MainWindow::create_graphics_scene_()
 
   /* create canvas */
   QPoint origin( 0, 0 );
-  canvas_ = new GraphicsScene( origin, gridSize,
-                               extract_cell_dimensions_from_settings( settings_ ),
-                               settings_, defaultSymbol, this );
+  canvas_ = new GraphicsScene( origin, gridSize, settings_, defaultSymbol, this );
   if ( !canvas_->Init() ) {
     qDebug() << "Failed to initialize canvas";
   }
@@ -666,6 +675,7 @@ void MainWindow::create_graphics_scene_()
   canvasView_ = new PatternView( canvas_ );
   canvasView_->Init();
 }
+
 
 
 //------------------------------------------------------------

@@ -78,6 +78,9 @@ public:
   /* reseat this cell to the given new column/row */
   void reseat( int newCol, int newRow );
 
+  /* resize cell after a cell aspect ratio change */
+  void resize() { fit_svg_(); }
+
   /* accessors for properties */
   int col() const { return columnIndex_; }
   int row() const { return rowIndex_; }

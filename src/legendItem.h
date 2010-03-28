@@ -54,13 +54,17 @@ class LegendItem
 public:
 
   explicit LegendItem( const QSize& aDim, const QString& idTag,
-                       const QSize& aspectRatio, const QColor& backColor = Qt::white,
+                       const QSize& aspectRatio,
+                       const QColor& backColor = Qt::white,
                        const QPoint& loc = QPoint( 0, 0 ) );
   bool Init();
 
   /* return our object type; needed for qgraphicsitem_cast */
   enum { Type = UserType + LEGEND_ITEM_TYPE };
   int type() const;
+
+  /* resize cell after a cell aspect ratio change */
+  void resize() { fit_svg_(); }
 
 
 signals:

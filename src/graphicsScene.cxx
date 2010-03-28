@@ -65,7 +65,7 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 GraphicsScene::GraphicsScene( const QPoint& anOrigin,
-                              const QSize& gridDim, const QSize& aspectRatio,
+                              const QSize& gridDim,
                               const QSettings& aSetting,
                               KnittingSymbolPtr defaultSymbol,
                               MainWindow* myParent )
@@ -75,7 +75,7 @@ GraphicsScene::GraphicsScene( const QPoint& anOrigin,
     origin_( anOrigin ),
     numCols_( gridDim.width() ),
     numRows_( gridDim.height() ),
-    cellAspectRatio_( aspectRatio ),
+    cellAspectRatio_( extract_cell_dimensions_from_settings( aSetting ) ),
     selectedCol_( UNSELECTED ),
     selectedRow_( UNSELECTED ),
     settings_( aSetting ),
@@ -87,6 +87,7 @@ GraphicsScene::GraphicsScene( const QPoint& anOrigin,
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
+
 
 
 //--------------------------------------------------------------
@@ -202,6 +203,7 @@ void GraphicsScene::instantiate_legend_items(
 }
 
 
+
 //-------------------------------------------------------------
 // this function is called after a previously saved sconcho
 // project file has been read in. It places the legend items
@@ -239,7 +241,6 @@ void GraphicsScene::place_legend_items(
     symbolDescriptors_[entryID] = labelText;
   }
 }
-
 
 
 
@@ -326,7 +327,7 @@ void GraphicsScene::hide_all_but_legend()
   }
 
   /* show legend items */
-  foreach( QGraphicsItem* anItem, get_list_of_legend_items_() ) {
+  foreach( QGraphicsItem* anItem, get_all_legend_items_() ) {
     anItem->show();
   }
 }
@@ -422,6 +423,7 @@ void GraphicsScene::add_symbol_to_legend(
 }
 
 
+
 //-------------------------------------------------------------
 // update the present list of grid items; if the number of
 // selected items matches the number we need based on the
@@ -464,6 +466,7 @@ void GraphicsScene::update_selected_background_color(
 }
 
 
+
 //------------------------------------------------------------
 // rest a grid item to its original state, i.e., convert
 // it back into empty single unit cells
@@ -497,6 +500,7 @@ void GraphicsScene::grid_item_reset( PatternGridItem* anItem )
 }
 
 
+
 //---------------------------------------------------------------
 // deselects all items currenty marked as active
 //---------------------------------------------------------------
@@ -509,6 +513,7 @@ void GraphicsScene::deselect_all_active_items()
   activeItems_.clear();
   enable_canvas_update_();
 }
+
 
 
 //-------------------------------------------------------------
@@ -568,14 +573,44 @@ void GraphicsScene::mark_active_cells_with_rectangle()
 }
 
 
+
 //------------------------------------------------------------
 // update our current canvas after a change in settings
 //------------------------------------------------------------
 void GraphicsScene::update_after_settings_change()
 {
+  int oldCellHeight = cellAspectRatio_.height();
+
+  /* update the aspect ratio and redraw all existing grid cells
+   * so they pick up their correct size */
+  cellAspectRatio_ = extract_cell_dimensions_from_settings( settings_ );
+
+  QList<QGraphicsItem*> allItems( items() );
+  foreach( QGraphicsItem* anItem, allItems ) {
+    PatternGridItem* cell = qgraphicsitem_cast<PatternGridItem*>( anItem );
+
+    if ( cell != 0 ) {
+      cell->resize();
+      cell->setPos( compute_cell_origin_( cell->col(), cell->row() ) );
+    }
+  }
+
+  /* shift all legend items and rescale the svg containing items */
+  int cellHeightChange = cellAspectRatio_.height() - oldCellHeight;
+  shift_legend_items_vertically_( 0, cellHeightChange*numRows_, cellHeightChange );
+  foreach( QGraphicsItem* anItem, get_all_svg_legend_items_() ) {
+    LegendItem* cell = qgraphicsitem_cast<LegendItem*>( anItem );
+
+    if ( cell != 0 ) {
+      cell->resize();
+    }
+  }
+
+  /* update the labels */
   create_grid_labels_();
   update_legend_labels_();
 }
+
 
 
 //-------------------------------------------------------------
@@ -1092,6 +1127,7 @@ void GraphicsScene::mouseMoveEvent(
 }
 
 
+
 //---------------------------------------------------------------
 // event handler for mouse press events
 //---------------------------------------------------------------
@@ -1217,6 +1253,7 @@ void GraphicsScene::try_place_knitting_symbol_()
 }
 
 
+
 //-----------------------------------------------------------------
 // compute the shift for horizontal labels so they are centered
 // in each grid cell
@@ -1237,6 +1274,7 @@ int GraphicsScene::compute_horizontal_label_shift_( int aNum,
 
   return static_cast<int>( size - numWidth * count );
 }
+
 
 
 //----------------------------------------------------------------
@@ -1261,6 +1299,7 @@ bool GraphicsScene::sort_active_items_row_wise_(
 
   return true;
 }
+
 
 
 //--------------------------------------------------------------
@@ -1437,7 +1476,6 @@ void GraphicsScene::select_column_( int colId )
 
 
 
-
 //----------------------------------------------------------------
 // compute the origin of a grid cell based on its column and
 // row index
@@ -1458,6 +1496,7 @@ int GraphicsScene::compute_cell_index_( PatternGridItem* anItem ) const
 {
   return ( anItem->row() * numCols_ ) + anItem->col();
 }
+
 
 
 //-----------------------------------------------------------------
@@ -1525,6 +1564,7 @@ void GraphicsScene::manage_columns_rows_( const QPoint& pos,
     colRowMenu.exec( pos );
   }
 }
+
 
 
 //-------------------------------------------------------------
@@ -1614,6 +1654,7 @@ void GraphicsScene::create_grid_labels_()
 }
 
 
+
 //---------------------------------------------------------------
 // shift the pattern grid by one column and/or row wise starting
 // at the specified column and row indices.
@@ -1679,6 +1720,7 @@ void GraphicsScene::purge_legend_()
 }
 
 
+
 //---------------------------------------------------------------
 // remove all items on canvas
 //
@@ -1706,6 +1748,7 @@ void GraphicsScene::purge_all_canvas_items_()
 }
 
 
+
 //------------------------------------------------------------
 // update the canvas, i.e., add the currently selected
 // knitting symbol/color to all active items.
@@ -1716,6 +1759,7 @@ void GraphicsScene::update_active_items_()
     try_place_knitting_symbol_();
   }
 }
+
 
 
 //-----------------------------------------------------------
@@ -1791,6 +1835,7 @@ QRect GraphicsScene::find_bounding_rectangle_(
 }
 
 
+
 //--------------------------------------------------------------
 // handle mouse clicks on the boundary of any of the marker
 // rectangles
@@ -1860,6 +1905,7 @@ bool GraphicsScene::handle_click_on_grid_array_(
 }
 
 
+
 //----------------------------------------------------------------
 // handle mouse clicks on the grid labels
 //----------------------------------------------------------------
@@ -1879,6 +1925,7 @@ bool GraphicsScene::handle_click_on_grid_labels_(
 
   return true;
 }
+
 
 
 //---------------------------------------------------------------
@@ -1945,6 +1992,7 @@ void GraphicsScene::add_patternGridItem_( PatternGridItem* anItem )
 }
 
 
+
 //-------------------------------------------------------------
 // use this function to remove a PatternGridItem from the scene.
 // In addition to that we also update the referene count of
@@ -1994,7 +2042,7 @@ QString GraphicsScene::get_symbol_description_(
 int GraphicsScene::get_next_legend_items_y_position_() const
 {
   QList<QGraphicsItem*> allLegendGraphicsItems =
-    get_list_of_legend_items_();
+    get_all_legend_items_();
 
   int yMaxLegend = static_cast<int>(
                      floor( get_max_y_coordinate( allLegendGraphicsItems ) ) );
@@ -2005,20 +2053,49 @@ int GraphicsScene::get_next_legend_items_y_position_() const
 }
 
 
+
 //--------------------------------------------------------------
 // return a list of all QGraphicsItems currently in the legend
 //--------------------------------------------------------------
-QList<QGraphicsItem*> GraphicsScene::get_list_of_legend_items_() const
+QList<QGraphicsItem*> GraphicsScene::get_all_legend_items_() const
+{
+  return get_all_text_legend_items_() + get_all_svg_legend_items_();
+}
+
+
+
+//--------------------------------------------------------------
+// return a list of all QGraphicsItems containing text
+// currently in the legend
+//--------------------------------------------------------------
+QList<QGraphicsItem*> GraphicsScene::get_all_text_legend_items_() const
 {
   QList<LegendEntry> allLegendEntries( legendEntries_.values() );
   QList<QGraphicsItem*> allLegendGraphicsItems;
   foreach( LegendEntry item, allLegendEntries ) {
-    allLegendGraphicsItems.push_back( item.first );
     allLegendGraphicsItems.push_back( item.second );
   }
 
   return allLegendGraphicsItems;
 }
+
+
+
+//--------------------------------------------------------------
+// return a list of all QGraphicsItems containing an SVG
+// item currently in the legend
+//--------------------------------------------------------------
+QList<QGraphicsItem*> GraphicsScene::get_all_svg_legend_items_() const
+{
+  QList<LegendEntry> allLegendEntries( legendEntries_.values() );
+  QList<QGraphicsItem*> allLegendGraphicsItems;
+  foreach( LegendEntry item, allLegendEntries ) {
+    allLegendGraphicsItems.push_back( item.first );
+  }
+
+  return allLegendGraphicsItems;
+}
+
 
 
 //-------------------------------------------------------------
@@ -2035,25 +2112,29 @@ void GraphicsScene::update_legend_labels_()
 }
 
 
+
 //-------------------------------------------------------------
 // shift all legend items below pivot by "distance"
 // vertically
 //-------------------------------------------------------------
 void GraphicsScene::shift_legend_items_vertically_( int pivot,
-    int distance )
+    int globalDistance, int perItemDistance )
 {
-  /* find all legend items below the pivot */
-  QList<QGraphicsItem*> allLegendItems = get_list_of_legend_items_();
-  QList<QGraphicsItem*> toBeShiftedItems;
   int pivotYPos = pivot * cellAspectRatio_.height();
 
-  foreach( QGraphicsItem* item, allLegendItems ) {
-    QPointF itemPos = item->pos();
-    if ( itemPos.y() > pivotYPos ) {
-      item->setPos( itemPos.x(), itemPos.y() + distance );
-    }
-  }
+  /* shift all svg legend items; use a QMultimap for sorting
+   * legend items by y position */
+  QList<QGraphicsItem*> svgLegendItems = get_all_svg_legend_items_();
+  move_graphicsItems_vertically( svgLegendItems, pivotYPos,
+                                 globalDistance, perItemDistance );
+
+  /* shift all svg legend items; use a QMultimap for sorting
+   * legend items by y position */
+  QList<QGraphicsItem*> textLegendItems = get_all_text_legend_items_();
+  move_graphicsItems_vertically( textLegendItems, pivotYPos,
+                                 globalDistance, perItemDistance );
 }
+
 
 
 //-------------------------------------------------------------
@@ -2064,10 +2145,10 @@ void GraphicsScene::shift_legend_items_vertically_( int pivot,
 void GraphicsScene::shift_legend_items_horizontally_( int pivot,
     int distance )
 {
-  /* find all legend items right of the pivot */
-  QList<QGraphicsItem*> allLegendItems = get_list_of_legend_items_();
-  QList<QGraphicsItem*> toBeShiftedItems;
   int pivotXPos = pivot * cellAspectRatio_.width();
+
+  /* find all legend items right of the pivot */
+  QList<QGraphicsItem*> allLegendItems = get_all_legend_items_();
 
   foreach( QGraphicsItem* item, allLegendItems ) {
     QPointF itemPos = item->pos();

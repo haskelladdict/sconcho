@@ -41,13 +41,6 @@ class QGraphicsItem;
 class QGraphicsScene;
 class QSettings;
 
-#if 0
-//---------------------------------------------------------------
-// this function returns a QFont object with the currently
-// selected font
-//---------------------------------------------------------------
-QFont extract_font_from_settings( const QSettings& settings );
-#endif
 
 //---------------------------------------------------------------
 // given a list of QGraphicsItems returns the maximum y
@@ -117,6 +110,19 @@ QString get_legend_item_name( const QString& theID );
 // takes a legendID and returns the category of described symbol
 //---------------------------------------------------------------
 QString get_legend_item_category( const QString& theID );
+
+
+
+//---------------------------------------------------------------
+// takes a QList of GraphicsItems and moves them vertically by
+// the given global and local offset. I.e. all items are first
+// moved by the global offset. Then in a list of items sorted
+// by increasing y coordinate, the 0 item is moved 0*(local offset),
+// the 1st item is moved 1*(local offset) etc.
+//---------------------------------------------------------------
+void move_graphicsItems_vertically( const QList<QGraphicsItem*>& items,
+                                    int pivot, int globalOffset,
+                                    int localOffset );
 
 
 

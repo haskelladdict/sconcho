@@ -112,12 +112,14 @@ QRectF KnittingPatternItem::boundingRect() const
 }
 
 
+
 //------------------------------------------------------------
 // overload pure virtual base class function painting
 // ourselves
 //------------------------------------------------------------
 void KnittingPatternItem::paint( QPainter *painter,
-                                 const QStyleOptionGraphicsItem *option, QWidget *widget )
+                                 const QStyleOptionGraphicsItem *option,
+                                 QWidget *widget )
 {
   Q_UNUSED( widget );
   Q_UNUSED( option );
@@ -130,6 +132,7 @@ void KnittingPatternItem::paint( QPainter *painter,
                              QSize( cellAspectRatio_.width() * dim_.width(),
                                     cellAspectRatio_.height() * dim_.height() ) ) );
 }
+
 
 
 //-------------------------------------------------------------
@@ -162,6 +165,7 @@ void KnittingPatternItem::insert_knitting_symbol(
 }
 
 
+
 //--------------------------------------------------------------
 // return a pointer to the currently embedded knitting symbol
 //--------------------------------------------------------------
@@ -172,6 +176,7 @@ const
 }
 
 
+
 //-------------------------------------------------------------
 // change the background color
 //-------------------------------------------------------------
@@ -179,6 +184,7 @@ void KnittingPatternItem::set_background_color( const QColor& newColor )
 {
   backColor_ = newColor;
 }
+
 
 
 /**************************************************************

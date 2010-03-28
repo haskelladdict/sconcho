@@ -62,7 +62,8 @@ class KnittingPatternItem
 public:
 
   explicit KnittingPatternItem( const QSize& aDim,
-                                const QSize& aspectRatio, const QColor& backColor = Qt::white,
+                                const QSize& aspectRatio,
+                                const QColor& backColor = Qt::white,
                                 const QPoint& loc = QPoint( 0, 0 ) );
   bool Init();
 
@@ -116,7 +117,7 @@ private:
   /* our location and dimensions */
   QSize dim_;
   QPoint loc_;
-  QSize cellAspectRatio_;
+  const QSize& cellAspectRatio_;
 
   /* functions */
   void set_up_pens_brushes_();

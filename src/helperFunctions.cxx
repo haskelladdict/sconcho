@@ -25,6 +25,7 @@
 /* qt includes */
 #include <QDebug>
 #include <QGraphicsItem>
+#include <QMultiMap>
 
 /* local includes */
 #include "graphicsScene.h"
@@ -33,20 +34,6 @@
 
 
 QT_BEGIN_NAMESPACE
-
-#if 0
-//---------------------------------------------------------------
-// this function returns a QFont object with the currently
-// selected font
-//----------------------------------------------------------------
-QFont extract_font_from_settings( const QSettings& settings )
-{
-  QFont theFont;
-  theFont.fromString( get_font_string( settings ) );
-
-  return theFont;
-}
-#endif
 
 //---------------------------------------------------------------
 // given a list of QGraphicsItems returns the maximum y
@@ -209,6 +196,34 @@ QString get_legend_item_category( const QString& idString )
   }
 }
 
+
+
+//---------------------------------------------------------------
+// takes a QList of GraphicsItems and moves them by the
+// given global and local offset. I.e. all items are first
+// moved by the global offset. Then in a list of items sorted
+// by increasing y coordinate, the 0 item is moved 0*(local offset),
+// the 1st item is moved 1*(local offset) etc.
+// NOTE: Only items with y coordinate > pivot are shifted
+//---------------------------------------------------------------
+void move_graphicsItems_vertically( const QList<QGraphicsItem*>& allItems,
+                                    int pivot, int globalOffset, int localOffset )
+{
+  QMultiMap<double, QGraphicsItem*> sortedByYPos;
+  foreach( QGraphicsItem* item, allItems ) {
+    sortedByYPos.insert( item->pos().y(), item );
+  }
+
+  int counter = 0;
+  foreach( QGraphicsItem* item, sortedByYPos.values() ) {
+    QPointF itemPos = item->pos();
+    if ( itemPos.y() > pivot ) {
+      item->setPos( itemPos.x(),
+                    itemPos.y() + globalOffset + counter * localOffset );
+      counter++;
+    }
+  }
+}
 
 
 

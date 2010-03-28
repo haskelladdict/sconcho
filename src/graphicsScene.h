@@ -83,8 +83,9 @@ class GraphicsScene
 public:
 
   explicit GraphicsScene( const QPoint& origin, const QSize& gridsize,
-                          const QSize& cellSize, const QSettings& settings,
-                          KnittingSymbolPtr defaultSymbol, MainWindow* myParent = 0 );
+                          const QSettings& settings,
+                          KnittingSymbolPtr defaultSymbol,
+                          MainWindow* myParent = 0 );
   bool Init();
 
   /* helper functions */
@@ -191,11 +192,15 @@ private:
 
   /* items related to the legend */
   bool legendIsVisible_;
-  void shift_legend_items_vertically_( int pivot, int distance );
-  void shift_legend_items_horizontally_( int pivot, int distance );
+  void shift_legend_items_vertically_( int pivot, int globalOffset,
+                                       int localOffset = 0 );
+  void shift_legend_items_horizontally_( int pivot, int globalOffset );
   void update_legend_labels_();
   int get_next_legend_items_y_position_() const;
-  QList<QGraphicsItem*> get_list_of_legend_items_() const;
+  QList<QGraphicsItem*> get_all_legend_items_() const;
+  QList<QGraphicsItem*> get_all_svg_legend_items_() const;
+  QList<QGraphicsItem*> get_all_text_legend_items_() const;
+
 
   /* List of items in the current Legend */
   QMap<QString, LegendEntry> legendEntries_;
