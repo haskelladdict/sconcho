@@ -383,13 +383,16 @@ bool CanvasIOWriter::save()
   bool statusLegendEntryPos   = save_legendInfo_( root );
   bool statusColors           = save_colorInfo_( root );
   bool statusCellDimensions   = save_gridCellDimensions_( root );
+  bool statusTextFont         = save_textFont_( root );
 
   /* write it to stream */
   writeDoc_.save( *writeStream_, 4 );
 
   return ( statusPatternGridItems && statusLegendEntryPos
-           && statusColors && statusCellDimensions );
+           && statusColors && statusCellDimensions 
+           && statusTextFont );
 }
+
 
 
 /**************************************************************
@@ -574,6 +577,24 @@ bool CanvasIOWriter::save_gridCellDimensions_( QDomElement& root )
 }
 
 
+//-------------------------------------------------------------
+// save the currently defined custom grid cell dimensions
+//-------------------------------------------------------------
+bool CanvasIOWriter::save_textFont_( QDomElement& root )
+{
+  QDomElement mainTag = writeDoc_.createElement( "textFont" );
+  root.appendChild( mainTag );
+
+  QFont theFont = extract_font_from_settings(settings_);
+  
+  QDomElement fontTag = writeDoc_.createElement( "name" );
+  mainTag.appendChild( fontTag );
+  fontTag.appendChild( writeDoc_.createTextNode( theFont.toString() ) );
+
+  return true;
+}
+ 
+
 
 //---------------------------------------------------------------
 //
@@ -651,7 +672,8 @@ bool CanvasIOReader::read()
   if ( !readDoc_.setContent( filePtr_, true, &errStr, &errLine, &errCol ) ) {
     QMessageBox::critical( 0, "sconcho DOM Parser",
                            QString( "Error parsing\n%1\nat line %2 column %3; %4" )
-                           .arg( fileName_ ) .arg( errLine ) .arg( errCol ) .arg( errStr ) );
+                           .arg( fileName_ ) .arg( errLine ) .arg( errCol ) 
+                           .arg( errStr ) );
 
     return false;
   }
@@ -675,7 +697,10 @@ bool CanvasIOReader::read()
       parseStatus &= parse_projectColors_( node );
     } else if ( node.toElement().tagName() == "gridCellDimensions" ) {
       parseStatus &= parse_gridCellDimensions_( node );
+    } else if ( node.toElement().tagName() == "textFont" ) {
+      parseStatus &= parse_textFont_( node );
     }
+
 
     node = node.nextSibling();
   }
@@ -882,6 +907,26 @@ bool CanvasIOReader::parse_gridCellDimensions_(
    * height */
   if ( allFound == 2 ) {
     set_cell_dimensions(settings_, QSize(width, height)); 
+  }
+
+  return true;
+}
+
+
+
+//-------------------------------------------------------------
+// read the list of dimensions of the grid cells (if present)
+//-------------------------------------------------------------
+bool CanvasIOReader::parse_textFont_( const QDomNode& itemNode )
+{
+  QDomNode node = itemNode.firstChild();
+  while ( !node.isNull() ) {
+    if ( node.toElement().tagName() == "name" ) {
+      QDomNode childNode( node.firstChild() );
+      set_font_string(settings_, childNode.toText().data() );
+    }
+
+    node = node.nextSibling();
   }
 
   return true;

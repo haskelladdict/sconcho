@@ -177,6 +177,7 @@ private:
   bool save_legendInfo_( QDomElement& rootElement );
   bool save_colorInfo_( QDomElement& rootElement );
   bool save_gridCellDimensions_( QDomElement& rootElement );
+  bool save_textFont_( QDomElement& rootElement );
 };
 
 
@@ -290,6 +291,7 @@ private:
   bool parse_legendItems_( const QDomNode& itemNode );
   bool parse_projectColors_( const QDomNode& itemNode );
   bool parse_gridCellDimensions_( const QDomNode& itemNode );
+  bool parse_textFont_( const QDomNode& itemNode );
   void add_to_extraLegendItems_( const QString& entryID, double itemXPos,
                                  double itemYPos, double labelXPos, double labelYPos,
                                  const QString& labelText );
