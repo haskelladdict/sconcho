@@ -42,7 +42,6 @@
 #include <QVBoxLayout>
 
 /** local headers */
-#include "aboutSconcho.h"
 #include "basicDefs.h"
 #include "colorSelectorWidget.h"
 #include "graphicsScene.h"
@@ -57,6 +56,38 @@
 
 
 QT_BEGIN_NAMESPACE
+
+
+/* use anonymous namespace to define some constants */
+namespace
+{
+const QString NAME = "sconcho";
+const QString VERSION = "0.0";
+const QString IDENTIFIER = NAME + " v" + VERSION;
+QString aboutSconchoText =
+  QObject::tr(
+    "<b>sconcho</b> is a versatile and extensible knitting chart "
+    "design tool capable of producing print quality charts.<br><br>"
+    "Copyright (C) 2009-2010 Markus Dittrich<br><br>"
+    "Many thanks to Susan Dittrich for continued testing, advice, "
+    "support, and generation of the SVG knitting symbols.<br><br>"
+    "This program is free software: you can redistribute it and/or "
+    "modify it under the terms of the GNU General Public License "
+    "as published by the Free Software Foundation, either version 3 "
+    "of the License, or (at your option) any later version.<br><br>"
+    "This program is distributed in the hope that it will be useful, "
+    "but WITHOUT ANY WARRANTY; without even the implied warranty of "
+    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the "
+    "GNU General Public License for more details.<br>"
+    "You should have received a copy of the GNU General Public "
+    "License along with this program. "
+    "If not, see <a href=\"http://www.gnu.org/licenses/\">"
+    "http://www.gnu.org/licenses</a><br><br>"
+    "Please contact the author via <a href=\"mailto:haskelladdict@users.sourceforge.org\">"
+    "email</a> for suggestions, comments, or in case of problems"
+  );
+}
+
 
 
 /**************************************************************
@@ -88,6 +119,7 @@ bool MainWindow::Init()
   }
 
   setWindowTitle( tr( "sconcho" ) );
+  setWindowIcon( QIcon( ":/icons/sconcho_icon.png" ) );
   setMinimumSize( initialSize );
   initialize_settings( settings_ );
 
@@ -396,8 +428,9 @@ void MainWindow::show_about_qt_dialog_()
 //-------------------------------------------------------------
 void MainWindow::show_sconcho_dialog_()
 {
-  AboutSconchoWidget about;
-  about.exec();
+  //AboutSconchoWidget about;
+  //about.exec();
+  QMessageBox::about( this, tr( "about sconcho" ) , aboutSconchoText );
 }
 
 

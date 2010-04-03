@@ -57,16 +57,6 @@ class SymbolSelectorWidget;
 /* convenience typedefs and constants */
 const QSize initialSize( 700, 500 );
 
-
-/* use anonymous namespace to define some constants */
-namespace
-{
-const QString NAME = "sconcho";
-const QString VERSION = "0.0";
-const QString IDENTIFIER = NAME + " v" + VERSION;
-}
-
-
 /***************************************************************
  *
  * The MainWindow class organizes the layout of sconcho's main
