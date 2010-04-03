@@ -163,11 +163,9 @@ void PatternGridItem::mousePressEvent(
     return;
   }
 
-  /* if the user has shift pressed this is a reset event
-   * otherwise a select/deselect event */
-  if ( anEvent->modifiers().testFlag( Qt::ShiftModifier ) ) {
-    emit item_reset( this );
-  } else {
+  /* if the user has shift pressed we don't do anything to
+   * not interfere with the rubber band */
+  if ( !anEvent->modifiers().testFlag( Qt::ShiftModifier ) ) {
     select();
   }
 }
@@ -193,7 +191,6 @@ void PatternGridItem::mousePressEvent(
 void PatternGridItem::highlight_on_()
 {
   selected_ = true;
-//  currentColor_ = highlightColor_;
   select_highlight_color();
 }
 
@@ -201,7 +198,6 @@ void PatternGridItem::highlight_on_()
 void PatternGridItem::highlight_off_()
 {
   selected_ = false;
-//  currentColor_ = backColor_;
   select_background_color();
 }
 
