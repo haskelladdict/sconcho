@@ -40,6 +40,7 @@
 
 /* local headers */
 #include "basicDefs.h"
+#include "colRowDeleteInsertDialog.h"
 #include "graphicsScene.h"
 #include "helperFunctions.h"
 #include "knittingSymbol.h"
@@ -653,6 +654,33 @@ void GraphicsScene::toggle_legend_visibility()
  *************************************************************/
 
 //-------------------------------------------------------------
+// this slot opens a dialog to control adding and deleting
+// of rows 
+//-------------------------------------------------------------
+void GraphicsScene::open_row_menu_()
+{
+  assert( selectedRow_ >= 0 );
+  assert( selectedRow_ < numRows_ );
+
+  if ( selectedRow_ == UNSELECTED ) {
+    return;
+  }
+
+  RowDeleteInsertDialog rowDialog( selectedRow_, numRows_ );
+  rowDialog.Init();
+
+  connect ( &rowDialog,
+            SIGNAL( insert_rows(int, int, int) ),
+            this,
+            SLOT( insert_rows_(int, int, int) )
+          );
+  
+  rowDialog.exec();
+}
+
+
+
+//-------------------------------------------------------------
 // this slots deletes selectedCol from the pattern grid array
 // NOTE: delecting columns is a bit more tricky than deleting
 // rows since we have to bail if the selected column has cells
@@ -894,6 +922,27 @@ void GraphicsScene::insert_col_( int aCol )
 
 
 
+//-----------------------------------------------------------------
+// this slot inserts the requested number of rows at the pivot
+// location
+// NOTE: pivotRow is in user row coordinates and we have to
+// convert it into internal row coordinate (i.e. top row has
+// index zero and increasing downward). Also location is either
+// 0 for inserting below or 1 for inserting above.
+//-----------------------------------------------------------------
+void GraphicsScene::insert_rows_(int numRows, int pivotRow, int location)
+{
+  if ( selectedRow_ == UNSELECTED ) {
+    return;
+  }
+
+  for (int rowCount = 0; rowCount < numRows; ++rowCount) {
+    insert_single_row_( numRows_ - pivotRow - location);
+  }
+}
+
+
+#if 0
 //-------------------------------------------------------------
 // insert new rows into grid
 //-------------------------------------------------------------
@@ -916,10 +965,10 @@ void GraphicsScene::insert_below_row_()
 
   insert_row_( selectedRow_ );
 }
+#endif
 
 
-
-void GraphicsScene::insert_row_( int aRow )
+void GraphicsScene::insert_single_row_( int aRow )
 {
   deselect_all_active_items();
 
@@ -1506,75 +1555,6 @@ int GraphicsScene::compute_cell_index_( PatternGridItem* anItem ) const
 }
 
 
-
-//-----------------------------------------------------------------
-// this function is responsible for opening up a dialog allowing
-// the user to delete/insert/add rows and initiates the necessary
-// steps according to the selection
-//-----------------------------------------------------------------
-void GraphicsScene::manage_columns_rows_( const QPoint& pos,
-    int colID, int rowID )
-{
-  QMenu colRowMenu;
-
-  /* show menu only if we're inside the pattern grid */
-  if ( colID >= 0 && colID < numCols_ &&
-       rowID >= 0 && rowID < numRows_ ) {
-    /* column related entries */
-    QString colString;
-    colString.setNum( numCols_ - colID );
-
-    QAction* colDeleteAction =
-      colRowMenu.addAction( "delete column " + colString );
-    QAction* colInsertLeftOfAction =
-      colRowMenu.addAction( "insert left of column " + colString );
-    QAction* colInsertRightOfAction =
-      colRowMenu.addAction( "insert right of column " + colString );
-
-    connect( colDeleteAction, SIGNAL( triggered() ),
-             this, SLOT( delete_col_() ) );
-    connect( colInsertLeftOfAction, SIGNAL( triggered() ),
-             this, SLOT( insert_left_of_col_() ) );
-    connect( colInsertRightOfAction, SIGNAL( triggered() ),
-             this, SLOT( insert_right_of_col_() ) );
-
-    colRowMenu.addSeparator();
-
-    /* row related entries */
-    QString rowString;
-    rowString.setNum( numRows_ - rowID );
-
-    QAction* rowDeleteAction =
-      colRowMenu.addAction( "delete row " + rowString );
-    QAction* rowInsertAboveAction =
-      colRowMenu.addAction( "insert above row " + rowString );
-    QAction* rowInsertBelowAction =
-      colRowMenu.addAction( "insert below row " + rowString );
-
-    connect( rowDeleteAction,
-             SIGNAL( triggered() ),
-             this,
-             SLOT( delete_row_() )
-           );
-
-    connect( rowInsertAboveAction,
-             SIGNAL( triggered() ),
-             this,
-             SLOT( insert_above_row_() )
-           );
-
-    connect( rowInsertBelowAction,
-             SIGNAL( triggered() ),
-             this,
-             SLOT( insert_below_row_() )
-           );
-
-    colRowMenu.exec( pos );
-  }
-}
-
-
-
 //-------------------------------------------------------------
 // create the grid
 //-------------------------------------------------------------
@@ -1892,20 +1872,34 @@ bool GraphicsScene::handle_click_on_grid_array_(
   int column = arrayIndex.first;
   int row    = arrayIndex.second;
 
-  /* FIXME: manage_columns_rows_ calls the proper member function
-   * via a signal and can't therefore provide the column/row
-   * ID by itself which is why we have to use a silly
-   * private variable. Is there any way we can avoid this?
-   *
-   * Also we show the menu only if we're inside the pattern
-   * grid plus a margin of a single cellSize_ in all directions */
-  if ( row > -1 || row < ( numRows_ + 1 ) || column > -1
-       || column < ( numCols_ + 1 ) ) {
+
+  /* show menu only if we're inside the pattern grid */
+  if ( column >= 0 &&  column < numCols_ &&
+       row >= 0 && row < numRows_ ) {
+
+    /* indicate currently selected rows and columns */
     selectedCol_ = column;
     selectedRow_ = row;
-    manage_columns_rows_( mouseEvent->screenPos(), column, row );
-  }
 
+    /* fire up menu */
+    QMenu gridMenu;
+    QAction* copyAction = gridMenu.addAction( "&Copy" );
+    QAction* pasteAction = gridMenu.addAction( "&Paste" );
+    
+    gridMenu.addSeparator();
+
+    QAction* rowAction  = gridMenu.addAction ( "Insert/delete rows" );
+    QAction* colAction = gridMenu.addAction ( "Insert/delete columns" );
+    
+    connect( rowAction,
+             SIGNAL( triggered() ),
+             this,
+             SLOT( open_row_menu_() ) );
+
+    gridMenu.exec( mouseEvent->screenPos() );
+  }
+     
+    
   return true;
 }
 

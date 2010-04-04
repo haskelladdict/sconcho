@@ -50,6 +50,7 @@ class QKeyEvent;
 class QSettings;
 class MainWindow;
 
+
 namespace
 {
 /* convenience constants */
@@ -139,12 +140,12 @@ protected:
 
 private slots:
 
+  void open_row_menu_();
+  void insert_rows_(int numRows, int pivotRow, int location);
   void delete_col_();
   void delete_row_();
   void insert_left_of_col_();
   void insert_right_of_col_();
-  void insert_above_row_();
-  void insert_below_row_();
   void mark_rectangle_for_deletion_( QObject* foo );
   void customize_rectangle_( QObject* foo );
   void update_key_label_text_( QString, QString );
@@ -243,9 +244,8 @@ private:
   void select_column_( int col );
   void select_row_( int row );
   void insert_col_( int col );
-  void insert_row_( int row );
+  void insert_single_row_( int row );
   void expand_grid_( int colStart, int rowStart );
-  void manage_columns_rows_( const QPoint& pos, int col, int row );
 
   void enable_canvas_update_() { updateActiveItems_ = true; }
   void disable_canvas_update_() { updateActiveItems_ = false; }

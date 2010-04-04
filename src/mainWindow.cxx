@@ -428,8 +428,6 @@ void MainWindow::show_about_qt_dialog_()
 //-------------------------------------------------------------
 void MainWindow::show_sconcho_dialog_()
 {
-  //AboutSconchoWidget about;
-  //about.exec();
   QMessageBox::about( this, tr( "about sconcho" ) , aboutSconchoText );
 }
 
