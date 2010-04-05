@@ -52,12 +52,12 @@ QT_BEGIN_NAMESPACE
 // constructor
 //-------------------------------------------------------------
 RowDeleteInsertDialog::RowDeleteInsertDialog( int selectedRow,
-                                              int maxRows,
-                                              QWidget* myParent )
+    int maxRows,
+    QWidget* myParent )
     :
-  QDialog( myParent ),
-  selectedRow_( selectedRow ),
-  maxRows_( maxRows )
+    QDialog( myParent ),
+    selectedRow_( selectedRow ),
+    maxRows_( maxRows )
 {
   status_ = SUCCESSFULLY_CONSTRUCTED;
 }
@@ -72,9 +72,10 @@ bool RowDeleteInsertDialog::Init()
     return false;
   }
 
-  setupUi(this);
+  setupUi( this );
 
   customize_insert_layout_();
+  customize_delete_layout_();
   return true;
 }
 
@@ -106,7 +107,7 @@ bool RowDeleteInsertDialog::Init()
  *************************************************************/
 
 //-------------------------------------------------------------
-// take action based on what the user selected
+// insert based on what the user selected
 //-------------------------------------------------------------
 void RowDeleteInsertDialog::insert_clicked_()
 {
@@ -115,7 +116,17 @@ void RowDeleteInsertDialog::insert_clicked_()
   int location = insertLocationWidget->currentIndex();
   int pivot = pivotRowLocation->value();
 
-  emit insert_rows(numRows, pivot, location);
+  emit insert_rows( numRows, pivot, location );
+  close();
+}
+
+
+//-------------------------------------------------------------
+// delete based on what the user selected
+//-------------------------------------------------------------
+void RowDeleteInsertDialog::delete_clicked_()
+{
+  emit delete_row( deleteRowWidget->value() );
   close();
 }
 
@@ -131,19 +142,42 @@ void RowDeleteInsertDialog::insert_clicked_()
 //-------------------------------------------------------------
 void RowDeleteInsertDialog::customize_insert_layout_()
 {
-  pivotRowLocation->setValue(maxRows_ - selectedRow_);
+  pivotRowLocation->setValue( maxRows_ - selectedRow_ );
 
   connect( insertButton,
            SIGNAL( clicked() ),
            this,
            SLOT( insert_clicked_() )
-           );
-  
+         );
+
   connect( insertCancelButton,
            SIGNAL( clicked() ),
            this,
            SLOT( close() )
-           );
+         );
 }
+
+
+
+//-------------------------------------------------------------
+// this function customizes the delete row widget
+//-------------------------------------------------------------
+void RowDeleteInsertDialog::customize_delete_layout_()
+{
+  deleteRowWidget->setValue( maxRows_ - selectedRow_ );
+
+  connect( deleteButton,
+           SIGNAL( clicked() ),
+           this,
+           SLOT( delete_clicked_() )
+         );
+
+  connect( deleteCancelButton,
+           SIGNAL( clicked() ),
+           this,
+           SLOT( close() )
+         );
+}
+
 
 QT_END_NAMESPACE

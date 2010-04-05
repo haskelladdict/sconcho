@@ -65,12 +65,14 @@ public:
 
 signals:
 
-  void insert_rows(int num, int pivot, int location);
-  
+  void insert_rows( int num, int pivot, int location );
+  void delete_row( int row );
+
 
 private slots:
 
   void insert_clicked_();
+  void delete_clicked_();
 
 
 private:
@@ -82,6 +84,7 @@ private:
 
   /* interface creation functions */
   void customize_insert_layout_();
+  void customize_delete_layout_();
 };
 
 

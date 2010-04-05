@@ -647,6 +647,68 @@ void GraphicsScene::toggle_legend_visibility()
 }
 
 
+
+//-------------------------------------------------------------
+// this slots deletes selectedRow from the pattern grid array
+// NOTE: deadRow is in user row coordinates and we have to
+// convert it into internal row coordinate (i.e. top row has
+// index zero and increasing downward).
+//-------------------------------------------------------------
+void GraphicsScene::delete_row( int aDeadRow )
+{
+  int deadRow = numRows_ - aDeadRow;
+  assert( deadRow >= 0 );
+  assert( deadRow < numRows_ );
+
+  deselect_all_active_items();
+
+  /* go through all grid cells and
+   * - delete the ones in the selectedRow_
+   * - shift the ones in a row greater than selectedRow_
+   *   up by one
+   *
+   * Important: We can't just delete as we go since
+   * this also nukes the svg item children which
+   * we are also iterating over
+   */
+  QList<QGraphicsItem*> allItems( items() );
+  QList<PatternGridItem*> patternItems;
+  foreach( QGraphicsItem* anItem, allItems ) {
+    PatternGridItem* cell =
+      qgraphicsitem_cast<PatternGridItem*>( anItem );
+
+    if ( cell != 0 ) {
+      patternItems.push_back( cell );
+    }
+  }
+
+  foreach( PatternGridItem* patItem, patternItems ) {
+    if ( patItem->row() == deadRow ) {
+      remove_patternGridItem_( patItem );
+    } else if ( patItem->row() > deadRow ) {
+      patItem->reseat( patItem->col(), patItem->row() - 1 );
+      patItem->setPos(
+        compute_cell_origin_( patItem->col(), patItem->row() ) );
+    }
+  }
+
+  /* update position of legend items */
+  shift_legend_items_vertically_( deadRow, -gridCellDimensions_.height() );
+
+  /* unselect row and update row counter */
+  numRows_ = numRows_ - 1;
+  selectedRow_ = UNSELECTED;
+
+  /* redraw the labels */
+  create_grid_labels_();
+
+  /* update sceneRect
+   * NOTE: This may be a bottleneck for large grids */
+  setSceneRect( itemsBoundingRect() );
+}
+
+
+
 /**************************************************************
  *
  * PRIVATE SLOTS
@@ -655,7 +717,7 @@ void GraphicsScene::toggle_legend_visibility()
 
 //-------------------------------------------------------------
 // this slot opens a dialog to control adding and deleting
-// of rows 
+// of rows
 //-------------------------------------------------------------
 void GraphicsScene::open_row_menu_()
 {
@@ -669,12 +731,19 @@ void GraphicsScene::open_row_menu_()
   RowDeleteInsertDialog rowDialog( selectedRow_, numRows_ );
   rowDialog.Init();
 
-  connect ( &rowDialog,
-            SIGNAL( insert_rows(int, int, int) ),
-            this,
-            SLOT( insert_rows_(int, int, int) )
-          );
-  
+  connect( &rowDialog,
+           SIGNAL( insert_rows( int, int, int ) ),
+           this,
+           SLOT( insert_rows_( int, int, int ) )
+         );
+
+
+  connect( &rowDialog,
+           SIGNAL( delete_row( int ) ),
+           this,
+           SLOT( delete_row( int ) )
+         );
+
   rowDialog.exec();
 }
 
@@ -748,66 +817,6 @@ void GraphicsScene::delete_col_()
   /* unselect row and update row counter */
   numCols_ = numCols_ - 1;
   selectedCol_ = UNSELECTED;
-
-  /* redraw the labels */
-  create_grid_labels_();
-
-  /* update sceneRect
-   * NOTE: This may be a bottleneck for large grids */
-  setSceneRect( itemsBoundingRect() );
-}
-
-
-//-------------------------------------------------------------
-// this slots deletes selectedRow from the pattern grid array
-//-------------------------------------------------------------
-void GraphicsScene::delete_row_()
-{
-  assert( selectedRow_ >= 0 );
-  assert( selectedRow_ < numRows_ );
-
-  if ( selectedRow_ == UNSELECTED ) {
-    return;
-  }
-
-  deselect_all_active_items();
-
-  /* go through all grid cells and
-   * - delete the ones in the selectedRow_
-   * - shift the ones in a row greater than selectedRow_
-   *   up by one
-   *
-   * Important: We can't just delete as we go since
-   * this also nukes the svg item children which
-   * we are also iterating over
-   */
-  QList<QGraphicsItem*> allItems( items() );
-  QList<PatternGridItem*> patternItems;
-  foreach( QGraphicsItem* anItem, allItems ) {
-    PatternGridItem* cell =
-      qgraphicsitem_cast<PatternGridItem*>( anItem );
-
-    if ( cell != 0 ) {
-      patternItems.push_back( cell );
-    }
-  }
-
-  foreach( PatternGridItem* patItem, patternItems ) {
-    if ( patItem->row() == selectedRow_ ) {
-      remove_patternGridItem_( patItem );
-    } else if ( patItem->row() > selectedRow_ ) {
-      patItem->reseat( patItem->col(), patItem->row() - 1 );
-      patItem->setPos(
-        compute_cell_origin_( patItem->col(), patItem->row() ) );
-    }
-  }
-
-  /* update position of legend items */
-  shift_legend_items_vertically_( selectedRow_, -gridCellDimensions_.height() );
-
-  /* unselect row and update row counter */
-  numRows_ = numRows_ - 1;
-  selectedRow_ = UNSELECTED;
 
   /* redraw the labels */
   create_grid_labels_();
@@ -930,14 +939,14 @@ void GraphicsScene::insert_col_( int aCol )
 // index zero and increasing downward). Also location is either
 // 0 for inserting below or 1 for inserting above.
 //-----------------------------------------------------------------
-void GraphicsScene::insert_rows_(int numRows, int pivotRow, int location)
+void GraphicsScene::insert_rows_( int numRows, int pivotRow, int location )
 {
   if ( selectedRow_ == UNSELECTED ) {
     return;
   }
 
-  for (int rowCount = 0; rowCount < numRows; ++rowCount) {
-    insert_single_row_( numRows_ - pivotRow - location);
+  for ( int rowCount = 0; rowCount < numRows; ++rowCount ) {
+    insert_single_row_( numRows_ - pivotRow - location );
   }
 }
 
@@ -1885,12 +1894,12 @@ bool GraphicsScene::handle_click_on_grid_array_(
     QMenu gridMenu;
     QAction* copyAction = gridMenu.addAction( "&Copy" );
     QAction* pasteAction = gridMenu.addAction( "&Paste" );
-    
+
     gridMenu.addSeparator();
 
-    QAction* rowAction  = gridMenu.addAction ( "Insert/delete rows" );
-    QAction* colAction = gridMenu.addAction ( "Insert/delete columns" );
-    
+    QAction* rowAction  = gridMenu.addAction( "Insert/delete rows" );
+    QAction* colAction = gridMenu.addAction( "Insert/delete columns" );
+
     connect( rowAction,
              SIGNAL( triggered() ),
              this,
@@ -1898,8 +1907,8 @@ bool GraphicsScene::handle_click_on_grid_array_(
 
     gridMenu.exec( mouseEvent->screenPos() );
   }
-     
-    
+
+
   return true;
 }
 
