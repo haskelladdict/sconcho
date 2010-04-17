@@ -3,7 +3,6 @@ INCLUDE( ${QT_USE_FILE} )
 SET( SCONCHO_SRCS
      colorSelectorItem.cxx
      colorSelectorWidget.cxx
-     colRowDeleteInsertDialog.cxx
      graphicsScene.cxx
      gridDimensionDialog.cxx
      helperFunctions.cxx
@@ -19,6 +18,7 @@ SET( SCONCHO_SRCS
      patternGridRectangleDialog.cxx
      patternView.cxx
      preferencesDialog.cxx
+     rowColDeleteInsertDialog.cxx
      sconcho.cxx
      settings.cxx
      symbolSelectorItem.cxx
@@ -28,7 +28,6 @@ SET( SCONCHO_SRCS
 SET( SCONCHO_MOC_HDRS
      colorSelectorItem.h
      colorSelectorWidget.h
-     colRowDeleteInsertDialog.h
      graphicsScene.h
      gridDimensionDialog.h
      legendItem.h
@@ -39,12 +38,13 @@ SET( SCONCHO_MOC_HDRS
      patternGridRectangleDialog.h
      patternView.h
      preferencesDialog.h
+     rowColDeleteInsertDialog.h
      symbolSelectorItem.h
      symbolSelectorWidget.h
    )
 
 SET ( SCONCHO_UI_FILES
-      ui/insertDeleteRowsWidget.ui
+      ui/rowColDeleteInsertDialog.ui
     )
 
 SET( SCONCHO_ICONS

@@ -57,7 +57,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I./ -O2 -fomit-frame-pointer -march=nat
 
 ###################### regular build ###############################
 ELSE(NOT RELEASE)
-  SET(CMAKE_CXX_FLAGS "-I./ -O0 -ggdb -Wall -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wparentheses -Wshadow -Wpointer-arith -Woverloaded-virtual -Wextra -Winline -Wctor-dtor-privacy -Wnon-virtual-dtor -Wreorder -Wno-deprecated  -Wstrict-null-sentinel -Wno-non-template-friend  -Woverloaded-virtual -Wno-pmf-conversions -Wsign-promo -Wextra -pthread -D_FILE_OFFSET_BITS=64")
+  SET(CMAKE_CXX_FLAGS "-I./ -O0 -ggdb -Wall -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wparentheses -Wshadow -Wpointer-arith -Woverloaded-virtual -Wextra -Winline -Wctor-dtor-privacy -Wnon-virtual-dtor -Wreorder -Wno-deprecated  -Wstrict-null-sentinel -Wno-non-template-friend  -Woverloaded-virtual -Wno-pmf-conversions -Wsign-promo -Wextra -pthread -D_FILE_OFFSET_BITS=64 -DDEBUG")
 ENDIF(RELEASE)
 
 # install symbols 

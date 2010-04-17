@@ -77,7 +77,7 @@ void initialize_settings( QSettings& settings )
 QFont extract_font_from_settings( const QSettings& settings )
 {
   QString preferenceFont = settings.value( "global/font" ).toString();
-  assert( !preferenceFont.isNull );
+  assert( !preferenceFont.isNull() );
 
   QFont theFont;
   theFont.fromString( preferenceFont );

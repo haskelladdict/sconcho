@@ -35,12 +35,13 @@
 #include <QGraphicsView>
 #include <QKeyEvent>
 #include <QMenu>
+#include <QMessageBox>
 #include <QSettings>
 #include <QSignalMapper>
 
 /* local headers */
 #include "basicDefs.h"
-#include "colRowDeleteInsertDialog.h"
+#include "rowColDeleteInsertDialog.h"
 #include "graphicsScene.h"
 #include "helperFunctions.h"
 #include "knittingSymbol.h"
@@ -650,21 +651,26 @@ void GraphicsScene::toggle_legend_visibility()
 
 //-------------------------------------------------------------
 // this slots deletes selectedRow from the pattern grid array
-// NOTE: deadRow is in user row coordinates and we have to
+// NOTE 1: deadRow is in user row coordinates and we have to
 // convert it into internal row coordinate (i.e. top row has
 // index zero and increasing downward).
+// NOTE 2: Also make sure we only delete valid rows and leave
+// at least one.
 //-------------------------------------------------------------
 void GraphicsScene::delete_row( int aDeadRow )
 {
   int deadRow = numRows_ - aDeadRow;
-  assert( deadRow >= 0 );
-  assert( deadRow < numRows_ );
+  
+  if ( !can_row_be_deleted(numRows_, aDeadRow) )
+  {
+    return;
+  }
 
   deselect_all_active_items();
 
   /* go through all grid cells and
-   * - delete the ones in the selectedRow_
-   * - shift the ones in a row greater than selectedRow_
+   * - delete the ones in aDeadRow
+   * - shift the ones in a row greater than aDeadRow
    *   up by one
    *
    * Important: We can't just delete as we go since
@@ -697,7 +703,6 @@ void GraphicsScene::delete_row( int aDeadRow )
 
   /* unselect row and update row counter */
   numRows_ = numRows_ - 1;
-  selectedRow_ = UNSELECTED;
 
   /* redraw the labels */
   create_grid_labels_();
@@ -719,32 +724,35 @@ void GraphicsScene::delete_row( int aDeadRow )
 // this slot opens a dialog to control adding and deleting
 // of rows
 //-------------------------------------------------------------
-void GraphicsScene::open_row_menu_()
+void GraphicsScene::open_row_col_menu_()
 {
   assert( selectedRow_ >= 0 );
   assert( selectedRow_ < numRows_ );
+  assert( selectedCol_ >= 0 );
+  assert( selectedCol_ < numCols_ );
 
-  if ( selectedRow_ == UNSELECTED ) {
+  if ( selectedRow_ == UNSELECTED || selectedCol_ == UNSELECTED ) {
     return;
   }
 
-  RowDeleteInsertDialog rowDialog( selectedRow_, numRows_ );
-  rowDialog.Init();
+  RowColDeleteInsertDialog rowColDialog( selectedRow_, numRows_,
+                                         selectedCol_, numCols_ );
+  rowColDialog.Init();
 
-  connect( &rowDialog,
+  connect( &rowColDialog,
            SIGNAL( insert_rows( int, int, int ) ),
            this,
            SLOT( insert_rows_( int, int, int ) )
          );
 
 
-  connect( &rowDialog,
+  connect( &rowColDialog,
            SIGNAL( delete_row( int ) ),
            this,
            SLOT( delete_row( int ) )
          );
 
-  rowDialog.exec();
+  rowColDialog.exec();
 }
 
 
@@ -939,42 +947,17 @@ void GraphicsScene::insert_col_( int aCol )
 // index zero and increasing downward). Also location is either
 // 0 for inserting below or 1 for inserting above.
 //-----------------------------------------------------------------
-void GraphicsScene::insert_rows_( int numRows, int pivotRow, int location )
+void GraphicsScene::insert_rows_( int rowCount, int pivotRow, int direction)
 {
-  if ( selectedRow_ == UNSELECTED ) {
+  if ( !can_row_be_inserted( numRows_, pivotRow) )
+  {
     return;
   }
-
-  for ( int rowCount = 0; rowCount < numRows; ++rowCount ) {
-    insert_single_row_( numRows_ - pivotRow - location );
+  
+  for ( int count = 0; count < rowCount; ++count ) {
+    insert_single_row_( numRows_ - pivotRow - direction);
   }
 }
-
-
-#if 0
-//-------------------------------------------------------------
-// insert new rows into grid
-//-------------------------------------------------------------
-void GraphicsScene::insert_above_row_()
-{
-  if ( selectedRow_ == UNSELECTED ) {
-    return;
-  }
-
-  insert_row_( selectedRow_ - 1 );
-}
-
-
-
-void GraphicsScene::insert_below_row_()
-{
-  if ( selectedRow_ == UNSELECTED ) {
-    return;
-  }
-
-  insert_row_( selectedRow_ );
-}
-#endif
 
 
 void GraphicsScene::insert_single_row_( int aRow )
@@ -999,10 +982,6 @@ void GraphicsScene::insert_single_row_( int aRow )
     anItem->insert_knitting_symbol( defaultSymbol_ );
     add_patternGridItem_( anItem );
   }
-
-
-  /* unselect row and update row counter */
-  selectedRow_ = UNSELECTED;
 
   /* redraw the labels */
   create_grid_labels_();
@@ -1897,13 +1876,12 @@ bool GraphicsScene::handle_click_on_grid_array_(
 
     gridMenu.addSeparator();
 
-    QAction* rowAction  = gridMenu.addAction( "Insert/delete rows" );
-    QAction* colAction = gridMenu.addAction( "Insert/delete columns" );
+    QAction* rowAction  = gridMenu.addAction( "Insert/delete rows/columns" );
 
     connect( rowAction,
              SIGNAL( triggered() ),
              this,
-             SLOT( open_row_menu_() ) );
+             SLOT( open_row_col_menu_() ) );
 
     gridMenu.exec( mouseEvent->screenPos() );
   }

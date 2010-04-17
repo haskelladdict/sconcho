@@ -141,7 +141,7 @@ protected:
 
 private slots:
 
-  void open_row_menu_();
+  void open_row_col_menu_();
   void insert_rows_( int numRows, int pivotRow, int location );
   void delete_col_();
   void insert_left_of_col_();

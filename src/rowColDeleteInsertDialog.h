@@ -28,7 +28,7 @@
 #include <QDialog>
 
 /* local includes */
-#include "ui_insertDeleteRowsWidget.h"
+#include "ui_rowColDeleteInsertDialog.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -40,16 +40,24 @@ class QGroupBox;
 class QSpinBox;
 
 
+namespace {
+  const int INSERT_ROW = 0;
+  const int DELETE_ROW = 1;
+  const int INSERT_COLUMN = 2;
+  const int DELETE_COLUMN = 3;
+}
+
+
 /**************************************************************
  *
  * this dialog provides the ability to delete or insert rows
  * in the main pattern grid
  *
  **************************************************************/
-class RowDeleteInsertDialog
+class RowColDeleteInsertDialog
     :
     public QDialog,
-    public Ui::RowDeleteInsertDialog,
+    public Ui::RowColDeleteInsertDialog,
     public boost::noncopyable
 {
 
@@ -58,8 +66,9 @@ class RowDeleteInsertDialog
 
 public:
 
-  explicit RowDeleteInsertDialog( int selectedRow, int maxRows,
-                                  QWidget* myParent = 0 );
+  explicit RowColDeleteInsertDialog( int selectedRow, int maxRows,
+                                     int selectedColumn, int maxColums,
+                                     QWidget* myParent = 0 );
   bool Init();
 
 
@@ -71,8 +80,8 @@ signals:
 
 private slots:
 
-  void insert_clicked_();
-  void delete_clicked_();
+  void insert_row_clicked_();
+  void delete_row_clicked_();
 
 
 private:
@@ -81,10 +90,14 @@ private:
   int status_;
   int selectedRow_;
   int maxRows_;
+  int selectedColumn_;
+  int maxColumns_;
+//  int tabSelector_;
 
   /* interface creation functions */
-  void customize_insert_layout_();
-  void customize_delete_layout_();
+  void customize_insert_row_layout_();
+  void customize_delete_row_layout_();
+  void customize_delete_col_layout_();
 };
 
 

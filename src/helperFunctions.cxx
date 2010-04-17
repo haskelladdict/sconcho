@@ -25,6 +25,7 @@
 /* qt includes */
 #include <QDebug>
 #include <QGraphicsItem>
+#include <QMessageBox>
 #include <QMultiMap>
 
 /* local includes */
@@ -224,6 +225,63 @@ void move_graphicsItems_vertically( const QList<QGraphicsItem*>& allItems,
     }
   }
 }
+
+
+
+//----------------------------------------------------------------
+// check if a certain row can be deleted
+// NOTE: deadRow is in user coordinates not in internal
+// coordinates.
+//----------------------------------------------------------------
+bool can_row_be_deleted( int numRows, int deadRow )
+{
+  int status = true;
+  int deadRowInternal = numRows - deadRow;
+
+  /* make sure we're deleting a valid row */
+  if (deadRowInternal < 0 || deadRowInternal >= numRows)
+  {
+    QString num;
+    QMessageBox::critical(0, QObject::tr("Invalid Row"),
+                          QObject::tr("trying to delete non-existing row ")
+                          + num.setNum(deadRow) + "!" );
+    status = false;
+  }
+
+  /* make sure we don't delete the last row */
+  if ( numRows <= 1 )
+  {
+     QMessageBox::critical(0, QObject::tr("Invalid Row"),
+                           QObject::tr("trying to delete last row!") );
+     status = false;
+  }
+
+  return status;
+}
+
+
+
+//----------------------------------------------------------------
+// check if a certain row can be deleted
+// NOTE: pivotRow is in user coordinates not in internal
+// coordinates.
+//----------------------------------------------------------------
+bool can_row_be_inserted( int numRows, int pivotRow )
+{
+  bool status = true;
+  
+  if (pivotRow <= 0 || pivotRow > numRows)
+  {
+    QString num;
+    QMessageBox::critical(0, QObject::tr("Invalid Row"),
+                          QObject::tr("trying to insert at non-existing row ")
+                          + num.setNum(pivotRow));
+    status = false;
+  }
+
+  return status;
+}
+
 
 
 
