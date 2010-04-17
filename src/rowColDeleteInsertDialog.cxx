@@ -78,9 +78,16 @@ bool RowColDeleteInsertDialog::Init()
 
   customize_insert_row_layout_();
   customize_delete_row_layout_();
-  customize_delete_col_layout_();
+  customize_insert_column_layout_();
+  customize_delete_column_layout_();
 
-  insertDeleteTabWidget->setCurrentIndex(0);
+  connect( closeButton,
+           SIGNAL( clicked() ),
+           this,
+           SLOT( close() )
+         );
+  
+  insertDeleteTabWidget->setCurrentIndex( 0 );
   return true;
 }
 
@@ -134,6 +141,32 @@ void RowColDeleteInsertDialog::delete_row_clicked_()
 }
 
 
+
+//-------------------------------------------------------------
+// insert based on what the user selected
+//-------------------------------------------------------------
+void RowColDeleteInsertDialog::insert_column_clicked_()
+{
+  /* figure out what the user selected */
+  int numColumns = numColumnsWidget->value();
+  int location = insertColumnLocationWidget->currentIndex();
+  int pivot = pivotColumnLocation->value();
+
+  emit insert_column( numColumns, pivot, location );
+}
+
+
+
+//-------------------------------------------------------------
+// delete based on what the user selected
+//-------------------------------------------------------------
+void RowColDeleteInsertDialog::delete_column_clicked_()
+{
+  emit delete_column( deleteColumnWidget->value() );
+}
+
+
+
 /*************************************************************
  *
  * PRIVATE MEMBER FUNCTIONS
@@ -153,13 +186,7 @@ void RowColDeleteInsertDialog::customize_insert_row_layout_()
            SLOT( insert_row_clicked_() )
          );
 
-  connect( closeButton,
-           SIGNAL( clicked() ),
-           this,
-           SLOT( close() )
-         );
 }
-
 
 
 
@@ -168,18 +195,28 @@ void RowColDeleteInsertDialog::customize_insert_row_layout_()
 //-------------------------------------------------------------
 void RowColDeleteInsertDialog::customize_delete_row_layout_()
 {
-  deleteRowWidget->setValue( maxColumns_ - selectedColumn_ );
+  deleteRowWidget->setValue( maxRows_ - selectedRow_ );
 
   connect( deleteRowButton,
            SIGNAL( clicked() ),
            this,
            SLOT( delete_row_clicked_() )
          );
+}
 
-  connect( closeButton,
+
+
+//-------------------------------------------------------------
+// this function customizes the insert row widget
+//-------------------------------------------------------------
+void RowColDeleteInsertDialog::customize_insert_column_layout_()
+{
+  pivotColumnLocation->setValue( maxColumns_ - selectedColumn_ );
+
+  connect( insertColumnButton,
            SIGNAL( clicked() ),
            this,
-           SLOT( close() )
+           SLOT( insert_column_clicked_() )
          );
 }
 
@@ -188,20 +225,14 @@ void RowColDeleteInsertDialog::customize_delete_row_layout_()
 //-------------------------------------------------------------
 // this function customizes the delete column widget
 //-------------------------------------------------------------
-void RowColDeleteInsertDialog::customize_delete_col_layout_()
+void RowColDeleteInsertDialog::customize_delete_column_layout_()
 {
-  deleteColumnWidget->setValue( maxRows_ - selectedRow_ );
-
+  deleteColumnWidget->setValue( maxColumns_ - selectedColumn_ );
+  
   connect( deleteColumnButton,
            SIGNAL( clicked() ),
            this,
-           SLOT( delete_row_clicked_() )
-         );
-
-  connect( closeButton,
-           SIGNAL( clicked() ),
-           this,
-           SLOT( close() )
+           SLOT( delete_column_clicked_() )
          );
 }
 

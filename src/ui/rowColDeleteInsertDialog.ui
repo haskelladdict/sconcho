@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="insertRowTab">
     <attribute name="title">
@@ -206,7 +206,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="numColsWidget">
+         <widget class="QSpinBox" name="numColumnsWidget">
           <property name="minimum">
            <number>1</number>
           </property>
@@ -308,7 +308,7 @@
       <item>
        <widget class="QLabel" name="label_11">
         <property name="text">
-         <string>delete row</string>
+         <string>delete column</string>
         </property>
        </widget>
       </item>
@@ -365,7 +365,7 @@
   <tabstop>insertRowButton</tabstop>
   <tabstop>closeButton</tabstop>
   <tabstop>deleteRowButton</tabstop>
-  <tabstop>numColsWidget</tabstop>
+  <tabstop>numColumnsWidget</tabstop>
   <tabstop>insertColumnLocationWidget</tabstop>
   <tabstop>pivotColumnLocation</tabstop>
   <tabstop>insertColumnButton</tabstop>

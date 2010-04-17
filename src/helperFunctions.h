@@ -144,6 +144,13 @@ bool can_row_be_inserted( int numRows, int pivotRow );
 
 
 
+//----------------------------------------------------------------
+// check if a certain column can be deleted
+// NOTE: deadCol is in user coordinates not in internal
+// coordinates.
+//----------------------------------------------------------------
+bool can_column_be_deleted( int numColumns, int deadColumn );
+
 
 
 QT_END_NAMESPACE

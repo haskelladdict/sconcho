@@ -649,6 +649,135 @@ void GraphicsScene::toggle_legend_visibility()
 
 
 
+
+/**************************************************************
+ *
+ * PRIVATE SLOTS
+ *
+ *************************************************************/
+
+//-------------------------------------------------------------
+// this slot opens a dialog to control adding and deleting
+// of rows
+//-------------------------------------------------------------
+void GraphicsScene::open_row_col_menu_()
+{
+  assert( selectedRow_ >= 0 );
+  assert( selectedRow_ < numRows_ );
+  assert( selectedCol_ >= 0 );
+  assert( selectedCol_ < numCols_ );
+
+  if ( selectedRow_ == UNSELECTED || selectedCol_ == UNSELECTED ) {
+    return;
+  }
+
+  RowColDeleteInsertDialog rowColDialog( selectedRow_, numRows_,
+                                         selectedCol_, numCols_ );
+  rowColDialog.Init();
+
+  connect( &rowColDialog,
+           SIGNAL( insert_rows( int, int, int ) ),
+           this,
+           SLOT( insert_rows_( int, int, int ) )
+         );
+
+
+  connect( &rowColDialog,
+           SIGNAL( delete_row( int ) ),
+           this,
+           SLOT( delete_row_( int ) )
+         );
+
+
+  connect( &rowColDialog,
+           SIGNAL( delete_col( int ) ),
+           this,
+           SLOT( delete_col_( int ) )
+         );
+
+  rowColDialog.exec();
+}
+
+
+//-------------------------------------------------------------
+// this slots deletes selectedCol from the pattern grid array
+// NOTE: delecting columns is a bit more tricky than deleting
+// rows since we have to bail if the selected column has cells
+// that span more than a single unit cell, i.e., columns.
+//-------------------------------------------------------------
+void GraphicsScene::delete_col_( int aDeadCol )
+{
+  int deadCol = numCols_ - aDeadCol;
+
+  if ( !can_column_be_deleted( numCols_, aDeadCol ) ) {
+    return;
+  }
+  
+  assert( deadCol >= 0 );
+  assert( deadCol < numCols_ );
+
+  deselect_all_active_items();
+
+  QList<QGraphicsItem*> allItems( items() );
+  QList<PatternGridItem*> gridItems;
+
+  /* go through all items and make sure that the cells
+   * of the selected rows are all unit cells and don't
+   * span multiple columns */
+  int targetColCounter = 0;
+  foreach( QGraphicsItem* anItem, allItems ) {
+    PatternGridItem* cell =
+      qgraphicsitem_cast<PatternGridItem*>( anItem );
+
+    if ( cell != 0 ) {
+      if ( cell->col() == deadCol &&
+           cell->dim().width() == 1 ) {
+        targetColCounter += 1;
+      }
+
+      gridItems.push_back( cell );
+    }
+  }
+
+  /* if we have less than numRows_ in deletedColCounter there
+   * was at least on multi column cell in the column */
+  if ( targetColCounter < numRows_ ) {
+    emit statusBar_error( "cannot delete columns with "
+                          "cells that span multiple columns" );
+    return;
+  }
+
+
+  /* go through all grid cells and
+   * - delete the ones in the selectedRow_
+   * - shift the ones in a row greater than selectedRow_
+   *   up by one
+   */
+  foreach( PatternGridItem* cell, gridItems ) {
+    if ( cell->col() == deadCol ) {
+      remove_patternGridItem_( cell );
+    } else if ( cell->col() > deadCol ) {
+      cell->reseat( cell->col() - 1, cell->row() );
+      cell->setPos( compute_cell_origin_( cell->col(), cell->row() ) );
+    }
+  }
+
+  /* update position of legend items */
+  shift_legend_items_horizontally_( deadCol, -gridCellDimensions_.width() );
+
+  /* unselect row and update row counter */
+  numCols_ = numCols_ - 1;
+
+  /* redraw the labels */
+  create_grid_labels_();
+
+  /* update sceneRect
+   * NOTE: This may be a bottleneck for large grids */
+  setSceneRect( itemsBoundingRect() );
+}
+
+
+
 //-------------------------------------------------------------
 // this slots deletes selectedRow from the pattern grid array
 // NOTE 1: deadRow is in user row coordinates and we have to
@@ -657,12 +786,11 @@ void GraphicsScene::toggle_legend_visibility()
 // NOTE 2: Also make sure we only delete valid rows and leave
 // at least one.
 //-------------------------------------------------------------
-void GraphicsScene::delete_row( int aDeadRow )
+void GraphicsScene::delete_row_( int aDeadRow )
 {
   int deadRow = numRows_ - aDeadRow;
-  
-  if ( !can_row_be_deleted(numRows_, aDeadRow) )
-  {
+
+  if ( !can_row_be_deleted( numRows_, aDeadRow ) ) {
     return;
   }
 
@@ -713,50 +841,7 @@ void GraphicsScene::delete_row( int aDeadRow )
 }
 
 
-
-/**************************************************************
- *
- * PRIVATE SLOTS
- *
- *************************************************************/
-
-//-------------------------------------------------------------
-// this slot opens a dialog to control adding and deleting
-// of rows
-//-------------------------------------------------------------
-void GraphicsScene::open_row_col_menu_()
-{
-  assert( selectedRow_ >= 0 );
-  assert( selectedRow_ < numRows_ );
-  assert( selectedCol_ >= 0 );
-  assert( selectedCol_ < numCols_ );
-
-  if ( selectedRow_ == UNSELECTED || selectedCol_ == UNSELECTED ) {
-    return;
-  }
-
-  RowColDeleteInsertDialog rowColDialog( selectedRow_, numRows_,
-                                         selectedCol_, numCols_ );
-  rowColDialog.Init();
-
-  connect( &rowColDialog,
-           SIGNAL( insert_rows( int, int, int ) ),
-           this,
-           SLOT( insert_rows_( int, int, int ) )
-         );
-
-
-  connect( &rowColDialog,
-           SIGNAL( delete_row( int ) ),
-           this,
-           SLOT( delete_row( int ) )
-         );
-
-  rowColDialog.exec();
-}
-
-
-
+#if 0
 //-------------------------------------------------------------
 // this slots deletes selectedCol from the pattern grid array
 // NOTE: delecting columns is a bit more tricky than deleting
@@ -833,7 +918,7 @@ void GraphicsScene::delete_col_()
    * NOTE: This may be a bottleneck for large grids */
   setSceneRect( itemsBoundingRect() );
 }
-
+#endif
 
 
 //-------------------------------------------------------------
@@ -947,15 +1032,14 @@ void GraphicsScene::insert_col_( int aCol )
 // index zero and increasing downward). Also location is either
 // 0 for inserting below or 1 for inserting above.
 //-----------------------------------------------------------------
-void GraphicsScene::insert_rows_( int rowCount, int pivotRow, int direction)
+void GraphicsScene::insert_rows_( int rowCount, int pivotRow, int direction )
 {
-  if ( !can_row_be_inserted( numRows_, pivotRow) )
-  {
+  if ( !can_row_be_inserted( numRows_, pivotRow ) ) {
     return;
   }
-  
+
   for ( int count = 0; count < rowCount; ++count ) {
-    insert_single_row_( numRows_ - pivotRow - direction);
+    insert_single_row_( numRows_ - pivotRow - direction );
   }
 }
 

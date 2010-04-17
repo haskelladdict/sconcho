@@ -130,7 +130,8 @@ public slots:
   void update_after_settings_change();
   void toggle_legend_visibility();
   void load_settings();
-  void delete_row( int row );
+//  void delete_row( int row );
+//  void delete_col( int col );
 
 
 protected:
@@ -143,7 +144,8 @@ private slots:
 
   void open_row_col_menu_();
   void insert_rows_( int numRows, int pivotRow, int location );
-  void delete_col_();
+  void delete_row_( int row );
+  void delete_col_( int col );
   void insert_left_of_col_();
   void insert_right_of_col_();
   void mark_rectangle_for_deletion_( QObject* foo );

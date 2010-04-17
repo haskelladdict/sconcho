@@ -40,11 +40,12 @@ class QGroupBox;
 class QSpinBox;
 
 
-namespace {
-  const int INSERT_ROW = 0;
-  const int DELETE_ROW = 1;
-  const int INSERT_COLUMN = 2;
-  const int DELETE_COLUMN = 3;
+namespace
+{
+const int INSERT_ROW = 0;
+const int DELETE_ROW = 1;
+const int INSERT_COLUMN = 2;
+const int DELETE_COLUMN = 3;
 }
 
 
@@ -76,12 +77,16 @@ signals:
 
   void insert_rows( int num, int pivot, int location );
   void delete_row( int row );
+  void insert_column( int num, int pivot, int location );
+  void delete_column( int col );
 
 
 private slots:
 
   void insert_row_clicked_();
   void delete_row_clicked_();
+  void insert_column_clicked_();
+  void delete_column_clicked_();
 
 
 private:
@@ -92,12 +97,12 @@ private:
   int maxRows_;
   int selectedColumn_;
   int maxColumns_;
-//  int tabSelector_;
 
   /* interface creation functions */
   void customize_insert_row_layout_();
   void customize_delete_row_layout_();
-  void customize_delete_col_layout_();
+  void customize_insert_column_layout_();
+  void customize_delete_column_layout_();
 };
 
 

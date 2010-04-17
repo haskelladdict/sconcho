@@ -239,21 +239,19 @@ bool can_row_be_deleted( int numRows, int deadRow )
   int deadRowInternal = numRows - deadRow;
 
   /* make sure we're deleting a valid row */
-  if (deadRowInternal < 0 || deadRowInternal >= numRows)
-  {
+  if ( deadRowInternal < 0 || deadRowInternal >= numRows ) {
     QString num;
-    QMessageBox::critical(0, QObject::tr("Invalid Row"),
-                          QObject::tr("trying to delete non-existing row ")
-                          + num.setNum(deadRow) + "!" );
+    QMessageBox::critical( 0, QObject::tr( "Invalid Row" ),
+                           QObject::tr( "trying to delete non-existing row " )
+                           + num.setNum( deadRow ) + "!" );
     status = false;
   }
 
   /* make sure we don't delete the last row */
-  if ( numRows <= 1 )
-  {
-     QMessageBox::critical(0, QObject::tr("Invalid Row"),
-                           QObject::tr("trying to delete last row!") );
-     status = false;
+  if ( numRows <= 1 ) {
+    QMessageBox::critical( 0, QObject::tr( "Invalid Row" ),
+                           QObject::tr( "trying to delete last row!" ) );
+    status = false;
   }
 
   return status;
@@ -269,13 +267,12 @@ bool can_row_be_deleted( int numRows, int deadRow )
 bool can_row_be_inserted( int numRows, int pivotRow )
 {
   bool status = true;
-  
-  if (pivotRow <= 0 || pivotRow > numRows)
-  {
+
+  if ( pivotRow <= 0 || pivotRow > numRows ) {
     QString num;
-    QMessageBox::critical(0, QObject::tr("Invalid Row"),
-                          QObject::tr("trying to insert at non-existing row ")
-                          + num.setNum(pivotRow));
+    QMessageBox::critical( 0, QObject::tr( "Invalid Row" ),
+                           QObject::tr( "trying to insert at non-existing row " )
+                           + num.setNum( pivotRow ) );
     status = false;
   }
 
@@ -283,6 +280,35 @@ bool can_row_be_inserted( int numRows, int pivotRow )
 }
 
 
+
+//----------------------------------------------------------------
+// check if a certain column can be deleted
+// NOTE: deadColumn is in user coordinates not in internal
+// coordinates.
+//----------------------------------------------------------------
+bool can_column_be_deleted( int numColumns, int deadColumn )
+{
+  int status = true;
+  int deadColInternal = numColumns - deadColumn;
+
+  /* make sure we're deleting a valid row */
+  if ( deadColInternal < 0 || deadColInternal >= numColumns ) {
+    QString num;
+    QMessageBox::critical( 0, QObject::tr( "Invalid Column" ),
+                           QObject::tr( "trying to delete non-existing column " )
+                           + num.setNum( deadColumn ) + "!" );
+    status = false;
+  }
+
+  /* make sure we don't delete the last row */
+  if ( numColumns <= 1 ) {
+    QMessageBox::critical( 0, QObject::tr( "Invalid Column" ),
+                           QObject::tr( "trying to delete last column!" ) );
+    status = false;
+  }
+
+  return status;
+}
 
 
 QT_END_NAMESPACE
