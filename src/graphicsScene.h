@@ -22,6 +22,7 @@
 #define GRAPHICS_SCENE_H
 
 /* boost includes */
+#include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 
 /* QT includes */
@@ -60,9 +61,33 @@ const int NOSHIFT    = -101;
 /* convenience typedefs */
 typedef QList<QPair<int, int> > RowLayout;
 typedef QList<PatternGridItem*> RowItems;
-
 typedef QPair<LegendItem*, LegendLabel*> LegendEntry;
 };
+
+
+
+/****************************************************************
+ *
+ * definitions of copy object
+ *
+ ***************************************************************/
+struct CopyObjectItem {
+  KnittingSymbolPtr symbol;
+  QColor backColor;
+  QSize size;
+  int row;
+  int column;
+};
+typedef boost::shared_ptr<CopyObjectItem> CopyObjectItemPtr;
+
+
+struct CopyObject {
+  QList<CopyObjectItemPtr> objects;
+  int width;    // width of copy object in columns
+  int height;   // height of copy object in rows
+};
+
+
 
 
 /***************************************************************
@@ -130,8 +155,6 @@ public slots:
   void update_after_settings_change();
   void toggle_legend_visibility();
   void load_settings();
-//  void delete_row( int row );
-//  void delete_col( int col );
 
 
 protected:
@@ -150,6 +173,8 @@ private slots:
   void mark_rectangle_for_deletion_( QObject* foo );
   void customize_rectangle_( QObject* foo );
   void update_key_label_text_( QString, QString );
+  void copy_items_();
+  void paste_items_();
   void notify_legend_of_item_addition_( const KnittingSymbolPtr symbol,
                                         QColor color, QString extraTag );
   void notify_legend_of_item_removal_( const KnittingSymbolPtr symbol,
@@ -181,6 +206,9 @@ private:
 
   /* list of currenly selected items */
   QMap<int, PatternGridItem*> activeItems_;
+
+  /* currently copied selection */
+  CopyObject copiedItems_;
 
   /* pointers to current user selections (knitting symbol,
    * color, pen size ..) */
@@ -254,6 +282,9 @@ private:
 
   QPoint compute_cell_origin_( int col, int row ) const;
   int compute_cell_index_( PatternGridItem* anItem ) const;
+  QPair<int, int> compute_from_cell_index_( int index ) const;
+
+  PatternGridItem* patternGridItem_at_( int col, int row ) const;
 
   bool handle_click_on_marker_rectangle_(
     const QGraphicsSceneMouseEvent* mouseEvent );

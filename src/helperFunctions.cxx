@@ -334,4 +334,37 @@ bool can_column_be_inserted( int numColumns, int pivotCol )
 
 
 
+//----------------------------------------------------------------
+// takes the current extent of a copy region and adjusts it
+// based on a new item to be part of the region
+//----------------------------------------------------------------
+void adjust_copy_region( CopyRegionDimension& aDim,
+                         QPair<int, int> location )
+{
+  int row = location.first;
+  int col = location.second;
+
+  /* adjust row dimensions */
+  if ( row < aDim.get<0>() ) {
+    aDim.get<0>() = row;
+  } else if ( row > aDim.get<1>() ) {
+    aDim.get<1>() = row;
+  }
+
+  /* adjust column dimensions */
+  if ( col < aDim.get<2>() ) {
+    aDim.get<2>() = col;
+  } else if ( col > aDim.get<3>() ) {
+    aDim.get<3>() = col;
+  }
+}
+
+
+
+
+
+
+
+
+
 QT_END_NAMESPACE

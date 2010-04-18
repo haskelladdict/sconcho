@@ -32,8 +32,12 @@
 #include <QPair>
 #include <QString>
 
+/* include local defs */
+#include "basicDefs.h"
+
 
 QT_BEGIN_NAMESPACE
+
 
 /* forward declarations */
 class GraphicsScene;
@@ -159,6 +163,16 @@ bool can_column_be_inserted( int numColumns, int pivotColumn );
 // coordinates.
 //----------------------------------------------------------------
 bool can_column_be_deleted( int numColumns, int deadColumn );
+
+
+
+//----------------------------------------------------------------
+// takes the current extent of a copy region and adjusts it
+// based on a new item to be part of the region
+//----------------------------------------------------------------
+void adjust_copy_region( CopyRegionDimension& aDim,
+                         QPair<int, int> location );
+
 
 
 

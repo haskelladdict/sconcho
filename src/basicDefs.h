@@ -33,6 +33,7 @@
 
 /* use BOOST_FOREACH */
 #include <boost/foreach.hpp>
+#include <boost/tuple/tuple.hpp>
 #define FOREACH BOOST_FOREACH
 
 /** assert for debugging */
@@ -40,6 +41,9 @@
 #define NDEBUG
 #endif
 #include <cassert>
+
+/* convenience typedef */
+typedef boost::tuple<int, int, int, int> CopyRegionDimension;
 
 /* flag that a class object has been successfully
  * constructed */

@@ -50,6 +50,7 @@ KnittingPatternItem::KnittingPatternItem( const QSize& aDim,
     svgItem_( 0 ),
     knittingSymbol_( emptyKnittingSymbol ),
     backColor_( aBackColor ),
+    highlightColor_( QColor( Qt::gray ) ),
     dim_( aDim ),
     loc_( aLoc ),
     cellAspectRatio_( aspectRatio )
@@ -244,9 +245,6 @@ void KnittingPatternItem::set_up_pens_brushes_()
   /* pen used */
   pen_.setWidthF( 1.0 );
   pen_.setColor( Qt::black );
-
-  /* set up highlight color */
-  highlightColor_ = QColor( Qt::gray );
 
   currentColor_ = backColor_;
 }

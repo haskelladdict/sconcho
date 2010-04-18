@@ -692,7 +692,7 @@ void GraphicsScene::open_row_col_menu_()
            SLOT( insert_columns_( int, int, int ) )
          );
 
-  
+
   connect( &rowColDialog,
            SIGNAL( delete_column( int ) ),
            this,
@@ -716,7 +716,7 @@ void GraphicsScene::delete_column_( int aDeadCol )
   if ( !can_column_be_deleted( numCols_, aDeadCol ) ) {
     return;
   }
-  
+
   assert( deadCol >= 0 );
   assert( deadCol < numCols_ );
 
@@ -848,7 +848,7 @@ void GraphicsScene::delete_row_( int aDeadRow )
 //-------------------------------------------------------------
 // insert new columns into grid
 //-------------------------------------------------------------
-void GraphicsScene::insert_columns_( int columnCount, int pivotCol, int direction)
+void GraphicsScene::insert_columns_( int columnCount, int pivotCol, int direction )
 {
   if ( !can_column_be_inserted( numCols_, pivotCol ) ) {
     return;
@@ -856,7 +856,7 @@ void GraphicsScene::insert_columns_( int columnCount, int pivotCol, int directio
 
   for ( int count = 0; count < columnCount; ++count ) {
     insert_single_column_( numCols_ - pivotCol + direction );
-  } 
+  }
 }
 
 
@@ -1042,6 +1042,87 @@ void GraphicsScene::notify_legend_of_item_removal_(
 }
 
 
+//-------------------------------------------------------------
+// this function copies the current active item selection
+//-------------------------------------------------------------
+void GraphicsScene::copy_items_()
+{
+  copiedItems_.objects.clear();
+  CopyRegionDimension regionDim( INT_MAX, 0, INT_MAX, 0 );
+
+  QMap<int, PatternGridItem*>::const_iterator iter =
+    activeItems_.constBegin();
+  while ( iter != activeItems_.constEnd() ) {
+
+    QPair<int, int> location = compute_from_cell_index_( iter.key() );
+    adjust_copy_region( regionDim, location );
+
+    /* copy item */
+    PatternGridItem* source = iter.value();
+    CopyObjectItemPtr item = CopyObjectItemPtr( new CopyObjectItem );
+    item->symbol    = source->get_knitting_symbol();
+    item->backColor = source->color();
+    item->size      = source->dim();
+    item->row       = source->row();
+    item->column    = source->col();
+    copiedItems_.objects.push_back( item );
+
+    ++iter;
+  }
+
+  /* now that we know the total extent we can normalize each
+   * item and compute the width and height of the copy region */
+  int rowOrigin = regionDim.get<0>();
+  int colOrigin = regionDim.get<2>();
+  foreach( CopyObjectItemPtr item, copiedItems_.objects ) {
+    item->row = item->row - rowOrigin;
+    item->column = item->column - colOrigin;
+
+    assert( item->row >= 0 );
+    assert( item->column >= 0 );
+  }
+
+  copiedItems_.height = regionDim.get<1>() - rowOrigin + 1;
+  copiedItems_.width  = regionDim.get<3>() - colOrigin + 1;
+}
+
+
+
+//-------------------------------------------------------------
+// this function pastes whatever is in the current selection
+// assuming this is possible based on the present grid
+// geometry and user selection on the grid.
+//-------------------------------------------------------------
+void GraphicsScene::paste_items_()
+{
+  /* make sure the copy object fits */
+  if (( selectedRow_ + copiedItems_.height ) > numRows_
+      || ( selectedCol_ + copiedItems_.width ) > numCols_ ) {
+    QMessageBox::critical( 0, tr( "Paste Error" ),
+                           tr( "Pasted selection does not fit "
+                               "into current grid!" ) );
+    return;
+  }
+
+  foreach( CopyObjectItemPtr item, copiedItems_.objects ) {
+    int targetCol = selectedCol_ + item->column;
+    int targetRow = selectedRow_ + item->row;
+
+    PatternGridItem* deadItem = patternGridItem_at_( targetCol, targetRow );
+    remove_patternGridItem_( deadItem );
+
+    PatternGridItem* newItem =
+      new PatternGridItem( item->size, gridCellDimensions_, targetCol,
+                           targetRow, this, item->backColor );
+
+    newItem->Init();
+    newItem->insert_knitting_symbol( item->symbol );
+    newItem->setPos( compute_cell_origin_( targetCol, targetRow ) );
+    add_patternGridItem_( newItem );
+  }
+}
+
+
 
 /**************************************************************
  *
@@ -1133,7 +1214,7 @@ void GraphicsScene::insert_single_row_( int aRow )
 // NOTE: The special case here is adding a column at the
 // right or left of the pattern grid in which case we're
 // always in good shape and the below test will actually
-// fail when adding at the right 
+// fail when adding at the right
 //-------------------------------------------------------------
 void GraphicsScene::insert_single_column_( int aCol )
 {
@@ -1164,8 +1245,8 @@ void GraphicsScene::insert_single_column_( int aCol )
     /* if we have less than numCols_ in deletedColCounter there
      * was at least on multi column cell in the column */
     if ( targetColCounter < numRows_ ) {
-      QMessageBox::critical(0, tr("Invalid Column"), tr("cannot insert column")
-                            + tr("between cells that span multiple columns" ));
+      QMessageBox::critical( 0, tr( "Invalid Column" ), tr( "cannot insert column" )
+                             + tr( "between cells that span multiple columns" ) );
       return;
     }
   }
@@ -1176,8 +1257,8 @@ void GraphicsScene::insert_single_column_( int aCol )
 
   /* now insert the new column */
   for ( int row = 0; row < numRows_; ++row ) {
-    PatternGridItem* anItem = new PatternGridItem(QSize( 1, 1 ),
-      gridCellDimensions_, aCol, row, this, defaultColor_ );
+    PatternGridItem* anItem = new PatternGridItem( QSize( 1, 1 ),
+        gridCellDimensions_, aCol, row, this, defaultColor_ );
 
     anItem->Init();
     anItem->setPos( compute_cell_origin_( aCol, row ) );
@@ -1529,12 +1610,57 @@ QPoint GraphicsScene::compute_cell_origin_( int col, int row ) const
 
 
 //-----------------------------------------------------------------
+// returns a pointer to the PatternGridItem at the given row
+// and column indices
+//-----------------------------------------------------------------
+PatternGridItem* GraphicsScene::patternGridItem_at_( int col, int row ) const
+{
+  assert( col >= 0 && col <= numCols_ );
+  assert( row >= 0 && row <= numRows_ );
+
+  QPointF center( origin_.x() + ( col + 0.5 ) * gridCellDimensions_.width(),
+                  origin_.y() + ( row + 0.5 ) * gridCellDimensions_.height() );
+
+  QList<PatternGridItem*> foundItems;
+  QList<QGraphicsItem*> allItems = items( center );
+  foreach( QGraphicsItem* anItem, allItems ) {
+    PatternGridItem* cell = qgraphicsitem_cast<PatternGridItem*>( anItem );
+
+    if ( cell != 0 ) {
+      foundItems.push_back( cell );
+    }
+  }
+
+  assert( foundItems.size() == 1 );
+
+  return foundItems.first();
+}
+
+
+//-----------------------------------------------------------------
 // compute the index of a given cell based on its present row
 // and column
 //-----------------------------------------------------------------
 int GraphicsScene::compute_cell_index_( PatternGridItem* anItem ) const
 {
   return ( anItem->row() * numCols_ ) + anItem->col();
+}
+
+
+
+//-----------------------------------------------------------------
+// compute the row and column of a given cell based on the
+// cell index
+//-----------------------------------------------------------------
+QPair<int, int> GraphicsScene::compute_from_cell_index_( int index ) const
+{
+  int row = static_cast<int>( index / numCols_ );
+  int col = index;
+  if ( row != 0 ) {
+    col = index % numCols_;
+  }
+
+  return QPair<int, int>( row, col );
 }
 
 
@@ -1871,12 +1997,22 @@ bool GraphicsScene::handle_click_on_grid_array_(
 
     gridMenu.addSeparator();
 
-    QAction* rowAction  = gridMenu.addAction( "Insert/delete rows/columns" );
+    QAction* rowAction  = gridMenu.addAction( "Insert/delete rows & columns" );
 
     connect( rowAction,
              SIGNAL( triggered() ),
              this,
              SLOT( open_row_col_menu_() ) );
+
+    connect( copyAction,
+             SIGNAL( triggered() ),
+             this,
+             SLOT( copy_items_() ) );
+
+    connect( pasteAction,
+             SIGNAL( triggered() ),
+             this,
+             SLOT( paste_items_() ) );
 
     gridMenu.exec( mouseEvent->screenPos() );
   }

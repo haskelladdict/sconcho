@@ -86,7 +86,7 @@ bool RowColDeleteInsertDialog::Init()
            this,
            SLOT( close() )
          );
-  
+
   insertDeleteTabWidget->setCurrentIndex( 0 );
   return true;
 }
@@ -228,7 +228,7 @@ void RowColDeleteInsertDialog::customize_insert_column_layout_()
 void RowColDeleteInsertDialog::customize_delete_column_layout_()
 {
   deleteColumnWidget->setValue( maxColumns_ - selectedColumn_ );
-  
+
   connect( deleteColumnButton,
            SIGNAL( clicked() ),
            this,
