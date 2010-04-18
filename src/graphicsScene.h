@@ -143,11 +143,10 @@ protected:
 private slots:
 
   void open_row_col_menu_();
-  void insert_rows_( int numRows, int pivotRow, int location );
+  void insert_rows_( int numRows, int pivotRow, int direction );
   void delete_row_( int row );
-  void delete_col_( int col );
-  void insert_left_of_col_();
-  void insert_right_of_col_();
+  void insert_columns_( int numCols, int pivotCol, int direction );
+  void delete_column_( int col );
   void mark_rectangle_for_deletion_( QObject* foo );
   void customize_rectangle_( QObject* foo );
   void update_key_label_text_( QString, QString );
@@ -245,7 +244,7 @@ private:
 
   void select_column_( int col );
   void select_row_( int row );
-  void insert_col_( int col );
+  void insert_single_column_( int col );
   void insert_single_row_( int row );
   void expand_grid_( int colStart, int rowStart );
 

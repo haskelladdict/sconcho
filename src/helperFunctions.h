@@ -128,6 +128,15 @@ void move_graphicsItems_vertically( const QList<QGraphicsItem*>& items,
 
 //----------------------------------------------------------------
 // check if a certain row can be deleted
+// NOTE: pivotRow is in user coordinates not in internal
+// coordinates.
+//----------------------------------------------------------------
+bool can_row_be_inserted( int numRows, int pivotRow );
+
+
+
+//----------------------------------------------------------------
+// check if a certain row can be deleted
 // NOTE: deadRow is in user coordinates not in internal
 // coordinates.
 //----------------------------------------------------------------
@@ -140,7 +149,7 @@ bool can_row_be_deleted( int numRows, int deadRow );
 // NOTE: pivotRow is in user coordinates not in internal
 // coordinates.
 //----------------------------------------------------------------
-bool can_row_be_inserted( int numRows, int pivotRow );
+bool can_column_be_inserted( int numColumns, int pivotColumn );
 
 
 

@@ -311,4 +311,27 @@ bool can_column_be_deleted( int numColumns, int deadColumn )
 }
 
 
+
+//----------------------------------------------------------------
+// check if a certain row can be deleted
+// NOTE: pivotRow is in user coordinates not in internal
+// coordinates.
+//----------------------------------------------------------------
+bool can_column_be_inserted( int numColumns, int pivotCol )
+{
+  bool status = true;
+
+  if ( pivotCol <= 0 || pivotCol > numColumns ) {
+    QString num;
+    QMessageBox::critical( 0, QObject::tr( "Invalid Column" ),
+                           QObject::tr( "trying to insert at non-existing column " )
+                           + num.setNum( pivotCol ) );
+    status = false;
+  }
+
+  return status;
+}
+
+
+
 QT_END_NAMESPACE

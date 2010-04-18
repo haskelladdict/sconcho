@@ -216,8 +216,6 @@ void GraphicsScene::instantiate_legend_items(
 void GraphicsScene::place_legend_items(
   const QList<LegendEntryDescriptorPtr>& newLegendEntries )
 {
-  assert( newLegendEntries.size() != 0 );
-
   foreach( LegendEntryDescriptorPtr entryDesc, newLegendEntries ) {
     /* find the legend entry by entryID
      * NOTE: We need to do some careful checking here!
@@ -262,6 +260,7 @@ void GraphicsScene::reset_canvas_()
     aView->resetMatrix();
   }
 }
+
 
 
 //--------------------------------------------------------------
@@ -315,10 +314,6 @@ void GraphicsScene::select_region( const QRectF& aRegion )
 //----------------------------------------------------------------
 void GraphicsScene::hide_all_but_legend()
 {
-  /* get list of all items that are not part of the legend
-   * and are not svg items */
-  //QList<QGraphicsItem*> allItems = items();
-
   /* disable all non-legend items */
   foreach( QGraphicsItem* anItem, items() ) {
     QGraphicsSvgItem* svgItem =
@@ -336,6 +331,7 @@ void GraphicsScene::hide_all_but_legend()
 }
 
 
+
 //---------------------------------------------------------------
 // show all items on the canvas
 //---------------------------------------------------------------
@@ -345,6 +341,7 @@ void GraphicsScene::show_all_items()
     anItem->show();
   }
 }
+
 
 
 //-------------------------------------------------------------
@@ -690,9 +687,16 @@ void GraphicsScene::open_row_col_menu_()
 
 
   connect( &rowColDialog,
-           SIGNAL( delete_col( int ) ),
+           SIGNAL( insert_columns( int, int, int ) ),
            this,
-           SLOT( delete_col_( int ) )
+           SLOT( insert_columns_( int, int, int ) )
+         );
+
+  
+  connect( &rowColDialog,
+           SIGNAL( delete_column( int ) ),
+           this,
+           SLOT( delete_column_( int ) )
          );
 
   rowColDialog.exec();
@@ -705,7 +709,7 @@ void GraphicsScene::open_row_col_menu_()
 // rows since we have to bail if the selected column has cells
 // that span more than a single unit cell, i.e., columns.
 //-------------------------------------------------------------
-void GraphicsScene::delete_col_( int aDeadCol )
+void GraphicsScene::delete_column_( int aDeadCol )
 {
   int deadCol = numCols_ - aDeadCol;
 
@@ -841,186 +845,20 @@ void GraphicsScene::delete_row_( int aDeadRow )
 }
 
 
-#if 0
-//-------------------------------------------------------------
-// this slots deletes selectedCol from the pattern grid array
-// NOTE: delecting columns is a bit more tricky than deleting
-// rows since we have to bail if the selected column has cells
-// that span more than a single unit cell, i.e., columns.
-//-------------------------------------------------------------
-void GraphicsScene::delete_col_()
-{
-  assert( selectedCol_ >= 0 );
-  assert( selectedCol_ < numCols_ );
-
-  if ( selectedCol_ == UNSELECTED ) {
-    return;
-  }
-
-  deselect_all_active_items();
-
-  QList<QGraphicsItem*> allItems( items() );
-  QList<PatternGridItem*> gridItems;
-
-  /* go through all items and make sure that the cells
-   * of the selected rows are all unit cells and don't
-   * span multiple columns */
-  int targetColCounter = 0;
-  foreach( QGraphicsItem* anItem, allItems ) {
-    PatternGridItem* cell =
-      qgraphicsitem_cast<PatternGridItem*>( anItem );
-
-    if ( cell != 0 ) {
-      if ( cell->col() == selectedCol_ &&
-           cell->dim().width() == 1 ) {
-        targetColCounter += 1;
-      }
-
-      gridItems.push_back( cell );
-    }
-  }
-
-  /* if we have less than numRows_ in deletedColCounter there
-   * was at least on multi column cell in the column */
-  if ( targetColCounter < numRows_ ) {
-    emit statusBar_error( "cannot delete columns with "
-                          "cells that span multiple columns" );
-    selectedCol_ = UNSELECTED;
-    return;
-  }
-
-
-  /* go through all grid cells and
-   * - delete the ones in the selectedRow_
-   * - shift the ones in a row greater than selectedRow_
-   *   up by one
-   */
-  foreach( PatternGridItem* cell, gridItems ) {
-    if ( cell->col() == selectedCol_ ) {
-      remove_patternGridItem_( cell );
-    } else if ( cell->col() > selectedCol_ ) {
-      cell->reseat( cell->col() - 1, cell->row() );
-      cell->setPos( compute_cell_origin_( cell->col(), cell->row() ) );
-    }
-  }
-
-  /* update position of legend items */
-  shift_legend_items_horizontally_( selectedCol_, -gridCellDimensions_.width() );
-
-  /* unselect row and update row counter */
-  numCols_ = numCols_ - 1;
-  selectedCol_ = UNSELECTED;
-
-  /* redraw the labels */
-  create_grid_labels_();
-
-  /* update sceneRect
-   * NOTE: This may be a bottleneck for large grids */
-  setSceneRect( itemsBoundingRect() );
-}
-#endif
-
-
 //-------------------------------------------------------------
 // insert new columns into grid
 //-------------------------------------------------------------
-void GraphicsScene::insert_left_of_col_()
+void GraphicsScene::insert_columns_( int columnCount, int pivotCol, int direction)
 {
-  if ( selectedCol_ == UNSELECTED ) {
+  if ( !can_column_be_inserted( numCols_, pivotCol ) ) {
     return;
   }
 
-  insert_col_( selectedCol_ );
+  for ( int count = 0; count < columnCount; ++count ) {
+    insert_single_column_( numCols_ - pivotCol + direction );
+  } 
 }
 
-
-void GraphicsScene::insert_right_of_col_()
-{
-  if ( selectedCol_ == UNSELECTED ) {
-    return;
-  }
-
-  insert_col_( selectedCol_ + 1 );
-}
-
-
-
-void GraphicsScene::insert_col_( int aCol )
-{
-  deselect_all_active_items();
-
-  /* go through all items and make sure that that
-   * inserting the columns won't cut through any
-   * multy row cells
-   * NOTE: The special case here is adding a column at the
-   * right or left of the pattern grid in which case we're
-   * always in good shape and the below test will actually
-   * fail when adding at the right */
-  if ( aCol != 0 && aCol != numCols_ ) {
-    int targetColCounter = 0;
-    QList<QGraphicsItem*> allItems( items() );
-    foreach( QGraphicsItem* anItem, allItems ) {
-      PatternGridItem* cell =
-        qgraphicsitem_cast<PatternGridItem*>( anItem );
-
-      if ( cell != 0 ) {
-        /* in order to make sure we won't cut through
-         * a wide cell, we check if the origin of the cell
-         * is in the current cell. If not, it will surely
-         * start in the cell to the left and we would cut
-         * it in this case */
-        QPointF actualOrigin( cell->scenePos() );
-        QPointF neededOrigin( compute_cell_origin_( aCol, cell->row() ) );
-
-        /* FIXME: we shouldn't be comparing QPointFs !!! */
-        if ( cell->col() == aCol && actualOrigin == neededOrigin ) {
-          targetColCounter += 1;
-        }
-      }
-    }
-
-    /* if we have less than numCols_ in deletedColCounter there
-     * was at least on multi column cell in the column */
-    if ( targetColCounter < numRows_ ) {
-      emit statusBar_error( "cannot insert column in between "
-                            "cells that span multiple columns" );
-      selectedCol_ = UNSELECTED;
-      return;
-    }
-  }
-
-
-  /* expand the grid to make space */
-  expand_grid_( aCol, NOSHIFT );
-
-
-  /* now insert the new column */
-  for ( int row = 0; row < numRows_; ++row ) {
-    PatternGridItem* anItem = new PatternGridItem(
-      QSize( 1, 1 ),
-      gridCellDimensions_,
-      aCol,
-      row,
-      this,
-      defaultColor_ );
-
-    anItem->Init();
-    anItem->setPos( compute_cell_origin_( aCol, row ) );
-    anItem->insert_knitting_symbol( defaultSymbol_ );
-    add_patternGridItem_( anItem );
-  }
-
-
-  /* unselect row and update row counter */
-  selectedCol_ = UNSELECTED;
-
-  /* redraw the labels */
-  create_grid_labels_();
-
-  /* update sceneRect
-   * NOTE: This may be a bottleneck for large grids */
-  setSceneRect( itemsBoundingRect() );
-}
 
 
 
@@ -1044,36 +882,6 @@ void GraphicsScene::insert_rows_( int rowCount, int pivotRow, int direction )
 }
 
 
-void GraphicsScene::insert_single_row_( int aRow )
-{
-  deselect_all_active_items();
-
-  /* shift rows to make space */
-  expand_grid_( NOSHIFT, aRow );
-
-  /* now insert the new row */
-  for ( int column = 0; column < numCols_; ++column ) {
-    PatternGridItem* anItem = new PatternGridItem(
-      QSize( 1, 1 ),
-      gridCellDimensions_,
-      column,
-      aRow + 1,
-      this,
-      defaultColor_ );
-
-    anItem->Init();
-    anItem->setPos( compute_cell_origin_( column, aRow + 1 ) );
-    anItem->insert_knitting_symbol( defaultSymbol_ );
-    add_patternGridItem_( anItem );
-  }
-
-  /* redraw the labels */
-  create_grid_labels_();
-
-  /* update sceneRect
-   * NOTE: This may be a bottleneck for large grids */
-  setSceneRect( itemsBoundingRect() );
-}
 
 
 
@@ -1283,6 +1091,109 @@ void GraphicsScene::mousePressEvent(
  * PRIVATE MEMBER FUNCTIONS
  *
  *************************************************************/
+
+
+//-------------------------------------------------------------
+// this function inserts a single columne into the chart at
+// column aCol
+//-------------------------------------------------------------
+void GraphicsScene::insert_single_row_( int aRow )
+{
+  deselect_all_active_items();
+
+  /* shift rows to make space */
+  expand_grid_( NOSHIFT, aRow );
+
+  /* now insert the new row */
+  for ( int column = 0; column < numCols_; ++column ) {
+    PatternGridItem* anItem = new PatternGridItem(
+      QSize( 1, 1 ), gridCellDimensions_, column, aRow + 1,
+      this, defaultColor_ );
+
+    anItem->Init();
+    anItem->setPos( compute_cell_origin_( column, aRow + 1 ) );
+    anItem->insert_knitting_symbol( defaultSymbol_ );
+    add_patternGridItem_( anItem );
+  }
+
+  /* redraw the labels */
+  create_grid_labels_();
+
+  /* update sceneRect
+   * NOTE: This may be a bottleneck for large grids */
+  setSceneRect( itemsBoundingRect() );
+}
+
+
+
+//-------------------------------------------------------------
+// this function inserts a single columne into the chart at
+// column aCol. We go through all items and make sure that that
+// inserting the columns won't cut through any multi row cells
+// NOTE: The special case here is adding a column at the
+// right or left of the pattern grid in which case we're
+// always in good shape and the below test will actually
+// fail when adding at the right 
+//-------------------------------------------------------------
+void GraphicsScene::insert_single_column_( int aCol )
+{
+  deselect_all_active_items();
+
+  if ( aCol != 0 && aCol != numCols_ ) {
+    int targetColCounter = 0;
+    QList<QGraphicsItem*> allItems( items() );
+    foreach( QGraphicsItem* anItem, allItems ) {
+      PatternGridItem* cell =
+        qgraphicsitem_cast<PatternGridItem*>( anItem );
+
+      if ( cell != 0 ) {
+        /* in order to make sure we won't cut through a wide cell, we
+         * check if the origin of the cell is in the current cell. If not,
+         * it will surely start in the cell to the left and we would cut
+         * it in this case */
+        QPointF actualOrigin( cell->scenePos() );
+        QPointF neededOrigin( compute_cell_origin_( aCol, cell->row() ) );
+
+        /* FIXME: we shouldn't be comparing QPointFs !!! */
+        if ( cell->col() == aCol && actualOrigin == neededOrigin ) {
+          targetColCounter += 1;
+        }
+      }
+    }
+
+    /* if we have less than numCols_ in deletedColCounter there
+     * was at least on multi column cell in the column */
+    if ( targetColCounter < numRows_ ) {
+      QMessageBox::critical(0, tr("Invalid Column"), tr("cannot insert column")
+                            + tr("between cells that span multiple columns" ));
+      return;
+    }
+  }
+
+
+  /* expand the grid to make space */
+  expand_grid_( aCol, NOSHIFT );
+
+  /* now insert the new column */
+  for ( int row = 0; row < numRows_; ++row ) {
+    PatternGridItem* anItem = new PatternGridItem(QSize( 1, 1 ),
+      gridCellDimensions_, aCol, row, this, defaultColor_ );
+
+    anItem->Init();
+    anItem->setPos( compute_cell_origin_( aCol, row ) );
+    anItem->insert_knitting_symbol( defaultSymbol_ );
+    add_patternGridItem_( anItem );
+  }
+
+  /* redraw the labels */
+  create_grid_labels_();
+
+  /* update sceneRect
+   * NOTE: This may be a bottleneck for large grids */
+  setSceneRect( itemsBoundingRect() );
+}
+
+
 
 //-------------------------------------------------------------
 // this function goes through all active items and changes

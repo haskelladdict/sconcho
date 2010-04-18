@@ -226,12 +226,12 @@
          <widget class="QComboBox" name="insertColumnLocationWidget">
           <item>
            <property name="text">
-            <string>right of</string>
+            <string>left of</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>left of</string>
+            <string>right of</string>
            </property>
           </item>
          </widget>

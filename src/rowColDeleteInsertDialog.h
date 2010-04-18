@@ -77,7 +77,7 @@ signals:
 
   void insert_rows( int num, int pivot, int location );
   void delete_row( int row );
-  void insert_column( int num, int pivot, int location );
+  void insert_columns( int num, int pivot, int location );
   void delete_column( int col );
 
 

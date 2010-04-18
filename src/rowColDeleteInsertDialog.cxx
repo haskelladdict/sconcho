@@ -152,7 +152,7 @@ void RowColDeleteInsertDialog::insert_column_clicked_()
   int location = insertColumnLocationWidget->currentIndex();
   int pivot = pivotColumnLocation->value();
 
-  emit insert_column( numColumns, pivot, location );
+  emit insert_columns( numColumns, pivot, location );
 }
 
 
