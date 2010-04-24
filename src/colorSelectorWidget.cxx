@@ -144,8 +144,8 @@ void ColorSelectorWidget::highlight_color_button(
 //---------------------------------------------------------------
 // change the color of the currently active color widget
 //---------------------------------------------------------------
-void ColorSelectorWidget::change_active_color( 
-    const QColor& newColor)
+void ColorSelectorWidget::change_active_color(
+  const QColor& newColor )
 {
   activeSelector_->set_color( newColor );
   set_color_selector_button_( newColor );

@@ -299,11 +299,30 @@ void MainWindow::show_file_save_dialog_()
   QString extension = saveFileInfo.completeSuffix();
 
   if ( extension != "spf" ) {
-    QMessageBox::warning( this, tr( "Warning" ),
-                          tr( "Unknown file format " ) + extension,
-                          QMessageBox::Ok );
-    return;
+    if ( extension.isEmpty() ) {
+      /* add spf default suffix */
+      saveFileName = saveFileName + ".spf";
+    } else {
+
+      QMessageBox::warning( this, tr( "Warning" ),
+                            tr( "Unknown file format " ) + extension,
+                            QMessageBox::Ok );
+      return;
+    }
   }
+
+  if ( QFileInfo( saveFileName ).exists() ) {
+    int ret = QMessageBox::warning( this, tr( "Warning" ),
+                                    QFileInfo( saveFileName ).fileName()
+                                    + " already exists.\n"
+                                    + "Do you want to replace it?",
+                                    QMessageBox::Yes | QMessageBox::No );
+
+    if ( ret == QMessageBox::No ) {
+      return;
+    }
+  }
+
 
   /* update project filename */
   set_project_file_path( saveFileName );
