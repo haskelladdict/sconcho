@@ -1123,6 +1123,20 @@ void GraphicsScene::paste_items_()
 }
 
 
+//-------------------------------------------------------------
+// this function grabs the color of the grid item under 
+// the mouse and applies it as to the currently active color
+// selector
+//-------------------------------------------------------------
+void GraphicsScene::grab_color_()
+{
+  PatternGridItem* selectedItem = 
+    patternGridItem_at_(selectedCol_, selectedRow_);
+
+  emit grabbed_color( selectedItem->color() );
+}
+ 
+
 
 /**************************************************************
  *
@@ -1994,10 +2008,10 @@ bool GraphicsScene::handle_click_on_grid_array_(
     QMenu gridMenu;
     QAction* copyAction = gridMenu.addAction( "&Copy" );
     QAction* pasteAction = gridMenu.addAction( "&Paste" );
-
     gridMenu.addSeparator();
-
     QAction* rowAction  = gridMenu.addAction( "Insert/delete rows & columns" );
+    gridMenu.addSeparator();
+    QAction* colorAction = gridMenu.addAction( "Grab color"); 
 
     connect( rowAction,
              SIGNAL( triggered() ),
@@ -2013,6 +2027,11 @@ bool GraphicsScene::handle_click_on_grid_array_(
              SIGNAL( triggered() ),
              this,
              SLOT( paste_items_() ) );
+
+    connect( colorAction,
+             SIGNAL( triggered() ),
+             this,
+             SLOT( grab_color_() ) );
 
     gridMenu.exec( mouseEvent->screenPos() );
   }

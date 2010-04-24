@@ -167,6 +167,11 @@ bool MainWindow::Init()
            SLOT( accessible_in_view() )
          );
 
+  connect( canvas_,
+           SIGNAL( grabbed_color( const QColor& ) ),
+           colorSelectorWidget_,
+           SLOT( change_active_color( const QColor& ) ) );
+
   /* set up main interface and set initial splitter sizes */
   mainSplitter_->addWidget( canvasView_ );
   mainSplitter_->addWidget( propertyBox_ );

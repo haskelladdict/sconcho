@@ -70,6 +70,7 @@ signals:
 public slots:
 
   void highlight_color_button( ColorSelectorItem* newActiveItem );
+  void change_active_color( const QColor& newColor );
 
 
 private slots:
@@ -94,7 +95,7 @@ private:
   /* widgets */
   QHBoxLayout* buttonLayout_;
   QPushButton* customizeColorButton_;
-  
+
   /* widget creation routines */
   void create_layout_();
   void create_color_customize_button_();

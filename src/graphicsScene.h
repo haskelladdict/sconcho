@@ -141,6 +141,7 @@ signals:
   void statusBar_error( QString msg );
   void statusBar_message( QString msg );
   void show_whole_scene();
+  void grabbed_color( const QColor& aColor );
 
 
 public slots:
@@ -175,6 +176,7 @@ private slots:
   void update_key_label_text_( QString, QString );
   void copy_items_();
   void paste_items_();
+  void grab_color_();
   void notify_legend_of_item_addition_( const KnittingSymbolPtr symbol,
                                         QColor color, QString extraTag );
   void notify_legend_of_item_removal_( const KnittingSymbolPtr symbol,

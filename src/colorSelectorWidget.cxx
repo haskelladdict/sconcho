@@ -126,8 +126,7 @@ void ColorSelectorWidget::set_colors(
  *************************************************************/
 
 //-------------------------------------------------------------
-// switch the currently selected color selected to the newly
-// selected one
+// switch to the selected color widget
 //-------------------------------------------------------------
 void ColorSelectorWidget::highlight_color_button(
   ColorSelectorItem* newActiveItem )
@@ -142,6 +141,19 @@ void ColorSelectorWidget::highlight_color_button(
 }
 
 
+//---------------------------------------------------------------
+// change the color of the currently active color widget
+//---------------------------------------------------------------
+void ColorSelectorWidget::change_active_color( 
+    const QColor& newColor)
+{
+  activeSelector_->set_color( newColor );
+  set_color_selector_button_( newColor );
+  emit color_changed( newColor );
+}
+
+
+
 /****************************************************************
  *
  * PRIVATE SLOTS
@@ -154,13 +166,10 @@ void ColorSelectorWidget::highlight_color_button(
 //----------------------------------------------------------------
 void ColorSelectorWidget::customize_color_()
 {
-  QColor colorSelection = 
+  QColor colorSelection =
     QColorDialog::getColor( activeSelector_->get_color(), 0,
                             "Select custom color" );
-
-  activeSelector_->set_color( colorSelection );
-  set_color_selector_button_( colorSelection );
-  emit color_changed( colorSelection );
+  change_active_color( colorSelection );
 }
 
 
@@ -230,7 +239,7 @@ void ColorSelectorWidget::create_color_customize_button_()
   customizeColorButton_ = new QPushButton( tr( "customize color" ) );
   buttonLayout_ = new QHBoxLayout;
   buttonLayout_->addStretch();
-  buttonLayout_->addWidget(customizeColorButton_);
+  buttonLayout_->addWidget( customizeColorButton_ );
   buttonLayout_->addStretch();
 
   connect( customizeColorButton_,
@@ -264,7 +273,7 @@ void ColorSelectorWidget::pad_colors_()
 void ColorSelectorWidget::set_color_selector_button_( const QColor& newColor )
 {
   QPalette buttonColor = QPalette( newColor );
-  customizeColorButton_->setPalette(buttonColor);
+  customizeColorButton_->setPalette( buttonColor );
 }
 
 
