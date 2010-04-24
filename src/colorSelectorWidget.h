@@ -28,10 +28,11 @@
 #include <QWidget>
 
 /* local includes */
-//#include "knittingSymbol.h"
 
 /* forward declarations */
 class ColorSelectorItem;
+class QHBoxLayout;
+class QPushButton;
 
 
 QT_BEGIN_NAMESPACE
@@ -71,6 +72,11 @@ public slots:
   void highlight_color_button( ColorSelectorItem* newActiveItem );
 
 
+private slots:
+
+  void customize_color_();
+
+
 private:
 
   /* some tracking variables */
@@ -85,11 +91,17 @@ private:
   /* currently highlighted color selector */
   ColorSelectorItem* activeSelector_;
 
+  /* widgets */
+  QHBoxLayout* buttonLayout_;
+  QPushButton* customizeColorButton_;
+  
   /* widget creation routines */
   void create_layout_();
+  void create_color_customize_button_();
 
   /* helper functions */
   void pad_colors_();
+  void set_color_selector_button_( const QColor& newColor );
 };
 
 

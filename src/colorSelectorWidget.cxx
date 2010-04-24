@@ -20,6 +20,7 @@
 
 /** Qt headers */
 #include <QDebug>
+#include <QColorDialog>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QToolButton>
@@ -134,7 +135,34 @@ void ColorSelectorWidget::highlight_color_button(
   activeSelector_->unselect();
   activeSelector_ = newActiveItem;
   activeSelector_->select();
+
+  QColor newColor( newActiveItem->get_color() );
+  set_color_selector_button_( newColor );
+  emit color_changed( newColor );
 }
+
+
+/****************************************************************
+ *
+ * PRIVATE SLOTS
+ *
+ ****************************************************************/
+
+//----------------------------------------------------------------
+// fire up color selector widget and change currently active
+// color
+//----------------------------------------------------------------
+void ColorSelectorWidget::customize_color_()
+{
+  QColor colorSelection = 
+    QColorDialog::getColor( activeSelector_->get_color(), 0,
+                            "Select custom color" );
+
+  activeSelector_->set_color( colorSelection );
+  set_color_selector_button_( colorSelection );
+  emit color_changed( colorSelection );
+}
+
 
 
 /*************************************************************
@@ -152,6 +180,8 @@ void ColorSelectorWidget::highlight_color_button(
 //----------------------------------------------------------------
 void ColorSelectorWidget::create_layout_()
 {
+  create_color_customize_button_();
+
   /* set up the top selector layout */
   QHBoxLayout* topSelectorLayout = new QHBoxLayout;
   for ( int topCount = 0; topCount < NUM_TOP_COLORSELECTORS; ++topCount ) {
@@ -165,6 +195,7 @@ void ColorSelectorWidget::create_layout_()
     if ( topCount == 0 ) {
       newItem->select();
       activeSelector_ = newItem;
+      set_color_selector_button_( newItem->get_color() );
     }
   }
 
@@ -184,9 +215,32 @@ void ColorSelectorWidget::create_layout_()
   QVBoxLayout* selectorLayout = new QVBoxLayout;
   selectorLayout->addLayout( topSelectorLayout );
   selectorLayout->addLayout( bottomSelectorLayout );
+  selectorLayout->addLayout( buttonLayout_ );
 
   setLayout( selectorLayout );
 }
+
+
+
+//-----------------------------------------------------------------------
+// create button for color customization
+//-----------------------------------------------------------------------
+void ColorSelectorWidget::create_color_customize_button_()
+{
+  customizeColorButton_ = new QPushButton( tr( "customize color" ) );
+  buttonLayout_ = new QHBoxLayout;
+  buttonLayout_->addStretch();
+  buttonLayout_->addWidget(customizeColorButton_);
+  buttonLayout_->addStretch();
+
+  connect( customizeColorButton_,
+           SIGNAL( pressed() ),
+           this,
+           SLOT( customize_color_() )
+         );
+}
+
+
 
 
 //-----------------------------------------------------------------------
@@ -202,5 +256,16 @@ void ColorSelectorWidget::pad_colors_()
     selectorColors_.push_back( DEFAULT_COLOR );
   }
 }
+
+
+//-----------------------------------------------------------------------
+// set the button color to the currently active button color
+//-----------------------------------------------------------------------
+void ColorSelectorWidget::set_color_selector_button_( const QColor& newColor )
+{
+  QPalette buttonColor = QPalette( newColor );
+  customizeColorButton_->setPalette(buttonColor);
+}
+
 
 QT_END_NAMESPACE

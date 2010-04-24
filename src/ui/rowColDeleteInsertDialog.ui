@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="insertRowTab">
     <attribute name="title">
@@ -122,7 +122,7 @@
     <attribute name="title">
      <string>delete row</string>
     </attribute>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QWidget" name="layoutWidget1">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -186,7 +186,7 @@
     <attribute name="title">
      <string>insert column</string>
     </attribute>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QWidget" name="layoutWidget2">
      <property name="geometry">
       <rect>
        <x>11</x>
@@ -282,7 +282,7 @@
     <attribute name="title">
      <string>delete column</string>
     </attribute>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QWidget" name="layoutWidget3">
      <property name="geometry">
       <rect>
        <x>10</x>

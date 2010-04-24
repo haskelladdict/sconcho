@@ -73,12 +73,6 @@ bool ColorSelectorItem::Init()
            SLOT( highlight_color_button( ColorSelectorItem* ) )
          );
 
-  connect( this,
-           SIGNAL( selector_color_changed( const QColor& ) ),
-           parent(),
-           SIGNAL( color_changed( const QColor& ) )
-         );
-
   return true;
 }
 
@@ -90,7 +84,6 @@ void ColorSelectorItem::select()
 {
   selected_ = true;
   setStyleSheet( get_active_stylesheet_() );
-  emit selector_color_changed( color_ );
 }
 
 
@@ -131,8 +124,6 @@ void ColorSelectorItem::mousePressEvent( QMouseEvent* mouseEvent )
 {
   if (( mouseEvent->button() == Qt::LeftButton ) && !selected_ ) {
     emit highlight_me( this );
-  } else if ( mouseEvent->button() == Qt::RightButton ) {
-    show_property_menu_( mouseEvent->globalPos() );
   }
 
   repaint();
@@ -145,20 +136,6 @@ void ColorSelectorItem::mousePressEvent( QMouseEvent* mouseEvent )
  * PRIVATE SLOTS
  *
  *************************************************************/
-
-//------------------------------------------------------------
-// show a color selector dialog to let user select our new
-// color
-//------------------------------------------------------------
-void ColorSelectorItem::pick_color_()
-{
-  QColor selection = QColorDialog::getColor( color_ , 0,
-                     "Select custom color" );
-
-  set_color( selection );
-  emit selector_color_changed( color_ );
-}
-
 
 /*************************************************************
  *
@@ -208,26 +185,6 @@ QString ColorSelectorItem::get_inactive_stylesheet_()
 
   return inactiveStyleSheet;
 }
-
-
-//--------------------------------------------------------------
-// show menu to allow user to customize the our color
-//--------------------------------------------------------------
-void ColorSelectorItem::show_property_menu_( const QPoint& aPos )
-{
-  QMenu propertyMenu;
-  QAction* customizeColorAction =
-    propertyMenu.addAction( "customize color" );
-
-  connect( customizeColorAction,
-           SIGNAL( triggered() ),
-           this,
-           SLOT( pick_color_() )
-         );
-
-  propertyMenu.exec( aPos );
-}
-
 
 
 QT_END_NAMESPACE
