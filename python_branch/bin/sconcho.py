@@ -25,11 +25,23 @@ sys.path.append("../")
 
 from PyQt4.QtGui import QApplication
 from gui.mainWindow import MainWindow
+import sconchoIO.symbolParser as parser
 
+# for now hardcode the path; this has to become a bit
+# more spiffy lateron
+SYMBOL_PATHS = ["./symbols"]
+
+
+# main startup routine
 if __name__ == "__main__":
+    """
+    Main routine starting up the sconcho framework.
+    """
+
+    symbols = parser.parse_all_symbols(SYMBOL_PATHS)
 
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = MainWindow(symbols)
     window.show()
     sys.exit(app.exec_())
-
+    

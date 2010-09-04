@@ -19,20 +19,17 @@
 #
 #######################################################################
 
-from PyQt4.QtCore import pyqtSignature, QString, Qt, QVariant, \
-        SIGNAL, SLOT, QDir
-from PyQt4.QtGui import *
+from PyQt4.QtGui import QMainWindow
 from ui_mainWindow import Ui_MainWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    def __init__(self, filename = None, parent = None):
+    def __init__(self, knittingSymbols, filename = None, parent = None):
         """
         Initialize the main window.
         """
 
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
-
 
