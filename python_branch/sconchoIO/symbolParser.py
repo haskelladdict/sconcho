@@ -21,34 +21,64 @@
 #######################################################################
 
 
-from PyQt4.QtCore import QDir
+from PyQt4.QtCore import QDir, QFile, QStringList
+from PyQt4.QtXml import QDomDocument
 
-
-def parse_all_symbols(symbolPaths):
+def parse_all_symbols(symbolTopLevelPaths):
     """ 
     This function reads all available knitting symbols and
     returns a dictionary with them all.
     """
 
-    symbolPaths = get_list_of_symbol_paths(symbolPaths)
+    symbolPaths = get_list_of_symbol_paths(symbolTopLevelPaths)
 
     symbols = {}
-    symbols['foo'] = "bar"
-    
+    for path in symbolPaths:
+        symbol = parse_knitting_symbol(path)
+        
+        # if there was a problem we simply skip
+        # with a short warning
+        if not symbol:
+            print("Warning: Could not read symbol " + path)
+
     return symbols
 
 
 
-def get_list_of_symbol_paths(symbolPaths):
+def get_list_of_symbol_paths(symbolTopLevelPaths):
     """
     Given a list of top level paths to directories containting
-    sconcho kitting symbols returns a list of all paths to 
+    sconcho kitting symbols returns a QStringList of all paths to 
     individual sconcho patterns.
     """
 
-    for path in symbolPaths:
+    symbolPaths = []
+    for path in symbolTopLevelPaths:
         aDir = QDir(path)
-        print(path, aDir.absolutePath())
+        for entry in aDir.entryList(QDir.AllDirs | QDir.NoDotAndDotDot):
+            symbolPaths.append(aDir.absolutePath() + "/" + entry)
 
+    return symbolPaths
         
+
+
+def parse_knitting_symbol(symbolPath):
+    """
+    Parse the knitting symbol located at path symbolPath.
+    """
+
+    descriptionFile = QFile(symbolPath + "/description")
+    if (not descriptionFile.exists()) or descriptionFile.error():
+        return None
+
+    # parse XML
+    dom = QDomDocument()
+    (status, msg, line, col) = dom.setContent(descriptionFile)
+    if not status:
+        print("Warning: in file %s\n%s at line %d column %d" % \
+              (descriptionFile.fileName(), msg, line, col))
+
+
+
+    return True
 
