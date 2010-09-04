@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>purl</svgName>  
+    <category>basic:2</category>
+    <patternName>purl</patternName>
+    <patternDescription>purl on RS; knit on WS</patternDescription>
+    <patternWidth>1</patternWidth>
+  </knittingSymbol>
+</sconcho>
+

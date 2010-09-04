@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>doubledec</svgName>  
+    <category>basic:9</category>
+    <patternName>double decrease</patternName>
+    <patternDescription>slip 1 st knitwise, k2 sts together from left needle, pass slipped stitch over</patternDescription>
+    <patternWidth>1</patternWidth>
+  </knittingSymbol>
+</sconcho>
+

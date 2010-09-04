@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>nostitch</svgName>  
+    <category>basic:13</category>
+    <patternName>nostitch</patternName>
+    <patternDescription>no stitch (ignore this space)</patternDescription>
+    <patternWidth>1</patternWidth>
+    <backgroundColor>#D3D3D3</backgroundColor>
+  </knittingSymbol>
+</sconcho>
+
