@@ -44,3 +44,4 @@ def add_symbols_to_widget(symbols, widget):
 def sort_symbols_by_category(symbols):
     """
     Given a 
+    """

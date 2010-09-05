@@ -22,7 +22,7 @@
 from PyQt4.QtCore import SIGNAL, SLOT
 from PyQt4.QtGui import qApp, QMainWindow, QMessageBox
 import sconchoHelpers.text as text
-import sconchoHelpers.symbolWidget as symbolWidgetH
+import symbolWidget 
 from ui_mainWindow import Ui_MainWindow
 
 
@@ -61,8 +61,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Proxy for adding all the knitting symbols to the symbolWidget.
         """
 
-        symbolWidgetH.add_symbols_to_widget(self.__knittingSymbols, 
-                self.symbolWidget)
+        symbolWidget.add_symbols_to_widget(self.__knittingSymbols, 
+                self.symbolWidgetBase)
 
 
 
