@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 ########################################################################
 #
@@ -24,6 +23,8 @@
 from PyQt4.QtCore import QDir, QFile, QStringList
 from PyQt4.QtXml import QDomDocument
 
+
+
 def parse_all_symbols(symbolTopLevelPaths):
     """ 
     This function reads all available knitting symbols and
@@ -32,16 +33,19 @@ def parse_all_symbols(symbolTopLevelPaths):
 
     symbolPaths = get_list_of_symbol_paths(symbolTopLevelPaths)
 
-    symbols = {}
+    allSymbolDesc = {}
     for path in symbolPaths:
-        symbol = parse_knitting_symbol(path)
+        symbolDesc = parse_knitting_symbol(path)
         
         # if there was a problem we simply skip
         # with a short warning
-        if not symbol:
+        if not symbolDesc:
             print("Warning: Could not read symbol " + path)
 
-    return symbols
+        # add symbol to symbol database
+        allSymbolDesc[symbolDesc["svgName"]] = symbolDesc
+
+    return allSymbolDesc
 
 
 

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sat Sep  4 15:12:26 2010
+# Created: Sun Sep  5 11:45:24 2010
 #      by: PyQt4 UI code generator 4.7.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -449,20 +449,17 @@ class Ui_MainWindow(object):
         self.dockWidgetContents_3.setObjectName(_fromUtf8("dockWidgetContents_3"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.dockWidgetContents_3)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.tabWidget_2 = QtGui.QTabWidget(self.dockWidgetContents_3)
+        self.symbolWidget = QtGui.QTabWidget(self.dockWidgetContents_3)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.tabWidget_2.sizePolicy().hasHeightForWidth())
-        self.tabWidget_2.setSizePolicy(sizePolicy)
-        self.tabWidget_2.setObjectName(_fromUtf8("tabWidget_2"))
-        self.tab_3 = QtGui.QWidget()
-        self.tab_3.setObjectName(_fromUtf8("tab_3"))
-        self.tabWidget_2.addTab(self.tab_3, _fromUtf8(""))
-        self.tab_4 = QtGui.QWidget()
-        self.tab_4.setObjectName(_fromUtf8("tab_4"))
-        self.tabWidget_2.addTab(self.tab_4, _fromUtf8(""))
-        self.verticalLayout_2.addWidget(self.tabWidget_2)
+        sizePolicy.setHeightForWidth(self.symbolWidget.sizePolicy().hasHeightForWidth())
+        self.symbolWidget.setSizePolicy(sizePolicy)
+        self.symbolWidget.setObjectName(_fromUtf8("symbolWidget"))
+        self.basicTab = QtGui.QWidget()
+        self.basicTab.setObjectName(_fromUtf8("basicTab"))
+        self.symbolWidget.addTab(self.basicTab, _fromUtf8(""))
+        self.verticalLayout_2.addWidget(self.symbolWidget)
         self.dockWidget_3.setWidget(self.dockWidgetContents_3)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget_3)
         self.actionAbout_sconcho = QtGui.QAction(MainWindow)
@@ -514,7 +511,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget_2.setCurrentIndex(0)
+        self.symbolWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -525,8 +522,7 @@ class Ui_MainWindow(object):
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidget_3.setWindowTitle(QtGui.QApplication.translate("MainWindow", "knitting symbols", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_3), QtGui.QApplication.translate("MainWindow", "Tab 1", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_4), QtGui.QApplication.translate("MainWindow", "Tab 2", None, QtGui.QApplication.UnicodeUTF8))
+        self.symbolWidget.setTabText(self.symbolWidget.indexOf(self.basicTab), QtGui.QApplication.translate("MainWindow", "Tab 1", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout_sconcho.setText(QtGui.QApplication.translate("MainWindow", "About sconcho", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout_Qt4.setText(QtGui.QApplication.translate("MainWindow", "About Qt4", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPreferences.setText(QtGui.QApplication.translate("MainWindow", "Preferences", None, QtGui.QApplication.UnicodeUTF8))

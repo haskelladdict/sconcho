@@ -19,7 +19,10 @@
 #
 #######################################################################
 
-from PyQt4.QtGui import QMainWindow
+from PyQt4.QtCore import SIGNAL, SLOT
+from PyQt4.QtGui import qApp, QMainWindow, QMessageBox
+import sconchoHelpers.text as text
+import sconchoHelpers.symbolWidget as symbolWidgetH
 from ui_mainWindow import Ui_MainWindow
 
 
@@ -32,4 +35,51 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
+
+        self.__knittingSymbols = knittingSymbols
+
+        # add connections
+        self.connect(self.actionQuit, SIGNAL("triggered()"),
+            qApp, SLOT("quit()"))
+
+        self.connect(self.actionAbout_sconcho, SIGNAL("triggered()"),
+                self.show_about_sconcho)
+
+        self.connect(self.actionAbout_Qt4, SIGNAL("triggered()"),
+                self.show_about_qt4)
+
+
+        # setup rest of the GUI
+        self.initialize_symbol_widget()
+
+
+
+
+
+    def initialize_symbol_widget(self):
+        """
+        Proxy for adding all the knitting symbols to the symbolWidget.
+        """
+
+        symbolWidgetH.add_symbols_to_widget(self.__knittingSymbols, 
+                self.symbolWidget)
+
+
+
+    def show_about_sconcho(self):
+        """
+        Show the about sconcho dialog.
+        """
+        QMessageBox.about(self, "sconcho", text.sconchoDescription)
+
+
+
+    def show_about_qt4(self):
+        """
+        Show the about Qt dialog.
+        """
+        QMessageBox.aboutQt(self)
+
+
+
 

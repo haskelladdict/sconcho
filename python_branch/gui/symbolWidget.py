@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 ########################################################################
 #
@@ -20,29 +19,28 @@
 #
 #######################################################################
 
-import os, sys
-sys.path.append("../")
 
-from PyQt4.QtGui import QApplication
-from gui.mainWindow import MainWindow
-import sconchoIO.symbolParser as parser
-
-# for now hardcode the path; this has to become a bit
-# more spiffy lateron
-SYMBOL_PATHS = ["../symbols"]
+from PyQt4.QtCore import QString
+from PyQt4.QtGui import QFrame
 
 
-# main startup routine
-if __name__ == "__main__":
+def add_symbols_to_widget(symbols, widget):
     """
-    Main routine starting up the sconcho framework.
+    Adds all passed knitting symbols to the tab widget.
     """
 
-    symbols = parser.parse_all_symbols(SYMBOL_PATHS)
+    symbolsByCategory = sort_symbols_by_category(symbols)
 
-    app = QApplication(sys.argv)
-    window = MainWindow(symbols)
-    window.show()
-    sys.exit(app.exec_())
-    
-    
+
+
+
+
+
+
+
+
+
+
+def sort_symbols_by_category(symbols):
+    """
+    Given a 
