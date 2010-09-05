@@ -20,7 +20,7 @@
 #######################################################################
 
 
-from PyQt4.QtCore import QDir, QFile, QStringList
+from PyQt4.QtCore import QDir, QFile, QString, QStringList
 from PyQt4.QtXml import QDomDocument
 
 
@@ -94,6 +94,9 @@ def parse_knitting_symbol(symbolPath):
   
     content = parse_symbol_description(node)
 
+    # add the absolute path
+    content["svgPath"] = symbolPath + "/" + content["svgName"] + ".svg"
+
     return content
 
 
@@ -102,8 +105,8 @@ def parse_symbol_description(node):
     """
     Parses the main content of a sconcho pattern description
     file. 
-    FIXME: This function currently does no checking whatsoever
-           and probably should.
+    FIXME: This function currently does not much checking 
+           and probably should do more.
     """
 
     content = {}
@@ -116,8 +119,19 @@ def parse_symbol_description(node):
         if item.toElement().tagName() == "svgName":
             content["svgName"] = entry
 
+        # looks like we explicitly have to copy the QStringList
+        # elements into a QString otherwise the code seg faults
         if item.toElement().tagName() == "category":
-            content["rawCategory"] = entry
+            splitEntry = entry.split(":")
+            if len(splitEntry) == 1:
+                content["category"] = QString(splitEntry.first())
+                content["category_pos"] = QString("0")
+            elif len(splitEntry) == 2:
+                content["category"] = QString(splitEntry.first())
+                content["category_pos"] = QString(splitEntry.last())
+            else:
+                return None
+
 
         if item.toElement().tagName() == "patternName":
             content["patternName"] = entry

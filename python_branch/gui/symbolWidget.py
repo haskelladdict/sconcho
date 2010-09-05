@@ -21,7 +21,10 @@
 
 
 from PyQt4.QtCore import QString
-from PyQt4.QtGui import QFrame
+from PyQt4.QtGui import QFrame, QGridLayout, QWidgetItem, QWidget, \
+                        QHBoxLayout
+from PyQt4.QtSvg import QSvgWidget
+
 
 
 def add_symbols_to_widget(symbols, widget):
@@ -30,18 +33,60 @@ def add_symbols_to_widget(symbols, widget):
     """
 
     symbolsByCategory = sort_symbols_by_category(symbols)
+    for (symbolCategory, symbols) in symbolsByCategory.items():
+        if symbolCategory == "basic":
 
+            tab    = QWidget()
+            layout = QGridLayout()
 
+            for (row, symbol) in enumerate(symbols):
+                newItem = SymbolSelectorItem(symbol)
+                layout.addWidget(newItem, row, 0)
 
+            tab.setLayout(layout)
 
-
-
-
-
+            widget.addTab(tab, symbolCategory)
 
 
 
 def sort_symbols_by_category(symbols):
     """
-    Given a 
+    Given a dictionary of knitting symbols returns a dictionary
+    with key category and value a list of corresponding symbols
     """
+
+    sortedSymbols = {}
+    for symbol in symbols.values():
+       
+        symbolKey = symbol["category"]
+        if symbolKey in sortedSymbols:
+            sortedSymbols[symbolKey].append(symbol)
+        else:
+            sortedSymbols[symbolKey] = [symbol]
+
+
+    return sortedSymbols
+
+
+
+
+class SymbolSelectorItem(QFrame):
+
+    def __init__(self, symbol, parent = None):
+
+        QFrame.__init__(self, parent)
+        self.__name = symbol["patternName"]
+
+        svgWidget = QSvgWidget(symbol["svgPath"]) 
+        layout    = QHBoxLayout()
+        layout.addWidget(svgWidget)
+
+        self.setLayout(layout)
+
+
+
+
+
+
+
+
