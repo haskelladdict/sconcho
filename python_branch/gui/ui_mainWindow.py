@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sun Sep  5 12:11:17 2010
+# Created: Sun Sep  5 14:05:07 2010
 #      by: PyQt4 UI code generator 4.7.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -46,7 +46,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget(self.scrollArea)
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 803, 56))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 753, 56))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.scrollAreaWidgetContents)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
@@ -442,7 +442,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(4)
         sizePolicy.setHeightForWidth(self.dockWidget_3.sizePolicy().hasHeightForWidth())
         self.dockWidget_3.setSizePolicy(sizePolicy)
-        self.dockWidget_3.setMinimumSize(QtCore.QSize(300, 89))
+        self.dockWidget_3.setMinimumSize(QtCore.QSize(350, 89))
         self.dockWidget_3.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
         self.dockWidget_3.setObjectName(_fromUtf8("dockWidget_3"))
         self.dockWidgetContents_3 = QtGui.QWidget()
@@ -456,9 +456,6 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.symbolWidgetBase.sizePolicy().hasHeightForWidth())
         self.symbolWidgetBase.setSizePolicy(sizePolicy)
         self.symbolWidgetBase.setObjectName(_fromUtf8("symbolWidgetBase"))
-        self.basicTab = QtGui.QWidget()
-        self.basicTab.setObjectName(_fromUtf8("basicTab"))
-        self.symbolWidgetBase.addTab(self.basicTab, _fromUtf8(""))
         self.verticalLayout_2.addWidget(self.symbolWidgetBase)
         self.dockWidget_3.setWidget(self.dockWidgetContents_3)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget_3)
@@ -511,7 +508,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.symbolWidgetBase.setCurrentIndex(0)
+        self.symbolWidgetBase.setCurrentIndex(-1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -522,7 +519,6 @@ class Ui_MainWindow(object):
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidget_3.setWindowTitle(QtGui.QApplication.translate("MainWindow", "knitting symbols", None, QtGui.QApplication.UnicodeUTF8))
-        self.symbolWidgetBase.setTabText(self.symbolWidgetBase.indexOf(self.basicTab), QtGui.QApplication.translate("MainWindow", "Tab 1", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout_sconcho.setText(QtGui.QApplication.translate("MainWindow", "About sconcho", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout_Qt4.setText(QtGui.QApplication.translate("MainWindow", "About Qt4", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPreferences.setText(QtGui.QApplication.translate("MainWindow", "Preferences", None, QtGui.QApplication.UnicodeUTF8))
