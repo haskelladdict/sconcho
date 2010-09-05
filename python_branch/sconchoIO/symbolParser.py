@@ -78,7 +78,55 @@ def parse_knitting_symbol(symbolPath):
         print("Warning: in file %s\n%s at line %d column %d" % \
               (descriptionFile.fileName(), msg, line, col))
 
+    # make sure we're reading a sconcho pattern description 
+    root = dom.documentElement()
+    if root.tagName() != "sconcho":
+        return None
+
+    # parse the actual content
+    node = root.firstChild()
+    if node.toElement().tagName() != "knittingSymbol":
+        return None
+  
+    content = parse_symbol_description(node)
+
+    return content
 
 
-    return True
 
+def parse_symbol_description(node):
+    """
+    Parses the main content of a sconcho pattern description
+    file. 
+    FIXME: This function currently does no checking whatsoever
+           and probably should.
+    """
+
+    content = {}
+
+    item = node.firstChild()
+    while not item.isNull():
+
+        entry = item.firstChild().toText().data()
+
+        if item.toElement().tagName() == "svgName":
+            content["svgName"] = entry
+
+        if item.toElement().tagName() == "category":
+            content["rawCategory"] = entry
+
+        if item.toElement().tagName() == "patternName":
+            content["patternName"] = entry
+
+        if item.toElement().tagName() == "patternDescription":
+            content["patternDescription"] = entry
+
+        if item.toElement().tagName() == "patternWidth":
+            content["patternWidth"] = entry
+
+        if item.toElement().tagName() == "backgroundColor":
+            content["backgroundColorName"] = entry
+
+        item = item.nextSibling();
+
+    return content
