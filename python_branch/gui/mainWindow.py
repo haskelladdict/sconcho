@@ -36,8 +36,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
 
-        self.__knittingSymbols = knittingSymbols
-
+        # initialize the symbol tracker
+        self.initialize_symbol_widget(knittingSymbols)
+        
         # add connections
         self.connect(self.actionQuit, SIGNAL("triggered()"),
             qApp, SLOT("quit()"))
@@ -49,23 +50,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.show_about_qt4)
 
 
-        # initialize the symbol tracker
-        self.__symbolTracker = self.initialize_symbol_widget()
-        self.connect(self.__symbolTracker, SIGNAL("selected_symbol_changed()"),
+   
+
+    def symbol_changed(self, foo):
+        """
+        This function handles events when the user changes the 
+        currently selected symbol.
+        """
+
+        print("symbol changed --> " + foo["name"])
+    
+
+
+    def initialize_symbol_widget(self, knittingSymbols):
+        """
+        Proxy for adding all the knitting symbols to the symbolWidget
+        and connecting it to the symbol changed slot.
+        """
+
+        symbolTracker = symbolWidget.add_symbols_to_widget(knittingSymbols, 
+                            self.symbolWidgetBase)
+
+        self.connect(symbolTracker, 
+                     SIGNAL("selected_symbol_changed(PyQt_PyObject)"),
                      self.symbol_changed)
 
 
-    def symbol_changed(self):
-        print(self.__symbolTracker.get_active_symbol()["name"])
 
-
-    def initialize_symbol_widget(self):
-        """
-        Proxy for adding all the knitting symbols to the symbolWidget.
-        """
-
-        return symbolWidget.add_symbols_to_widget(self.__knittingSymbols, 
-                    self.symbolWidgetBase)
 
 
 

@@ -197,7 +197,7 @@ class SymbolSelectorItem(QFrame):
 class Synchronizer(QObject):
 
     # signal for notifying if active widget changes
-    selected_symbol_changed = pyqtSignal()
+    selected_symbol_changed = pyqtSignal("PyQt_PyObject")
 
 
     def __init__(self, parent = None):
@@ -224,7 +224,7 @@ class Synchronizer(QObject):
             self.__activeWidget = target
             self.__activeWidget.activate_me()
 
-        self.selected_symbol_changed.emit()
+        self.selected_symbol_changed.emit(self.__activeWidget.get_symbol())
 
 
 
