@@ -21,9 +21,10 @@
 
 from PyQt4.QtCore import SIGNAL, SLOT
 from PyQt4.QtGui import qApp, QMainWindow, QMessageBox
-import sconchoHelpers.text as text
-import symbolWidget 
 from ui_mainWindow import Ui_MainWindow
+import sconchoHelpers.text as text
+import symbolWidget
+from patternCanvas import PatternCanvas
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -36,8 +37,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
 
-        # initialize the symbol tracker
         self.initialize_symbol_widget(knittingSymbols)
+        self.graphicsView.setScene(PatternCanvas())
         
         # add connections
         self.connect(self.actionQuit, SIGNAL("triggered()"),

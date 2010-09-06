@@ -24,11 +24,11 @@ from PyQt4.QtCore import QString
 
 
 sconchoDescription = QString(
-    "<b>sconcho</b> is a versatile and extensible knitting chart "
+    "<b>sconcho</b> is a knitting chart "
     "design tool capable of producing print quality charts.<br><br>"
     "Copyright (C) 2009-2010 Markus Dittrich<br><br>"
     "This is a complete rewrite of the original C++/Qt4 version of sconcho "
-    "ported to python/PyQt4.<br><br>."
+    "ported to python/PyQt4.<br><br>"
     "Many thanks to Susan Dittrich for continued testing, advice, "
     "support, and generation of the SVG knitting symbols.<br><br>"
     "This program is free software: you can redistribute it and/or "
