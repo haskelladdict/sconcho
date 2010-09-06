@@ -20,7 +20,7 @@
 #######################################################################
 
 
-from PyQt4.QtCore import QString, QSize
+from PyQt4.QtCore import QString, QSize, pyqtSignal, QObject, SIGNAL
 from PyQt4.QtGui import QFrame, QGridLayout, QWidgetItem, QWidget, \
                         QHBoxLayout, QLabel, QScrollArea
 from PyQt4.QtSvg import QSvgWidget
@@ -55,7 +55,7 @@ def add_symbols_to_widget(symbols, widget):
             symbol = symbolEntry[1]
             newItem = SymbolSelectorItem(symbol, synchronizer)
             layout.addWidget(newItem, row, 0)
-            layout.addWidget(QLabel(symbol["patternName"]), row, 1)
+            layout.addWidget(QLabel(symbol["name"]), row, 1)
 
         tab.setLayout(layout)
         scrollArea = QScrollArea()
@@ -64,6 +64,8 @@ def add_symbols_to_widget(symbols, widget):
 
         if symbolCategory == "basic":
             widget.setCurrentWidget(scrollArea)
+
+    return synchronizer
 
 
 
@@ -106,16 +108,17 @@ class SymbolSelectorItem(QFrame):
     def __init__(self, symbol, synchronizer, parent = None):
 
         QFrame.__init__(self, parent)
-        self.name = symbol["patternName"]
         self.__synchronizer = synchronizer
+        self.__symbol = symbol
 
         # define and set stylesheets
         self.define_stylesheets() 
         self.setStyleSheet(self.__unselectedStyleSheet)
-
+        self.setToolTip(symbol["description"])
+        
         # add the symbol's svg
         svgWidget = QSvgWidget(symbol["svgPath"]) 
-        svgWidth = symbol["patternWidth"].toInt()[0]
+        svgWidth = symbol["width"].toInt()[0]
         svgWidget.setMaximumSize(QSize(svgWidth * 30, 30))
 
         # finalize the layout
@@ -123,6 +126,14 @@ class SymbolSelectorItem(QFrame):
         layout.setContentsMargins( 0, 0, 0, 0 )
         layout.addWidget(svgWidget)
         self.setLayout(layout)
+
+
+    def get_symbol(self):
+        """
+        Returns the symbol controled by this widget.
+        """
+
+        return self.__symbol
 
 
 
@@ -137,12 +148,18 @@ class SymbolSelectorItem(QFrame):
                                     "border-color: red;" \
                                     "background-color: lightblue;"
 
+        if "backgroundColor" in self.__symbol:
+            backColor = self.__symbol["backgroundColor"]
+        else:
+            backColor = "white"
+
         self.__unselectedStyleSheet = "border-width: 1px;" \
                                       "border-style: solid;" \
                                       "border-color: black;" \
-                                      "background-color: white;"
+                                      "background-color: " + backColor + ";"
 
-       
+    
+
     def mousePressEvent(self, event): 
         """
         Acts on mouse press events and uses the synchronizer
@@ -177,15 +194,25 @@ class SymbolSelectorItem(QFrame):
 ## class for synchronizing all SymbolSelectorItems
 ##
 #########################################################
-class Synchronizer(object):
+class Synchronizer(QObject):
+
+    # signal for notifying if active widget changes
+    selected_symbol_changed = pyqtSignal()
 
 
-    def __init__(self):
+    def __init__(self, parent = None):
 
+        QObject.__init__(self, parent)
         self.__activeWidget = None
 
-
+    
+    
     def select(self, target):
+        """
+        This method "remembers" the newly activated
+        knitting symbol and makes sure to deactivate
+        the previous one.
+        """
 
         if self.__activeWidget == target:
             self.__activeWidget.inactivate_me()
@@ -197,7 +224,14 @@ class Synchronizer(object):
             self.__activeWidget = target
             self.__activeWidget.activate_me()
 
-        if self.__activeWidget:
-            print(self.__activeWidget.name)
+        self.selected_symbol_changed.emit()
 
 
+
+    def get_active_symbol(self):
+        """
+        Simply returns the active knitting symbol
+        to anybody who cares to know.
+        """
+
+        return self.__activeWidget.get_symbol()

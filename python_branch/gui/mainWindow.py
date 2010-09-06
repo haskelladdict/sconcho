@@ -49,11 +49,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.show_about_qt4)
 
 
-        # setup rest of the GUI
-        self.initialize_symbol_widget()
+        # initialize the symbol tracker
+        self.__symbolTracker = self.initialize_symbol_widget()
+        self.connect(self.__symbolTracker, SIGNAL("selected_symbol_changed()"),
+                     self.symbol_changed)
 
 
-
+    def symbol_changed(self):
+        print(self.__symbolTracker.get_active_symbol()["name"])
 
 
     def initialize_symbol_widget(self):
@@ -61,8 +64,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Proxy for adding all the knitting symbols to the symbolWidget.
         """
 
-        symbolWidget.add_symbols_to_widget(self.__knittingSymbols, 
-                self.symbolWidgetBase)
+        return symbolWidget.add_symbols_to_widget(self.__knittingSymbols, 
+                    self.symbolWidgetBase)
 
 
 

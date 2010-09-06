@@ -134,16 +134,16 @@ def parse_symbol_description(node):
 
 
         if item.toElement().tagName() == "patternName":
-            content["patternName"] = entry
+            content["name"] = entry
 
         if item.toElement().tagName() == "patternDescription":
-            content["patternDescription"] = entry
+            content["description"] = entry
 
         if item.toElement().tagName() == "patternWidth":
-            content["patternWidth"] = entry
+            content["width"] = entry
 
         if item.toElement().tagName() == "backgroundColor":
-            content["backgroundColorName"] = entry
+            content["backgroundColor"] = entry
 
         item = item.nextSibling();
 
