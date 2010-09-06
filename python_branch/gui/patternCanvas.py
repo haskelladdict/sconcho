@@ -70,7 +70,7 @@ class PatternCanvasItem(QGraphicsItem):
 
         self.__svgItem = None
 
-        self.
+#        self.
 
 
     def boundingRect(self):
