@@ -19,7 +19,7 @@
 #
 #######################################################################
 
-from PyQt4.QtCore import QSettings, QString
+from PyQt4.QtCore import QSettings, QString, QSize
 
 
 ### some global settings (is there a better way to do this)
@@ -27,7 +27,7 @@ GRID_CELL_WIDTH  = "30"
 GRID_CELL_HEIGHT = "30"
 
 
-def initialize_settings(settings):
+def initialize(settings):
     """
     Initializes some basic settings if none exist.
     """
@@ -54,3 +54,21 @@ def initialize_settings(settings):
     if cellHeight.isEmpty():
         defaultHeight = QString(GRID_CELL_HEIGHT)
         settings.setValue( "global/cell_height", defaultHeight )
+
+
+
+def get_grid_dimensions(settings):
+    """
+    Helper function returning a tuple with width and height
+    for grid cells.
+    """
+
+    (cellWidth, widthStatus) = \
+            settings.value( "global/cell_width" ).toString().toInt()
+    (cellHeight, heightStatus) = \
+            settings.value( "global/cell_height" ).toString().toInt()
+
+    if not widthStatus or not heightStatus:
+        print("Error: Failed to retrieve grid dimensions from settings.")
+
+    return QSize(cellWidth, cellHeight)

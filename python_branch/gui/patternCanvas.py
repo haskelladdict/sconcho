@@ -20,14 +20,12 @@
 #######################################################################
 
 
-from PyQt4.QtCore import Qt, QRectF
-from PyQt4.QtGui import QGraphicsScene, QGraphicsItem, QPen, QColor
+from PyQt4.QtCore import Qt, QRectF, QSize, QPointF, QSizeF, \
+                         pyqtSignal, QObject
+from PyQt4.QtGui import QGraphicsScene, QGraphicsItem, QPen, QColor, \
+                        QBrush
 from PyQt4.QtSvg import QSvgWidget
-
-
-### these should become part of a settings object
-gridWidth = 30
-gridHeight = 30
+import sconchoHelpers.settings as settings
 
 
 #########################################################
@@ -37,10 +35,11 @@ gridHeight = 30
 #########################################################
 class PatternCanvas(QGraphicsScene):
 
-    def __init__(self, parent = None):
+    def __init__(self, settings, parent = None):
 
         QGraphicsScene.__init__(self, parent)
 
+        self.__settings = settings
         self.set_up_main_grid()
 
 
@@ -50,8 +49,15 @@ class PatternCanvas(QGraphicsScene):
         This function draws the main grid.
         """
 
-        foo = PatternCanvasItem(10, 10)
-        self.addItem(foo)
+        unitCellDim = QSizeF(settings.get_grid_dimensions(self.__settings))
+        width  = unitCellDim.width()
+        height = unitCellDim.height()
+
+        for row in range(0,10):
+            for column in range(0,10):
+                location = QPointF(row * width, column * height)
+                foo = PatternCanvasItem(location, unitCellDim)
+                self.addItem(foo)
 
 
 
@@ -64,32 +70,64 @@ class PatternCanvas(QGraphicsScene):
 #########################################################
 class PatternCanvasItem(QGraphicsItem):
 
-    def __init__(self, width, height, parent = None, scene = None):
+    # signal for notifying if active widget changes
+    item_selected = pyqtSignal("PyQt_PyObject")
 
-        QGraphicsItem.__init__(self, parent, scene)
+
+    def __init__(self, origin, size, parent = None, scene = None):
+
+        QGraphicsItem.__init__(self, parent)
+        QObject.__init__(self, parent)
 
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
         self.__pen.setColor(Qt.black)
 
+        self.__selected  = False
+        self.__backColor = Qt.white
+        self.__highlightedColor = Qt.gray
+        self.__color     = self.__backColor
+        
         self.__svgItem = None
-        self.__height = height
-        self.__width = width
+        self.__origin  = origin
+        self.__size    = size
+
+
+    def mousePressEvent(self, event):
+        """
+        Handle user press events on the item.
+        """
+
+        if not self.__selected:
+            self.__selected = True
+            #self.item_selected.emit(self)
+            self.__color = self.__highlightedColor
+        else:
+            self.__selected = False
+            self.__color = self.__backColor
+
+        self.update()
+
 
 
     def boundingRect(self):
         """
         Return the bounding rectangle of the item.
         """
-
-        return QRectF(0,0, self.__width * gridWidth, 
-                      self.__height * gridHeight)
+        
+        return QRectF(self.__origin, self.__size)
         
 
+
     def paint(self, painter, option, widget):
+        """
+        Paint ourselves.
+        """
 
         painter.setPen(self.__pen)
-        painter.drawRect(0, 0, 30, 30)
+        brush = QBrush(self.__color)
+        painter.setBrush(brush)
+        painter.drawRect(QRectF(self.__origin, self.__size))
 
 
 

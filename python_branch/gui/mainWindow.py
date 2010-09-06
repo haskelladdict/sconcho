@@ -39,10 +39,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.__settings = QSettings("sconcho", "settings")
-        settings.initialize_settings(self.__settings)
+        settings.initialize(self.__settings)
 
         self.initialize_symbol_widget(knittingSymbols)
-        self.graphicsView.setScene(PatternCanvas())
+        canvas = PatternCanvas(self.__settings)
+        self.graphicsView.setScene(canvas)
         
         # add connections
         self.connect(self.actionQuit, SIGNAL("triggered()"),
