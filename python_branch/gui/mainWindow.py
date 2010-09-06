@@ -19,10 +19,11 @@
 #
 #######################################################################
 
-from PyQt4.QtCore import SIGNAL, SLOT
+from PyQt4.QtCore import SIGNAL, SLOT, QSettings
 from PyQt4.QtGui import qApp, QMainWindow, QMessageBox
 from ui_mainWindow import Ui_MainWindow
 import sconchoHelpers.text as text
+import sconchoHelpers.settings as settings
 import symbolWidget
 from patternCanvas import PatternCanvas
 
@@ -36,6 +37,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
+
+        self.__settings = QSettings("sconcho", "settings")
+        settings.initialize_settings(self.__settings)
 
         self.initialize_symbol_widget(knittingSymbols)
         self.graphicsView.setScene(PatternCanvas())

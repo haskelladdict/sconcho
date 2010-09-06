@@ -25,6 +25,10 @@ from PyQt4.QtGui import QGraphicsScene, QGraphicsItem, QPen, QColor
 from PyQt4.QtSvg import QSvgWidget
 
 
+### these should become part of a settings object
+gridWidth = 30
+gridHeight = 30
+
 
 #########################################################
 ## 
@@ -65,17 +69,21 @@ class PatternCanvasItem(QGraphicsItem):
         QGraphicsItem.__init__(self, parent, scene)
 
         self.__pen = QPen()
-        self.__pen.setWidthF(1.0);
+        self.__pen.setWidthF(1.0)
         self.__pen.setColor(Qt.black)
 
         self.__svgItem = None
-
-#        self.
+        self.__height = height
+        self.__width = width
 
 
     def boundingRect(self):
+        """
+        Return the bounding rectangle of the item.
+        """
 
-        return QRectF(0,0,10,10)
+        return QRectF(0,0, self.__width * gridWidth, 
+                      self.__height * gridHeight)
         
 
     def paint(self, painter, option, widget):
