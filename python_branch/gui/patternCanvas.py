@@ -30,6 +30,20 @@ import sconchoHelpers.settings as settings
 
 
 
+def paint_cells(symbol, allCells):
+    """
+    Given a collection of cells tries to place symbols
+    in them. Need to check if we have the proper total
+    number of cells and also if we have the proper number
+    of neighboring tuples.
+    """
+
+    if symbol:
+        for cell in allCells:
+            cell.set_symbol(symbol)
+        allCells.clear()
+
+
 #########################################################
 ## 
 ## class for managing the actual pattern canvas
@@ -39,7 +53,7 @@ class PatternCanvas(QGraphicsScene):
 
     def __init__(self, settings, parent = None):
 
-        QGraphicsScene.__init__(self, parent)
+        super(PatternCanvas,self).__init__()
 
         self.__settings = settings
         self.__activeSymbol = None
@@ -60,7 +74,7 @@ class PatternCanvas(QGraphicsScene):
         for row in range(0,10):
             for column in range(0,10):
                 location = QPointF(row * width, column * height)
-                item = PatternCanvasItem(location, unitCellDim)
+                item = PatternCanvasItem(location, unitCellDim, row, column)
                 self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
                              self.grid_cell_activated)
                 self.addItem(item)
@@ -77,23 +91,14 @@ class PatternCanvas(QGraphicsScene):
             print("symbol changed --> " + activeKnittingSymbol["name"])
             
         self.__activeSymbol = activeKnittingSymbol
-        self.paint_cells()
+        paint_cells(self.__activeSymbol, self.__selectedCells)
 
-
-
-    def paint_cells(self):
-        
-        if self.__activeSymbol:
-            for cell in self.__selectedCells:
-                cell.set_symbol(self.__activeSymbol)
-            self.__selectedCells.clear()
-       
 
 
     def grid_cell_activated(self, item):
 
         self.__selectedCells.add(item)
-        self.paint_cells()
+        paint_cells(self.__activeSymbol, self.__selectedCells)
 
 
 
@@ -110,10 +115,16 @@ class PatternCanvasItem(QGraphicsObject):
     cell_selected = pyqtSignal("PyQt_PyObject")
 
 
-    def __init__(self, origin, size, parent = None, scene = None):
+    def __init__(self, origin, size, row, col,
+                 parent = None, scene = None):
 
         super(PatternCanvasItem, self).__init__() 
 
+        self.__origin  = origin
+        self.__size    = size
+        self.__row     = row
+        self.__col     = col
+        
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
         self.__pen.setColor(Qt.black)
@@ -124,8 +135,6 @@ class PatternCanvasItem(QGraphicsObject):
         self.__color     = self.__backColor
         
         self.__svgItem = None
-        self.__origin  = origin
-        self.__size    = size
 
 
 
@@ -171,14 +180,18 @@ class PatternCanvasItem(QGraphicsObject):
         scene.
         """
 
-        self.unselect()
-
         # make sure we remove the previous svgItem
         if self.__svgItem:
             self.__svgItem.scene().removeItem(self.__svgItem)
 
         svgPath = newSymbol["svgPath"]
         self.__svgItem = QGraphicsSvgItem(svgPath, self)
+
+        # apply color if present
+        if "backgroundColor" in newSymbol:
+            self.__backColor = QColor(newSymbol["backgroundColor"])
+        else:
+            self.__backColor = Qt.white
 
         # move svg item into correct position
         itemBound = self.boundingRect()
@@ -189,7 +202,9 @@ class PatternCanvasItem(QGraphicsObject):
         self.__svgItem.scale(widthScale, heightScale)
         self.__svgItem.setPos(itemBound.x(), itemBound.y())
 
-        
+        self.unselect()
+
+
 
     def boundingRect(self):
         """
