@@ -30,18 +30,70 @@ import sconchoHelpers.settings as settings
 
 
 
-def paint_cells(symbol, allCells):
+def verify_cell_arrangement(width, allCells):
     """
-    Given a collection of cells tries to place symbols
-    in them. Need to check if we have the proper total
+    Given a collection of cells verifies that we can place
+    the symbol. Need to check if we have the proper total
     number of cells and also if we have the proper number
     of neighboring tuples.
     """
 
-    if symbol:
-        for cell in allCells:
-            cell.set_symbol(symbol)
-        allCells.clear()
+    # check 1: number of active cells has to be a multiple
+    # of width
+    if len(allCells) % width != 0:
+        return []
+
+    cellsByRow = {}
+    for cell in allCells:
+        if not cell.row in cellsByRow:
+            cellsByRow[cell.row] = [cell]
+        else:
+            cellsByRow[cell.row].append(cell)
+
+    # check 2: each row has to be a multiple of width
+    for row in cellsByRow.values():
+        if len(row) % width != 0:
+            return []
+
+    chunkList = []
+    for row in cellsByRow.values():
+        row.sort(lambda x, y: cmp(x.col, y.col))
+        chunks = [row[x:x+width] for x in range(0,len(row),width)]
+        if not are_consecutive(chunks):
+            return []
+
+        chunkList.append(chunks)
+
+    return chunkList
+
+
+
+def are_consecutive(chunks):
+    """
+    Checks if each chunk in a list of chunks consists
+    of consecutive items. For each chunk compute the
+    difference between column indices, if they are not
+    all 1 they are obviously not consecutive.
+    """
+
+    if not chunks:
+        return True
+
+    for chunk in chunks:
+        value = 0
+        diffs = []
+        for cell in chunk:
+            diffs.append(cell.col - value)
+            value = cell.col
+
+        for diff in diffs[1:]:
+            if diff != 1:
+                return False
+            
+    return True
+        
+
+
 
 
 #########################################################
@@ -73,10 +125,12 @@ class PatternCanvas(QGraphicsScene):
 
         for row in range(0,10):
             for column in range(0,10):
-                location = QPointF(row * width, column * height)
+                location = QPointF(column * width, row * height)
                 item = PatternCanvasItem(location, unitCellDim, row, column)
                 self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
                              self.grid_cell_activated)
+                self.connect(item, SIGNAL("cell_unselected(PyQt_PyObject)"),
+                             self.grid_cell_inactivated)
                 self.addItem(item)
 
 
@@ -91,15 +145,40 @@ class PatternCanvas(QGraphicsScene):
             print("symbol changed --> " + activeKnittingSymbol["name"])
             
         self.__activeSymbol = activeKnittingSymbol
-        paint_cells(self.__activeSymbol, self.__selectedCells)
-
+        self.paint_cells()
 
 
     def grid_cell_activated(self, item):
+        """
+        If a grid cell notifies it has been activated add it
+        to the collectoin of selected cells and try to paint
+        them.
+        """
 
         self.__selectedCells.add(item)
-        paint_cells(self.__activeSymbol, self.__selectedCells)
+        self.paint_cells()
 
+
+    def grid_cell_inactivated(self, item):
+        """
+        If a grid cell notifies it has been in-activated remove
+        it from the collectoin of selected cells.
+        """
+
+        self.__selectedCells.remove(item)
+        
+
+
+    def paint_cells(self):
+        
+        if self.__activeSymbol:
+            width = int(self.__activeSymbol["width"])
+            chunks = verify_cell_arrangement(width, self.__selectedCells)
+
+            if chunks:
+                for cell in self.__selectedCells:
+                    cell.set_symbol(self.__activeSymbol)
+                self.__selectedCells.clear()
 
 
 
@@ -112,7 +191,8 @@ class PatternCanvas(QGraphicsScene):
 class PatternCanvasItem(QGraphicsObject):
 
     # signal for notifying if active widget changes
-    cell_selected = pyqtSignal("PyQt_PyObject")
+    cell_selected   = pyqtSignal("PyQt_PyObject")
+    cell_unselected = pyqtSignal("PyQt_PyObject") 
 
 
     def __init__(self, origin, size, row, col,
@@ -120,10 +200,10 @@ class PatternCanvasItem(QGraphicsObject):
 
         super(PatternCanvasItem, self).__init__() 
 
-        self.__origin  = origin
-        self.__size    = size
-        self.__row     = row
-        self.__col     = col
+        self.__origin = origin
+        self.__size   = size
+        self.row      = row
+        self.col      = col
         
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
@@ -144,13 +224,15 @@ class PatternCanvasItem(QGraphicsObject):
         """
 
         if not self.__selected:
-            self.select()
+            self.__select()
+            self.cell_selected.emit(self)
         else:
-            self.unselect()
+            self.__unselect()
+            self.cell_unselected.emit(self)
 
 
 
-    def unselect(self):
+    def __unselect(self):
         """
         Unselects a given selected cell. 
         """
@@ -161,7 +243,7 @@ class PatternCanvasItem(QGraphicsObject):
 
 
 
-    def select(self):
+    def __select(self):
         """
         Selects a given unselected cell. 
         """
@@ -169,8 +251,6 @@ class PatternCanvasItem(QGraphicsObject):
         self.__selected = True
         self.__color = self.__highlightedColor
         self.update()
-
-        self.cell_selected.emit(self)
 
 
             
@@ -202,7 +282,7 @@ class PatternCanvasItem(QGraphicsObject):
         self.__svgItem.scale(widthScale, heightScale)
         self.__svgItem.setPos(itemBound.x(), itemBound.y())
 
-        self.unselect()
+        self.__unselect()
 
 
 
