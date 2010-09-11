@@ -40,7 +40,7 @@ def verify_cell_arrangement(width, allCells):
 
     # check 1: number of active cells has to be a multiple
     # of width
-    if len(allCells) % width != 0:
+    if num_unitcells(allCells) % width != 0:
         return []
 
     cellsByRow = {}
@@ -52,17 +52,30 @@ def verify_cell_arrangement(width, allCells):
 
     # check 2: each row has to be a multiple of width
     for row in cellsByRow.values():
-        if len(row) % width != 0:
+        if num_unitcells(row) % width != 0:
             return []
 
+    # separate each row into chunks at least as long as
+    # the items we want to place. Then we check if each
+    # chunk is consecutive
     chunkList = []
     for row in cellsByRow.values():
         row.sort(lambda x, y: cmp(x.col, y.col))
-        chunks = [row[x:x+width] for x in range(0,len(row),width)]
+        chunks = []
+        chunk = []
+        length = 0
+        for item in row:
+            chunk.append(item)
+            length += item.width
+            if length % width == 0:
+               chunks.append(chunk)
+               chunk = []
+               length = 0
+
         if not are_consecutive(chunks):
             return []
 
-        chunkList.append(chunks)
+        chunkList.extend(chunks)
 
     return chunkList
 
@@ -71,28 +84,38 @@ def verify_cell_arrangement(width, allCells):
 def are_consecutive(chunks):
     """
     Checks if each chunk in a list of chunks consists
-    of consecutive items. For each chunk compute the
-    difference between column indices, if they are not
-    all 1 they are obviously not consecutive.
+    of consecutive items. 
     """
 
     if not chunks:
         return True
 
     for chunk in chunks:
-        value = 0
-        diffs = []
-        for cell in chunk:
-            diffs.append(cell.col - value)
-            value = cell.col
+        if not chunk:
+            return False
 
-        for diff in diffs[1:]:
-            if diff != 1:
+        consecutiveCol = chunk[0].col + chunk[0].width
+        for cell in chunk[1:]:
+            if cell.col != consecutiveCol:
                 return False
+            
+            consecutiveCol = cell.col + cell.width
             
     return True
         
 
+
+def num_unitcells(cells):
+    """
+    Compute the total number of unit cells in the
+    selection.
+    """
+
+    totalWidth = 0
+    for item in cells:
+        totalWidth += item.width
+
+    return totalWidth
 
 
 
@@ -103,13 +126,17 @@ def are_consecutive(chunks):
 #########################################################
 class PatternCanvas(QGraphicsScene):
 
-    def __init__(self, settings, parent = None):
+    def __init__(self, theSettings, parent = None):
 
         super(PatternCanvas,self).__init__()
 
-        self.__settings = settings
         self.__activeSymbol = None
         self.__selectedCells = set()
+
+        self.__unitCellDim = QSizeF(settings.get_grid_dimensions(theSettings))
+        self.__unitWidth   = self.__unitCellDim.width()
+        self.__unitHeight  = self.__unitCellDim.height()
+
         self.set_up_main_grid()
 
 
@@ -119,19 +146,12 @@ class PatternCanvas(QGraphicsScene):
         This function draws the main grid.
         """
 
-        unitCellDim = QSizeF(settings.get_grid_dimensions(self.__settings))
-        width  = unitCellDim.width()
-        height = unitCellDim.height()
-
         for row in range(0,10):
             for column in range(0,10):
-                location = QPointF(column * width, row * height)
-                item = PatternCanvasItem(location, unitCellDim, row, column)
-                self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
-                             self.grid_cell_activated)
-                self.connect(item, SIGNAL("cell_unselected(PyQt_PyObject)"),
-                             self.grid_cell_inactivated)
-                self.addItem(item)
+                location = QPointF(column * self.__unitWidth,
+                                   row * self.__unitHeight)
+                self.create_item(location, self.__unitCellDim,
+                                 row, column, 1)
 
 
 
@@ -148,6 +168,7 @@ class PatternCanvas(QGraphicsScene):
         self.paint_cells()
 
 
+
     def grid_cell_activated(self, item):
         """
         If a grid cell notifies it has been activated add it
@@ -159,6 +180,7 @@ class PatternCanvas(QGraphicsScene):
         self.paint_cells()
 
 
+
     def grid_cell_inactivated(self, item):
         """
         If a grid cell notifies it has been in-activated remove
@@ -166,19 +188,61 @@ class PatternCanvas(QGraphicsScene):
         """
 
         self.__selectedCells.remove(item)
-        
+        self.paint_cells()
+
+
+
+    def create_item(self, origin, dim, row, col, width):
+        """
+        Creates a new PatternGridItem of the specified dimension
+        at the given location.
+        """
+
+        item = PatternCanvasItem(origin, dim, row, col, width)
+        self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
+                     self.grid_cell_activated)
+        self.connect(item, SIGNAL("cell_unselected(PyQt_PyObject)"),
+                     self.grid_cell_inactivated)
+        self.addItem(item)
+
+        return item
+
 
 
     def paint_cells(self):
+        """
+        Attempts to paint the cells with the selected symbol.
+        Has to make sure the geometry is appropriate.
+        """
         
         if self.__activeSymbol:
             width = int(self.__activeSymbol["width"])
             chunks = verify_cell_arrangement(width, self.__selectedCells)
-
+            dim = QSizeF(self.__unitWidth * width, self.__unitHeight)
+            
             if chunks:
-                for cell in self.__selectedCells:
-                    cell.set_symbol(self.__activeSymbol)
+                for chunk in chunks:
+                    totalWidth = 0
+                    origin = chunk[0].origin
+                    row    = chunk[0].row
+                    col    = chunk[0].col
+                    for item in chunk:
+                        totalWidth += item.width
+                        self.removeItem(item)
+
+                    print(totalWidth, width, len(chunk))
+                    assert(totalWidth % width == 0)
+                    numNewItems = totalWidth/width
+                    for i in range(0,numNewItems):
+                        item = self.create_item(origin, dim, row, col, width)
+                        item.set_symbol(self.__activeSymbol)
+                        origin = QPointF(origin.x() + (width * self.__unitWidth),
+                                         origin.y())
+                        col    = col + width
+                        
+
                 self.__selectedCells.clear()
+
 
 
 
@@ -195,15 +259,16 @@ class PatternCanvasItem(QGraphicsObject):
     cell_unselected = pyqtSignal("PyQt_PyObject") 
 
 
-    def __init__(self, origin, size, row, col,
+    def __init__(self, origin, size, row, col, width,
                  parent = None, scene = None):
 
         super(PatternCanvasItem, self).__init__() 
 
-        self.__origin = origin
-        self.__size   = size
-        self.row      = row
-        self.col      = col
+        self.origin = origin
+        self.size   = size
+        self.row    = row
+        self.col    = col
+        self.width  = width
         
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
@@ -291,7 +356,7 @@ class PatternCanvasItem(QGraphicsObject):
         Return the bounding rectangle of the item.
         """
         
-        return QRectF(self.__origin, self.__size)
+        return QRectF(self.origin, self.size)
         
 
 
@@ -303,7 +368,7 @@ class PatternCanvasItem(QGraphicsObject):
         painter.setPen(self.__pen)
         brush = QBrush(self.__color)
         painter.setBrush(brush)
-        painter.drawRect(QRectF(self.__origin, self.__size))
+        painter.drawRect(QRectF(self.origin, self.size))
 
 
 
