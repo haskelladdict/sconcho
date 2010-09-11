@@ -41,9 +41,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__settings = QSettings("sconcho", "settings")
         settings.initialize(self.__settings)
 
+        self.__canvas = PatternCanvas(self.__settings)
         self.initialize_symbol_widget(knittingSymbols)
-        canvas = PatternCanvas(self.__settings)
-        self.graphicsView.setScene(canvas)
+        self.graphicsView.setScene(self.__canvas)
         
         # add connections
         self.connect(self.actionQuit, SIGNAL("triggered()"),
@@ -57,17 +57,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
    
-
-    def symbol_changed(self, foo):
-        """
-        This function handles events when the user changes the 
-        currently selected symbol.
-        """
-
-        print("symbol changed --> " + foo["name"])
-    
-
-
     def initialize_symbol_widget(self, knittingSymbols):
         """
         Proxy for adding all the knitting symbols to the symbolWidget
@@ -77,12 +66,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         symbolTracker = symbolWidget.add_symbols_to_widget(knittingSymbols, 
                             self.symbolWidgetBase)
 
+        # we connect the symbol tracker directly to the canvas
         self.connect(symbolTracker, 
                      SIGNAL("selected_symbol_changed(PyQt_PyObject)"),
-                     self.symbol_changed)
-
-
-
+                     self.__canvas.set_active_symbol)
 
 
 

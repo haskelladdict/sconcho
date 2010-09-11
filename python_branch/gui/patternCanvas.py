@@ -21,11 +21,13 @@
 
 
 from PyQt4.QtCore import Qt, QRectF, QSize, QPointF, QSizeF, \
-                         pyqtSignal, QObject
-from PyQt4.QtGui import QGraphicsScene, QGraphicsItem, QPen, QColor, \
+                         pyqtSignal, SIGNAL, QObject
+from PyQt4.QtGui import QGraphicsScene, QGraphicsObject, QPen, QColor, \
                         QBrush
+from PyQt4.QtSvg import QGraphicsSvgItem
 from PyQt4.QtSvg import QSvgWidget
 import sconchoHelpers.settings as settings
+
 
 
 #########################################################
@@ -40,6 +42,8 @@ class PatternCanvas(QGraphicsScene):
         QGraphicsScene.__init__(self, parent)
 
         self.__settings = settings
+        self.__activeSymbol = None
+        self.__selectedCells = set()
         self.set_up_main_grid()
 
 
@@ -56,8 +60,40 @@ class PatternCanvas(QGraphicsScene):
         for row in range(0,10):
             for column in range(0,10):
                 location = QPointF(row * width, column * height)
-                foo = PatternCanvasItem(location, unitCellDim)
-                self.addItem(foo)
+                item = PatternCanvasItem(location, unitCellDim)
+                self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
+                             self.grid_cell_activated)
+                self.addItem(item)
+
+
+
+    def set_active_symbol(self, activeKnittingSymbol):
+        """
+        This function receives the currently active symbol
+        and stores it.
+        """
+
+        if activeKnittingSymbol:
+            print("symbol changed --> " + activeKnittingSymbol["name"])
+            
+        self.__activeSymbol = activeKnittingSymbol
+        self.paint_cells()
+
+
+
+    def paint_cells(self):
+        
+        if self.__activeSymbol:
+            for cell in self.__selectedCells:
+                cell.set_symbol(self.__activeSymbol)
+            self.__selectedCells.clear()
+       
+
+
+    def grid_cell_activated(self, item):
+
+        self.__selectedCells.add(item)
+        self.paint_cells()
 
 
 
@@ -68,16 +104,15 @@ class PatternCanvas(QGraphicsScene):
 ## (svg image, frame, background color)
 ##
 #########################################################
-class PatternCanvasItem(QGraphicsItem):
+class PatternCanvasItem(QGraphicsObject):
 
     # signal for notifying if active widget changes
-    item_selected = pyqtSignal("PyQt_PyObject")
+    cell_selected = pyqtSignal("PyQt_PyObject")
 
 
     def __init__(self, origin, size, parent = None, scene = None):
 
-        QGraphicsItem.__init__(self, parent)
-        QObject.__init__(self, parent)
+        super(PatternCanvasItem, self).__init__() 
 
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
@@ -93,22 +128,68 @@ class PatternCanvasItem(QGraphicsItem):
         self.__size    = size
 
 
+
     def mousePressEvent(self, event):
         """
         Handle user press events on the item.
         """
 
         if not self.__selected:
-            self.__selected = True
-            #self.item_selected.emit(self)
-            self.__color = self.__highlightedColor
+            self.select()
         else:
-            self.__selected = False
-            self.__color = self.__backColor
+            self.unselect()
 
+
+
+    def unselect(self):
+        """
+        Unselects a given selected cell. 
+        """
+
+        self.__selected = False
+        self.__color = self.__backColor
         self.update()
 
 
+
+    def select(self):
+        """
+        Selects a given unselected cell. 
+        """
+
+        self.__selected = True
+        self.__color = self.__highlightedColor
+        self.update()
+
+        self.cell_selected.emit(self)
+
+
+            
+    def set_symbol(self, newSymbol):
+        """
+        Adds a new svg image of a knitting symbol to the
+        scene.
+        """
+
+        self.unselect()
+
+        # make sure we remove the previous svgItem
+        if self.__svgItem:
+            self.__svgItem.scene().removeItem(self.__svgItem)
+
+        svgPath = newSymbol["svgPath"]
+        self.__svgItem = QGraphicsSvgItem(svgPath, self)
+
+        # move svg item into correct position
+        itemBound = self.boundingRect()
+        svgBound  = self.__svgItem.boundingRect()
+        widthScale = float(itemBound.width())/svgBound.width()
+        heightScale = float(itemBound.height())/svgBound.height()
+        
+        self.__svgItem.scale(widthScale, heightScale)
+        self.__svgItem.setPos(itemBound.x(), itemBound.y())
+
+        
 
     def boundingRect(self):
         """

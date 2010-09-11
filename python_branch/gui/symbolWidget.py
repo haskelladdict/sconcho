@@ -217,14 +217,15 @@ class Synchronizer(QObject):
         if self.__activeWidget == target:
             self.__activeWidget.inactivate_me()
             self.__activeWidget = None
+            self.selected_symbol_changed.emit(None)
         else:
             if self.__activeWidget:
                 self.__activeWidget.inactivate_me()
 
             self.__activeWidget = target
             self.__activeWidget.activate_me()
-
-        self.selected_symbol_changed.emit(self.__activeWidget.get_symbol())
+    
+            self.selected_symbol_changed.emit(self.__activeWidget.get_symbol())
 
 
 
