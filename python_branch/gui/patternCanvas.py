@@ -23,10 +23,12 @@
 from PyQt4.QtCore import Qt, QRectF, QSize, QPointF, QSizeF, \
                          pyqtSignal, SIGNAL, QObject, QString
 from PyQt4.QtGui import QGraphicsScene, QGraphicsObject, QPen, QColor, \
-                        QBrush, QGraphicsTextItem, QFontMetrics
+                        QBrush, QGraphicsTextItem, QFontMetrics, QMenu, \
+                        QAction
 from PyQt4.QtSvg import QGraphicsSvgItem
 from PyQt4.QtSvg import QSvgWidget
 from sconchoHelpers.settings import get_grid_dimensions, get_text_font
+import sconchoHelpers.canvas as canvasHelpers
 
 
 
@@ -301,6 +303,42 @@ class PatternCanvas(QGraphicsScene):
                         
 
                 self.__selectedCells.clear()
+
+
+
+    def mousePressEvent(self, event):
+        """
+        Handle mouse press events directly on the canvas.
+        """
+
+        if (event.button() == Qt.RightButton):
+            (col, row) = canvasHelpers.convert_pos_to_row_col(
+                event.scenePos(), self.__unitWidth, self.__unitHeight)
+            
+            if canvasHelpers.is_row_col_in_grid(col, row,
+                                                self.__numColumns,
+                                                self.__numRows):
+                self.handle_right_click_on_grid(event)
+                
+        else:
+            return QGraphicsScene.mousePressEvent(self, event)
+
+
+
+    def handle_right_click_on_grid(self, event):
+        """
+        Handles a right click on the pattern grid by
+        displaying a QMenu with options.
+        """
+        
+        gridMenu = QMenu()
+        copyAction = gridMenu.addAction("&Copy")
+        pasteAction = gridMenu.addAction("&Paste")
+        gridMenu.addSeparator()
+        rowAction = gridMenu.addAction("Insert/delete rows & columns")
+        gridMenu.addSeparator();
+        colorAction = gridMenu.addAction("Grab color");
+        gridMenu.exec_(event.screenPos())
 
 
 
