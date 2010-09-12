@@ -20,6 +20,7 @@
 #######################################################################
 
 from PyQt4.QtCore import QSettings, QString, QSize
+from PyQt4.QtGui import QFont
 
 
 ### some global settings (is there a better way to do this)
@@ -64,11 +65,27 @@ def get_grid_dimensions(settings):
     """
 
     (cellWidth, widthStatus) = \
-            settings.value( "global/cell_width" ).toString().toInt()
+                settings.value("global/cell_width").toString().toInt()
     (cellHeight, heightStatus) = \
-            settings.value( "global/cell_height" ).toString().toInt()
+                 settings.value("global/cell_height").toString().toInt()
 
     if not widthStatus or not heightStatus:
         print("Error: Failed to retrieve grid dimensions from settings.")
 
     return QSize(cellWidth, cellHeight)
+
+
+
+def get_text_font(settings):
+    """
+    Helper function for extracting the currently selected text font
+    from settings.
+    """
+
+    fontString = settings.value("global/font").toString()
+
+    font = QFont()
+    if not font.fromString(fontString):
+        print("Error: Failed to retrive font from settings.")
+
+    return font

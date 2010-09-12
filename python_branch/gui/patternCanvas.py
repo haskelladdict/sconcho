@@ -21,21 +21,21 @@
 
 
 from PyQt4.QtCore import Qt, QRectF, QSize, QPointF, QSizeF, \
-                         pyqtSignal, SIGNAL, QObject
+                         pyqtSignal, SIGNAL, QObject, QString
 from PyQt4.QtGui import QGraphicsScene, QGraphicsObject, QPen, QColor, \
-                        QBrush
+                        QBrush, QGraphicsTextItem, QFontMetrics
 from PyQt4.QtSvg import QGraphicsSvgItem
 from PyQt4.QtSvg import QSvgWidget
-import sconchoHelpers.settings as settings
+from sconchoHelpers.settings import get_grid_dimensions, get_text_font
 
 
 
-def verify_cell_arrangement(width, allCells):
+def chunkify_cell_arrangement(width, allCells):
     """
-    Given a collection of cells verifies that we can place
-    the symbol. Need to check if we have the proper total
-    number of cells and also if we have the proper number
-    of neighboring tuples.
+    Given a collection of selected cells verifies that we
+    can place a symbol of given width. If so, return a
+    list of consecutive chunks of cells all of a multiple of width
+    that can be filled with the new symbol.
     """
 
     # check 1: number of active cells has to be a multiple
@@ -55,12 +55,24 @@ def verify_cell_arrangement(width, allCells):
         if num_unitcells(row) % width != 0:
             return []
 
-    # separate each row into chunks at least as long as
-    # the items we want to place. Then we check if each
-    # chunk is consecutive
+
+    chunkList = chunk_all_rows(width, cellsByRow)
+
+    return chunkList
+
+
+
+def chunk_all_rows(width, cellsByRow):
+    """
+    Separate each row into chunks at least as long as
+    the items we want to place. Then we check if each
+    chunk is consecutive.
+    """
+    
     chunkList = []
     for row in cellsByRow.values():
         row.sort(lambda x, y: cmp(x.col, y.col))
+
         chunks = []
         chunk = []
         length = 0
@@ -130,14 +142,22 @@ class PatternCanvas(QGraphicsScene):
 
         super(PatternCanvas,self).__init__()
 
+        self.__settings = theSettings
+
         self.__activeSymbol = None
         self.__selectedCells = set()
 
-        self.__unitCellDim = QSizeF(settings.get_grid_dimensions(theSettings))
+        self.__unitCellDim = QSizeF(get_grid_dimensions(theSettings))
         self.__unitWidth   = self.__unitCellDim.width()
         self.__unitHeight  = self.__unitCellDim.height()
+        self.__numRows     = 10
+        self.__numColumns  = 10
+
+        self.__textFont    = get_text_font(theSettings)
+        self.__textLabels  = []
 
         self.set_up_main_grid()
+        self.set_up_labels()
 
 
 
@@ -146,14 +166,50 @@ class PatternCanvas(QGraphicsScene):
         This function draws the main grid.
         """
 
-        for row in range(0,10):
-            for column in range(0,10):
+        for row in range(0, self.__numRows):
+            for column in range(0, self.__numColumns):
                 location = QPointF(column * self.__unitWidth,
                                    row * self.__unitHeight)
                 self.create_item(location, self.__unitCellDim,
                                  row, column, 1)
 
 
+    def set_up_labels(self):
+        """
+        Add labels to the main grid.
+        """
+
+        for label in self.__textLabels:
+            self.removeItem(label)
+
+        fm = QFontMetrics(self.__textFont)
+        
+        # row labels
+        xPos = self.__unitWidth * self.__numColumns
+        for row in range(0, self.__numRows):
+            item = QGraphicsTextItem(str(self.__numRows - row))
+
+            yPos = self.__unitHeight * row
+            item.setPos(xPos, yPos)
+            item.setFont(self.__textFont)
+            self.addItem(item)
+            self.__textLabels.append(item)
+
+        # column labels
+        yPos = self.__unitHeight * self.__numRows
+        for col in range(0, self.__numColumns):
+            labelText = QString(str(self.__numColumns - col))
+            textWidth = fm.width(labelText)
+            item = QGraphicsTextItem(labelText)
+            
+            xPos = self.__unitWidth * col + (self.__unitWidth * 0.6 -textWidth)
+            item.setPos(xPos, yPos)
+            item.setFont(self.__textFont)
+
+            self.addItem(item)
+            self.__textLabels.append(item)
+
+            
 
     def set_active_symbol(self, activeKnittingSymbol):
         """
@@ -217,21 +273,24 @@ class PatternCanvas(QGraphicsScene):
         
         if self.__activeSymbol:
             width = int(self.__activeSymbol["width"])
-            chunks = verify_cell_arrangement(width, self.__selectedCells)
+            chunks = chunkify_cell_arrangement(width, self.__selectedCells)
             dim = QSizeF(self.__unitWidth * width, self.__unitHeight)
             
             if chunks:
                 for chunk in chunks:
                     totalWidth = 0
+
+                    # location of leftmost item in chunk
                     origin = chunk[0].origin
                     row    = chunk[0].row
                     col    = chunk[0].col
+
+                    # compute total width and remove old items
                     for item in chunk:
                         totalWidth += item.width
                         self.removeItem(item)
 
-                    print(totalWidth, width, len(chunk))
-                    assert(totalWidth % width == 0)
+                    # insert as many new items as we can fit
                     numNewItems = totalWidth/width
                     for i in range(0,numNewItems):
                         item = self.create_item(origin, dim, row, col, width)
