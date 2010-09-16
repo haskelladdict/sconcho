@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-########################################################################
-#
+######################################################################## #
 # (c) 2010 Markus Dittrich
 #
 # This program is free software; you can redistribute it
@@ -21,7 +20,8 @@
 
 
 from PyQt4.QtCore import Qt, QRectF, QSize, QPointF, QSizeF, \
-                         pyqtSignal, SIGNAL, QObject, QString
+                         pyqtSignal, SIGNAL, QObject, QString, \
+                         QPoint
 from PyQt4.QtGui import QGraphicsScene, QGraphicsObject, QPen, QColor, \
                         QBrush, QGraphicsTextItem, QFontMetrics, QMenu, \
                         QAction
@@ -31,6 +31,416 @@ from sconchoHelpers.settings import get_grid_dimensions, get_text_font
 import sconchoHelpers.canvas as canvasHelpers
 
 
+
+
+#########################################################
+## 
+## class for managing the actual pattern canvas
+##
+#########################################################
+class PatternCanvas(QGraphicsScene):
+
+    def __init__(self, theSettings, parent = None):
+
+        super(PatternCanvas,self).__init__()
+
+        self.__settings = theSettings
+
+        self.__activeSymbol  = None
+        self.__selectedCells = set()
+        self.__copySelection = set()
+        self.__rightClickPos = QPoint() # (row, col) position of last right click
+
+        self.__unitCellDim = QSizeF(get_grid_dimensions(theSettings))
+        self.__unitWidth   = self.__unitCellDim.width()
+        self.__unitHeight  = self.__unitCellDim.height()
+        self.__numRows     = 10
+        self.__numColumns  = 10
+
+        self.__textFont    = get_text_font(theSettings)
+        self.__textLabels  = []
+
+        self.set_up_main_grid()
+        self.set_up_labels()
+
+
+
+    def set_up_main_grid(self):
+        """
+        This function draws the main grid.
+        """
+
+        for row in range(0, self.__numRows):
+            for column in range(0, self.__numColumns):
+                location = QPointF(column * self.__unitWidth,
+                                   row * self.__unitHeight)
+                self.create_item(location, self.__unitCellDim,
+                                 column, row, 1)
+
+
+    def set_up_labels(self):
+        """
+        Add labels to the main grid.
+        """
+
+        for label in self.__textLabels:
+            self.removeItem(label)
+
+        fm = QFontMetrics(self.__textFont)
+        
+        # row labels
+        xPos = self.__unitWidth * self.__numColumns
+        for row in range(0, self.__numRows):
+            item = QGraphicsTextItem(str(self.__numRows - row))
+
+            yPos = self.__unitHeight * row
+            item.setPos(xPos, yPos)
+            item.setFont(self.__textFont)
+            self.addItem(item)
+            self.__textLabels.append(item)
+
+        # column labels
+        yPos = self.__unitHeight * self.__numRows
+        for col in range(0, self.__numColumns):
+            labelText = QString(str(self.__numColumns - col))
+            textWidth = fm.width(labelText)
+            item = QGraphicsTextItem(labelText)
+            
+            xPos = self.__unitWidth * col + (self.__unitWidth * 0.6 -textWidth)
+            item.setPos(xPos, yPos)
+            item.setFont(self.__textFont)
+
+            self.addItem(item)
+            self.__textLabels.append(item)
+
+            
+
+    def set_active_symbol(self, activeKnittingSymbol):
+        """
+        This function receives the currently active symbol
+        and stores it.
+        """
+
+        if activeKnittingSymbol:
+            print("symbol changed --> " + activeKnittingSymbol["name"])
+            
+        self.__activeSymbol = activeKnittingSymbol
+        self.paint_cells()
+
+
+
+    def grid_cell_activated(self, item):
+        """
+        If a grid cell notifies it has been activated add it
+        to the collectoin of selected cells and try to paint
+        them.
+        """
+
+        self.__selectedCells.add(item)
+        self.paint_cells()
+
+
+
+    def grid_cell_inactivated(self, item):
+        """
+        If a grid cell notifies it has been in-activated remove
+        it from the collectoin of selected cells.
+        """
+
+        self.__selectedCells.remove(item)
+        self.paint_cells()
+
+
+
+    def create_item(self, origin, dim, col, row, width):
+        """
+        Creates a new PatternGridItem of the specified dimension
+        at the given location.
+        """
+
+        item = PatternCanvasItem(origin, dim, col, row, width)
+        self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
+                     self.grid_cell_activated)
+        self.connect(item, SIGNAL("cell_unselected(PyQt_PyObject)"),
+                     self.grid_cell_inactivated)
+        self.addItem(item)
+
+        return item
+
+
+
+    def paint_cells(self):
+        """
+        Attempts to paint the cells with the selected symbol.
+        Has to make sure the geometry is appropriate.
+        """
+        
+        if self.__activeSymbol:
+            width = int(self.__activeSymbol["width"])
+            chunks = chunkify_cell_arrangement(width, self.__selectedCells)
+            dim = QSizeF(self.__unitWidth * width, self.__unitHeight)
+            
+            if chunks:
+                for chunk in chunks:
+                    totalWidth = 0
+
+                    # location of leftmost item in chunk
+                    origin = chunk[0].origin
+                    row    = chunk[0].row
+                    col    = chunk[0].col
+
+                    # compute total width and remove old items
+                    for item in chunk:
+                        totalWidth += item.width
+                        self.removeItem(item)
+
+                    # insert as many new items as we can fit
+                    numNewItems = totalWidth/width
+                    for i in range(0,numNewItems):
+                        item = self.create_item(origin, dim, row, col, width)
+                        item.set_symbol(self.__activeSymbol)
+                        origin = QPointF(origin.x() + (width * self.__unitWidth),
+                                         origin.y())
+                        col    = col + width
+                        
+
+                self.__selectedCells.clear()
+
+
+
+    def item_at(self, pos):
+        """
+        Returns the item at the given column and row.
+        """
+
+        scenePos = \
+                 canvasHelpers.convert_row_col_to_pos(pos, self.__unitWidth,
+                                                      self.__unitHeight)
+
+        return self.itemAt(scenePos)
+
+
+
+
+    def mousePressEvent(self, event):
+        """
+        Handle mouse press events directly on the canvas.
+        """
+
+        # we handle right clicks and propagate the rest
+        if (event.button() == Qt.RightButton):
+            self.__rightClickPos = \
+                canvasHelpers.convert_pos_to_row_col(event.scenePos(),
+                                                     self.__unitWidth,
+                                                     self.__unitHeight)
+            
+            if canvasHelpers.is_row_col_in_grid(self.__rightClickPos,
+                                                self.__numColumns,
+                                                self.__numRows):
+                
+                print(isinstance(self.item_at(self.__rightClickPos).toGraphicsObject(), PatternCanvasItem))
+                
+                self.handle_right_click_on_grid(event)
+
+                
+        else:
+            return QGraphicsScene.mousePressEvent(self, event)
+
+
+
+    def handle_right_click_on_grid(self, event):
+        """
+        Handles a right click on the pattern grid by
+        displaying a QMenu with options.
+        """
+        
+        gridMenu = QMenu()
+        copyAction = gridMenu.addAction("&Copy")
+        pasteAction = gridMenu.addAction("&Paste")
+        gridMenu.addSeparator()
+        rowAction = gridMenu.addAction("Insert/delete rows & columns")
+        gridMenu.addSeparator();
+        colorAction = gridMenu.addAction("Grab color");
+
+        self.connect(copyAction, SIGNAL("triggered()"),
+                     self.copy_selection)
+        self.connect(pasteAction, SIGNAL("triggered()"),
+                     self.paste_selection)
+        
+        
+        gridMenu.exec_(event.screenPos())
+
+
+
+    def copy_selection(self):
+        """
+        Copies the currently active selection.
+        """
+
+        self.__copySelection.clear()
+        self.__copySelection = self.__selectedCells
+
+        print("copying")
+
+        
+
+    def paste_selection(self):
+        """
+        Pastes the selection currently stored in copySelection.
+        The upper left item in copySelection is copied into the
+        clicked cell.
+        NOTE: Pasting is not easy. We need to make sure that
+        the copied selection can fit seamlessly into the target
+        ares.
+        """
+
+        if not canvasHelpers.is_row_col_in_grid(self.__rightClickPos,
+                                                self.__numColumns,
+                                                self.__numRows):
+            return
+        
+        print("pasting")
+
+
+
+        
+
+
+
+#########################################################
+## 
+## class for managing a single pattern grid item
+## (svg image, frame, background color)
+##
+#########################################################
+class PatternCanvasItem(QGraphicsObject):
+
+    Type = 70000 + 1
+
+    # signal for notifying if active widget changes
+    cell_selected   = pyqtSignal("PyQt_PyObject")
+    cell_unselected = pyqtSignal("PyQt_PyObject") 
+
+
+    def __init__(self, origin, size, col, row, width,
+                 parent = None, scene = None):
+
+        super(PatternCanvasItem, self).__init__()
+
+        self.origin = origin
+        self.size   = size
+        self.row    = row
+        self.col    = col
+        self.width  = width
+        
+        self.__pen = QPen()
+        self.__pen.setWidthF(1.0)
+        self.__pen.setColor(Qt.black)
+
+        self.__selected  = False
+        self.__backColor = Qt.white
+        self.__highlightedColor = Qt.gray
+        self.__color     = self.__backColor
+        
+        self.__svgItem = None
+
+
+    def mousePressEvent(self, event):
+        """
+        Handle user press events on the item.
+        """
+
+        if not self.__selected:
+            self.__select()
+            self.cell_selected.emit(self)
+        else:
+            self.__unselect()
+            self.cell_unselected.emit(self)
+
+
+
+    def __unselect(self):
+        """
+        Unselects a given selected cell. 
+        """
+
+        self.__selected = False
+        self.__color = self.__backColor
+        self.update()
+
+
+
+    def __select(self):
+        """
+        Selects a given unselected cell. 
+        """
+
+        self.__selected = True
+        self.__color = self.__highlightedColor
+        self.update()
+
+
+            
+    def set_symbol(self, newSymbol):
+        """
+        Adds a new svg image of a knitting symbol to the
+        scene.
+        """
+
+        # make sure we remove the previous svgItem
+        if self.__svgItem:
+            self.__svgItem.scene().removeItem(self.__svgItem)
+
+        svgPath = newSymbol["svgPath"]
+        self.__svgItem = QGraphicsSvgItem(svgPath, self)
+
+        # apply color if present
+        if "backgroundColor" in newSymbol:
+            self.__backColor = QColor(newSymbol["backgroundColor"])
+        else:
+            self.__backColor = Qt.white
+
+        # move svg item into correct position
+        itemBound = self.boundingRect()
+        svgBound  = self.__svgItem.boundingRect()
+        widthScale = float(itemBound.width())/svgBound.width()
+        heightScale = float(itemBound.height())/svgBound.height()
+        
+        self.__svgItem.scale(widthScale, heightScale)
+        self.__svgItem.setPos(itemBound.x(), itemBound.y())
+
+        self.__unselect()
+
+
+
+    def boundingRect(self):
+        """
+        Return the bounding rectangle of the item.
+        """
+        
+        return QRectF(self.origin, self.size)
+        
+
+
+    def paint(self, painter, option, widget):
+        """
+        Paint ourselves.
+        """
+
+        painter.setPen(self.__pen)
+        brush = QBrush(self.__color)
+        painter.setBrush(brush)
+        painter.drawRect(QRectF(self.origin, self.size))
+
+
+
+
+
+############################################################################
+##
+## Helper functions
+##
+############################################################################
 
 def chunkify_cell_arrangement(width, allCells):
     """
@@ -130,350 +540,4 @@ def num_unitcells(cells):
         totalWidth += item.width
 
     return totalWidth
-
-
-
-#########################################################
-## 
-## class for managing the actual pattern canvas
-##
-#########################################################
-class PatternCanvas(QGraphicsScene):
-
-    def __init__(self, theSettings, parent = None):
-
-        super(PatternCanvas,self).__init__()
-
-        self.__settings = theSettings
-
-        self.__activeSymbol = None
-        self.__selectedCells = set()
-
-        self.__unitCellDim = QSizeF(get_grid_dimensions(theSettings))
-        self.__unitWidth   = self.__unitCellDim.width()
-        self.__unitHeight  = self.__unitCellDim.height()
-        self.__numRows     = 10
-        self.__numColumns  = 10
-
-        self.__textFont    = get_text_font(theSettings)
-        self.__textLabels  = []
-
-        self.set_up_main_grid()
-        self.set_up_labels()
-
-
-
-    def set_up_main_grid(self):
-        """
-        This function draws the main grid.
-        """
-
-        for row in range(0, self.__numRows):
-            for column in range(0, self.__numColumns):
-                location = QPointF(column * self.__unitWidth,
-                                   row * self.__unitHeight)
-                self.create_item(location, self.__unitCellDim,
-                                 row, column, 1)
-
-
-    def set_up_labels(self):
-        """
-        Add labels to the main grid.
-        """
-
-        for label in self.__textLabels:
-            self.removeItem(label)
-
-        fm = QFontMetrics(self.__textFont)
-        
-        # row labels
-        xPos = self.__unitWidth * self.__numColumns
-        for row in range(0, self.__numRows):
-            item = QGraphicsTextItem(str(self.__numRows - row))
-
-            yPos = self.__unitHeight * row
-            item.setPos(xPos, yPos)
-            item.setFont(self.__textFont)
-            self.addItem(item)
-            self.__textLabels.append(item)
-
-        # column labels
-        yPos = self.__unitHeight * self.__numRows
-        for col in range(0, self.__numColumns):
-            labelText = QString(str(self.__numColumns - col))
-            textWidth = fm.width(labelText)
-            item = QGraphicsTextItem(labelText)
-            
-            xPos = self.__unitWidth * col + (self.__unitWidth * 0.6 -textWidth)
-            item.setPos(xPos, yPos)
-            item.setFont(self.__textFont)
-
-            self.addItem(item)
-            self.__textLabels.append(item)
-
-            
-
-    def set_active_symbol(self, activeKnittingSymbol):
-        """
-        This function receives the currently active symbol
-        and stores it.
-        """
-
-        if activeKnittingSymbol:
-            print("symbol changed --> " + activeKnittingSymbol["name"])
-            
-        self.__activeSymbol = activeKnittingSymbol
-        self.paint_cells()
-
-
-
-    def grid_cell_activated(self, item):
-        """
-        If a grid cell notifies it has been activated add it
-        to the collectoin of selected cells and try to paint
-        them.
-        """
-
-        self.__selectedCells.add(item)
-        self.paint_cells()
-
-
-
-    def grid_cell_inactivated(self, item):
-        """
-        If a grid cell notifies it has been in-activated remove
-        it from the collectoin of selected cells.
-        """
-
-        self.__selectedCells.remove(item)
-        self.paint_cells()
-
-
-
-    def create_item(self, origin, dim, row, col, width):
-        """
-        Creates a new PatternGridItem of the specified dimension
-        at the given location.
-        """
-
-        item = PatternCanvasItem(origin, dim, row, col, width)
-        self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
-                     self.grid_cell_activated)
-        self.connect(item, SIGNAL("cell_unselected(PyQt_PyObject)"),
-                     self.grid_cell_inactivated)
-        self.addItem(item)
-
-        return item
-
-
-
-    def paint_cells(self):
-        """
-        Attempts to paint the cells with the selected symbol.
-        Has to make sure the geometry is appropriate.
-        """
-        
-        if self.__activeSymbol:
-            width = int(self.__activeSymbol["width"])
-            chunks = chunkify_cell_arrangement(width, self.__selectedCells)
-            dim = QSizeF(self.__unitWidth * width, self.__unitHeight)
-            
-            if chunks:
-                for chunk in chunks:
-                    totalWidth = 0
-
-                    # location of leftmost item in chunk
-                    origin = chunk[0].origin
-                    row    = chunk[0].row
-                    col    = chunk[0].col
-
-                    # compute total width and remove old items
-                    for item in chunk:
-                        totalWidth += item.width
-                        self.removeItem(item)
-
-                    # insert as many new items as we can fit
-                    numNewItems = totalWidth/width
-                    for i in range(0,numNewItems):
-                        item = self.create_item(origin, dim, row, col, width)
-                        item.set_symbol(self.__activeSymbol)
-                        origin = QPointF(origin.x() + (width * self.__unitWidth),
-                                         origin.y())
-                        col    = col + width
-                        
-
-                self.__selectedCells.clear()
-
-
-
-    def mousePressEvent(self, event):
-        """
-        Handle mouse press events directly on the canvas.
-        """
-
-        if (event.button() == Qt.RightButton):
-            (col, row) = canvasHelpers.convert_pos_to_row_col(
-                event.scenePos(), self.__unitWidth, self.__unitHeight)
-            
-            if canvasHelpers.is_row_col_in_grid(col, row,
-                                                self.__numColumns,
-                                                self.__numRows):
-                self.handle_right_click_on_grid(event)
-                
-        else:
-            return QGraphicsScene.mousePressEvent(self, event)
-
-
-
-    def handle_right_click_on_grid(self, event):
-        """
-        Handles a right click on the pattern grid by
-        displaying a QMenu with options.
-        """
-        
-        gridMenu = QMenu()
-        copyAction = gridMenu.addAction("&Copy")
-        pasteAction = gridMenu.addAction("&Paste")
-        gridMenu.addSeparator()
-        rowAction = gridMenu.addAction("Insert/delete rows & columns")
-        gridMenu.addSeparator();
-        colorAction = gridMenu.addAction("Grab color");
-        gridMenu.exec_(event.screenPos())
-
-
-
-
-#########################################################
-## 
-## class for managing a single pattern grid item
-## (svg image, frame, background color)
-##
-#########################################################
-class PatternCanvasItem(QGraphicsObject):
-
-    # signal for notifying if active widget changes
-    cell_selected   = pyqtSignal("PyQt_PyObject")
-    cell_unselected = pyqtSignal("PyQt_PyObject") 
-
-
-    def __init__(self, origin, size, row, col, width,
-                 parent = None, scene = None):
-
-        super(PatternCanvasItem, self).__init__() 
-
-        self.origin = origin
-        self.size   = size
-        self.row    = row
-        self.col    = col
-        self.width  = width
-        
-        self.__pen = QPen()
-        self.__pen.setWidthF(1.0)
-        self.__pen.setColor(Qt.black)
-
-        self.__selected  = False
-        self.__backColor = Qt.white
-        self.__highlightedColor = Qt.gray
-        self.__color     = self.__backColor
-        
-        self.__svgItem = None
-
-
-
-    def mousePressEvent(self, event):
-        """
-        Handle user press events on the item.
-        """
-
-        if not self.__selected:
-            self.__select()
-            self.cell_selected.emit(self)
-        else:
-            self.__unselect()
-            self.cell_unselected.emit(self)
-
-
-
-    def __unselect(self):
-        """
-        Unselects a given selected cell. 
-        """
-
-        self.__selected = False
-        self.__color = self.__backColor
-        self.update()
-
-
-
-    def __select(self):
-        """
-        Selects a given unselected cell. 
-        """
-
-        self.__selected = True
-        self.__color = self.__highlightedColor
-        self.update()
-
-
-            
-    def set_symbol(self, newSymbol):
-        """
-        Adds a new svg image of a knitting symbol to the
-        scene.
-        """
-
-        # make sure we remove the previous svgItem
-        if self.__svgItem:
-            self.__svgItem.scene().removeItem(self.__svgItem)
-
-        svgPath = newSymbol["svgPath"]
-        self.__svgItem = QGraphicsSvgItem(svgPath, self)
-
-        # apply color if present
-        if "backgroundColor" in newSymbol:
-            self.__backColor = QColor(newSymbol["backgroundColor"])
-        else:
-            self.__backColor = Qt.white
-
-        # move svg item into correct position
-        itemBound = self.boundingRect()
-        svgBound  = self.__svgItem.boundingRect()
-        widthScale = float(itemBound.width())/svgBound.width()
-        heightScale = float(itemBound.height())/svgBound.height()
-        
-        self.__svgItem.scale(widthScale, heightScale)
-        self.__svgItem.setPos(itemBound.x(), itemBound.y())
-
-        self.__unselect()
-
-
-
-    def boundingRect(self):
-        """
-        Return the bounding rectangle of the item.
-        """
-        
-        return QRectF(self.origin, self.size)
-        
-
-
-    def paint(self, painter, option, widget):
-        """
-        Paint ourselves.
-        """
-
-        painter.setPen(self.__pen)
-        brush = QBrush(self.__color)
-        painter.setBrush(brush)
-        painter.drawRect(QRectF(self.origin, self.size))
-
-
-
-
-
-
-
-
-
-
 
