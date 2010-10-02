@@ -1,5 +1,6 @@
 all:
 	pyuic4 -o ui_mainWindow.py ui/mainWindow.ui
+	pyuic4 -o ui_insertDeleteRowColumnWidget.py ui/insertDeleteRowColumnWidget.ui
 	pyrcc4 -o icons_rc.py icons.qrc
 
 

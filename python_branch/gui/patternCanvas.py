@@ -29,6 +29,7 @@ from PyQt4.QtSvg import QGraphicsSvgItem
 from PyQt4.QtSvg import QSvgWidget
 from sconchoHelpers.settings import get_grid_dimensions, get_text_font
 import sconchoHelpers.canvas as canvasHelpers
+from insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
 
 
 
@@ -255,18 +256,22 @@ class PatternCanvas(QGraphicsScene):
         """
         
         gridMenu = QMenu()
-        copyAction = gridMenu.addAction("&Copy")
-        pasteAction = gridMenu.addAction("&Paste")
-        gridMenu.addSeparator()
+        # TODO: copy and paste needs some thinking about
+        # e.g. what should we do when a user pastes a selection
+        # that does not fit into the target area 
+        #copyAction = gridMenu.addAction("&Copy")
+        #pasteAction = gridMenu.addAction("&Paste")
+        #self.connect(copyAction, SIGNAL("triggered()"),
+        #             self.copy_selection)
+        #self.connect(pasteAction, SIGNAL("triggered()"),
+        #             self.paste_selection)
+        #gridMenu.addSeparator()
         rowAction = gridMenu.addAction("Insert/delete rows & columns")
         gridMenu.addSeparator();
         colorAction = gridMenu.addAction("Grab color");
 
-        self.connect(copyAction, SIGNAL("triggered()"),
-                     self.copy_selection)
-        self.connect(pasteAction, SIGNAL("triggered()"),
-                     self.paste_selection)
-        
+        self.connect(rowAction, SIGNAL("triggered()"),
+                     self.insert_delete_rows_columns)
         
         gridMenu.exec_(event.screenPos())
 
@@ -303,7 +308,65 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def insert_delete_rows_columns(self):
+        """
+        This method manages the addition and deletion of rows and columns
+        via a widget.
+        """
+
+        addDeleteDialog = InsertDeleteRowColumnWidget()
+
+        self.connect(addDeleteDialog, SIGNAL("insert_row(int, QString, int)"),
+                     self.insert_row)
+        self.connect(addDeleteDialog, SIGNAL("delete_row(int)"),
+                     self.delete_row)
+        self.connect(addDeleteDialog, SIGNAL("insert_column(int, QString, int)"),
+                     self.insert_column)
+        self.connect(addDeleteDialog, SIGNAL("delete_column(int)"),
+                     self.delete_column)
         
+        addDeleteDialog.exec_()
+
+
+
+    def insert_row(self, num, mode, pivot):
+        """
+        Deals with requests to insert a row.
+        """
+
+        print("insert_row :: ", num, mode, pivot)
+
+
+
+
+    def delete_row(self, row):
+        """
+        Deals with requests to delete a specific row.
+        """
+
+        print("delete row :: ", row)
+
+
+    
+    def insert_column(self, num, mode, pivot):
+        """
+        Deals with requests to insert a column.
+        """
+
+        print("insert_column :: ", num, mode, pivot)
+
+
+
+
+    def delete_column(self, column):
+        """
+        Deals with requests to delete a specific column.
+        """
+
+        print("delete column :: ", column)
+
+
+
 
 
 
