@@ -18,15 +18,14 @@
 #
 #######################################################################
 
-
+import operator
 from PyQt4.QtCore import Qt, QRectF, QSize, QPointF, QSizeF, \
                          pyqtSignal, SIGNAL, QObject, QString, \
                          QPoint
 from PyQt4.QtGui import QGraphicsScene, QGraphicsObject, QPen, QColor, \
                         QBrush, QGraphicsTextItem, QFontMetrics, QMenu, \
                         QAction
-from PyQt4.QtSvg import QGraphicsSvgItem
-from PyQt4.QtSvg import QSvgWidget
+from PyQt4.QtSvg import QGraphicsSvgItem, QSvgWidget, QSvgRenderer
 from sconchoHelpers.settings import get_grid_dimensions, get_text_font
 import sconchoHelpers.canvas as canvasHelpers
 from insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
@@ -72,11 +71,12 @@ class PatternCanvas(QGraphicsScene):
         """
 
         for row in range(0, self.__numRows):
-            for column in range(0, self.__numColumns):
-                location = QPointF(column * self.__unitWidth,
-                                   row * self.__unitHeight)
-                self.create_item(location, self.__unitCellDim,
-                                 column, row, 1)
+            self.__create_row(row)
+            #for column in range(0, self.__numColumns):
+            #    location = QPointF(column * self.__unitWidth,
+            #                       row * self.__unitHeight)
+            #    self.create_item(location, self.__unitCellDim,
+            #                     column, row, 1)
 
 
     def set_up_labels(self):
@@ -133,7 +133,7 @@ class PatternCanvas(QGraphicsScene):
     def grid_cell_activated(self, item):
         """
         If a grid cell notifies it has been activated add it
-        to the collectoin of selected cells and try to paint
+        to the collection of selected cells and try to paint
         them.
         """
 
@@ -193,12 +193,13 @@ class PatternCanvas(QGraphicsScene):
                     # compute total width and remove old items
                     for item in chunk:
                         totalWidth += item.width
+                        print("removing ", item.row)
                         self.removeItem(item)
 
                     # insert as many new items as we can fit
                     numNewItems = totalWidth/width
                     for i in range(0,numNewItems):
-                        item = self.create_item(origin, dim, row, col, width)
+                        item = self.create_item(origin, dim, col, row, width)
                         item.set_symbol(self.__activeSymbol)
                         origin = QPointF(origin.x() + (width * self.__unitWidth),
                                          origin.y())
@@ -238,9 +239,6 @@ class PatternCanvas(QGraphicsScene):
             if canvasHelpers.is_row_col_in_grid(self.__rightClickPos,
                                                 self.__numColumns,
                                                 self.__numRows):
-                
-                print(isinstance(self.item_at(self.__rightClickPos).toGraphicsObject(), PatternCanvasItem))
-                
                 self.handle_right_click_on_grid(event)
 
                 
@@ -336,8 +334,39 @@ class PatternCanvas(QGraphicsScene):
 
         print("insert_row :: ", num, mode, pivot)
 
+        if mode == QString("above"):
+            cmpOp = operator.__ge__
+        else:
+            cmpOp = operator.__gt__
+
+        counter = 0
+        for item in self.items():
+            graphicsItem = item # .toGraphicsObject()
+            if graphicsItem:
+                if isinstance(graphicsItem, PatternCanvasItem):
+                    if cmpOp(graphicsItem.row, pivot):
+                        counter += 1
+                        shift_items(graphicsItem, num, self.__unitHeight)
+
+#                    for row in range(0, num):
+#                        self.__create_row(pivot + 1 + row)
+        print("counter ", counter)
+        self.__numRows += num
+        self.update()
 
 
+
+    def __create_row(self, rowID):
+        """
+        Creates a new row at rowID. This is a private function.
+        """
+
+        for column in range(0, self.__numColumns):
+            location = QPointF(column * self.__unitWidth,
+                               rowID * self.__unitHeight)
+            self.create_item(location, self.__unitCellDim, column, rowID, 1)
+
+        
 
     def delete_row(self, row):
         """
@@ -368,15 +397,13 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-
-
 #########################################################
 ## 
 ## class for managing a single pattern grid item
 ## (svg image, frame, background color)
 ##
 #########################################################
-class PatternCanvasItem(QGraphicsObject):
+class PatternCanvasItem(QGraphicsSvgItem):
 
     Type = 70000 + 1
 
@@ -388,7 +415,7 @@ class PatternCanvasItem(QGraphicsObject):
     def __init__(self, origin, size, col, row, width,
                  parent = None, scene = None):
 
-        super(PatternCanvasItem, self).__init__()
+        super(QGraphicsSvgItem, self).__init__()
 
         self.origin = origin
         self.size   = size
@@ -404,8 +431,7 @@ class PatternCanvasItem(QGraphicsObject):
         self.__backColor = Qt.white
         self.__highlightedColor = Qt.gray
         self.__color     = self.__backColor
-        
-        self.__svgItem = None
+
 
 
     def mousePressEvent(self, event):
@@ -450,27 +476,16 @@ class PatternCanvasItem(QGraphicsObject):
         scene.
         """
 
-        # make sure we remove the previous svgItem
-        if self.__svgItem:
-            self.__svgItem.scene().removeItem(self.__svgItem)
-
         svgPath = newSymbol["svgPath"]
-        self.__svgItem = QGraphicsSvgItem(svgPath, self)
+        if not self.renderer().load(svgPath):
+            print("failed to load")
+            return
 
         # apply color if present
         if "backgroundColor" in newSymbol:
             self.__backColor = QColor(newSymbol["backgroundColor"])
         else:
             self.__backColor = Qt.white
-
-        # move svg item into correct position
-        itemBound = self.boundingRect()
-        svgBound  = self.__svgItem.boundingRect()
-        widthScale = float(itemBound.width())/svgBound.width()
-        heightScale = float(itemBound.height())/svgBound.height()
-        
-        self.__svgItem.scale(widthScale, heightScale)
-        self.__svgItem.setPos(itemBound.x(), itemBound.y())
 
         self.__unselect()
 
@@ -490,12 +505,12 @@ class PatternCanvasItem(QGraphicsObject):
         Paint ourselves.
         """
 
+        #print(self.renderer())
         painter.setPen(self.__pen)
         brush = QBrush(self.__color)
         painter.setBrush(brush)
         painter.drawRect(QRectF(self.origin, self.size))
-
-
+        self.renderer().render(painter, QRectF(self.origin, self.size))
 
 
 
@@ -604,3 +619,15 @@ def num_unitcells(cells):
 
     return totalWidth
 
+
+
+def shift_items(item, num, unitCellHeight):
+    """
+    Shifts the given item by num rows given unitCellHeight.
+    """
+    
+    yShift = num * unitCellHeight
+    item.row += num
+    item.origin = QPointF(item.origin.x(), item.origin.y() + yShift)
+
+    print("shifting", item.origin)
