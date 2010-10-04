@@ -350,7 +350,6 @@ class PatternCanvas(QGraphicsScene):
 
 #                    for row in range(0, num):
 #                        self.__create_row(pivot + 1 + row)
-        print("counter ", counter)
         self.__numRows += num
         self.update()
 
@@ -495,7 +494,7 @@ class PatternCanvasItem(QGraphicsSvgItem):
         """
         Return the bounding rectangle of the item.
         """
-        
+
         return QRectF(self.origin, self.size)
         
 
@@ -506,6 +505,7 @@ class PatternCanvasItem(QGraphicsSvgItem):
         """
 
         #print(self.renderer())
+        print(self.origin)
         painter.setPen(self.__pen)
         brush = QBrush(self.__color)
         painter.setBrush(brush)
@@ -627,7 +627,9 @@ def shift_items(item, num, unitCellHeight):
     """
     
     yShift = num * unitCellHeight
+    item.prepareGeometryChange()
     item.row += num
     item.origin = QPointF(item.origin.x(), item.origin.y() + yShift)
+    item.update()
 
     print("shifting", item.origin)
