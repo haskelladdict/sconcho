@@ -68,6 +68,9 @@
            </item>
            <item>
             <widget class="QSpinBox" name="insertRowPivot">
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>1000</number>
              </property>
@@ -113,6 +116,9 @@
            </item>
            <item>
             <widget class="QSpinBox" name="deleteRowID">
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>1000</number>
              </property>
@@ -189,6 +195,9 @@
            </item>
            <item>
             <widget class="QSpinBox" name="insertColumnPivot">
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>1000</number>
              </property>
@@ -234,6 +243,9 @@
            </item>
            <item>
             <widget class="QSpinBox" name="deleteColumnID">
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>1000</number>
              </property>

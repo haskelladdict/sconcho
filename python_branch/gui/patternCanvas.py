@@ -306,7 +306,8 @@ class PatternCanvas(QGraphicsScene):
         via a widget.
         """
 
-        addDeleteDialog = InsertDeleteRowColumnWidget()
+        addDeleteDialog = InsertDeleteRowColumnWidget(self.__numRows,
+                                                      self.__numColumns)
 
         self.connect(addDeleteDialog, SIGNAL("insert_row(int, QString, int)"),
                      self.insert_row)

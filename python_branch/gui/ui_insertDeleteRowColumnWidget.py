@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/insertDeleteRowColumnWidget.ui'
 #
-# Created: Sat Oct  2 16:03:08 2010
+# Created: Mon Oct  4 21:50:33 2010
 #      by: PyQt4 UI code generator 4.7.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -48,6 +48,7 @@ class Ui_InsertDeleteRowColumnWidget(object):
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.horizontalLayout.addWidget(self.label_3)
         self.insertRowPivot = QtGui.QSpinBox(self.tab)
+        self.insertRowPivot.setMinimum(1)
         self.insertRowPivot.setMaximum(1000)
         self.insertRowPivot.setObjectName(_fromUtf8("insertRowPivot"))
         self.horizontalLayout.addWidget(self.insertRowPivot)
@@ -68,6 +69,7 @@ class Ui_InsertDeleteRowColumnWidget(object):
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.horizontalLayout_5.addWidget(self.label_7)
         self.deleteRowID = QtGui.QSpinBox(self.tab_2)
+        self.deleteRowID.setMinimum(1)
         self.deleteRowID.setMaximum(1000)
         self.deleteRowID.setObjectName(_fromUtf8("deleteRowID"))
         self.horizontalLayout_5.addWidget(self.deleteRowID)
@@ -102,6 +104,7 @@ class Ui_InsertDeleteRowColumnWidget(object):
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.horizontalLayout_3.addWidget(self.label_6)
         self.insertColumnPivot = QtGui.QSpinBox(self.tab_3)
+        self.insertColumnPivot.setMinimum(1)
         self.insertColumnPivot.setMaximum(1000)
         self.insertColumnPivot.setObjectName(_fromUtf8("insertColumnPivot"))
         self.horizontalLayout_3.addWidget(self.insertColumnPivot)
@@ -122,6 +125,7 @@ class Ui_InsertDeleteRowColumnWidget(object):
         self.label_8.setObjectName(_fromUtf8("label_8"))
         self.horizontalLayout_6.addWidget(self.label_8)
         self.deleteColumnID = QtGui.QSpinBox(self.tab_4)
+        self.deleteColumnID.setMinimum(1)
         self.deleteColumnID.setMaximum(1000)
         self.deleteColumnID.setObjectName(_fromUtf8("deleteColumnID"))
         self.horizontalLayout_6.addWidget(self.deleteColumnID)

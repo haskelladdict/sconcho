@@ -33,13 +33,19 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
     delete_column = pyqtSignal(int)
 
 
-    def __init__(self, parent = None):
+    def __init__(self, numRows, numCols, parent = None):
         """
         Initialize the dialog.
         """
 
         QDialog.__init__(self, parent)
         self.setupUi(self)
+
+        # set the maximum of the spinbox
+        self.insertRowPivot.setMaximum(numRows)
+        self.deleteRowID.setMaximum(numRows)
+        self.insertColumnPivot.setMaximum(numCols)
+        self.deleteColumnID.setMaximum(numCols)
 
         # install some connections
         self.connect(self.closeButton, SIGNAL("clicked()"), self.close)
