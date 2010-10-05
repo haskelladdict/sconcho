@@ -40,6 +40,7 @@ from insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
 #########################################################
 class PatternCanvas(QGraphicsScene):
 
+
     def __init__(self, theSettings, parent = None):
 
         super(PatternCanvas,self).__init__()
@@ -309,7 +310,7 @@ class PatternCanvas(QGraphicsScene):
         addDeleteDialog = InsertDeleteRowColumnWidget(self.__numRows,
                                                       self.__numColumns)
 
-        self.connect(addDeleteDialog, SIGNAL("insert_row(int, QString, int)"),
+        self.connect(addDeleteDialog, SIGNAL("insert_row(int, QString, int)"), 
                      self.insert_row)
         self.connect(addDeleteDialog, SIGNAL("delete_row(int)"),
                      self.delete_row)
@@ -322,15 +323,21 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def insert_row(self, num, mode, pivot):
+    def insert_row(self, num, mode, canvasPivot):
         """
         Deals with requests to insert a row.
         """
 
+        pivot = self.convert_canvas_rows_to_internal(canvasPivot)
+        assert(pivot >= 0 and pivot < self.__numRows)
+
         if mode == QString("above"):
             cmpOp = operator.__ge__
+            shift = 0
         else:
             cmpOp = operator.__gt__
+            shift = 1
+            
 
         counter = 0
         for item in self.items():
@@ -342,7 +349,7 @@ class PatternCanvas(QGraphicsScene):
                         shift_items(graphicsItem, num, self.__unitHeight)
 
         for row in range(0, num):
-            self.__create_row(pivot + 1 + row)
+            self.__create_row(pivot + shift + row)
 
         self.__numRows += num
         self.set_up_labels()
@@ -386,6 +393,17 @@ class PatternCanvas(QGraphicsScene):
         """
 
         print("delete column :: ", column)
+
+
+
+    def convert_canvas_rows_to_internal(self, row):
+        """
+        Internally rows are numbered 0 through numRows-1
+        from the top whereas they appear as numRows to 1
+        on the canvas. This function does the conversion.
+        """
+
+        return self.__numRows - row
 
 
 

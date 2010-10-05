@@ -42,10 +42,11 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         self.setupUi(self)
 
         # set the maximum of the spinbox
-        self.insertRowPivot.setMaximum(numRows)
-        self.deleteRowID.setMaximum(numRows)
-        self.insertColumnPivot.setMaximum(numCols)
-        self.deleteColumnID.setMaximum(numCols)
+        self.__numRows = numRows
+        self.set_upper_row_limit(numRows)
+
+        self.__numColumns = numCols
+        self.set_upper_column_limit(numCols)
 
         # install some connections
         self.connect(self.closeButton, SIGNAL("clicked()"), self.close)
@@ -69,6 +70,8 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         pivot      = self.insertRowPivot.value()
         insertMode = self.insertRowMode.currentText()
 
+        self.__numRows += numRows
+        self.set_upper_row_limit(self.__numRows)
         self.insert_row.emit(numRows, insertMode, pivot)
         
         
@@ -80,6 +83,8 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
 
         deadRowID = self.deleteRowID.value()
 
+        self.__numRows -= 1
+        self.set_upper_row_limit(self.__numRows)
         self.delete_row.emit(deadRowID)
 
 
@@ -93,6 +98,8 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         pivot      = self.insertColumnPivot.value()
         insertMode = self.insertColumnMode.currentText()
 
+        self.__numColumns += numColumns
+        self.set_upper_column_limit(self.__numColumns)
         self.insert_column.emit(numColumns, insertMode, pivot)
 
 
@@ -104,5 +111,28 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
 
         deadColumnID = self.deleteColumnID.value()
 
+        self.__numColumn -= 1
+        self.set_upper_column_limit(self.__numColumns)
         self.delete_column.emit(deadColumnID)
         
+
+
+    def set_upper_row_limit(self, numRows):
+        """
+        Sets the upper limit of the row selectors based
+        on the number of available rows.
+        """
+
+        self.insertRowPivot.setMaximum(numRows)
+        self.deleteRowID.setMaximum(numRows)
+
+
+
+    def set_upper_column_limit(self, numCols):
+        """
+        Sets the upper limit of the column selectors based
+        on the number of available columns.
+        """
+
+        self.insertColumnPivot.setMaximum(numCols)
+        self.deleteColumnID.setMaximum(numCols)
