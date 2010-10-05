@@ -72,11 +72,7 @@ class PatternCanvas(QGraphicsScene):
 
         for row in range(0, self.__numRows):
             self.__create_row(row)
-            #for column in range(0, self.__numColumns):
-            #    location = QPointF(column * self.__unitWidth,
-            #                       row * self.__unitHeight)
-            #    self.create_item(location, self.__unitCellDim,
-            #                     column, row, 1)
+
 
 
     def set_up_labels(self):
@@ -193,7 +189,6 @@ class PatternCanvas(QGraphicsScene):
                     # compute total width and remove old items
                     for item in chunk:
                         totalWidth += item.width
-                        print("removing ", item.row)
                         self.removeItem(item)
 
                     # insert as many new items as we can fit
@@ -204,7 +199,6 @@ class PatternCanvas(QGraphicsScene):
                         origin = QPointF(origin.x() + (width * self.__unitWidth),
                                          origin.y())
                         col    = col + width
-                        
 
                 self.__selectedCells.clear()
 
@@ -240,7 +234,6 @@ class PatternCanvas(QGraphicsScene):
                                                 self.__numColumns,
                                                 self.__numRows):
                 self.handle_right_click_on_grid(event)
-
                 
         else:
             return QGraphicsScene.mousePressEvent(self, event)
@@ -283,8 +276,6 @@ class PatternCanvas(QGraphicsScene):
         self.__copySelection.clear()
         self.__copySelection = self.__selectedCells
 
-        print("copying")
-
         
 
     def paste_selection(self):
@@ -302,7 +293,6 @@ class PatternCanvas(QGraphicsScene):
                                                 self.__numRows):
             return
         
-        print("pasting")
 
 
 
@@ -332,8 +322,6 @@ class PatternCanvas(QGraphicsScene):
         Deals with requests to insert a row.
         """
 
-        print("insert_row :: ", num, mode, pivot)
-
         if mode == QString("above"):
             cmpOp = operator.__ge__
         else:
@@ -341,17 +329,17 @@ class PatternCanvas(QGraphicsScene):
 
         counter = 0
         for item in self.items():
-            graphicsItem = item # .toGraphicsObject()
+            graphicsItem = item 
             if graphicsItem:
                 if isinstance(graphicsItem, PatternCanvasItem):
                     if cmpOp(graphicsItem.row, pivot):
                         counter += 1
                         shift_items(graphicsItem, num, self.__unitHeight)
 
-#                    for row in range(0, num):
-#                        self.__create_row(pivot + 1 + row)
+        for row in range(0, num):
+            self.__create_row(pivot + 1 + row)
+
         self.__numRows += num
-        self.update()
 
 
 
@@ -504,13 +492,12 @@ class PatternCanvasItem(QGraphicsSvgItem):
         Paint ourselves.
         """
 
-        #print(self.renderer())
-        print(self.origin)
         painter.setPen(self.__pen)
         brush = QBrush(self.__color)
         painter.setBrush(brush)
         painter.drawRect(QRectF(self.origin, self.size))
         self.renderer().render(painter, QRectF(self.origin, self.size))
+
 
 
 
@@ -630,6 +617,3 @@ def shift_items(item, num, unitCellHeight):
     item.prepareGeometryChange()
     item.row += num
     item.origin = QPointF(item.origin.x(), item.origin.y() + yShift)
-    item.update()
-
-    print("shifting", item.origin)
