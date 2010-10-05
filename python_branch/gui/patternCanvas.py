@@ -78,11 +78,15 @@ class PatternCanvas(QGraphicsScene):
     def set_up_labels(self):
         """
         Add labels to the main grid.
+        FIXME: This function currently recreates all labels instead
+        of just shifting around existing ones. The latter should
+        probably be more efficient.
         """
 
         for label in self.__textLabels:
             self.removeItem(label)
-
+        self.__textLabels = []
+            
         fm = QFontMetrics(self.__textFont)
         
         # row labels
@@ -340,6 +344,7 @@ class PatternCanvas(QGraphicsScene):
             self.__create_row(pivot + 1 + row)
 
         self.__numRows += num
+        self.set_up_labels()
 
 
 
