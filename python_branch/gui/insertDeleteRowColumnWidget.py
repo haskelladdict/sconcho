@@ -24,6 +24,13 @@ from PyQt4.QtGui import QDialog
 from ui_insertDeleteRowColumnWidget import Ui_InsertDeleteRowColumnWidget
 
 
+
+##########################################################################
+#
+# This widget provides a dialog for inserting and deleting rows
+# of the main pattern grid.
+#
+##########################################################################
 class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
 
     # install signals
@@ -70,6 +77,9 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         pivot      = self.insertRowPivot.value()
         insertMode = self.insertRowMode.currentText()
 
+        if pivot <= 0:
+            return
+
         self.__numRows += numRows
         self.set_upper_row_limit(self.__numRows)
         self.insert_row.emit(numRows, insertMode, pivot)
@@ -82,6 +92,9 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         """
 
         deadRowID = self.deleteRowID.value()
+
+        if deadRowID <= 0:
+            return
 
         self.__numRows -= 1
         self.set_upper_row_limit(self.__numRows)
@@ -98,6 +111,9 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         pivot      = self.insertColumnPivot.value()
         insertMode = self.insertColumnMode.currentText()
 
+        if pivot <= 0:
+            return
+
         self.__numColumns += numColumns
         self.set_upper_column_limit(self.__numColumns)
         self.insert_column.emit(numColumns, insertMode, pivot)
@@ -111,6 +127,9 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
 
         deadColumnID = self.deleteColumnID.value()
 
+        if deadColumnID <=0:
+            return
+
         self.__numColumn -= 1
         self.set_upper_column_limit(self.__numColumns)
         self.delete_column.emit(deadColumnID)
@@ -123,9 +142,11 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         on the number of available rows.
         """
 
+        self.insertRowPivot.setMinimum(1)
         self.insertRowPivot.setMaximum(numRows)
+        self.deleteRowID.setMinimum(1)
         self.deleteRowID.setMaximum(numRows)
-
+        
 
 
     def set_upper_column_limit(self, numCols):
@@ -133,6 +154,8 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         Sets the upper limit of the column selectors based
         on the number of available columns.
         """
-
+        
+        self.insertColumnPivot.setMinimum(1)
         self.insertColumnPivot.setMaximum(numCols)
+        self.deleteColumnID.setMinimum(1)
         self.deleteColumnID.setMaximum(numCols)

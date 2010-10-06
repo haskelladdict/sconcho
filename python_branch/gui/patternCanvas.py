@@ -337,16 +337,11 @@ class PatternCanvas(QGraphicsScene):
         else:
             cmpOp = operator.__gt__
             shift = 1
-            
 
-        counter = 0
-        for item in self.items():
-            graphicsItem = item 
-            if graphicsItem:
-                if isinstance(graphicsItem, PatternCanvasItem):
-                    if cmpOp(graphicsItem.row, pivot):
-                        counter += 1
-                        shift_items(graphicsItem, num, self.__unitHeight)
+        for graphicsItem in self.items():
+            if isinstance(graphicsItem, PatternCanvasItem):
+                if cmpOp(graphicsItem.row, pivot):
+                    shift_items(graphicsItem, num, self.__unitHeight)
 
         for row in range(0, num):
             self.__create_row(pivot + shift + row)
@@ -354,27 +349,25 @@ class PatternCanvas(QGraphicsScene):
         self.__numRows += num
         self.set_up_labels()
 
-
-
-    def __create_row(self, rowID):
-        """
-        Creates a new row at rowID. This is a private function.
-        """
-
-        for column in range(0, self.__numColumns):
-            location = QPointF(column * self.__unitWidth,
-                               rowID * self.__unitHeight)
-            self.create_item(location, self.__unitCellDim, column, rowID, 1)
-
         
 
-    def delete_row(self, row):
+    def delete_row(self, canvasRow):
         """
         Deals with requests to delete a specific row.
         """
 
-        print("delete row :: ", row)
+        row = self.convert_canvas_rows_to_internal(canvasRow)
 
+        for graphicsItem in self.items():
+            if isinstance(graphicsItem, PatternCanvasItem):
+                if graphicsItem.row == row:
+                    self.removeItem(graphicsItem)
+                elif graphicsItem.row > row:
+                    shift_items(graphicsItem, -1, self.__unitHeight)
+
+        self.__numRows -= 1
+        self.__activeItems = []
+        self.set_up_labels()
 
     
     def insert_column(self, num, mode, pivot):
@@ -404,6 +397,22 @@ class PatternCanvas(QGraphicsScene):
         """
 
         return self.__numRows - row
+
+
+
+    def __create_row(self, rowID):
+        """
+        Creates a new row at rowID, nothing else. In particular
+        this function does not attempt to make space for the row or
+        anything else along these lines. This is a private function.
+        """
+
+        for column in range(0, self.__numColumns):
+            location = QPointF(column * self.__unitWidth,
+                               rowID * self.__unitHeight)
+            self.create_item(location, self.__unitCellDim, column, rowID, 1)
+
+
 
 
 
