@@ -49,10 +49,10 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         self.setupUi(self)
 
         # set the maximum of the spinbox
-        self.__numRows = numRows
+        #self.__numRows = numRows
         self.set_upper_row_limit(numRows)
 
-        self.__numColumns = numCols
+        #self.__numColumns = numCols
         self.set_upper_column_limit(numCols)
 
         # install some connections
@@ -80,8 +80,8 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if pivot <= 0:
             return
 
-        self.__numRows += numRows
-        self.set_upper_row_limit(self.__numRows)
+        #self.__numRows += numRows
+        #self.set_upper_row_limit(self.__numRows)
         self.insert_row.emit(numRows, insertMode, pivot)
         
         
@@ -96,8 +96,8 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if deadRowID <= 0:
             return
 
-        self.__numRows -= 1
-        self.set_upper_row_limit(self.__numRows)
+        #self.__numRows -= 1
+        #self.set_upper_row_limit(self.__numRows)
         self.delete_row.emit(deadRowID)
 
 
@@ -114,8 +114,8 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if pivot <= 0:
             return
 
-        self.__numColumns += numColumns
-        self.set_upper_column_limit(self.__numColumns)
+        #self.__numColumns += numColumns
+        #self.set_upper_column_limit(self.__numColumns)
         self.insert_column.emit(numColumns, insertMode, pivot)
 
 
@@ -130,8 +130,8 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if deadColumnID <=0:
             return
 
-        self.__numColumns -= 1
-        self.set_upper_column_limit(self.__numColumns)
+        #self.__numColumns -= 1
+        #self.set_upper_column_limit(self.__numColumns)
         self.delete_column.emit(deadColumnID)
         
 
@@ -159,3 +159,16 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         self.insertColumnPivot.setMaximum(numCols)
         self.deleteColumnID.setMinimum(1)
         self.deleteColumnID.setMaximum(numCols)
+
+
+    def row_col_count_changed(self, type, num):
+        """
+        Adjusts the row and column limits.
+        """
+
+        if type == "numRows":
+            self.set_upper_row_limit(num)
+        elif type == "numColumns":
+            self.set_upper_column_limit(num)
+        else:
+            print("Error: asked to adjust ", type, " which is unknown.")

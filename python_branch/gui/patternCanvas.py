@@ -40,6 +40,9 @@ from insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
 #########################################################
 class PatternCanvas(QGraphicsScene):
 
+    # signals
+    row_col_count_changed = pyqtSignal(QString, int)
+    
 
     def __init__(self, theSettings, parent = None):
 
@@ -222,7 +225,6 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-
     def mousePressEvent(self, event):
         """
         Handle mouse press events directly on the canvas.
@@ -318,6 +320,8 @@ class PatternCanvas(QGraphicsScene):
                      self.insert_column)
         self.connect(addDeleteDialog, SIGNAL("delete_column(int)"),
                      self.delete_column)
+        self.connect(self, SIGNAL("row_col_count_changed(QString, int)"),
+                     addDeleteDialog.row_col_count_changed)
         
         addDeleteDialog.exec_()
 
@@ -328,7 +332,7 @@ class PatternCanvas(QGraphicsScene):
         Deals with requests to insert a row.
         """
 
-        pivot = self.convert_canvas_rows_to_internal(rowPivot)
+        pivot = self.convert_canvas_row_to_internal(rowPivot)
         assert(pivot >= 0 and pivot < self.__numRows)
 
         if mode == QString("above"):
@@ -348,6 +352,7 @@ class PatternCanvas(QGraphicsScene):
 
         self.__numRows += num
         self.set_up_labels()
+        self.row_col_count_changed.emit("numRows", self.__numRows)
 
         
 
@@ -368,6 +373,7 @@ class PatternCanvas(QGraphicsScene):
         self.__numRows -= 1
         self.__activeItems = []
         self.set_up_labels()
+        self.row_col_count_changed.emit("numRows", self.__numRows)
 
 
     
@@ -409,6 +415,7 @@ class PatternCanvas(QGraphicsScene):
 
         self.__numColumns += num
         self.set_up_labels()
+        self.row_col_count_changed.emit("numColumns", self.__numColumns)          
 
         
 
@@ -442,6 +449,7 @@ class PatternCanvas(QGraphicsScene):
         self.__numColumns -= 1
         self.__activeItems = []
         self.set_up_labels()
+        self.row_col_count_changed.emit("numColumns", self.__numColumns)          
 
 
 
