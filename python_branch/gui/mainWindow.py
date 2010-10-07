@@ -19,11 +19,12 @@
 #
 #######################################################################
 
-from PyQt4.QtCore import SIGNAL, SLOT, QSettings
-from PyQt4.QtGui import qApp, QMainWindow, QMessageBox
+from PyQt4.QtCore import SIGNAL, SLOT, QSettings, QDir, QFileInfo
+from PyQt4.QtGui import qApp, QMainWindow, QMessageBox, QFileDialog
 from ui_mainWindow import Ui_MainWindow
 import sconchoHelpers.text as text
 import sconchoHelpers.settings as settings
+import sconchoIO.io as io
 import symbolWidget
 from patternCanvas import PatternCanvas
 
@@ -41,6 +42,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__settings = QSettings("sconcho", "settings")
         settings.initialize(self.__settings)
 
+        self.__saveFilePath = None
+
         self.__canvas = PatternCanvas(self.__settings)
         self.initialize_symbol_widget(knittingSymbols)
         self.graphicsView.setScene(self.__canvas)
@@ -50,10 +53,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             qApp, SLOT("quit()"))
 
         self.connect(self.actionAbout_sconcho, SIGNAL("triggered()"),
-                self.show_about_sconcho)
+                     self.show_about_sconcho)
 
         self.connect(self.actionAbout_Qt4, SIGNAL("triggered()"),
-                self.show_about_qt4)
+                     self.show_about_qt4)
+
+        self.connect(self.actionSave, SIGNAL("triggered()"),
+                     self.save_pattern_dialog)
 
 
    
@@ -89,4 +95,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
+    def save_pattern_dialog(self):
+        """
+        This function opens a save pattern dialog.
+        """
 
+        location = self.__saveFilePath if self.__saveFilePath else QDir.homePath()
+        fileName = QFileDialog.getSaveFileName(self, "Save Pattern", location,
+                                               "sconcho pattern files (*.spf)")
+
+        if not fileName:
+            return
+
+        # check the extension; if none is present add .spf
+        extension = QFileInfo(fileName).completeSuffix()
+        if extension != "spf":
+            if not extension:
+                fileName = fileName + ".spf"
+            else:
+                QMessageBox.warning(self, "Warning", "Unknown extension " + extension,
+                                    QMessageBox.Ok)
+                return
+
+        self.set_project_save_file(fileName)
+        io.save_canvas(self.__canvas, None, self.__settings, fileName)
+        print("save it")
+
+
+
+
+    def set_project_save_file(self, fileName):
+        """
+        Stores the name of the currently operated on file.
+        """
+
+        self.__saveFilePath = fileName
+        self.setWindowTitle(QFileInfo(fileName).fileName())

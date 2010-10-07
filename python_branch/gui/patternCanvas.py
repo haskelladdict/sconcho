@@ -532,6 +532,12 @@ class PatternCanvasItem(QGraphicsSvgItem):
         self.row     = row
         self.column  = col
         self.width   = width
+        self.height  = 1
+
+        # we start off with an empty symbol
+        self.symbol  = { "svgName" : "", "category" : "", "name" : "", \
+                         "description" : "", "width" : "", \
+                         "backgroundColor" : "" }
         
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
@@ -540,7 +546,7 @@ class PatternCanvasItem(QGraphicsSvgItem):
         self.__selected  = False
         self.__backColor = Qt.white
         self.__highlightedColor = Qt.gray
-        self.__color     = self.__backColor
+        self.color     = self.__backColor
 
 
 
@@ -564,7 +570,7 @@ class PatternCanvasItem(QGraphicsSvgItem):
         """
 
         self.__selected = False
-        self.__color = self.__backColor
+        self.color = self.__backColor
         self.update()
 
 
@@ -575,7 +581,7 @@ class PatternCanvasItem(QGraphicsSvgItem):
         """
 
         self.__selected = True
-        self.__color = self.__highlightedColor
+        self.color = self.__highlightedColor
         self.update()
 
 
@@ -586,6 +592,7 @@ class PatternCanvasItem(QGraphicsSvgItem):
         scene.
         """
 
+        self.symbol = newSymbol
         svgPath = newSymbol["svgPath"]
         if not self.renderer().load(svgPath):
             print("failed to load")
@@ -616,7 +623,7 @@ class PatternCanvasItem(QGraphicsSvgItem):
         """
 
         painter.setPen(self.__pen)
-        brush = QBrush(self.__color)
+        brush = QBrush(self.color)
         painter.setBrush(brush)
         painter.drawRect(QRectF(self.origin, self.size))
         self.renderer().render(painter, QRectF(self.origin, self.size))
