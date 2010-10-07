@@ -130,7 +130,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if deadColumnID <=0:
             return
 
-        self.__numColumn -= 1
+        self.__numColumns -= 1
         self.set_upper_column_limit(self.__numColumns)
         self.delete_column.emit(deadColumnID)
         

@@ -189,7 +189,7 @@ class PatternCanvas(QGraphicsScene):
                     # location of leftmost item in chunk
                     origin = chunk[0].origin
                     row    = chunk[0].row
-                    col    = chunk[0].col
+                    column = chunk[0].column
 
                     # compute total width and remove old items
                     for item in chunk:
@@ -199,11 +199,11 @@ class PatternCanvas(QGraphicsScene):
                     # insert as many new items as we can fit
                     numNewItems = totalWidth/width
                     for i in range(0,numNewItems):
-                        item = self.create_item(origin, dim, col, row, width)
+                        item = self.create_item(origin, dim, column, row, width)
                         item.set_symbol(self.__activeSymbol)
                         origin = QPointF(origin.x() + (width * self.__unitWidth),
                                          origin.y())
-                        col    = col + width
+                        column = column + width
 
                 self.__selectedCells.clear()
 
@@ -323,12 +323,12 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def insert_row(self, num, mode, canvasPivot):
+    def insert_row(self, num, mode, rowPivot):
         """
         Deals with requests to insert a row.
         """
 
-        pivot = self.convert_canvas_rows_to_internal(canvasPivot)
+        pivot = self.convert_canvas_rows_to_internal(rowPivot)
         assert(pivot >= 0 and pivot < self.__numRows)
 
         if mode == QString("above"):
@@ -341,7 +341,7 @@ class PatternCanvas(QGraphicsScene):
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternCanvasItem):
                 if cmpOp(graphicsItem.row, pivot):
-                    shift_items(graphicsItem, num, self.__unitHeight)
+                    shift_items_row_wise(graphicsItem, num, self.__unitHeight)
 
         for row in range(0, num):
             self.__create_row(pivot + shift + row)
@@ -356,47 +356,114 @@ class PatternCanvas(QGraphicsScene):
         Deals with requests to delete a specific row.
         """
 
-        row = self.convert_canvas_rows_to_internal(canvasRow)
+        row = self.convert_canvas_row_to_internal(canvasRow)
 
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternCanvasItem):
                 if graphicsItem.row == row:
                     self.removeItem(graphicsItem)
                 elif graphicsItem.row > row:
-                    shift_items(graphicsItem, -1, self.__unitHeight)
+                    shift_items_row_wise(graphicsItem, -1, self.__unitHeight)
 
         self.__numRows -= 1
         self.__activeItems = []
         self.set_up_labels()
 
+
     
-    def insert_column(self, num, mode, pivot):
+    def insert_column(self, num, mode, columnPivot):
         """
         Deals with requests to insert a column.
         """
 
-        print("insert_column :: ", num, mode, pivot)
+        pivot = self.convert_canvas_column_to_internal(columnPivot)
+        assert(pivot >= 0 and pivot < self.__numColumns)
 
+        if mode == QString("left of"):
+            cmpOp = operator.__ge__
+            shift = 0
+        else:
+            cmpOp = operator.__gt__
+            shift = 1
 
+        # in order for inserting of a column at left or right of a
+        # pivot to work each row has to have a cell that starts at
+        # this pivot or right of it.
+        rowCounter = 0
+        for graphicsItem in self.items():
+            if isinstance(graphicsItem, PatternCanvasItem):
+                if graphicsItem.column == (pivot + shift):
+                    rowCounter += 1
 
+        if rowCounter != self.__numRows:
+            print("Error: Can not insert column(s) due to layout")
+            return
 
-    def delete_column(self, column):
+        for graphicsItem in self.items():
+            if isinstance(graphicsItem, PatternCanvasItem):
+                if cmpOp(graphicsItem.column, pivot):
+                    shift_items_column_wise(graphicsItem, num, self.__unitWidth)
+
+        for column in range(0, num):
+            self.__create_column(pivot + shift + column)
+
+        self.__numColumns += num
+        self.set_up_labels()
+
+        
+
+    def delete_column(self, deadColumn):
         """
         Deals with requests to delete a specific column.
         """
 
-        print("delete column :: ", column)
+        column = self.convert_canvas_column_to_internal(deadColumn)
+
+        # in order for deleting of a column at deadColumn to succeed
+        # there has to be a unit element at that column
+        rowCounter = 0
+        for graphicsItem in self.items():
+            if isinstance(graphicsItem, PatternCanvasItem):
+                if (graphicsItem.column == column) and \
+                   (graphicsItem.width == 1):
+                    rowCounter += 1
+
+        if rowCounter != self.__numRows:
+            print("Error: Can not delete column due to layout")
+            return
+
+        for graphicsItem in self.items():
+            if isinstance(graphicsItem, PatternCanvasItem):
+                if graphicsItem.column == column:
+                    self.removeItem(graphicsItem)
+                elif graphicsItem.column > column:
+                    shift_items_column_wise(graphicsItem, -1, self.__unitWidth)
+
+        self.__numColumns -= 1
+        self.__activeItems = []
+        self.set_up_labels()
 
 
 
-    def convert_canvas_rows_to_internal(self, row):
+    def convert_canvas_row_to_internal(self, row):
         """
         Internally rows are numbered 0 through numRows-1
-        from the top whereas they appear as numRows to 1
+        from the top to bottom whereas they appear as numRows to 1
         on the canvas. This function does the conversion.
         """
 
         return self.__numRows - row
+
+    
+
+    def convert_canvas_column_to_internal(self, column):
+        """
+        Internally columns are numbered 0 through numColumns-1
+        from the left to right whereas they appear as numColumns to 1
+        on the canvas. This function does the conversion.
+        """
+
+        return self.__numColumns - column
 
 
 
@@ -404,7 +471,8 @@ class PatternCanvas(QGraphicsScene):
         """
         Creates a new row at rowID, nothing else. In particular
         this function does not attempt to make space for the row or
-        anything else along these lines. This is a private function.
+        anything else along these lines. This is a private and 
+        very stupid function.
         """
 
         for column in range(0, self.__numColumns):
@@ -412,6 +480,20 @@ class PatternCanvas(QGraphicsScene):
                                rowID * self.__unitHeight)
             self.create_item(location, self.__unitCellDim, column, rowID, 1)
 
+
+
+    def __create_column(self, columnID):
+        """
+        Creates a new column at columnID, nothing else. In particular
+        this function does not attempt to make space for the column or
+        anything else along these lines. This is a private and very
+        stupid function.
+        """
+
+        for row in range(0, self.__numRows):
+            location = QPointF(columnID * self.__unitWidth,
+                               row * self.__unitHeight)
+            self.create_item(location, self.__unitCellDim, columnID, row, 1)
 
 
 
@@ -437,11 +519,11 @@ class PatternCanvasItem(QGraphicsSvgItem):
 
         super(QGraphicsSvgItem, self).__init__()
 
-        self.origin = origin
-        self.size   = size
-        self.row    = row
-        self.col    = col
-        self.width  = width
+        self.origin  = origin
+        self.size    = size
+        self.row     = row
+        self.column  = col
+        self.width   = width
         
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
@@ -581,7 +663,7 @@ def chunk_all_rows(width, cellsByRow):
     
     chunkList = []
     for row in cellsByRow.values():
-        row.sort(lambda x, y: cmp(x.col, y.col))
+        row.sort(lambda x, y: cmp(x.column, y.column))
 
         chunks = []
         chunk = []
@@ -616,12 +698,12 @@ def are_consecutive(chunks):
         if not chunk:
             return False
 
-        consecutiveCol = chunk[0].col + chunk[0].width
+        consecutiveCol = chunk[0].column + chunk[0].width
         for cell in chunk[1:]:
-            if cell.col != consecutiveCol:
+            if cell.column != consecutiveCol:
                 return False
             
-            consecutiveCol = cell.col + cell.width
+            consecutiveCol = cell.column + cell.width
             
     return True
         
@@ -641,7 +723,7 @@ def num_unitcells(cells):
 
 
 
-def shift_items(item, num, unitCellHeight):
+def shift_items_row_wise(item, num, unitCellHeight):
     """
     Shifts the given item by num rows given unitCellHeight.
     """
@@ -650,3 +732,15 @@ def shift_items(item, num, unitCellHeight):
     item.prepareGeometryChange()
     item.row += num
     item.origin = QPointF(item.origin.x(), item.origin.y() + yShift)
+
+
+
+def shift_items_column_wise(item, num, unitCellWidth):
+    """
+    Shifts the given item by num columns given unitCellWidth.
+    """
+    
+    xShift = num * unitCellWidth
+    item.prepareGeometryChange()
+    item.column += num
+    item.origin = QPointF(item.origin.x() + xShift, item.origin.y())

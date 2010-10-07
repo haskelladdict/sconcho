@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>631</width>
-    <height>204</height>
+    <width>636</width>
+    <height>157</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -36,7 +36,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="numInsertRows"/>
+            <widget class="QSpinBox" name="numInsertRows">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_2">
@@ -163,7 +167,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="numInsertColumns"/>
+            <widget class="QSpinBox" name="numInsertColumns">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_5">
