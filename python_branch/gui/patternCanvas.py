@@ -44,13 +44,14 @@ class PatternCanvas(QGraphicsScene):
     row_col_count_changed = pyqtSignal(QString, int)
     
 
-    def __init__(self, theSettings, parent = None):
+    def __init__(self, theSettings, defaultSymbol, parent = None):
 
         super(PatternCanvas,self).__init__()
 
         self.__settings = theSettings
 
         self.__activeSymbol  = None
+        self.__defaultSymbol = defaultSymbol
         self.__selectedCells = set()
         self.__copySelection = set()
         self.__rightClickPos = QPoint() # (row, col) position of last right click
@@ -163,7 +164,8 @@ class PatternCanvas(QGraphicsScene):
         at the given location.
         """
 
-        item = PatternCanvasItem(origin, dim, col, row, width)
+        item = PatternCanvasItem(origin, dim, col, row, width,
+                                 self.__defaultSymbol)
         self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
                      self.grid_cell_activated)
         self.connect(item, SIGNAL("cell_unselected(PyQt_PyObject)"),
@@ -522,7 +524,7 @@ class PatternCanvasItem(QGraphicsSvgItem):
     cell_unselected = pyqtSignal("PyQt_PyObject") 
 
 
-    def __init__(self, origin, size, col, row, width,
+    def __init__(self, origin, size, col, row, width, defaultSymbol,
                  parent = None, scene = None):
 
         super(QGraphicsSvgItem, self).__init__()
@@ -534,11 +536,7 @@ class PatternCanvasItem(QGraphicsSvgItem):
         self.width   = width
         self.height  = 1
 
-        # we start off with an empty symbol
-        self.symbol  = { "svgName" : "", "category" : "", "name" : "", \
-                         "description" : "", "width" : "", \
-                         "backgroundColor" : "" }
-        
+        self.symbol = defaultSymbol
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
         self.__pen.setColor(Qt.black)

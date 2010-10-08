@@ -19,7 +19,7 @@
 #
 #######################################################################
 
-from PyQt4.QtCore import SIGNAL, SLOT, QSettings, QDir, QFileInfo
+from PyQt4.QtCore import SIGNAL, SLOT, QSettings, QDir, QFileInfo, QString
 from PyQt4.QtGui import qApp, QMainWindow, QMessageBox, QFileDialog
 from ui_mainWindow import Ui_MainWindow
 import sconchoHelpers.text as text
@@ -44,7 +44,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__saveFilePath = None
 
-        self.__canvas = PatternCanvas(self.__settings)
+        self.__canvas = PatternCanvas(self.__settings, 
+                                      knittingSymbols[QString("knit")])
         self.initialize_symbol_widget(knittingSymbols)
         self.graphicsView.setScene(self.__canvas)
         
