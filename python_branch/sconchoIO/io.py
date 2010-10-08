@@ -128,19 +128,60 @@ def read_canvas(fileName):
         return
 
 
-    (status, errMsg, errLine, errCol) = QDomDocument().setContent(readFile, True)
+    readDoc = QDomDocument()
+    (status, errMsg, errLine, errCol) = readDoc.setContent(readFile, True)
+    print(errMsg)
     if not status:
-        QMessageBox.critical(0, "sconcho DOM Parser",
-                             QString("Error parsing\n%1\nat line %2 column %3; $4")
-                             .arg(fileName) .arg(errLine) .arg(errCol) .arg(errMsg))
+        QMessageBox.critical(None, "sconcho DOM Parser",
+                             "Error parsing\n %s \nat line %d column %d; %s"
+                             % (str(fileName), errLine, errCol, str(errMsg)))
 
-    #writeStream = QTextStream(writeFile)
-    #writeDoc    = QDomDocument()
+    root = readDoc.documentElement()
+    if root.tagName() != "sconcho":
+        print("no go")
+        return 
+    
+    node = root.firstChild()
+    while not node.isNull():
+        if node.toElement().tagName() == "canvasItem":
+            item = node.firstChild()
+            if item.toElement().tagName() == "patternGridItem":
+                parse_patternGridItems(item)
 
-    # write all the content
-    #root = initialize_DOM(writeDoc)
-    #write_patternGridItems(writeDoc, root, canvas)
+        node = node.nextSibling()
 
-    # save it
-    #writeDoc.save(writeStream, 4)
-    #writeFile.close()
+
+
+def parse_patternGridItems(item):
+    """
+    Parse a patternGridItem.
+    """
+
+    node = item.firstChild()
+    while not node.isNull():
+
+        if node.toElement().tagName() == "colIndex":
+            (colIndex, status) = node.firstChild().toText().data().toInt()
+
+        if node.toElement().tagName() == "rowIndex":
+            (rowIndex, status) = node.firstChild().toText().data().toInt()
+
+        if node.toElement().tagName() == "width":
+            (width, status) = node.firstChild().toText().data().toInt()
+
+        if node.toElement().tagName() == "height":
+            (height, status) = node.firstChild().toText().data().toInt()
+
+        if node.toElement().tagName() == "backgroundColor":
+            (color, status) = node.firstChild().toText().data().toUInt()
+
+        if node.toElement().tagName() == "patternCategory":
+            (category, status) = node.firstChild().toText().data()
+
+        if node.toElement().tagName() == "patternName":
+            (name, status) = node.firstChild().toText().data()
+
+        node = node.nextSibling()
+
+
+    print(colIndex, rowIndex, width, height, color, category, name)
