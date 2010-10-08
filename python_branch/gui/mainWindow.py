@@ -62,6 +62,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionSave, SIGNAL("triggered()"),
                      self.save_pattern_dialog)
 
+        self.connect(self.actionOpen, SIGNAL("triggered()"),
+                     self.read_pattern_dialog)
+
+
 
    
     def initialize_symbol_widget(self, knittingSymbols):
@@ -102,25 +106,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         location = self.__saveFilePath if self.__saveFilePath else QDir.homePath()
-        fileName = QFileDialog.getSaveFileName(self, "Save Pattern", location,
-                                               "sconcho pattern files (*.spf)")
+        saveFileName = QFileDialog.getSaveFileName(self, "Save Pattern", location,
+                                                   "sconcho pattern files (*.spf)")
 
-        if not fileName:
+        if not saveFileName:
             return
 
         # check the extension; if none is present add .spf
-        extension = QFileInfo(fileName).completeSuffix()
+        extension = QFileInfo(saveFileName).completeSuffix()
         if extension != "spf":
             if not extension:
-                fileName = fileName + ".spf"
+                saveFileName = saveFileName + ".spf"
             else:
                 QMessageBox.warning(self, "Warning", "Unknown extension " + extension,
                                     QMessageBox.Ok)
                 return
 
-        self.set_project_save_file(fileName)
-        io.save_canvas(self.__canvas, None, self.__settings, fileName)
+        self.set_project_save_file(saveFileName)
+        io.save_canvas(self.__canvas, None, self.__settings, saveFileName)
         print("save it")
+
+
+
+    def read_pattern_dialog(self):
+        """
+        This function opens a read pattern dialog.
+        """
+
+        readFileName = QFileDialog.getOpenFileName(self, "open sconcho data file",
+                                                   QDir.currentPath(),
+                                                   "sconcho pattern files (*.spf)")
+
+        if not readFileName:
+            return
+
+        io.read_canvas(readFileName)
 
 
 

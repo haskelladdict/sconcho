@@ -21,7 +21,7 @@
 
 
 from PyQt4.QtCore import QFile, QTextStream, QIODevice, QString
-from PyQt4.QtGui import QColor
+from PyQt4.QtGui import QColor, QMessageBox
 from PyQt4.QtXml import QDomDocument, QDomNode, QDomElement
 from gui.patternCanvas import PatternCanvasItem
 
@@ -42,7 +42,6 @@ def save_canvas(canvas, colors, settings, fileName):
     # write all the content
     root = initialize_DOM(writeDoc)
     write_patternGridItems(writeDoc, root, canvas)
-
 
     # save it
     writeDoc.save(writeStream, 4)
@@ -118,12 +117,30 @@ def write_patternGridItems(writeDoc, root, canvas):
 
 
 
-            
-            
 
-            
-                              
+def read_canvas(fileName):
+    """
+    Toplevel reader routine.
+    """
 
-            
+    readFile = QFile(fileName)
+    if not readFile.open(QIODevice.ReadOnly):
+        return
 
-            
+
+    (status, errMsg, errLine, errCol) = QDomDocument().setContent(readFile, True)
+    if not status:
+        QMessageBox.critical(0, "sconcho DOM Parser",
+                             QString("Error parsing\n%1\nat line %2 column %3; $4")
+                             .arg(fileName) .arg(errLine) .arg(errCol) .arg(errMsg))
+
+    #writeStream = QTextStream(writeFile)
+    #writeDoc    = QDomDocument()
+
+    # write all the content
+    #root = initialize_DOM(writeDoc)
+    #write_patternGridItems(writeDoc, root, canvas)
+
+    # save it
+    #writeDoc.save(writeStream, 4)
+    #writeFile.close()
