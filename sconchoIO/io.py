@@ -20,19 +20,20 @@
 #######################################################################
 
 
-from PyQt4.QtCore import QFile, QTextStream, QIODevice, QString
-from PyQt4.QtGui import QColor, QMessageBox
+from PyQt4.QtCore import QFile, QTextStream, QIODevice, QString, \
+                         Qt, QRectF
+from PyQt4.QtGui import QColor, QMessageBox, QImage, QPainter
 from PyQt4.QtXml import QDomDocument, QDomNode, QDomElement
 from gui.patternCanvas import PatternCanvasItem
 
 
 
-def save_project(canvas, colors, settings, fileName):
+def save_project(canvas, colors, settings, saveFileName):
     """
     Toplevel writer routine.
     """
 
-    writeFile = QFile(fileName)
+    writeFile = QFile(saveFileName)
     if not writeFile.open(QIODevice.WriteOnly | QIODevice.Truncate):
         return
 
@@ -118,12 +119,12 @@ def write_patternGridItems(writeDoc, root, canvas):
 
 
 
-def read_project(fileName):
+def read_project(readFileName):
     """
     Toplevel reader routine.
     """
 
-    readFile = QFile(fileName)
+    readFile = QFile(readFileName)
     if not readFile.open(QIODevice.ReadOnly):
         return
 
@@ -134,7 +135,7 @@ def read_project(fileName):
     if not status:
         QMessageBox.critical(None, "sconcho DOM Parser",
                              "Error parsing\n %s \nat line %d column %d; %s"
-                             % (str(fileName), errLine, errCol, str(errMsg)))
+                             % (str(readFileName), errLine, errCol, str(errMsg)))
 
     root = readDoc.documentElement()
     if root.tagName() != "sconcho":
@@ -197,3 +198,26 @@ def parse_patternGridItems(item):
              "category" : category,
              "name"     : name }
              
+
+
+def export_scene(canvas, exportFileName):
+    """
+    This function exports the scene to a file.
+    """
+
+    # NOTE: We seem to need the 1px buffer region to avoid
+    # the image being cut off
+    theScene = canvas.itemsBoundingRect()
+    theScene.adjust(-10, -10, 10, 10)
+
+    finalImage = QImage(theScene.width()*3, theScene.height()*3,
+                        QImage.Format_ARGB32_Premultiplied )
+    painter = QPainter(finalImage)
+    painter.setRenderHints(QPainter.SmoothPixmapTransform )
+    painter.setRenderHints(QPainter.HighQualityAntialiasing )
+    painter.setRenderHints(QPainter.TextAntialiasing )
+    painter.setBackgroundMode(Qt.TransparentMode )
+
+    canvas.render(painter, QRectF(), theScene )
+    painter.end()
+    finalImage.save(exportFileName)

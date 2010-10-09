@@ -69,7 +69,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionOpen, SIGNAL("triggered()"),
                      self.read_pattern_dialog)
 
-
+        self.connect(self.actionExport, SIGNAL("triggered()"),
+                     self.export_pattern_dialog)
 
    
     def initialize_symbol_widget(self, knittingSymbols):
@@ -110,25 +111,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         location = self.__saveFilePath if self.__saveFilePath else QDir.homePath()
-        saveFileName = QFileDialog.getSaveFileName(self, "Save Pattern", location,
+        saveFilePath = QFileDialog.getSaveFileName(self, "Save Pattern", location,
                                                    "sconcho pattern files (*.spf)")
 
-        if not saveFileName:
+        if not saveFilePath:
             return
 
         # check the extension; if none is present add .spf
-        extension = QFileInfo(saveFileName).completeSuffix()
+        extension = QFileInfo(saveFilePath).completeSuffix()
         if extension != "spf":
             if not extension:
-                saveFileName = saveFileName + ".spf"
+                saveFilePath = saveFileName + ".spf"
             else:
                 QMessageBox.warning(self, "Warning",
                                     "Unknown extension " + extension,
                                     QMessageBox.Ok)
                 return
 
-        self.set_project_save_file(saveFileName)
-        io.save_project(self.__canvas, None, self.__settings, saveFileName)
+        self.set_project_save_file(saveFilePath)
+        io.save_project(self.__canvas, None, self.__settings, saveFilePath)
+        saveFileName = QFileInfo(saveFilePath).fileName()
         self.statusBar().showMessage("successfully saved " + saveFileName, 3000)
 
 
@@ -138,17 +140,47 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         This function opens a read pattern dialog.
         """
 
-        readFileName = QFileDialog.getOpenFileName(self, "open sconcho data file",
+        readFilePath = QFileDialog.getOpenFileName(self, "open sconcho data file",
                                                    QDir.currentPath(),
                                                    "sconcho pattern files (*.spf)")
 
-        if not readFileName:
+        if not readFilePath:
             return
 
-        patternGridItems = io.read_project(readFileName)
+        patternGridItems = io.read_project(readFilePath)
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
         self.__canvas.open_project(knittingSymbols, patternGridItems)
+        readFileName = QFileInfo(readFilePath).fileName()
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
+        self.set_project_save_file(readFilePath)
+
+
+
+    def export_pattern_dialog(self):
+        """
+        This function opens and export pattern dialog.
+        """
+
+        exportFilePath = QFileDialog.getSaveFileName(self,
+                                                     "Export Pattern",
+                                                     QDir.homePath(),
+                                                     "Image files (*.png *.tif)")
+
+        if not exportFilePath:
+            return
+
+        # check the extension; if none is present add .spf
+        extension = QFileInfo(exportFilePath).completeSuffix()
+        if extension != "png": # or extension != "tif":
+            QMessageBox.warning(self, "Warning",
+                                "Unknown image file format " + extension,
+                                QMessageBox.Ok)
+            return
+
+        io.export_scene(self.__canvas, exportFilePath)
+        exportFileName = QFileInfo(exportFilePath).fileName()
+        self.statusBar().showMessage("successfully exported " + exportFileName,
+                                     3000)
 
 
 
