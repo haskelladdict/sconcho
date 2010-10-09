@@ -38,10 +38,8 @@ if __name__ == "__main__":
     Main routine starting up the sconcho framework.
     """
 
-    symbols = parser.parse_all_symbols(SYMBOL_PATHS)
-
     app = QApplication(sys.argv)
-    window = MainWindow(symbols)
+    window = MainWindow(SYMBOL_PATHS)
     window.show()
     sys.exit(app.exec_())
     

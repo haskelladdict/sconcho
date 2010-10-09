@@ -27,7 +27,7 @@ from gui.patternCanvas import PatternCanvasItem
 
 
 
-def save_canvas(canvas, colors, settings, fileName):
+def save_project(canvas, colors, settings, fileName):
     """
     Toplevel writer routine.
     """
@@ -56,7 +56,8 @@ def initialize_DOM(writeDoc):
     """
     
     xmlNode = writeDoc.createProcessingInstruction("xml",
-                                                   "version=\"1.0\" encoding=\"UTF-8\"" )
+                                                   "version=\"1.0\" "
+                                                   "encoding=\"UTF-8\"" )
     writeDoc.insertBefore(xmlNode, writeDoc.firstChild())
     root = writeDoc.createElement("sconcho")
     writeDoc.appendChild(root)
@@ -117,8 +118,7 @@ def write_patternGridItems(writeDoc, root, canvas):
 
 
 
-
-def read_canvas(fileName):
+def read_project(fileName):
     """
     Toplevel reader routine.
     """
@@ -140,15 +140,21 @@ def read_canvas(fileName):
     if root.tagName() != "sconcho":
         print("no go")
         return 
+
+
+    # list of parsed patternGridItems
+    patternGridItems = []
     
     node = root.firstChild()
     while not node.isNull():
         if node.toElement().tagName() == "canvasItem":
             item = node.firstChild()
             if item.toElement().tagName() == "patternGridItem":
-                parse_patternGridItems(item)
+                patternGridItems.append(parse_patternGridItems(item))
 
         node = node.nextSibling()
+
+    return patternGridItems
 
 
 
@@ -176,12 +182,18 @@ def parse_patternGridItems(item):
             (color, status) = node.firstChild().toText().data().toUInt()
 
         if node.toElement().tagName() == "patternCategory":
-            (category, status) = node.firstChild().toText().data()
+            category = node.firstChild().toText().data()
 
         if node.toElement().tagName() == "patternName":
-            (name, status) = node.firstChild().toText().data()
+            name = node.firstChild().toText().data()
 
         node = node.nextSibling()
 
-
-    print(colIndex, rowIndex, width, height, color, category, name)
+    return { "column"   : colIndex,
+             "row"      : rowIndex,
+             "width"    : width,
+             "height"   : height,
+             "color"    : color,
+             "category" : category,
+             "name"     : name }
+             

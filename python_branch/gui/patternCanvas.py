@@ -158,14 +158,15 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def create_item(self, origin, dim, col, row, width):
+    def create_item(self, origin, unitDim, col, row, width, height,
+                    knittingSymbol):
         """
         Creates a new PatternGridItem of the specified dimension
         at the given location.
         """
 
-        item = PatternCanvasItem(origin, dim, col, row, width,
-                                 self.__defaultSymbol)
+        item = PatternCanvasItem(origin, unitDim, col, row, width, height,
+                                 knittingSymbol)
         self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
                      self.grid_cell_activated)
         self.connect(item, SIGNAL("cell_unselected(PyQt_PyObject)"),
@@ -185,7 +186,6 @@ class PatternCanvas(QGraphicsScene):
         if self.__activeSymbol:
             width = int(self.__activeSymbol["width"])
             chunks = chunkify_cell_arrangement(width, self.__selectedCells)
-            dim = QSizeF(self.__unitWidth * width, self.__unitHeight)
             
             if chunks:
                 for chunk in chunks:
@@ -204,7 +204,9 @@ class PatternCanvas(QGraphicsScene):
                     # insert as many new items as we can fit
                     numNewItems = totalWidth/width
                     for i in range(0,numNewItems):
-                        item = self.create_item(origin, dim, column, row, width)
+                        item = self.create_item(origin, self.__unitCellDim,
+                                                column, row, width, 1,
+                                                self.__defaultSymbol)
                         item.set_symbol(self.__activeSymbol)
                         origin = QPointF(origin.x() + (width * self.__unitWidth),
                                          origin.y())
@@ -488,7 +490,8 @@ class PatternCanvas(QGraphicsScene):
         for column in range(0, self.__numColumns):
             location = QPointF(column * self.__unitWidth,
                                rowID * self.__unitHeight)
-            self.create_item(location, self.__unitCellDim, column, rowID, 1)
+            self.create_item(location, self.__unitCellDim, column, rowID,
+                             1, 1, self.__defaultSymbol)
 
 
 
@@ -503,8 +506,47 @@ class PatternCanvas(QGraphicsScene):
         for row in range(0, self.__numRows):
             location = QPointF(columnID * self.__unitWidth,
                                row * self.__unitHeight)
-            self.create_item(location, self.__unitCellDim, columnID, row, 1)
+            self.create_item(location, self.__unitCellDim, columnID, row,
+                             1, 1, self.__defaultSymbol)
 
+
+
+    def __clear_canvas(self):
+        """
+        Clear the complete canvas. Currently we just wrap around
+        QGraphicsScene's clear().
+        """
+
+        self.clear()
+        
+
+
+    def open_project(self, knittingSymbols, patternGridItems):
+        """
+        Clear curent canvas and establishes a new project
+        based on the passed canvas items.
+        """
+
+        self.__clear_canvas()
+
+        for newItem in patternGridItems:
+            colID    = newItem["column"]
+            rowID    = newItem["row"]
+            width    = newItem["width"]
+            height   = newItem["height"]
+            name     = newItem["name"]
+            category = newItem["category"]
+            symbolID = category + "::" + name
+            location = QPointF(colID * self.__unitWidth,
+                               rowID * self.__unitHeight)
+            symbol   = knittingSymbols[symbolID]
+            self.create_item(location, self.__unitCellDim, colID, rowID,
+                             width, height, symbol)
+
+        # need to clear our label cache, otherwise set_up_labels()
+        # will try to remove non-existing items
+        self.__textLabels = []
+        self.set_up_labels()
 
 
 
@@ -524,19 +566,22 @@ class PatternCanvasItem(QGraphicsSvgItem):
     cell_unselected = pyqtSignal("PyQt_PyObject") 
 
 
-    def __init__(self, origin, size, col, row, width, defaultSymbol,
-                 parent = None, scene = None):
+    def __init__(self, origin, unitDim, col, row, width, height,
+                 defaultSymbol, parent = None, scene = None):
 
         super(QGraphicsSvgItem, self).__init__()
 
         self.origin  = origin
-        self.size    = size
+        self.unitDim = unitDim
         self.row     = row
         self.column  = col
         self.width   = width
-        self.height  = 1
+        self.height  = height
+        self.size    = QSizeF(self.unitDim.width() * width,
+                              self.unitDim.height() * height)
 
-        self.symbol = defaultSymbol
+        self.set_symbol(defaultSymbol)
+        
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
         self.__pen.setColor(Qt.black)

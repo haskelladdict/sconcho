@@ -43,7 +43,8 @@ def parse_all_symbols(symbolTopLevelPaths):
             print("Warning: Could not read symbol " + path)
 
         # add symbol to symbol database
-        allSymbolDesc[symbolDesc["svgName"]] = symbolDesc
+        symbolID = symbolDesc["category"] + "::" + symbolDesc["name"]
+        allSymbolDesc[symbolID] = symbolDesc
 
     return allSymbolDesc
 

@@ -25,13 +25,14 @@ from ui_mainWindow import Ui_MainWindow
 import sconchoHelpers.text as text
 import sconchoHelpers.settings as settings
 import sconchoIO.io as io
+import sconchoIO.symbolParser as parser
 import symbolWidget
 from patternCanvas import PatternCanvas
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    def __init__(self, knittingSymbols, filename = None, parent = None):
+    def __init__(self, symbolPaths, filename = None, parent = None):
         """
         Initialize the main window.
         """
@@ -44,9 +45,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__saveFilePath = None
 
+        self.__symbolPaths = symbolPaths
+        knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
         self.__canvas = PatternCanvas(self.__settings, 
-                                      knittingSymbols[QString("knit")])
+                                      knittingSymbols[QString("basic::knit")])
         self.initialize_symbol_widget(knittingSymbols)
+
         self.graphicsView.setScene(self.__canvas)
         
         # add connections
@@ -118,13 +122,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not extension:
                 saveFileName = saveFileName + ".spf"
             else:
-                QMessageBox.warning(self, "Warning", "Unknown extension " + extension,
+                QMessageBox.warning(self, "Warning",
+                                    "Unknown extension " + extension,
                                     QMessageBox.Ok)
                 return
 
         self.set_project_save_file(saveFileName)
-        io.save_canvas(self.__canvas, None, self.__settings, saveFileName)
-        print("save it")
+        io.save_project(self.__canvas, None, self.__settings, saveFileName)
+        self.statusBar().showMessage("successfully saved " + saveFileName, 3000)
 
 
 
@@ -140,8 +145,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not readFileName:
             return
 
-        io.read_canvas(readFileName)
-
+        patternGridItems = io.read_project(readFileName)
+        knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
+        self.__canvas.open_project(knittingSymbols, patternGridItems)
+        self.statusBar().showMessage("successfully opened " + readFileName, 3000)
 
 
 
