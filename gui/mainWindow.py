@@ -66,6 +66,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionSave, SIGNAL("triggered()"),
                      self.save_pattern_dialog)
 
+        self.connect(self.actionSave_as, SIGNAL("triggered()"),
+                     self.save_as_pattern_dialog)
+        
         self.connect(self.actionOpen, SIGNAL("triggered()"),
                      self.read_pattern_dialog)
 
@@ -105,9 +108,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def save_pattern_dialog(self):
+    def save_as_pattern_dialog(self):
         """
         This function opens a save pattern dialog.
+        """
+
+        if not self.__saveFilePath:
+            self.save_pattern_dialog()
+            
+        io.save_project(self.__canvas, None, self.__settings,
+                        self.__saveFilePath)
+        saveFileName = QFileInfo(self.__saveFilePath).fileName()
+        self.statusBar().showMessage("successfully saved " + saveFileName, 3000)
+
+
+
+    def save_pattern_dialog(self):
+        """
+        This function opens a save as pattern dialog.
         """
 
         location = self.__saveFilePath if self.__saveFilePath else QDir.homePath()
@@ -171,7 +189,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # check the extension; if none is present add .spf
         extension = QFileInfo(exportFilePath).completeSuffix()
-        if extension != "png": # or extension != "tif":
+        if extension != "png" and extension != "tif":
             QMessageBox.warning(self, "Warning",
                                 "Unknown image file format " + extension,
                                 QMessageBox.Ok)
