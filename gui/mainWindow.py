@@ -75,6 +75,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionExport, SIGNAL("triggered()"),
                      self.export_pattern_dialog)
 
+        self.connect(self.actionPrint, SIGNAL("triggered()"),
+                     self.export_pattern_dialog)
+
    
     def initialize_symbol_widget(self, knittingSymbols):
         """
