@@ -76,7 +76,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.export_pattern_dialog)
 
         self.connect(self.actionPrint, SIGNAL("triggered()"),
-                     self.export_pattern_dialog)
+                     self.print_dialog)
 
    
     def initialize_symbol_widget(self, knittingSymbols):
@@ -203,6 +203,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar().showMessage("successfully exported " + exportFileName,
                                      3000)
 
+
+
+    def print_dialog(self):
+        """
+        This member function calls print routine.
+        """
+
+        io.print_scene(self.__canvas)
+        
 
 
     def set_project_save_file(self, fileName):

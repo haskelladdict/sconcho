@@ -22,7 +22,8 @@
 
 from PyQt4.QtCore import QFile, QTextStream, QIODevice, QString, \
                          Qt, QRectF
-from PyQt4.QtGui import QColor, QMessageBox, QImage, QPainter
+from PyQt4.QtGui import QColor, QMessageBox, QImage, QPainter, \
+                        QPrinter, QPrintDialog, QDialog
 from PyQt4.QtXml import QDomDocument, QDomNode, QDomElement
 from gui.patternCanvas import PatternCanvasItem
 
@@ -221,3 +222,25 @@ def export_scene(canvas, exportFileName):
     canvas.render(painter, QRectF(), theScene )
     painter.end()
     finalImage.save(exportFileName)
+
+
+
+def print_scene(canvas):
+    """
+    This function prints the content of the canvas.
+    """
+
+    aPrinter = QPrinter(QPrinter.HighResolution)
+    printDialog = QPrintDialog(aPrinter)
+    
+    if printDialog.exec_() == QDialog.Accepted:
+        
+        theScene = canvas.itemsBoundingRect()
+        theScene.adjust(-10, -10, 10, 10)
+
+        painter = QPainter(aPrinter)
+        painter.setRenderHints(QPainter.SmoothPixmapTransform)
+        painter.setRenderHints(QPainter.HighQualityAntialiasing)
+        painter.setRenderHints(QPainter.TextAntialiasing)
+        canvas.render(painter, QRectF(), theScene)
+        painter.end()
