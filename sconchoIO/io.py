@@ -25,7 +25,7 @@ from PyQt4.QtCore import QFile, QTextStream, QIODevice, QString, \
 from PyQt4.QtGui import QColor, QMessageBox, QImage, QPainter, \
                         QPrinter, QPrintDialog, QDialog
 from PyQt4.QtXml import QDomDocument, QDomNode, QDomElement
-from gui.patternCanvas import PatternCanvasItem
+from gui.patternCanvas import PatternGridItem
 
 
 
@@ -77,7 +77,7 @@ def write_patternGridItems(writeDoc, root, canvas):
     helper = QString()
 
     for item in canvas.items():
-        if isinstance(item, PatternCanvasItem):
+        if isinstance(item, PatternGridItem):
             mainTag = writeDoc.createElement("canvasItem")
             root.appendChild(mainTag)
 

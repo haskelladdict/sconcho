@@ -24,7 +24,7 @@ from PyQt4.QtCore import Qt, QRectF, QSize, QPointF, QSizeF, \
                          QPoint
 from PyQt4.QtGui import QGraphicsScene, QGraphicsObject, QPen, QColor, \
                         QBrush, QGraphicsTextItem, QFontMetrics, QMenu, \
-                        QAction
+                        QAction, QGraphicsItem
 from PyQt4.QtSvg import QGraphicsSvgItem, QSvgWidget, QSvgRenderer
 from sconchoHelpers.settings import get_grid_dimensions, get_text_font
 import sconchoHelpers.canvas as canvasHelpers
@@ -129,9 +129,6 @@ class PatternCanvas(QGraphicsScene):
         and stores it.
         """
 
-        if activeKnittingSymbol:
-            print("symbol changed --> " + activeKnittingSymbol["name"])
-            
         self.__activeSymbol = activeKnittingSymbol
         self.paint_cells()
 
@@ -139,37 +136,77 @@ class PatternCanvas(QGraphicsScene):
 
     def add_to_legend(self, item):
         """
-        Adds a newly created PatternCanvasItem to the legend database
+        Adds a newly created PatternGridItem to the legend database
         and updates the legend itself if needed.
         """
 
         name = item.symbol["name"]
         if name in self.__legend:
-            self.__legend[name] += 1
+            entry = self.__legend[name]
+            new_entry = change_count(entry, 1)
+            self.__legend[name] = new_entry
         else:
-            self.__legend[name] = 1
+            (item, textItem) = self.add_legend_item(item.symbol)
+            self.__legend[name] = [1, item, textItem]
 
-        print('doin some housekeeping.')
-        print(self.__legend)
+        #print('doin some housekeeping.')
+        #print(self.__legend)
+
+
+
+    def add_legend_item(self, symbol):
+        """
+        This adds a new legend entry including an PatternLegendItem
+        and a textual description. This function also attemps to be
+        sort of smart about where to put the item.
+        """
+
+        legendYmax = compute_max_legend_y_coordinate(self.__legend)
+        canvasYmax = (self.__numRows + 1) * self.__unitHeight
+
+        yMax = max(legendYmax, canvasYmax)
+
+        # add the symbol part of the legend
+        width  = int(symbol["width"])
+        height = 1
+        itemLocation = QPointF(0, yMax + self.__unitHeight + 10)
+        item = PatternLegendItem(itemLocation, self.__unitCellDim,
+                                 width, height, symbol)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        self.addItem(item)
+
+        # add the description part of the legend
+        textLocation = QPointF((width+1) * self.__unitWidth,
+                               yMax + self.__unitHeight + 10)
+        textItem = QGraphicsTextItem()
+        textItem.setPos(textLocation)
+        textItem.setFlag(QGraphicsItem.ItemIsMovable)
+        textItem.setTextInteractionFlags(Qt.TextEditorInteraction);
+        textItem.setPlainText(symbol["description"])
+        self.addItem(textItem)
+
+        return (item, textItem)
 
             
             
     def remove_from_legend(self, item):
         """
-        Removes a PatternCanvasItem from the legend database
+        Removes a PatternGridItem from the legend database
         and updates the legend itself if needed.
         """
 
         name = item.symbol["name"]
         assert(name in self.__legend)
 
-        if self.__legend[name] == 1:
+        entry = self.__legend[name]
+        if legendItem_count(entry) == 1:
+            self.removeItem(legendItem_symbol(entry))
+            self.removeItem(legendItem_text(entry))
             del self.__legend[name]
         else:
-            self.__legend[name] -= 1
+            new_entry = change_count(entry, -1)
+            self.__legend[name] = new_entry
         
-        
-
 
 
     def grid_cell_activated(self, item):
@@ -202,7 +239,7 @@ class PatternCanvas(QGraphicsScene):
         at the given location.
         """
 
-        item = PatternCanvasItem(origin, unitDim, col, row, width, height,
+        item = PatternGridItem(origin, unitDim, col, row, width, height,
                                  knittingSymbol)
         self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
                      self.grid_cell_activated)
@@ -218,7 +255,7 @@ class PatternCanvas(QGraphicsScene):
         specific task such as updating the legend for svg items.
         """
         
-        if isinstance(item, PatternCanvasItem):
+        if isinstance(item, PatternGridItem):
             self.add_to_legend(item)
 
         super(PatternCanvas,self).addItem(item)
@@ -231,7 +268,7 @@ class PatternCanvas(QGraphicsScene):
         specific task such as updating the legend for svg items.
         """
         
-        if isinstance(item, PatternCanvasItem):
+        if isinstance(item, PatternGridItem):
             self.remove_from_legend(item)
 
         super(PatternCanvas,self).removeItem(item)
@@ -409,7 +446,7 @@ class PatternCanvas(QGraphicsScene):
             shift = 1
 
         for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternCanvasItem):
+            if isinstance(graphicsItem, PatternGridItem):
                 if cmpOp(graphicsItem.row, pivot):
                     shift_items_row_wise(graphicsItem, num, self.__unitHeight)
 
@@ -430,7 +467,7 @@ class PatternCanvas(QGraphicsScene):
         row = self.convert_canvas_row_to_internal(canvasRow)
 
         for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternCanvasItem):
+            if isinstance(graphicsItem, PatternGridItem):
                 if graphicsItem.row == row:
                     self.removeItem(graphicsItem)
                 elif graphicsItem.row > row:
@@ -463,7 +500,7 @@ class PatternCanvas(QGraphicsScene):
         # this pivot or right of it.
         rowCounter = 0
         for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternCanvasItem):
+            if isinstance(graphicsItem, PatternGridItem):
                 if graphicsItem.column == (pivot + shift):
                     rowCounter += 1
 
@@ -472,7 +509,7 @@ class PatternCanvas(QGraphicsScene):
             return
 
         for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternCanvasItem):
+            if isinstance(graphicsItem, PatternGridItem):
                 if cmpOp(graphicsItem.column, pivot):
                     shift_items_column_wise(graphicsItem, num, self.__unitWidth)
 
@@ -496,7 +533,7 @@ class PatternCanvas(QGraphicsScene):
         # there has to be a unit element at that column
         rowCounter = 0
         for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternCanvasItem):
+            if isinstance(graphicsItem, PatternGridItem):
                 if (graphicsItem.column == column) and \
                    (graphicsItem.width == 1):
                     rowCounter += 1
@@ -506,7 +543,7 @@ class PatternCanvas(QGraphicsScene):
             return
 
         for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternCanvasItem):
+            if isinstance(graphicsItem, PatternGridItem):
                 if graphicsItem.column == column:
                     self.removeItem(graphicsItem)
                 elif graphicsItem.column > column:
@@ -625,7 +662,7 @@ class PatternCanvas(QGraphicsScene):
 ## (svg image, frame, background color)
 ##
 #########################################################
-class PatternCanvasItem(QGraphicsSvgItem):
+class PatternGridItem(QGraphicsSvgItem):
 
     Type = 70000 + 1
 
@@ -717,6 +754,77 @@ class PatternCanvasItem(QGraphicsSvgItem):
             self.__backColor = Qt.white
 
         self.__unselect()
+
+
+
+    def boundingRect(self):
+        """
+        Return the bounding rectangle of the item.
+        """
+
+        return QRectF(self.origin, self.size)
+        
+
+
+    def paint(self, painter, option, widget):
+        """
+        Paint ourselves.
+        """
+
+        painter.setPen(self.__pen)
+        brush = QBrush(self.color)
+        painter.setBrush(brush)
+        painter.drawRect(QRectF(self.origin, self.size))
+        self.renderer().render(painter, QRectF(self.origin, self.size))
+
+
+
+
+#########################################################
+## 
+## class for managing a single legend item
+## (svg image, frame, background color)
+##
+#########################################################
+class PatternLegendItem(QGraphicsSvgItem):
+
+    Type = 70000 + 2
+
+
+    def __init__(self, origin, unitDim, width, height,
+                 defaultSymbol, parent = None, scene = None):
+
+        super(QGraphicsSvgItem, self).__init__()
+
+        self.origin  = origin
+        self.unitDim = unitDim
+        self.width   = width
+        self.height  = height
+        self.size    = QSizeF(self.unitDim.width() * width,
+                              self.unitDim.height() * height)
+
+        self.symbol = None
+        self.__set_symbol(defaultSymbol)
+        
+        self.__pen = QPen()
+        self.__pen.setWidthF(1.0)
+        self.__pen.setColor(Qt.black)
+
+        self.color  = Qt.white
+
+
+
+    def __set_symbol(self, newSymbol):
+        """
+        Adds a new svg image of a knitting symbol to the
+        scene.
+        """
+
+        self.symbol = newSymbol
+        svgPath = newSymbol["svgPath"]
+        if not self.renderer().load(svgPath):
+            print("failed to load")
+            return
 
 
 
@@ -871,3 +979,59 @@ def shift_items_column_wise(item, num, unitCellWidth):
     item.prepareGeometryChange()
     item.column += num
     item.origin = QPointF(item.origin.x() + xShift, item.origin.y())
+
+
+
+def compute_max_legend_y_coordinate(legendList):
+    """
+    Given the current list of existing legend items
+    figure out the largest y coordinate among them all.
+    """
+
+    yList = [0]
+    for item in legendList.values():
+        yList.append(item[1].scenePos().y())
+        yList.append(item[2].scenePos().y())
+    
+    return max(yList)
+
+
+
+def change_count(item, count):
+    """
+    Convenience wrapper changing the count for a particular
+    legend entry.
+    """
+
+    item[0] += count
+    return item
+
+
+
+def legendItem_count(item):
+    """
+    Convenience wrapper returning the reference count for the
+    particular legend item.
+    """
+
+    return item[0]
+
+
+
+def legendItem_symbol(item):
+    """
+    Convenience wrapper returning the current symbol for a
+    particular legend item.
+    """
+
+    return item[1]
+
+
+
+def legendItem_text(item):
+    """
+    Convenience wrapper returning the current description text
+    for a particular legend item.
+    """
+
+    return item[2]
