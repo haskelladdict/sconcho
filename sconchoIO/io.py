@@ -25,7 +25,9 @@ from PyQt4.QtCore import QFile, QTextStream, QIODevice, QString, \
 from PyQt4.QtGui import QColor, QMessageBox, QImage, QPainter, \
                         QPrinter, QPrintDialog, QDialog
 from PyQt4.QtXml import QDomDocument, QDomNode, QDomElement
-from gui.patternCanvas import PatternGridItem
+from gui.patternCanvas import PatternGridItem, PatternLegendItem, \
+                              legendItem_symbol, legendItem_text, \
+                              generate_symbol_item_id
 
 
 
@@ -44,6 +46,7 @@ def save_project(canvas, colors, settings, saveFileName):
     # write all the content
     root = initialize_DOM(writeDoc)
     write_patternGridItems(writeDoc, root, canvas)
+    write_patternLegendItems(writeDoc, root, canvas)
 
     # save it
     writeDoc.save(writeStream, 4)
@@ -51,7 +54,6 @@ def save_project(canvas, colors, settings, saveFileName):
 
 
 
-    
 def initialize_DOM(writeDoc):
     """
     Write the header.
@@ -120,6 +122,51 @@ def write_patternGridItems(writeDoc, root, canvas):
 
 
 
+def write_patternLegendItems(writeDoc, root, canvas):
+    """
+    Write all the PatternLegendItems to the sconcho file.
+    """
+    
+    helper = QString()
+
+    for item in canvas.legend.values():
+
+        symbolItem = legendItem_symbol(item)
+        textItem   = legendItem_text(item)
+        itemID     = generate_symbol_item_id(symbolItem)
+
+        mainTag = writeDoc.createElement("canvasItem")
+        root.appendChild(mainTag)
+
+        itemTag = writeDoc.createElement("legendEntry")
+        mainTag.appendChild(itemTag)
+
+        idTag = writeDoc.createElement("IDTag")
+        itemTag.appendChild(idTag)
+        idTag.appendChild(writeDoc.createTextNode(itemID))
+                        
+        itemXPosTag = writeDoc.createElement("itemXPos")
+        itemTag.appendChild(itemXPosTag)
+        helper.setNum(symbolItem.scenePos().x())
+        itemXPosTag.appendChild(writeDoc.createTextNode(helper))
+                                    
+        itemYPosTag = writeDoc.createElement("itemYPos")
+        itemTag.appendChild(itemYPosTag)
+        helper.setNum(symbolItem.scenePos().y())
+        itemYPosTag.appendChild(writeDoc.createTextNode(helper))
+
+        labelXPosTag = writeDoc.createElement("labelXPos")
+        itemTag.appendChild(labelXPosTag)
+        helper.setNum(textItem.scenePos().x())
+        labelXPosTag.appendChild(writeDoc.createTextNode(helper))
+                                    
+        labelYPosTag = writeDoc.createElement("labelYPos")
+        itemTag.appendChild(labelYPosTag)
+        helper.setNum(textItem.scenePos().y())
+        labelYPosTag.appendChild(writeDoc.createTextNode(helper))
+        
+
+            
 def read_project(readFileName):
     """
     Toplevel reader routine.
@@ -244,3 +291,6 @@ def print_scene(canvas):
         painter.setRenderHints(QPainter.TextAntialiasing)
         canvas.render(painter, QRectF(), theScene)
         painter.end()
+
+
+

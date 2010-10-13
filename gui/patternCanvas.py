@@ -65,7 +65,7 @@ class PatternCanvas(QGraphicsScene):
         self.__textFont    = get_text_font(theSettings)
         self.__textLabels  = []
 
-        self.__legend = {}
+        self.legend = {}
 
         self.set_up_main_grid()
         self.set_up_labels()
@@ -141,16 +141,16 @@ class PatternCanvas(QGraphicsScene):
         """
 
         name = item.symbol["name"]
-        if name in self.__legend:
-            entry = self.__legend[name]
+        if name in self.legend:
+            entry = self.legend[name]
             new_entry = change_count(entry, 1)
-            self.__legend[name] = new_entry
+            self.legend[name] = new_entry
         else:
             (item, textItem) = self.add_legend_item(item.symbol)
-            self.__legend[name] = [1, item, textItem]
+            self.legend[name] = [1, item, textItem]
 
         #print('doin some housekeeping.')
-        #print(self.__legend)
+        #print(self.legend)
 
 
 
@@ -161,7 +161,7 @@ class PatternCanvas(QGraphicsScene):
         sort of smart about where to put the item.
         """
 
-        legendYmax = compute_max_legend_y_coordinate(self.__legend)
+        legendYmax = compute_max_legend_y_coordinate(self.legend)
         canvasYmax = (self.__numRows + 1) * self.__unitHeight
 
         yMax = max(legendYmax, canvasYmax)
@@ -196,16 +196,16 @@ class PatternCanvas(QGraphicsScene):
         """
 
         name = item.symbol["name"]
-        assert(name in self.__legend)
+        assert(name in self.legend)
 
-        entry = self.__legend[name]
+        entry = self.legend[name]
         if legendItem_count(entry) == 1:
             self.removeItem(legendItem_symbol(entry))
             self.removeItem(legendItem_text(entry))
-            del self.__legend[name]
+            del self.legend[name]
         else:
             new_entry = change_count(entry, -1)
-            self.__legend[name] = new_entry
+            self.legend[name] = new_entry
         
 
 
@@ -1035,3 +1035,15 @@ def legendItem_text(item):
     """
 
     return item[2]
+
+
+
+def generate_symbol_item_id(symbolItem):
+    """
+    Based on the symbol properties of a PatternLegendItem return a
+    unique id.
+    """
+
+    return symbolItem.symbol["category"] + ":" + \
+           symbolItem.symbol["name"] + ":" + \
+           str(QColor(symbolItem.color).rgb())

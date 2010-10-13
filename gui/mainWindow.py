@@ -51,7 +51,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                       knittingSymbols[QString("basic::knit")])
         self.initialize_symbol_widget(knittingSymbols)
 
+        # we set a manual scene rectangle for our view. we
+        # should be a little smarter about this in the future
         self.graphicsView.setScene(self.__canvas)
+        self.graphicsView.setSceneRect( -100, -100, 2000, 2000)
         
         # add connections
         self.connect(self.actionQuit, SIGNAL("triggered()"),
