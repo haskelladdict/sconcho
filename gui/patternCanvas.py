@@ -170,9 +170,10 @@ class PatternCanvas(QGraphicsScene):
         width  = int(symbol["width"])
         height = 1
         itemLocation = QPointF(0, yMax + self.__unitHeight + 10)
-        item = PatternLegendItem(itemLocation, self.__unitCellDim,
+        item = PatternLegendItem(QPointF(0,0), self.__unitCellDim,
                                  width, height, symbol)
         item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setPos(itemLocation)
         self.addItem(item)
 
         # add the description part of the legend
@@ -274,7 +275,6 @@ class PatternCanvas(QGraphicsScene):
         super(PatternCanvas,self).removeItem(item)
 
         
-
 
     def paint_cells(self):
         """
@@ -1047,3 +1047,11 @@ def generate_symbol_item_id(symbolItem):
     return symbolItem.symbol["category"] + ":" + \
            symbolItem.symbol["name"] + ":" + \
            str(QColor(symbolItem.color).rgb())
+
+def deconstruct_symbol_item_by_id(itemID):
+    """
+    Based on the item ID return the symbol name, category,
+    and color.
+    """
+
+    return itemID.split(":")

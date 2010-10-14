@@ -27,7 +27,8 @@ from PyQt4.QtGui import QColor, QMessageBox, QImage, QPainter, \
 from PyQt4.QtXml import QDomDocument, QDomNode, QDomElement
 from gui.patternCanvas import PatternGridItem, PatternLegendItem, \
                               legendItem_symbol, legendItem_text, \
-                              generate_symbol_item_id
+                              generate_symbol_item_id, \
+                              deconstruct_symbol_item_by_id
 
 
 
@@ -63,13 +64,22 @@ def initialize_DOM(writeDoc):
                                                    "version=\"1.0\" "
                                                    "encoding=\"UTF-8\"" )
     writeDoc.insertBefore(xmlNode, writeDoc.firstChild())
+
+    apiEntry = writeDoc.createElement("sconchoAPI")
+    apiEntry.appendChild(writeDoc.createTextNode("1.0"))
+
     root = writeDoc.createElement("sconcho")
     writeDoc.appendChild(root)
+
+    # add an api version so we can handle changes in the
+    # future
+    apiTag = writeDoc.createElement("api")
+    root.appendChild(apiTag)
+    apiTag.appendChild(writeDoc.createTextNode("1.0"))
 
     return root
 
     
-
 
 def write_patternGridItems(writeDoc, root, canvas):
     """
@@ -147,24 +157,28 @@ def write_patternLegendItems(writeDoc, root, canvas):
                         
         itemXPosTag = writeDoc.createElement("itemXPos")
         itemTag.appendChild(itemXPosTag)
-        helper.setNum(symbolItem.scenePos().x())
+        helper.setNum(symbolItem.pos().x())
         itemXPosTag.appendChild(writeDoc.createTextNode(helper))
                                     
         itemYPosTag = writeDoc.createElement("itemYPos")
         itemTag.appendChild(itemYPosTag)
-        helper.setNum(symbolItem.scenePos().y())
+        helper.setNum(symbolItem.pos().y())
         itemYPosTag.appendChild(writeDoc.createTextNode(helper))
 
         labelXPosTag = writeDoc.createElement("labelXPos")
         itemTag.appendChild(labelXPosTag)
-        helper.setNum(textItem.scenePos().x())
+        helper.setNum(textItem.pos().x())
         labelXPosTag.appendChild(writeDoc.createTextNode(helper))
                                     
         labelYPosTag = writeDoc.createElement("labelYPos")
         itemTag.appendChild(labelYPosTag)
-        helper.setNum(textItem.scenePos().y())
+        helper.setNum(textItem.pos().y())
         labelYPosTag.appendChild(writeDoc.createTextNode(helper))
-        
+
+        labelDescriptionTag = writeDoc.createElement("description")
+        itemTag.appendChild(labelDescriptionTag)
+        text = textItem.toPlainText()
+        labelDescriptionTag.appendChild(writeDoc.createTextNode(text))
 
             
 def read_project(readFileName):
@@ -187,19 +201,24 @@ def read_project(readFileName):
 
     root = readDoc.documentElement()
     if root.tagName() != "sconcho":
-        print("no go")
+        print("Error: This doesn't look like a sconncho file")
         return 
 
 
     # list of parsed patternGridItems
     patternGridItems = []
+    legendItems      = []
     
     node = root.firstChild()
     while not node.isNull():
         if node.toElement().tagName() == "canvasItem":
             item = node.firstChild()
+
             if item.toElement().tagName() == "patternGridItem":
-                patternGridItems.append(parse_patternGridItems(item))
+                patternGridItems.append(parse_patternGridItem(item))
+
+            if item.toElement().tagName() == "legendEntry":
+                legendItems.append(parse_legendItem(item))
 
         node = node.nextSibling()
 
@@ -207,7 +226,7 @@ def read_project(readFileName):
 
 
 
-def parse_patternGridItems(item):
+def parse_patternGridItem(item):
     """
     Parse a patternGridItem.
     """
@@ -246,6 +265,40 @@ def parse_patternGridItems(item):
              "category" : category,
              "name"     : name }
              
+
+
+def parse_legendItem(item):
+    """
+    Parse a patternGridItem.
+    """
+
+    node = item.firstChild()
+    while not node.isNull():
+
+        if node.toElement().tagName() == "IDTag":
+            IDTag = node.firstChild().toText().data()
+
+        if node.toElement().tagName() == "itemXPos":
+            (itemXPos, status) = node.firstChild().toText().data().toInt()
+
+        if node.toElement().tagName() == "itemYPos":
+            (itemYPos, status) = node.firstChild().toText().data().toInt()
+
+        if node.toElement().tagName() == "labelXPos":
+            (labelXPos, status) = node.firstChild().toText().data().toInt()
+
+        if node.toElement().tagName() == "labelYPos":
+            (labelYPos, status) = node.firstChild().toText().data().toInt()
+
+        if node.toElement().tagName() == "description":
+            description = node.firstChild().toText().data()
+
+        node = node.nextSibling()
+
+    stuff = deconstruct_symbol_item_by_id(IDTag)
+    for foo in stuff:
+        print(foo)
+
 
 
 def export_scene(canvas, exportFileName):
