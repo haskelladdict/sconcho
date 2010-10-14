@@ -46,7 +46,7 @@ class PatternCanvas(QGraphicsScene):
 
     def __init__(self, theSettings, defaultSymbol, parent = None):
 
-        super(PatternCanvas,self).__init__()
+        super(PatternCanvas, self).__init__()
 
         self.__settings = theSettings
 
@@ -170,8 +170,7 @@ class PatternCanvas(QGraphicsScene):
         width  = int(symbol["width"])
         height = 1
         itemLocation = QPointF(0, yMax + self.__unitHeight + 10)
-        item = PatternLegendItem(QPointF(0,0), self.__unitCellDim,
-                                 width, height, symbol)
+        item = PatternLegendItem(self.__unitCellDim, width, height, symbol)
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setPos(itemLocation)
         self.addItem(item)
@@ -240,8 +239,9 @@ class PatternCanvas(QGraphicsScene):
         at the given location.
         """
 
-        item = PatternGridItem(origin, unitDim, col, row, width, height,
-                                 knittingSymbol)
+        item = PatternGridItem(unitDim, col, row, width, height,
+                               knittingSymbol)
+        item.setPos(origin)
         self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
                      self.grid_cell_activated)
         self.connect(item, SIGNAL("cell_unselected(PyQt_PyObject)"),
@@ -291,7 +291,7 @@ class PatternCanvas(QGraphicsScene):
                     totalWidth = 0
 
                     # location of leftmost item in chunk
-                    origin = chunk[0].origin
+                    origin = chunk[0].pos()
                     row    = chunk[0].row
                     column = chunk[0].column
 
@@ -671,12 +671,12 @@ class PatternGridItem(QGraphicsSvgItem):
     cell_unselected = pyqtSignal("PyQt_PyObject")
 
 
-    def __init__(self, origin, unitDim, col, row, width, height,
+    def __init__(self, unitDim, col, row, width, height,
                  defaultSymbol, parent = None, scene = None):
 
         super(QGraphicsSvgItem, self).__init__()
 
-        self.origin  = origin
+        self.origin  = QPointF(0.0, 0.0)
         self.unitDim = unitDim
         self.row     = row
         self.column  = col
@@ -791,12 +791,12 @@ class PatternLegendItem(QGraphicsSvgItem):
     Type = 70000 + 2
 
 
-    def __init__(self, origin, unitDim, width, height,
+    def __init__(self, unitDim, width, height,
                  defaultSymbol, parent = None, scene = None):
 
         super(QGraphicsSvgItem, self).__init__()
 
-        self.origin  = origin
+        self.origin  = QPointF(0.0, 0.0)
         self.unitDim = unitDim
         self.width   = width
         self.height  = height
@@ -966,7 +966,7 @@ def shift_items_row_wise(item, num, unitCellHeight):
     yShift = num * unitCellHeight
     item.prepareGeometryChange()
     item.row += num
-    item.origin = QPointF(item.origin.x(), item.origin.y() + yShift)
+    item.translate(0.0, yShift)
 
 
 
@@ -978,7 +978,7 @@ def shift_items_column_wise(item, num, unitCellWidth):
     xShift = num * unitCellWidth
     item.prepareGeometryChange()
     item.column += num
-    item.origin = QPointF(item.origin.x() + xShift, item.origin.y())
+    item.translate(xShift, 0.0)
 
 
 
