@@ -1081,4 +1081,4 @@ def generate_legend_id(symbol):
     name = symbol["name"]
     category = symbol["category"]
     
-    return name + ":" + category
+    return name + ":" + category 
