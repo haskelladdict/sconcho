@@ -171,9 +171,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not readFilePath:
             return
 
-        patternGridItems = io.read_project(readFilePath)
+        (patternGridItems, legendItems) = io.read_project(readFilePath)
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
-        self.__canvas.open_project(knittingSymbols, patternGridItems)
+        self.__canvas.open_project(knittingSymbols, patternGridItems, legendItems)
         readFileName = QFileInfo(readFilePath).fileName()
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
         self.set_project_save_file(readFilePath)

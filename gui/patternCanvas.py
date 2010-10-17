@@ -24,7 +24,7 @@ from PyQt4.QtCore import Qt, QRectF, QSize, QPointF, QSizeF, \
                          QPoint
 from PyQt4.QtGui import QGraphicsScene, QGraphicsObject, QPen, QColor, \
                         QBrush, QGraphicsTextItem, QFontMetrics, QMenu, \
-                        QAction, QGraphicsItem
+                        QAction, QGraphicsItem, QMessageBox
 from PyQt4.QtSvg import QGraphicsSvgItem, QSvgWidget, QSvgRenderer
 from sconchoHelpers.settings import get_grid_dimensions, get_text_font
 import sconchoHelpers.canvas as canvasHelpers
@@ -140,17 +140,14 @@ class PatternCanvas(QGraphicsScene):
         and updates the legend itself if needed.
         """
 
-        name = item.symbol["name"]
-        if name in self.legend:
-            entry = self.legend[name]
+        legendID = generate_legend_id(item.symbol)
+        if legendID in self.legend:
+            entry = self.legend[legendID]
             new_entry = change_count(entry, 1)
-            self.legend[name] = new_entry
+            self.legend[legendID] = new_entry
         else:
             (item, textItem) = self.add_legend_item(item.symbol)
-            self.legend[name] = [1, item, textItem]
-
-        #print('doin some housekeeping.')
-        #print(self.legend)
+            self.legend[legendID] = [1, item, textItem]
 
 
 
@@ -195,17 +192,18 @@ class PatternCanvas(QGraphicsScene):
         and updates the legend itself if needed.
         """
 
-        name = item.symbol["name"]
-        assert(name in self.legend)
 
-        entry = self.legend[name]
+        legendID = generate_legend_id(item.symbol)
+        assert(legendID in self.legend)
+
+        entry = self.legend[legendID]
         if legendItem_count(entry) == 1:
             self.removeItem(legendItem_symbol(entry))
             self.removeItem(legendItem_text(entry))
-            del self.legend[name]
+            del self.legend[legendID]
         else:
             new_entry = change_count(entry, -1)
-            self.legend[name] = new_entry
+            self.legend[legendID] = new_entry
         
 
 
@@ -616,15 +614,20 @@ class PatternCanvas(QGraphicsScene):
 
     def __clear_canvas(self):
         """
-        Clear the complete canvas. Currently we just wrap around
-        QGraphicsScene's clear().
+        Clear the complete canvas. 
         """
 
+        # clear GraphicsScene
         self.clear()
+
+        # clear all caches
+        self.legend.clear()
+        
         
 
 
-    def open_project(self, knittingSymbols, patternGridItems):
+    def open_project(self, knittingSymbols, patternGridItemInfo,
+                     legendItemInfo):
         """
         Clear curent canvas and establishes a new project
         based on the passed canvas items.
@@ -632,7 +635,7 @@ class PatternCanvas(QGraphicsScene):
 
         self.__clear_canvas()
 
-        for newItem in patternGridItems:
+        for newItem in patternGridItemInfo:
             colID    = newItem["column"]
             rowID    = newItem["row"]
             width    = newItem["width"]
@@ -648,10 +651,41 @@ class PatternCanvas(QGraphicsScene):
                                                      symbol)
             self.addItem(item)
 
+        arrange_label_items(legendItemInfo, self.legend )
+
         # need to clear our label cache, otherwise set_up_labels()
         # will try to remove non-existing items
         self.__textLabels = []
         self.set_up_labels()
+
+
+
+
+def arrange_label_items(legendItemInfo, legendItems):
+    """
+    Position all label items (pairs of PatternGridItem
+    and PatternLegendItem) as requested in dict legendItems
+    which comes from a parsed spf file.
+    """
+
+    
+    for item in legendItemInfo:
+        legendID = generate_legend_id(item)
+
+        if legendID in legendItems:
+            
+            legendItem = legendItems[legendID]
+            legendPatternItem = legendItem_symbol(legendItem)
+            legendTextItem = legendItem_text(legendItem)
+            legendPatternItem.setPos(int(item["itemXPos"]),
+                                     int(item["itemYPos"]))
+            legendTextItem.setPos(int(item["labelXPos"]),
+                                  int(item["labelYPos"]))
+        else:
+            QMessageBox.critical(None, "Error", "A legend item found in the " + \
+                                 "opened file doesn't match the pattern.",
+                                 QMessageBox.Ok)
+        
 
 
 
@@ -1038,20 +1072,13 @@ def legendItem_text(item):
 
 
 
-def generate_symbol_item_id(symbolItem):
+def generate_legend_id(symbol):
     """
-    Based on the symbol properties of a PatternLegendItem return a
-    unique id.
-    """
-
-    return symbolItem.symbol["category"] + ":" + \
-           symbolItem.symbol["name"] + ":" + \
-           str(QColor(symbolItem.color).rgb())
-
-def deconstruct_symbol_item_by_id(itemID):
-    """
-    Based on the item ID return the symbol name, category,
-    and color.
+    Based on a symbol/legend info, generate an id tag. Currently
+    this is just based on name and category.
     """
 
-    return itemID.split(":")
+    name = symbol["name"]
+    category = symbol["category"]
+    
+    return name + ":" + category

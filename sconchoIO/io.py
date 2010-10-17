@@ -26,9 +26,7 @@ from PyQt4.QtGui import QColor, QMessageBox, QImage, QPainter, \
                         QPrinter, QPrintDialog, QDialog
 from PyQt4.QtXml import QDomDocument, QDomNode, QDomElement
 from gui.patternCanvas import PatternGridItem, PatternLegendItem, \
-                              legendItem_symbol, legendItem_text, \
-                              generate_symbol_item_id, \
-                              deconstruct_symbol_item_by_id
+                              legendItem_symbol, legendItem_text
 
 
 
@@ -143,7 +141,7 @@ def write_patternLegendItems(writeDoc, root, canvas):
 
         symbolItem = legendItem_symbol(item)
         textItem   = legendItem_text(item)
-        itemID     = generate_symbol_item_id(symbolItem)
+        #itemID     = generate_symbol_item_id(symbolItem)
 
         mainTag = writeDoc.createElement("canvasItem")
         root.appendChild(mainTag)
@@ -151,10 +149,19 @@ def write_patternLegendItems(writeDoc, root, canvas):
         itemTag = writeDoc.createElement("legendEntry")
         mainTag.appendChild(itemTag)
 
-        idTag = writeDoc.createElement("IDTag")
+        idTag = writeDoc.createElement("patternName")
         itemTag.appendChild(idTag)
-        idTag.appendChild(writeDoc.createTextNode(itemID))
+        idTag.appendChild(writeDoc.createTextNode(symbolItem.symbol["name"]))
+
+        idTag = writeDoc.createElement("patternCategory")
+        itemTag.appendChild(idTag)
+        idTag.appendChild(writeDoc.createTextNode(symbolItem.symbol["category"]))
                         
+        colorTag = writeDoc.createElement("backgroundColor")
+        itemTag.appendChild(colorTag)
+        helper.setNum(QColor(symbolItem.color).rgb())
+        colorTag.appendChild(writeDoc.createTextNode(helper))
+
         itemXPosTag = writeDoc.createElement("itemXPos")
         itemTag.appendChild(itemXPosTag)
         helper.setNum(symbolItem.pos().x())
@@ -179,6 +186,7 @@ def write_patternLegendItems(writeDoc, root, canvas):
         itemTag.appendChild(labelDescriptionTag)
         text = textItem.toPlainText()
         labelDescriptionTag.appendChild(writeDoc.createTextNode(text))
+
 
             
 def read_project(readFileName):
@@ -215,14 +223,18 @@ def read_project(readFileName):
             item = node.firstChild()
 
             if item.toElement().tagName() == "patternGridItem":
-                patternGridItems.append(parse_patternGridItem(item))
+                newEntry = parse_patternGridItem(item)
+                if newEntry:
+                    patternGridItems.append(newEntry)
 
             if item.toElement().tagName() == "legendEntry":
-                legendItems.append(parse_legendItem(item))
+                newEntry = parse_legendItem(item)
+                if newEntry:
+                    legendItems.append(newEntry)
 
         node = node.nextSibling()
 
-    return patternGridItems
+    return (patternGridItems, legendItems)
 
 
 
@@ -257,14 +269,22 @@ def parse_patternGridItem(item):
 
         node = node.nextSibling()
 
-    return { "column"   : colIndex,
-             "row"      : rowIndex,
-             "width"    : width,
-             "height"   : height,
-             "color"    : color,
-             "category" : category,
-             "name"     : name }
-             
+    try:
+        newItem = { "column"   : colIndex,
+                    "row"      : rowIndex,
+                    "width"    : width,
+                    "height"   : height,
+                    "color"    : color,
+                    "category" : category,
+                    "name"     : name }
+    except:
+        QMessageBox.critical(None, "Error", "Failed to parse pattern. " + \
+                            "Please check the file for an incomplete patternentry.",
+                            QMessageBox.Ok)
+        return None
+
+    return newItem
+
 
 
 def parse_legendItem(item):
@@ -275,9 +295,12 @@ def parse_legendItem(item):
     node = item.firstChild()
     while not node.isNull():
 
-        if node.toElement().tagName() == "IDTag":
-            IDTag = node.firstChild().toText().data()
+        if node.toElement().tagName() == "patternCategory":
+            category = node.firstChild().toText().data()
 
+        if node.toElement().tagName() == "patternName":
+            name = node.firstChild().toText().data()
+            
         if node.toElement().tagName() == "itemXPos":
             (itemXPos, status) = node.firstChild().toText().data().toInt()
 
@@ -290,14 +313,29 @@ def parse_legendItem(item):
         if node.toElement().tagName() == "labelYPos":
             (labelYPos, status) = node.firstChild().toText().data().toInt()
 
+        if node.toElement().tagName() == "backgroundColor":
+            (color, status) = node.firstChild().toText().data().toUInt()
+            
         if node.toElement().tagName() == "description":
             description = node.firstChild().toText().data()
 
         node = node.nextSibling()
 
-    stuff = deconstruct_symbol_item_by_id(IDTag)
-    for foo in stuff:
-        print(foo)
+    try:
+        newItem = { "category"  : category,
+                    "name"      : name,
+                    "itemXPos"  : itemXPos,
+                    "itemYPos"  : itemYPos,
+                    "labelXPos" : labelXPos,
+                    "labelYPos" : labelYPos, 
+                    "color"     : color }
+    except:
+        QMessageBox.critical(None, "Error", "Failed to parse legend. " + \
+                            "Please check the file for an incomplete legend entry.",
+                            QMessageBox.Ok)
+        return None
+
+    return newItem
 
 
 
