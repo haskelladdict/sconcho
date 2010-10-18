@@ -52,6 +52,8 @@ class PatternCanvas(QGraphicsScene):
 
         self.__activeSymbol  = None
         self.__defaultSymbol = defaultSymbol
+        self.__activeColor   = None
+        self.__defaultColor  = Qt.white
         self.__selectedCells = set()
         self.__copySelection = set()
         self.__rightClickPos = QPoint() # (row, col) position of last right click
@@ -134,24 +136,36 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def set_active_color(self, color):
+        """
+        This function received the currently active
+        background color and stores it.
+        """
+
+        print("coloring")
+        self.__activeColor = color
+        self.paint_cells()
+            
+
+
     def add_to_legend(self, item):
         """
         Adds a newly created PatternGridItem to the legend database
         and updates the legend itself if needed.
         """
 
-        legendID = generate_legend_id(item.symbol)
+        legendID = generate_legend_id(item.symbol, item.color)
         if legendID in self.legend:
             entry = self.legend[legendID]
             new_entry = change_count(entry, 1)
             self.legend[legendID] = new_entry
         else:
-            (item, textItem) = self.add_legend_item(item.symbol)
+            (item, textItem) = self.add_legend_item(item.symbol, item.color)
             self.legend[legendID] = [1, item, textItem]
 
 
 
-    def add_legend_item(self, symbol):
+    def add_legend_item(self, symbol, color):
         """
         This adds a new legend entry including an PatternLegendItem
         and a textual description. This function also attemps to be
@@ -167,14 +181,14 @@ class PatternCanvas(QGraphicsScene):
         width  = int(symbol["width"])
         height = 1
         itemLocation = QPointF(0, yMax + self.__unitHeight + 10)
-        item = PatternLegendItem(self.__unitCellDim, width, height, symbol)
+        item = PatternLegendItem(self.__unitCellDim, width, height, symbol, color)
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setPos(itemLocation)
         self.addItem(item)
 
         # add the description part of the legend
         textLocation = QPointF((width+1) * self.__unitWidth,
-                               yMax + self.__unitHeight + 10)
+                                yMax + self.__unitHeight + 10)
         textItem = QGraphicsTextItem()
         textItem.setPos(textLocation)
         textItem.setFlag(QGraphicsItem.ItemIsMovable)
@@ -184,8 +198,8 @@ class PatternCanvas(QGraphicsScene):
 
         return (item, textItem)
 
-            
-            
+
+
     def remove_from_legend(self, item):
         """
         Removes a PatternGridItem from the legend database
@@ -193,7 +207,7 @@ class PatternCanvas(QGraphicsScene):
         """
 
 
-        legendID = generate_legend_id(item.symbol)
+        legendID = generate_legend_id(item.symbol, item.color)
         assert(legendID in self.legend)
 
         entry = self.legend[legendID]
@@ -204,7 +218,7 @@ class PatternCanvas(QGraphicsScene):
         else:
             new_entry = change_count(entry, -1)
             self.legend[legendID] = new_entry
-        
+
 
 
     def grid_cell_activated(self, item):
@@ -231,19 +245,20 @@ class PatternCanvas(QGraphicsScene):
 
 
     def create_pattern_grid_item(self, origin, unitDim, col, row,
-                                 width, height, knittingSymbol):
+                                    width, height, knittingSymbol,
+                                    color):
         """
         Creates a new PatternGridItem of the specified dimension
         at the given location.
         """
 
         item = PatternGridItem(unitDim, col, row, width, height,
-                               knittingSymbol)
+                                knittingSymbol, color)
         item.setPos(origin)
         self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
-                     self.grid_cell_activated)
+                        self.grid_cell_activated)
         self.connect(item, SIGNAL("cell_unselected(PyQt_PyObject)"),
-                     self.grid_cell_inactivated)
+                        self.grid_cell_inactivated)
         return item
 
 
@@ -253,7 +268,7 @@ class PatternCanvas(QGraphicsScene):
         This overload of addItem makes sure that we perform QGraphicsItem
         specific task such as updating the legend for svg items.
         """
-        
+
         if isinstance(item, PatternGridItem):
             self.add_to_legend(item)
 
@@ -266,24 +281,24 @@ class PatternCanvas(QGraphicsScene):
         This overload of removeItem makes sure that we perform QGraphicsItem
         specific task such as updating the legend for svg items.
         """
-        
+
         if isinstance(item, PatternGridItem):
             self.remove_from_legend(item)
 
         super(PatternCanvas,self).removeItem(item)
 
-        
+
 
     def paint_cells(self):
         """
         Attempts to paint the cells with the selected symbol.
         Has to make sure the geometry is appropriate.
         """
-        
+
         if self.__activeSymbol:
             width = int(self.__activeSymbol["width"])
             chunks = chunkify_cell_arrangement(width, self.__selectedCells)
-            
+
             if chunks:
                 for chunk in chunks:
                     totalWidth = 0
@@ -303,10 +318,10 @@ class PatternCanvas(QGraphicsScene):
                     for i in range(0,numNewItems):
                         item = self.create_pattern_grid_item(origin,
                                     self.__unitCellDim, column, row, width, 1,
-                                    self.__activeSymbol)
+                                    self.__activeSymbol, self.__activeColor)
                         self.addItem(item)
                         origin = QPointF(origin.x() + (width * self.__unitWidth),
-                                         origin.y())
+                                            origin.y())
                         column = column + width
 
                 self.__selectedCells.clear()
@@ -319,8 +334,8 @@ class PatternCanvas(QGraphicsScene):
         """
 
         scenePos = \
-                 canvasHelpers.convert_row_col_to_pos(pos, self.__unitWidth,
-                                                      self.__unitHeight)
+                    canvasHelpers.convert_row_col_to_pos(pos, self.__unitWidth,
+                                                        self.__unitHeight)
 
         return self.itemAt(scenePos)
 
@@ -335,14 +350,14 @@ class PatternCanvas(QGraphicsScene):
         if (event.button() == Qt.RightButton):
             self.__rightClickPos = \
                 canvasHelpers.convert_pos_to_row_col(event.scenePos(),
-                                                     self.__unitWidth,
-                                                     self.__unitHeight)
-            
+                                                        self.__unitWidth,
+                                                        self.__unitHeight)
+
             if canvasHelpers.is_row_col_in_grid(self.__rightClickPos,
                                                 self.__numColumns,
                                                 self.__numRows):
                 self.handle_right_click_on_grid(event)
-                
+
         else:
             return QGraphicsScene.mousePressEvent(self, event)
 
@@ -353,7 +368,7 @@ class PatternCanvas(QGraphicsScene):
         Handles a right click on the pattern grid by
         displaying a QMenu with options.
         """
-        
+
         gridMenu = QMenu()
         # TODO: copy and paste needs some thinking about
         # e.g. what should we do when a user pastes a selection
@@ -370,8 +385,8 @@ class PatternCanvas(QGraphicsScene):
         colorAction = gridMenu.addAction("Grab color");
 
         self.connect(rowAction, SIGNAL("triggered()"),
-                     self.insert_delete_rows_columns)
-        
+                        self.insert_delete_rows_columns)
+
         gridMenu.exec_(event.screenPos())
 
 
@@ -384,7 +399,7 @@ class PatternCanvas(QGraphicsScene):
         self.__copySelection.clear()
         self.__copySelection = self.__selectedCells
 
-        
+
 
     def paste_selection(self):
         """
@@ -400,7 +415,7 @@ class PatternCanvas(QGraphicsScene):
                                                 self.__numColumns,
                                                 self.__numRows):
             return
-        
+
 
 
 
@@ -411,19 +426,19 @@ class PatternCanvas(QGraphicsScene):
         """
 
         addDeleteDialog = InsertDeleteRowColumnWidget(self.__numRows,
-                                                      self.__numColumns)
+                                                        self.__numColumns)
 
         self.connect(addDeleteDialog, SIGNAL("insert_row(int, QString, int)"), 
-                     self.insert_row)
+                        self.insert_row)
         self.connect(addDeleteDialog, SIGNAL("delete_row(int)"),
-                     self.delete_row)
+                        self.delete_row)
         self.connect(addDeleteDialog, SIGNAL("insert_column(int, QString, int)"),
-                     self.insert_column)
+                        self.insert_column)
         self.connect(addDeleteDialog, SIGNAL("delete_column(int)"),
-                     self.delete_column)
+                        self.delete_column)
         self.connect(self, SIGNAL("row_col_count_changed(QString, int)"),
-                     addDeleteDialog.row_col_count_changed)
-        
+                        addDeleteDialog.row_col_count_changed)
+
         addDeleteDialog.exec_()
 
 
@@ -455,7 +470,7 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
         self.row_col_count_changed.emit("numRows", self.__numRows)
 
-        
+
 
     def delete_row(self, canvasRow):
         """
@@ -477,7 +492,7 @@ class PatternCanvas(QGraphicsScene):
         self.row_col_count_changed.emit("numRows", self.__numRows)
 
 
-    
+
     def insert_column(self, num, mode, columnPivot):
         """
         Deals with requests to insert a column.
@@ -518,7 +533,7 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
         self.row_col_count_changed.emit("numColumns", self.__numColumns)          
 
-        
+
 
     def delete_column(self, deadColumn):
         """
@@ -533,7 +548,7 @@ class PatternCanvas(QGraphicsScene):
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem):
                 if (graphicsItem.column == column) and \
-                   (graphicsItem.width == 1):
+                    (graphicsItem.width == 1):
                     rowCounter += 1
 
         if rowCounter != self.__numRows:
@@ -563,7 +578,7 @@ class PatternCanvas(QGraphicsScene):
 
         return self.__numRows - row
 
-    
+
 
     def convert_canvas_column_to_internal(self, column):
         """
@@ -586,10 +601,11 @@ class PatternCanvas(QGraphicsScene):
 
         for column in range(0, self.__numColumns):
             location = QPointF(column * self.__unitWidth,
-                               rowID * self.__unitHeight)
+                                rowID * self.__unitHeight)
             item = self.create_pattern_grid_item(location, self.__unitCellDim,
-                                                 column, rowID, 1, 1,
-                                                 self.__defaultSymbol)
+                                                    column, rowID, 1, 1,
+                                                    self.__defaultSymbol,
+                                                    self.__defaultColor)
             self.addItem(item)
 
 
@@ -604,10 +620,11 @@ class PatternCanvas(QGraphicsScene):
 
         for row in range(0, self.__numRows):
             location = QPointF(columnID * self.__unitWidth,
-                               row * self.__unitHeight)
+                                row * self.__unitHeight)
             item = self.create_pattern_grid_item(location, self.__unitCellDim,
-                                                 columnID, row, 1, 1,
-                                                 self.__defaultSymbol)
+                                                    columnID, row, 1, 1,
+                                                    self.__defaultSymbol,
+                                                    self.__defaultColor)
             self.addItem(item)
 
 
@@ -622,12 +639,12 @@ class PatternCanvas(QGraphicsScene):
 
         # clear all caches
         self.legend.clear()
-        
-        
+
+
 
 
     def open_project(self, knittingSymbols, patternGridItemInfo,
-                     legendItemInfo):
+                        legendItemInfo):
         """
         Clear curent canvas and establishes a new project
         based on the passed canvas items.
@@ -641,14 +658,15 @@ class PatternCanvas(QGraphicsScene):
             width    = newItem["width"]
             height   = newItem["height"]
             name     = newItem["name"]
+            color    = QColor(newItem["color"])
             category = newItem["category"]
             symbolID = category + "::" + name
             location = QPointF(colID * self.__unitWidth,
-                               rowID * self.__unitHeight)
+                                rowID * self.__unitHeight)
             symbol   = knittingSymbols[symbolID]
             item     = self.create_pattern_grid_item(location, self.__unitCellDim,
-                                                     colID, rowID, width, height,
-                                                     symbol)
+                                                        colID, rowID, width, height,
+                                                        symbol, color)
             self.addItem(item)
 
         arrange_label_items(legendItemInfo, self.legend )
@@ -668,10 +686,10 @@ def arrange_label_items(legendItemInfo, legendItems):
     which comes from a parsed spf file.
     """
 
+    print(legendItemInfo)
     
     for item in legendItemInfo:
-        legendID = generate_legend_id(item)
-
+        legendID = generate_legend_id(item, QColor(item["color"]))
         if legendID in legendItems:
             
             legendItem = legendItems[legendID]
@@ -706,7 +724,8 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
     def __init__(self, unitDim, col, row, width, height,
-                 defaultSymbol, parent = None, scene = None):
+                 defaultSymbol, defaultColor = Qt.white,
+                 parent = None, scene = None):
 
         super(QGraphicsSvgItem, self).__init__()
 
@@ -718,18 +737,18 @@ class PatternGridItem(QGraphicsSvgItem):
         self.height  = height
         self.size    = QSizeF(self.unitDim.width() * width,
                               self.unitDim.height() * height)
-
-        self.symbol = None
-        self.__set_symbol(defaultSymbol)
         
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
         self.__pen.setColor(Qt.black)
 
         self.__selected  = False
-        self.__backColor = Qt.white
+        self.color       = defaultColor
+        self.__backColor = self.color
         self.__highlightedColor = Qt.gray
-        self.color     = self.__backColor
+
+        self.symbol = None
+        self.__set_symbol(defaultSymbol)
 
 
 
@@ -753,7 +772,7 @@ class PatternGridItem(QGraphicsSvgItem):
         """
 
         self.__selected = False
-        self.color = self.__backColor
+        self.__backColor = self.color
         self.update()
 
 
@@ -764,7 +783,7 @@ class PatternGridItem(QGraphicsSvgItem):
         """
 
         self.__selected = True
-        self.color = self.__highlightedColor
+        self.__backColor = self.__highlightedColor
         self.update()
 
 
@@ -806,7 +825,7 @@ class PatternGridItem(QGraphicsSvgItem):
         """
 
         painter.setPen(self.__pen)
-        brush = QBrush(self.color)
+        brush = QBrush(self.__backColor)
         painter.setBrush(brush)
         painter.drawRect(QRectF(self.origin, self.size))
         self.renderer().render(painter, QRectF(self.origin, self.size))
@@ -826,7 +845,8 @@ class PatternLegendItem(QGraphicsSvgItem):
 
 
     def __init__(self, unitDim, width, height,
-                 defaultSymbol, parent = None, scene = None):
+                 defaultSymbol, defaultColor = Qt.white,
+                 parent = None, scene = None):
 
         super(QGraphicsSvgItem, self).__init__()
 
@@ -837,6 +857,8 @@ class PatternLegendItem(QGraphicsSvgItem):
         self.size    = QSizeF(self.unitDim.width() * width,
                               self.unitDim.height() * height)
 
+        self.color  = defaultColor
+
         self.symbol = None
         self.__set_symbol(defaultSymbol)
         
@@ -844,7 +866,6 @@ class PatternLegendItem(QGraphicsSvgItem):
         self.__pen.setWidthF(1.0)
         self.__pen.setColor(Qt.black)
 
-        self.color  = Qt.white
 
 
 
@@ -1072,7 +1093,7 @@ def legendItem_text(item):
 
 
 
-def generate_legend_id(symbol):
+def generate_legend_id(symbol, color):
     """
     Based on a symbol/legend info, generate an id tag. Currently
     this is just based on name and category.
@@ -1080,5 +1101,6 @@ def generate_legend_id(symbol):
 
     name = symbol["name"]
     category = symbol["category"]
+    colorID  = QColor(color).name()
     
-    return name + ":" + category 
+    return name + ":" + category + ":" + str(colorID)

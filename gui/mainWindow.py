@@ -19,7 +19,8 @@
 #
 #######################################################################
 
-from PyQt4.QtCore import SIGNAL, SLOT, QSettings, QDir, QFileInfo, QString
+from PyQt4.QtCore import SIGNAL, SLOT, QSettings, QDir, QFileInfo, \
+                         QString, Qt
 from PyQt4.QtGui import qApp, QMainWindow, QMessageBox, QFileDialog
 from ui_mainWindow import Ui_MainWindow
 import sconchoHelpers.text as text
@@ -27,6 +28,7 @@ import sconchoHelpers.settings as settings
 import sconchoIO.io as io
 import sconchoIO.symbolParser as parser
 import symbolWidget
+import colorWidget
 from patternCanvas import PatternCanvas
 
 
@@ -50,6 +52,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__canvas = PatternCanvas(self.__settings, 
                                       knittingSymbols[QString("basic::knit")])
         self.initialize_symbol_widget(knittingSymbols)
+        self.initialize_color_widget()
 
         # we set a manual scene rectangle for our view. we
         # should be a little smarter about this in the future
@@ -81,6 +84,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPrint, SIGNAL("triggered()"),
                      self.print_dialog)
 
+
    
     def initialize_symbol_widget(self, knittingSymbols):
         """
@@ -88,13 +92,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         and connecting it to the symbol changed slot.
         """
 
-        symbolTracker = symbolWidget.add_symbols_to_widget(knittingSymbols, 
-                            self.symbolWidgetBase)
-
-        # we connect the symbol tracker directly to the canvas
+        symbolTracker = symbolWidget.Synchronizer()
         self.connect(symbolTracker, 
-                     SIGNAL("selected_symbol_changed(PyQt_PyObject)"),
+                     SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
                      self.__canvas.set_active_symbol)
+        
+        symbolWidget.add_symbols_to_widget(knittingSymbols, 
+                                           self.symbolWidgetBase, symbolTracker)
+
+
+
+
+    def initialize_color_widget(self):
+        """
+        Proxy for adding all the knitting symbols to the symbolWidget
+        and connecting it to the symbol changed slot.
+        """
+
+        colorList = [Qt.white, Qt.red, Qt.blue, Qt.black, Qt.cyan, Qt.yellow]
+
+        colorTracker = symbolWidget.Synchronizer()
+        self.connect(colorTracker, 
+                     SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
+                     self.__canvas.set_active_color)
+        
+        colorWidget.add_color_buttons_to_widget(colorList, 
+                                                self.colorWidget, colorTracker)
+
 
 
 
@@ -145,7 +169,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         extension = QFileInfo(saveFilePath).completeSuffix()
         if extension != "spf":
             if not extension:
-                saveFilePath = saveFileName + ".spf"
+                saveFilePath = saveFilePath + ".spf"
             else:
                 QMessageBox.warning(self, "Warning",
                                     "Unknown extension " + extension,

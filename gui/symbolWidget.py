@@ -27,14 +27,10 @@ from PyQt4.QtSvg import QSvgWidget
 
 
 
-def add_symbols_to_widget(symbols, widget):
+def add_symbols_to_widget(symbols, widget, synchronizer):
     """
     Adds all passed knitting symbols to the tab widget.
     """
-
-    # the synchronizer object makes sure one object is selected
-    # at a time and keeps track of which one
-    synchronizer = Synchronizer()
 
     symbolsByCategory = sort_symbols_by_category(symbols)
     for (symbolCategory, symbols) in symbolsByCategory:
@@ -128,7 +124,7 @@ class SymbolSelectorItem(QFrame):
         self.setLayout(layout)
 
 
-    def get_symbol(self):
+    def get_content(self):
         """
         Returns the symbol controled by this widget.
         """
@@ -197,7 +193,7 @@ class SymbolSelectorItem(QFrame):
 class Synchronizer(QObject):
 
     # signal for notifying if active widget changes
-    selected_symbol_changed = pyqtSignal("PyQt_PyObject")
+    synchronized_object_changed = pyqtSignal("PyQt_PyObject")
 
 
     def __init__(self, parent = None):
@@ -217,15 +213,14 @@ class Synchronizer(QObject):
         if self.__activeWidget == target:
             self.__activeWidget.inactivate_me()
             self.__activeWidget = None
-            self.selected_symbol_changed.emit(None)
+            self.synchronized_object_changed.emit(None)
         else:
             if self.__activeWidget:
                 self.__activeWidget.inactivate_me()
 
             self.__activeWidget = target
             self.__activeWidget.activate_me()
-    
-            self.selected_symbol_changed.emit(self.__activeWidget.get_symbol())
+            self.synchronized_object_changed.emit(self.__activeWidget.get_content())
 
 
 
@@ -235,4 +230,4 @@ class Synchronizer(QObject):
         to anybody who cares to know.
         """
 
-        return self.__activeWidget.get_symbol()
+        return self.__activeWidget.get_content()

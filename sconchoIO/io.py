@@ -116,8 +116,8 @@ def write_patternGridItems(writeDoc, root, canvas):
 
             colorTag = writeDoc.createElement("backgroundColor")
             itemTag.appendChild(colorTag)
-            helper.setNum(QColor(item.color).rgb())
-            colorTag.appendChild(writeDoc.createTextNode(helper))
+            colorString = QColor(item.color).name()
+            colorTag.appendChild(writeDoc.createTextNode(colorString))
 
             symbol = item.symbol
             catTag = writeDoc.createElement("patternCategory")
@@ -159,8 +159,8 @@ def write_patternLegendItems(writeDoc, root, canvas):
                         
         colorTag = writeDoc.createElement("backgroundColor")
         itemTag.appendChild(colorTag)
-        helper.setNum(QColor(symbolItem.color).rgb())
-        colorTag.appendChild(writeDoc.createTextNode(helper))
+        colorString = QColor(symbolItem.color).name()
+        colorTag.appendChild(writeDoc.createTextNode(colorString))
 
         itemXPosTag = writeDoc.createElement("itemXPos")
         itemTag.appendChild(itemXPosTag)
@@ -259,7 +259,7 @@ def parse_patternGridItem(item):
             (height, status) = node.firstChild().toText().data().toInt()
 
         if node.toElement().tagName() == "backgroundColor":
-            (color, status) = node.firstChild().toText().data().toUInt()
+            color = node.firstChild().toText().data()
 
         if node.toElement().tagName() == "patternCategory":
             category = node.firstChild().toText().data()
@@ -314,7 +314,7 @@ def parse_legendItem(item):
             (labelYPos, status) = node.firstChild().toText().data().toInt()
 
         if node.toElement().tagName() == "backgroundColor":
-            (color, status) = node.firstChild().toText().data().toUInt()
+            color = node.firstChild().toText().data()
             
         if node.toElement().tagName() == "description":
             description = node.firstChild().toText().data()
