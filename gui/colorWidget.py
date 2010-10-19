@@ -20,35 +20,62 @@
 #######################################################################
 
 
-from PyQt4.QtCore import QString, pyqtSignal, QObject, Qt
+from PyQt4.QtCore import QString, pyqtSignal, QObject, Qt, SIGNAL
 from PyQt4.QtGui import QFrame, QWidget, QColor, QPushButton, \
                         QHBoxLayout
 from symbolWidget import Synchronizer
 
 
 
-def add_color_buttons_to_widget(colors, mainWidget, synchronizer):
+def add_color_buttons_to_widget(colors, colorWidgetContainer, synchronizer):
     """
     Adds all passed color widget to the color widget.
     """
 
-    # layout for current tab
-    layout = mainWidget.layout()
+    myColorWidget = ColorWidget(synchronizer, colors)
 
-    colorButton = QPushButton("customize color")
-    layout.addWidget(colorButton)
-    layout.addStretch()
+    # add it to our color widget container
+    colorWidgetContainer.layout().addWidget(myColorWidget)
 
-    for color in colors:
-        newItem = ColorSelectorItem(color, synchronizer)
-        layout.addWidget(newItem)
-        if color == Qt.white:
-            synchronizer.select(newItem)
 
-    mainWidget.setLayout(layout)
 
-    return synchronizer
 
+#########################################################
+## 
+## class for managing the color selection widget
+##
+#########################################################
+class ColorWidget(QWidget):
+
+    def __init__(self, synchronizer, colors, parent = None):
+
+        super(QWidget, self).__init__(parent)
+
+        self.__synchronizer = synchronizer
+
+        layout = QHBoxLayout()
+        colorButton = QPushButton("customize color")
+        QObject.connect(colorButton, SIGNAL("pressed()"),
+                        self.customized_color_button_pressed)
+
+        layout.addWidget(colorButton)
+        layout.addStretch()
+
+        for color in colors:
+            newItem = ColorSelectorItem(color, synchronizer)
+            layout.addWidget(newItem)
+            if color == Qt.white:
+                synchronizer.select(newItem)
+
+        self.setLayout(layout)
+
+
+    def customized_color_button_pressed(self):
+        """ 
+        Deal with user requests to customize colors.
+        """
+
+        print("pressed it")
 
 
 
@@ -61,7 +88,8 @@ class ColorSelectorItem(QFrame):
 
     def __init__(self, color, synchronizer, parent = None):
 
-        QFrame.__init__(self, parent)
+        super(QFrame, self).__init__(parent)
+
         self.__synchronizer = synchronizer
         self.__color = color
 
@@ -99,8 +127,8 @@ class ColorSelectorItem(QFrame):
         self.__selectedStyleSheet = "border-width: 2px;" \
                                     "margin: 0px;" \
                                     "padding: 6px;" \
-                                    "border-style: dotted;" \
-                                    "border-color: grey;" \
+                                    "border-style: solid;" \
+                                    "border-color: black;" \
                                     "background-color: " + \
                                     buttonColor + ";" 
 

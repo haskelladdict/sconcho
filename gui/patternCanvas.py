@@ -142,7 +142,6 @@ class PatternCanvas(QGraphicsScene):
         background color and stores it.
         """
 
-        print("coloring")
         self.__activeColor = color
         self.paint_cells()
             
@@ -679,33 +678,6 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-def arrange_label_items(legendItemInfo, legendItems):
-    """
-    Position all label items (pairs of PatternGridItem
-    and PatternLegendItem) as requested in dict legendItems
-    which comes from a parsed spf file.
-    """
-
-    print(legendItemInfo)
-    
-    for item in legendItemInfo:
-        legendID = generate_legend_id(item, QColor(item["color"]))
-        if legendID in legendItems:
-            
-            legendItem = legendItems[legendID]
-            legendPatternItem = legendItem_symbol(legendItem)
-            legendTextItem = legendItem_text(legendItem)
-            legendPatternItem.setPos(int(item["itemXPos"]),
-                                     int(item["itemYPos"]))
-            legendTextItem.setPos(int(item["labelXPos"]),
-                                  int(item["labelYPos"]))
-        else:
-            QMessageBox.critical(None, "Error", "A legend item found in the " + \
-                                 "opened file doesn't match the pattern.",
-                                 QMessageBox.Ok)
-        
-
-
 
 
 #########################################################
@@ -1104,3 +1076,33 @@ def generate_legend_id(symbol, color):
     colorID  = QColor(color).name()
     
     return name + ":" + category + ":" + str(colorID)
+
+
+
+
+def arrange_label_items(legendItemInfo, legendItems):
+    """
+    Position all label items (pairs of PatternGridItem
+    and PatternLegendItem) as requested in dict legendItems
+    which comes from a parsed spf file.
+    """
+
+    print(legendItemInfo)
+    
+    for item in legendItemInfo:
+        legendID = generate_legend_id(item, QColor(item["color"]))
+        if legendID in legendItems:
+            
+            legendItem = legendItems[legendID]
+            legendPatternItem = legendItem_symbol(legendItem)
+            legendTextItem = legendItem_text(legendItem)
+            legendPatternItem.setPos(int(item["itemXPos"]),
+                                     int(item["itemYPos"]))
+            legendTextItem.setPos(int(item["labelXPos"]),
+                                  int(item["labelYPos"]))
+        else:
+            QMessageBox.critical(None, "Error", "A legend item found in the " + \
+                                 "opened file doesn't match the pattern.",
+                                 QMessageBox.Ok)
+        
+

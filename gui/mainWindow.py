@@ -39,7 +39,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Initialize the main window.
         """
 
-        QMainWindow.__init__(self, parent)
+        super(QMainWindow, self).__init__(parent)
         self.setupUi(self)
 
         self.__settings = QSettings("sconcho", "settings")
@@ -109,7 +109,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         and connecting it to the symbol changed slot.
         """
 
-        colorList = [Qt.white, Qt.red, Qt.blue, Qt.black, Qt.cyan, Qt.yellow]
+        colorList = [Qt.white, Qt.red, Qt.blue, Qt.black, Qt.darkGray, \
+                     Qt.cyan, Qt.yellow, Qt.green, Qt.magenta]
 
         colorTracker = symbolWidget.Synchronizer()
         self.connect(colorTracker, 
