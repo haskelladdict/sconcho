@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1133</width>
-    <height>714</height>
+    <width>1137</width>
+    <height>777</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,7 +48,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>60</height>
+          <height>80</height>
          </size>
         </property>
         <property name="widgetResizable">
@@ -59,8 +59,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>753</width>
-           <height>56</height>
+           <width>757</width>
+           <height>76</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout"/>
@@ -76,7 +76,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1133</width>
+     <width>1137</width>
      <height>28</height>
     </rect>
    </property>

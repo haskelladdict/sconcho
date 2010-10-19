@@ -187,10 +187,10 @@ class SymbolSelectorItem(QFrame):
 
 #########################################################
 ## 
-## class for synchronizing all SymbolSelectorItems
+## class for synchronizing all symbol selector widgets
 ##
 #########################################################
-class Synchronizer(QObject):
+class SymbolSynchronizer(QObject):
 
     # signal for notifying if active widget changes
     synchronized_object_changed = pyqtSignal("PyQt_PyObject")
@@ -206,7 +206,7 @@ class Synchronizer(QObject):
     def select(self, target):
         """
         This method "remembers" the newly activated
-        knitting symbol and makes sure to deactivate
+        widget and makes sure to deactivate
         the previous one.
         """
 
@@ -224,10 +224,10 @@ class Synchronizer(QObject):
 
 
 
-    def get_active_symbol(self):
+    def get_active_widget(self):
         """
-        Simply returns the active knitting symbol
+        Simply returns the active widget
         to anybody who cares to know.
         """
 
-        return self.__activeWidget.get_content()
+        return self.__activeWidget

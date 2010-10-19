@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sun Oct 17 15:38:41 2010
+# Created: Mon Oct 18 20:57:51 2010
 #      by: PyQt4 UI code generator 4.7.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(1133, 714)
+        MainWindow.resize(1137, 777)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/sconcho_icon.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -42,11 +42,11 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(1)
         sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
         self.scrollArea.setSizePolicy(sizePolicy)
-        self.scrollArea.setMinimumSize(QtCore.QSize(0, 60))
+        self.scrollArea.setMinimumSize(QtCore.QSize(0, 80))
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.colorWidget = QtGui.QWidget(self.scrollArea)
-        self.colorWidget.setGeometry(QtCore.QRect(0, 0, 753, 56))
+        self.colorWidget.setGeometry(QtCore.QRect(0, 0, 757, 76))
         self.colorWidget.setObjectName(_fromUtf8("colorWidget"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.colorWidget)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
@@ -55,7 +55,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addLayout(self.verticalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1133, 28))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1137, 28))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))

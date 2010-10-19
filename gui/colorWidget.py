@@ -22,20 +22,8 @@
 
 from PyQt4.QtCore import QString, pyqtSignal, QObject, Qt, SIGNAL
 from PyQt4.QtGui import QFrame, QWidget, QColor, QPushButton, \
-                        QHBoxLayout
-from symbolWidget import Synchronizer
-
-
-
-def add_color_buttons_to_widget(colors, colorWidgetContainer, synchronizer):
-    """
-    Adds all passed color widget to the color widget.
-    """
-
-    myColorWidget = ColorWidget(synchronizer, colors)
-
-    # add it to our color widget container
-    colorWidgetContainer.layout().addWidget(myColorWidget)
+                        QHBoxLayout, QColorDialog
+#from symbolWidget import Synchronizer
 
 
 
@@ -53,6 +41,7 @@ class ColorWidget(QWidget):
 
         self.__synchronizer = synchronizer
 
+        # set up layout
         layout = QHBoxLayout()
         colorButton = QPushButton("customize color")
         QObject.connect(colorButton, SIGNAL("pressed()"),
@@ -70,12 +59,23 @@ class ColorWidget(QWidget):
         self.setLayout(layout)
 
 
+
     def customized_color_button_pressed(self):
         """ 
         Deal with user requests to customize colors.
         """
 
-        print("pressed it")
+        color = QColorDialog.getColor(Qt.white, None,
+                                      "Select custom color")
+
+        activeColorWidget = self.__synchronizer.get_active_widget()
+        activeColorWidget.set_content(color)
+        self.__synchronizer.select(activeColorWidget)
+
+        print(color)
+
+
+
 
 
 
@@ -91,7 +91,7 @@ class ColorSelectorItem(QFrame):
         super(QFrame, self).__init__(parent)
 
         self.__synchronizer = synchronizer
-        self.__color = color
+        self.color = color
 
         # define and set stylesheets
         self.define_stylesheets() 
@@ -101,19 +101,24 @@ class ColorSelectorItem(QFrame):
         self.setMaximumHeight(40)
         self.setMinimumWidth(40)
         self.setMaximumWidth(40)
-        
-        # finalize the layout
-        layout    = QHBoxLayout()
-        layout.setContentsMargins( 0, 0, 0, 0 )
-        self.setLayout(layout)
 
+        
 
     def get_content(self):
         """
         Returns the color content controled by this widget.
         """
 
-        return self.__color
+        return self.color
+
+
+    def set_content(self, color):
+        """
+        Sets the current color of the selector.
+        """
+
+        self.color = color
+        self.define_stylesheets()
 
 
 
@@ -123,7 +128,7 @@ class ColorSelectorItem(QFrame):
         of this widget.
         """
 
-        buttonColor = QColor(self.__color).name()
+        buttonColor = QColor(self.color).name()
         self.__selectedStyleSheet = "border-width: 2px;" \
                                     "margin: 0px;" \
                                     "padding: 6px;" \
@@ -166,3 +171,55 @@ class ColorSelectorItem(QFrame):
 
         self.setStyleSheet(self.__unselectedStyleSheet)
 
+
+
+
+#########################################################
+## 
+## class for synchronizing color selector widgets
+##
+## NOTE: In contrast to the symbol selector synchronizer,
+## this one does not allow to deselect a color button,
+## i.e., some color has to be selected at all times
+##
+#########################################################
+class ColorSynchronizer(QObject):
+
+    # signal for notifying if active widget changes
+    synchronized_object_changed = pyqtSignal("PyQt_PyObject")
+
+
+    def __init__(self, parent = None):
+
+        QObject.__init__(self, parent)
+        self.__activeWidget = None
+
+    
+    
+    def select(self, target):
+        """
+        This method "remembers" the newly activated
+        widget and makes sure to deactivate
+        the previous one.
+        """
+
+        if self.__activeWidget == target:
+            self.__activeWidget.activate_me()
+            self.synchronized_object_changed.emit(self.__activeWidget.get_content())
+        else:
+            if self.__activeWidget:
+                self.__activeWidget.inactivate_me()
+                
+            self.__activeWidget = target
+            self.__activeWidget.activate_me()
+            self.synchronized_object_changed.emit(self.__activeWidget.get_content())
+
+
+
+    def get_active_widget(self):
+        """
+        Simply returns the active widget
+        to anybody who cares to know.
+        """
+
+        return self.__activeWidget

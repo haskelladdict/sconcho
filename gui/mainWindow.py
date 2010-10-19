@@ -27,8 +27,8 @@ import sconchoHelpers.text as text
 import sconchoHelpers.settings as settings
 import sconchoIO.io as io
 import sconchoIO.symbolParser as parser
-import symbolWidget
-import colorWidget
+from symbolWidget import add_symbols_to_widget, SymbolSynchronizer
+from colorWidget import ColorWidget, ColorSynchronizer
 from patternCanvas import PatternCanvas
 
 
@@ -92,35 +92,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         and connecting it to the symbol changed slot.
         """
 
-        symbolTracker = symbolWidget.Synchronizer()
+        symbolTracker = SymbolSynchronizer()
         self.connect(symbolTracker, 
                      SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
                      self.__canvas.set_active_symbol)
         
-        symbolWidget.add_symbols_to_widget(knittingSymbols, 
-                                           self.symbolWidgetBase, symbolTracker)
+        add_symbols_to_widget(knittingSymbols, 
+                              self.symbolWidgetBase, symbolTracker)
 
 
 
 
     def initialize_color_widget(self):
         """
-        Proxy for adding all the knitting symbols to the symbolWidget
-        and connecting it to the symbol changed slot.
+        Proxy for adding all the color selectors to the color selector
+        Widget and connecting the slots
         """
 
-        colorList = [Qt.white, Qt.red, Qt.blue, Qt.black, Qt.darkGray, \
-                     Qt.cyan, Qt.yellow, Qt.green, Qt.magenta]
-
-        colorTracker = symbolWidget.Synchronizer()
+        colorTracker = ColorSynchronizer()
         self.connect(colorTracker, 
                      SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
                      self.__canvas.set_active_color)
+
+        colorList = [Qt.white, Qt.red, Qt.blue, Qt.black, Qt.darkGray, \
+                     Qt.cyan, Qt.yellow, Qt.green, Qt.magenta]
+        myColorWidget = ColorWidget(colorTracker, colorList)
+        self.colorWidget.layout().addWidget(myColorWidget)
         
-        colorWidget.add_color_buttons_to_widget(colorList, 
-                                                self.colorWidget, colorTracker)
-
-
 
 
     def show_about_sconcho(self):
