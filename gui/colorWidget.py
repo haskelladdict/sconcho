@@ -108,6 +108,7 @@ class ColorSelectorItem(QFrame):
         # define and set stylesheets
         self.define_stylesheets() 
         self.setStyleSheet(self.__unselectedStyleSheet)
+        self.__currentStyleSheet = self.__unselectedStyleSheet
 
         self.setMinimumHeight(40)
         self.setMaximumHeight(40)
@@ -131,6 +132,7 @@ class ColorSelectorItem(QFrame):
 
         self.color = color
         self.define_stylesheets()
+        self.__synchronizer.select(self)
 
 
 
@@ -155,6 +157,7 @@ class ColorSelectorItem(QFrame):
                                       "border-color: black;" \
                                       "background-color: " + \
                                       buttonColor + ";" 
+
     
 
     def mousePressEvent(self, event): 
@@ -173,6 +176,7 @@ class ColorSelectorItem(QFrame):
         """
 
         self.setStyleSheet(self.__selectedStyleSheet)
+        self.__currentStyleSheet = self.__selectedStyleSheet
 
 
 
@@ -182,7 +186,7 @@ class ColorSelectorItem(QFrame):
         """
 
         self.setStyleSheet(self.__unselectedStyleSheet)
-
+        self.__currentStyleSheet = self.__unselectedStyleSheet
 
 
 
