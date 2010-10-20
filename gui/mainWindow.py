@@ -32,6 +32,14 @@ from colorWidget import ColorWidget, ColorSynchronizer
 from patternCanvas import PatternCanvas
 
 
+
+#######################################################################
+#
+#
+# top level window class
+#
+#
+#######################################################################
 class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __init__(self, symbolPaths, filename = None, parent = None):
@@ -46,6 +54,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         settings.initialize(self.__settings)
 
         self.__saveFilePath = None
+        self.__colorWidget  = None
 
         self.__symbolPaths = symbolPaths
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
@@ -116,8 +125,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         colorList = [Qt.white, Qt.red, Qt.blue, Qt.black, Qt.darkGray, \
                      Qt.cyan, Qt.yellow, Qt.green, Qt.magenta]
-        myColorWidget = ColorWidget(colorTracker, colorList)
-        self.colorWidget.layout().addWidget(myColorWidget)
+        self.__colorWidget = ColorWidget(colorTracker, colorList)
+        self.colorWidgetContainer.layout().addWidget(self.__colorWidget)
         
 
 
@@ -144,9 +153,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if not self.__saveFilePath:
             self.save_pattern_dialog()
-            
+
         io.save_project(self.__canvas, None, self.__settings,
                         self.__saveFilePath)
+        
         saveFileName = QFileInfo(self.__saveFilePath).fileName()
         self.statusBar().showMessage("successfully saved " + saveFileName, 3000)
 
@@ -176,7 +186,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
 
         self.set_project_save_file(saveFilePath)
-        io.save_project(self.__canvas, None, self.__settings, saveFilePath)
+        io.save_project(self.__canvas, self.__colorWidget.get_all_colors(),
+                        self.__settings, saveFilePath)
         saveFileName = QFileInfo(saveFilePath).fileName()
         self.statusBar().showMessage("successfully saved " + saveFileName, 3000)
 

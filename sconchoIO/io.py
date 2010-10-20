@@ -46,6 +46,7 @@ def save_project(canvas, colors, settings, saveFileName):
     root = initialize_DOM(writeDoc)
     write_patternGridItems(writeDoc, root, canvas)
     write_patternLegendItems(writeDoc, root, canvas)
+    write_colors(writeDoc, root, colors)
 
     # save it
     writeDoc.save(writeStream, 4)
@@ -141,7 +142,6 @@ def write_patternLegendItems(writeDoc, root, canvas):
 
         symbolItem = legendItem_symbol(item)
         textItem   = legendItem_text(item)
-        #itemID     = generate_symbol_item_id(symbolItem)
 
         mainTag = writeDoc.createElement("canvasItem")
         root.appendChild(mainTag)
@@ -189,6 +189,22 @@ def write_patternLegendItems(writeDoc, root, canvas):
 
 
             
+def write_colors(writeDoc, root, colors):
+    """
+    Write all colors currently selected in colorSelectorItems
+    """
+    
+    mainTag = writeDoc.createElement("projectColors")
+    root.appendChild(mainTag)
+    
+    for item in colors:
+        colorTag = writeDoc.createElement("color")
+        mainTag.appendChild(colorTag)
+        colorTag.appendChild(writeDoc.createTextNode(item.name()))
+
+
+
+
 def read_project(readFileName):
     """
     Toplevel reader routine.

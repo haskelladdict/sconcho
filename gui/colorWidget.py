@@ -23,8 +23,6 @@
 from PyQt4.QtCore import QString, pyqtSignal, QObject, Qt, SIGNAL
 from PyQt4.QtGui import QFrame, QWidget, QColor, QPushButton, \
                         QHBoxLayout, QColorDialog
-#from symbolWidget import Synchronizer
-
 
 
 
@@ -46,13 +44,17 @@ class ColorWidget(QWidget):
         colorButton = QPushButton("customize color")
         QObject.connect(colorButton, SIGNAL("pressed()"),
                         self.customized_color_button_pressed)
-
         layout.addWidget(colorButton)
         layout.addStretch()
 
+        # we need to keep a list of all ColorSelectorItems so we can
+        # parse them later for their colors when saving as spf
+        # or set their color when loading an spf.
+        self.colorWidgets = []
         for color in colors:
             newItem = ColorSelectorItem(color, synchronizer)
             layout.addWidget(newItem)
+            self.colorWidgets.append(newItem)
             if color == Qt.white:
                 synchronizer.select(newItem)
 
@@ -72,10 +74,20 @@ class ColorWidget(QWidget):
         activeColorWidget.set_content(color)
         self.__synchronizer.select(activeColorWidget)
 
-        print(color)
 
 
+    def get_all_colors(self):
+        """
+        Returns a list with all colors currently available in
+        the ColorSelectorItems.
+        """
 
+        allColors = []
+        for item in self.colorWidgets:
+            allColors.append(item.get_content())
+
+        return allColors
+            
 
 
 
@@ -91,7 +103,7 @@ class ColorSelectorItem(QFrame):
         super(QFrame, self).__init__(parent)
 
         self.__synchronizer = synchronizer
-        self.color = color
+        self.color = QColor(color)
 
         # define and set stylesheets
         self.define_stylesheets() 

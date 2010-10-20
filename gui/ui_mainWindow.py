@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Mon Oct 18 20:57:51 2010
+# Created: Tue Oct 19 21:30:14 2010
 #      by: PyQt4 UI code generator 4.7.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -45,12 +45,12 @@ class Ui_MainWindow(object):
         self.scrollArea.setMinimumSize(QtCore.QSize(0, 80))
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
-        self.colorWidget = QtGui.QWidget(self.scrollArea)
-        self.colorWidget.setGeometry(QtCore.QRect(0, 0, 757, 76))
-        self.colorWidget.setObjectName(_fromUtf8("colorWidget"))
-        self.horizontalLayout = QtGui.QHBoxLayout(self.colorWidget)
+        self.colorWidgetContainer = QtGui.QWidget(self.scrollArea)
+        self.colorWidgetContainer.setGeometry(QtCore.QRect(0, 0, 757, 76))
+        self.colorWidgetContainer.setObjectName(_fromUtf8("colorWidgetContainer"))
+        self.horizontalLayout = QtGui.QHBoxLayout(self.colorWidgetContainer)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.scrollArea.setWidget(self.colorWidget)
+        self.scrollArea.setWidget(self.colorWidgetContainer)
         self.verticalLayout.addWidget(self.scrollArea)
         self.horizontalLayout_2.addLayout(self.verticalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
