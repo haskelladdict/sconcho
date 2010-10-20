@@ -232,6 +232,7 @@ def read_project(readFileName):
     # list of parsed patternGridItems
     patternGridItems = []
     legendItems      = []
+    projectColors    = None
     
     node = root.firstChild()
     while not node.isNull():
@@ -248,9 +249,14 @@ def read_project(readFileName):
                 if newEntry:
                     legendItems.append(newEntry)
 
+        elif node.toElement().tagName() == "projectColors":
+            item = node.firstChild()
+            projectColors = parse_colors(item)
+            print(projectColors)
+
         node = node.nextSibling()
 
-    return (patternGridItems, legendItems)
+    return (patternGridItems, legendItems, projectColors)
 
 
 
@@ -295,7 +301,7 @@ def parse_patternGridItem(item):
                     "name"     : name }
     except:
         QMessageBox.critical(None, "Error", "Failed to parse pattern. " + \
-                            "Please check the file for an incomplete patternentry.",
+                            "Please check the file for an incomplete patternEntry.",
                             QMessageBox.Ok)
         return None
 
@@ -355,6 +361,22 @@ def parse_legendItem(item):
 
 
 
+def parse_colors(node):
+    """
+    Parse a projectColor entry
+    """
+
+    colors = []
+    while not node.isNull():
+        if node.toElement().tagName() == "color":
+            colors.append(QColor(node.firstChild().toText().data()))
+
+        node = node.nextSibling()
+
+    return colors
+
+
+            
 def export_scene(canvas, exportFileName):
     """
     This function exports the scene to a file.

@@ -205,9 +205,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not readFilePath:
             return
 
-        (patternGridItems, legendItems) = io.read_project(readFilePath)
+        (patternGridItems, legendItems, colors) = io.read_project(readFilePath)
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
-        self.__canvas.open_project(knittingSymbols, patternGridItems, legendItems)
+        self.__canvas.create_new_canvas(knittingSymbols, patternGridItems,
+                                        legendItems)
+        set_up_colors(self.__colorWidget, colors)
         readFileName = QFileInfo(readFilePath).fileName()
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
         self.set_project_save_file(readFilePath)
@@ -258,3 +260,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__saveFilePath = fileName
         self.setWindowTitle(QFileInfo(fileName).fileName())
+
+
+
+
+def set_up_colors(widget, colors):
+    """
+    Sets the colors of ColorSelectorItems in the widget to
+    the requested colors.
+    """
+
+    assert (len(widget.colorWidgets) == len(colors))
+
+    for (i, item) in enumerate(widget.colorWidgets):
+        item.set_content(colors[i])
+        widget.synchronizer.select(item)

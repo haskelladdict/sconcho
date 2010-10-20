@@ -642,10 +642,10 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def open_project(self, knittingSymbols, patternGridItemInfo,
-                        legendItemInfo):
+    def create_new_canvas(self, knittingSymbols, patternGridItemInfo,
+                          legendItemInfo):
         """
-        Clear curent canvas and establishes a new project
+        Clear curent canvas and establishes a new canvas
         based on the passed canvas items.
         """
 
@@ -1087,8 +1087,6 @@ def arrange_label_items(legendItemInfo, legendItems):
     which comes from a parsed spf file.
     """
 
-    print(legendItemInfo)
-    
     for item in legendItemInfo:
         legendID = generate_legend_id(item, QColor(item["color"]))
         if legendID in legendItems:
