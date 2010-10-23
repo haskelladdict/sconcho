@@ -180,7 +180,8 @@ class PatternCanvas(QGraphicsScene):
         width  = int(symbol["width"])
         height = 1
         itemLocation = QPointF(0, yMax + self.__unitHeight + 10)
-        item = PatternLegendItem(self.__unitCellDim, width, height, symbol, color)
+        item = PatternLegendItem(self.__unitCellDim, width, height, symbol,
+                                 color, 1)
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setPos(itemLocation)
         self.addItem(item)
@@ -190,6 +191,7 @@ class PatternCanvas(QGraphicsScene):
                                 yMax + self.__unitHeight + 10)
         textItem = QGraphicsTextItem()
         textItem.setPos(textLocation)
+        textItem.setZValue(1)
         textItem.setFlag(QGraphicsItem.ItemIsMovable)
         textItem.setTextInteractionFlags(Qt.TextEditorInteraction);
         textItem.setPlainText(symbol["description"])
@@ -818,9 +820,11 @@ class PatternLegendItem(QGraphicsSvgItem):
 
     def __init__(self, unitDim, width, height,
                  defaultSymbol, defaultColor = Qt.white,
-                 parent = None, scene = None):
+                 zValue = 0, parent = None, scene = None):
 
         super(QGraphicsSvgItem, self).__init__()
+        
+        self.setZValue(zValue)
 
         self.origin  = QPointF(0.0, 0.0)
         self.unitDim = unitDim
