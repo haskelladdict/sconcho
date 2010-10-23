@@ -284,4 +284,4 @@ def set_up_colors(widget, colors):
 
     for (i, item) in enumerate(widget.colorWidgets):
         item.set_content(colors[i])
-        widget.synchronizer.select(item)
+        item.repaint()
