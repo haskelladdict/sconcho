@@ -642,9 +642,19 @@ class PatternCanvas(QGraphicsScene):
         self.legend.clear()
 
 
+    def create_new_canvas(self):
+        """
+        Create a complete new and blank canvas.
+        """
+
+        self.__clear_canvas()
+        self.__textLabels = []
+        self.set_up_main_grid()
+        self.set_up_labels()
+        
 
 
-    def create_new_canvas(self, knittingSymbols, patternGridItemInfo,
+    def load_previous_canvas(self, knittingSymbols, patternGridItemInfo,
                           legendItemInfo):
         """
         Clear curent canvas and establishes a new canvas

@@ -78,6 +78,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionAbout_Qt4, SIGNAL("triggered()"),
                      self.show_about_qt4)
 
+        self.connect(self.actionNew, SIGNAL("triggered()"),
+                     self.new_pattern_dialog)
+
         self.connect(self.actionSave, SIGNAL("triggered()"),
                      self.save_pattern_dialog)
 
@@ -152,6 +155,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
+    def new_pattern_dialog(self):
+        """
+        Open a dialog asking users if they are sure that
+        they want to open a new dialog and erase their
+        current pattern.
+        """
+
+        answer = QMessageBox.question(self, "start new pattern",
+                                      "Starting a new project will erase " \
+                                      "your current pattern. Do you want to " \
+                                      "proceed?",
+                                      QMessageBox.Ok, QMessageBox.Cancel)
+
+        if answer == QMessageBox.Ok:
+            self.__canvas.create_new_canvas()
+
+
+
     def save_as_pattern_dialog(self):
         """
         This function opens a save pattern dialog.
@@ -217,8 +238,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         (patternGridItems, legendItems, colors) = io.read_project(readFilePath)
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
-        self.__canvas.create_new_canvas(knittingSymbols, patternGridItems,
-                                        legendItems)
+        self.__canvas.load_previous_canvas(knittingSymbols, patternGridItems,
+                                           legendItems)
         set_up_colors(self.__colorWidget, colors)
         readFileName = QFileInfo(readFilePath).fileName()
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)

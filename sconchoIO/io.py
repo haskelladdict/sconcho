@@ -214,10 +214,8 @@ def read_project(readFileName):
     if not readFile.open(QIODevice.ReadOnly):
         return
 
-
     readDoc = QDomDocument()
     (status, errMsg, errLine, errCol) = readDoc.setContent(readFile, True)
-    print(errMsg)
     if not status:
         QMessageBox.critical(None, "sconcho DOM Parser",
                              "Error parsing\n %s \nat line %d column %d; %s"
@@ -253,7 +251,6 @@ def read_project(readFileName):
         elif node.toElement().tagName() == "projectColors":
             item = node.firstChild()
             projectColors = parse_colors(item)
-            print(projectColors)
 
         node = node.nextSibling()
 
