@@ -221,7 +221,8 @@ def read_project(readFileName):
     if not status:
         QMessageBox.critical(None, "sconcho DOM Parser",
                              "Error parsing\n %s \nat line %d column %d; %s"
-                             % (str(readFileName), errLine, errCol, str(errMsg)))
+                             % (unicode(readFileName), errLine, errCol,
+                                unicode(errMsg)))
 
     root = readDoc.documentElement()
     if root.tagName() != "sconcho":

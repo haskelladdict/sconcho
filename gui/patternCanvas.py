@@ -101,7 +101,7 @@ class PatternCanvas(QGraphicsScene):
         # row labels
         xPos = self.__unitWidth * self.__numColumns
         for row in range(0, self.__numRows):
-            item = QGraphicsTextItem(str(self.__numRows - row))
+            item = QGraphicsTextItem(unicode(self.__numRows - row))
 
             yPos = self.__unitHeight * row
             item.setPos(xPos, yPos)
@@ -112,7 +112,7 @@ class PatternCanvas(QGraphicsScene):
         # column labels
         yPos = self.__unitHeight * self.__numRows
         for col in range(0, self.__numColumns):
-            labelText = QString(str(self.__numColumns - col))
+            labelText = QString(unicode(self.__numColumns - col))
             textWidth = fm.width(labelText)
             item = QGraphicsTextItem(labelText)
             
@@ -1075,7 +1075,7 @@ def generate_legend_id(symbol, color):
     category = symbol["category"]
     colorID  = QColor(color).name()
     
-    return name + ":" + category + ":" + str(colorID)
+    return (name, category, unicode(colorID))
 
 
 

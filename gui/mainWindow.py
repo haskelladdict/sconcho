@@ -168,7 +168,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         location = self.__saveFilePath if self.__saveFilePath else QDir.homePath()
-        saveFilePath = QFileDialog.getSaveFileName(self, "Save Pattern", location,
+        saveFilePath = QFileDialog.getSaveFileName(self,
+                                                   "save as sconcho pattern file",
+                                                   location,
                                                    "sconcho pattern files (*.spf)")
 
         if not saveFilePath:
@@ -181,7 +183,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 saveFilePath = saveFilePath + ".spf"
             else:
                 QMessageBox.warning(self, "Warning",
-                                    "Unknown extension " + extension,
+                                    "Unknown extension " + extension +
+                                    " - please save as .spf!",
                                     QMessageBox.Ok)
                 return
 
@@ -198,7 +201,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         This function opens a read pattern dialog.
         """
 
-        readFilePath = QFileDialog.getOpenFileName(self, "open sconcho data file",
+        readFilePath = QFileDialog.getOpenFileName(self,
+                                                   "open sconcho pattern file",
                                                    QDir.currentPath(),
                                                    "sconcho pattern files (*.spf)")
 
@@ -222,7 +226,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         exportFilePath = QFileDialog.getSaveFileName(self,
-                                                     "Export Pattern",
+                                                     "Export pattern as image file",
                                                      QDir.homePath(),
                                                      "Image files (*.png *.tif)")
 
