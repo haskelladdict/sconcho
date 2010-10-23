@@ -117,6 +117,9 @@ class SymbolSelectorItem(QFrame):
         svgWidth = symbol["width"].toInt()[0]
         svgWidget.setMaximumSize(QSize(svgWidth * 30, 30))
 
+        self.setMinimumSize(30,30)
+        self.setMaximumSize(svgWidth * 30, 30)
+
         # finalize the layout
         layout    = QHBoxLayout()
         layout.setContentsMargins( 0, 0, 0, 0 )

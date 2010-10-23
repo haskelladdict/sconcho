@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sat Oct 23 13:18:47 2010
+# Created: Sat Oct 23 14:14:16 2010
 #      by: PyQt4 UI code generator 4.7.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -96,6 +96,7 @@ class Ui_MainWindow(object):
         self.toolBar.setObjectName(_fromUtf8("toolBar"))
         MainWindow.addToolBar(QtCore.Qt.ToolBarArea(QtCore.Qt.TopToolBarArea), self.toolBar)
         self.actionAbout_sconcho = QtGui.QAction(MainWindow)
+        self.actionAbout_sconcho.setIcon(icon)
         self.actionAbout_sconcho.setObjectName(_fromUtf8("actionAbout_sconcho"))
         self.actionAbout_Qt4 = QtGui.QAction(MainWindow)
         self.actionAbout_Qt4.setObjectName(_fromUtf8("actionAbout_Qt4"))

@@ -20,8 +20,11 @@
 #######################################################################
 
 from PyQt4.QtCore import SIGNAL, SLOT, QSettings, QDir, QFileInfo, \
-                         QString, Qt
-from PyQt4.QtGui import qApp, QMainWindow, QMessageBox, QFileDialog
+                         QString, Qt, QSize
+from PyQt4.QtGui import qApp, QMainWindow, QMessageBox, QFileDialog, \
+                        QWidget, QGridLayout, QHBoxLayout, QLabel, \
+                        QFrame, QColor
+from PyQt4.QtSvg import QSvgWidget
 from ui_mainWindow import Ui_MainWindow
 import sconchoHelpers.text as text
 import sconchoHelpers.settings as settings
@@ -56,6 +59,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__saveFilePath = None
         self.__colorWidget  = None
 
+        # set up the statusBar
+        self.activeSymbolWidget = ActiveSymbolWidget()
+        self.statusBar().addPermanentWidget(self.activeSymbolWidget)
+        
         self.__symbolPaths = symbolPaths
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
         self.__canvas = PatternCanvas(self.__settings, 
@@ -67,8 +74,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # should be a little smarter about this in the future
         self.graphicsView.setScene(self.__canvas)
         self.graphicsView.setSceneRect( -100, -100, 2000, 2000)
+
+        # set up all the connections
+        self.__set_up_connections()
         
-        # add connections
+
+
+    def __set_up_connections(self):
+        """
+        Set up all connections required by MainWindow.
+        """
+        
         self.connect(self.actionQuit, SIGNAL("triggered()"),
             qApp, SLOT("quit()"))
 
@@ -114,7 +130,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(symbolTracker, 
                      SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
                      self.__canvas.set_active_symbol)
-        
+
+        self.connect(symbolTracker, 
+                     SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
+                     self.activeSymbolWidget.active_symbol_changed)
+
         add_symbols_to_widget(knittingSymbols, 
                               self.symbolWidgetBase, symbolTracker)
 
@@ -131,6 +151,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(colorTracker, 
                      SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
                      self.__canvas.set_active_color)
+
+        self.connect(colorTracker, 
+                     SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
+                     self.activeSymbolWidget.active_color_changed)
 
         colorList = [Qt.white, Qt.red, Qt.blue, Qt.black, Qt.darkGray, \
                      Qt.cyan, Qt.yellow, Qt.green, Qt.magenta]
@@ -306,3 +330,118 @@ def set_up_colors(widget, colors):
     for (i, item) in enumerate(widget.colorWidgets):
         item.set_content(colors[i])
         item.repaint()
+
+
+
+
+
+###############################################################
+#
+# this simple class provides a view of the currently
+# active widget in the status bar
+#
+###############################################################
+class ActiveSymbolWidget(QWidget):
+
+
+    def __init__(self, parent = None):
+
+        super(QWidget, self).__init__(parent)
+
+        self.layout = QGridLayout()
+        self.color  = QColor(Qt.white)
+        self.layout.setSizeConstraint(5)
+        
+        self.label  = QLabel("Active Symbol")
+        self.widget = None
+        self.layout.addWidget(self.label,0,0)
+        self.setLayout(self.layout)
+
+
+
+    def active_symbol_changed(self, symbol):
+        """
+        Update the displayed active Widget after
+        the user selected a new one.
+        """
+
+        if self.widget:
+            self.layout.removeWidget(self.widget)
+            self.widget.setParent(None)
+
+        if symbol:
+            self.widget = SymbolDisplayItem(symbol, self.color)
+            self.layout.addWidget(self.widget,0,1)
+
+
+
+    def active_color_changed(self, color):
+        """
+        Update the background of the displayed active
+        widget (if there is one) after a user color change.
+        """
+
+        if self.widget:
+            self.widget.set_backcolor(color)
+            self.color = color
+        
+        
+
+            
+        
+#########################################################
+## 
+## class for displaying the currently active symbol
+## and color
+##
+#########################################################
+class SymbolDisplayItem(QFrame):
+
+    def __init__(self, symbol, color, parent = None):
+
+        QFrame.__init__(self, parent)
+        self.__symbol = symbol
+        self.backColor = color
+
+        # define and set stylesheets
+        self.setup_stylesheets()
+        self.setMinimumSize(20,20)
+        self.setStyleSheet(self.__theStyleSheet)
+
+        # layout
+        layout    = QHBoxLayout()
+        layout.setContentsMargins( 0, 0, 0, 0 )
+        self.setToolTip(symbol["description"])
+
+        # add the symbol's svg
+        svgWidget = QSvgWidget(symbol["svgPath"]) 
+        svgWidth = symbol["width"].toInt()[0]
+        svgWidget.setMaximumSize(QSize(svgWidth * 20, 20))
+        layout.addWidget(svgWidget)
+            
+        self.setLayout(layout)
+
+
+
+    def set_backcolor(self, color):
+        """
+        Sets the background color.
+        """
+
+        self.backColor = color
+        self.setup_stylesheets()
+        self.setStyleSheet(self.__theStyleSheet)
+        
+
+
+    def setup_stylesheets(self):
+        """
+        Defines the stylesheets used for display.
+        """
+
+        self.__theStyleSheet = "border-width: 1px;" \
+                               "border-style: solid;" \
+                               "border-color: black;" \
+                               "background-color: " + self.backColor.name() + ";"
+
+    

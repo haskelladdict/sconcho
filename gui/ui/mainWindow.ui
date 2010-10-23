@@ -180,6 +180,10 @@
    <addaction name="separator"/>
   </widget>
   <action name="actionAbout_sconcho">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/sconcho_icon.png</normaloff>:/icons/sconcho_icon.png</iconset>
+   </property>
    <property name="text">
     <string>About sconcho</string>
    </property>

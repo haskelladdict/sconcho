@@ -190,6 +190,7 @@ class ColorSelectorItem(QFrame):
 
 
 
+
 #########################################################
 ## 
 ## class for synchronizing color selector widgets
