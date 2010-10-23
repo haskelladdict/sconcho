@@ -93,8 +93,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPrint, SIGNAL("triggered()"),
                      self.print_dialog)
 
+        self.connect(self.actionShow_legend, SIGNAL("toggled(bool)"),
+                     self.__canvas.toggle_legend_visibility)
 
-   
+        self.connect(self.actionShow_pattern_grid, SIGNAL("toggled(bool)"),
+                     self.__canvas.toggle_pattern_grid_visibility)
+
+
+        
     def initialize_symbol_widget(self, knittingSymbols):
         """
         Proxy for adding all the knitting symbols to the symbolWidget

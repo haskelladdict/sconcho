@@ -101,7 +101,7 @@ class PatternCanvas(QGraphicsScene):
         # row labels
         xPos = self.__unitWidth * self.__numColumns
         for row in range(0, self.__numRows):
-            item = QGraphicsTextItem(unicode(self.__numRows - row))
+            item = PatternLabelItem(unicode(self.__numRows - row))
 
             yPos = self.__unitHeight * row
             item.setPos(xPos, yPos)
@@ -114,7 +114,7 @@ class PatternCanvas(QGraphicsScene):
         for col in range(0, self.__numColumns):
             labelText = QString(unicode(self.__numColumns - col))
             textWidth = fm.width(labelText)
-            item = QGraphicsTextItem(labelText)
+            item = PatternLabelItem(labelText)
             
             xPos = self.__unitWidth * col + (self.__unitWidth * 0.6 -textWidth)
             item.setPos(xPos, yPos)
@@ -679,6 +679,38 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def toggle_legend_visibility(self, status):
+        """
+        Per request from main window toggle the legend
+        visibility on or off.
+        """
+
+        if status:
+            for item in self.legend.values():
+                legendItem_symbol(item).show()
+                legendItem_text(item).show()
+
+        else:
+            for item in self.legend.values():
+                legendItem_symbol(item).hide()
+                legendItem_text(item).hide()
+            
+
+
+    def toggle_pattern_grid_visibility(self, status):
+        """
+        Per request from main window toggle the pattern grid
+        visibility on or off.
+        """
+
+        for item in self.items():
+            if isinstance(item, PatternGridItem) or \
+               isinstance(item, PatternLabelItem):
+                if status:
+                    item.show()
+                else:
+                    item.hide()
+
 
 
 
@@ -699,9 +731,9 @@ class PatternGridItem(QGraphicsSvgItem):
 
     def __init__(self, unitDim, col, row, width, height,
                  defaultSymbol, defaultColor = Qt.white,
-                 parent = None, scene = None):
+                 parent = None):
 
-        super(QGraphicsSvgItem, self).__init__()
+        super(QGraphicsSvgItem, self).__init__(parent)
 
         self.origin  = QPointF(0.0, 0.0)
         self.unitDim = unitDim
@@ -820,9 +852,9 @@ class PatternLegendItem(QGraphicsSvgItem):
 
     def __init__(self, unitDim, width, height,
                  defaultSymbol, defaultColor = Qt.white,
-                 zValue = 0, parent = None, scene = None):
+                 zValue = 0, parent = None):
 
-        super(QGraphicsSvgItem, self).__init__()
+        super(QGraphicsSvgItem, self).__init__(parent)
         
         self.setZValue(zValue)
 
@@ -879,6 +911,25 @@ class PatternLegendItem(QGraphicsSvgItem):
         painter.drawRect(QRectF(self.origin, self.size))
         self.renderer().render(painter, QRectF(self.origin, self.size))
 
+
+
+
+#########################################################
+## 
+## class for managing a single pattern grid label
+## (this does nothing spiffy at all, we just need
+## it to identify the item on the canvas)
+##
+#########################################################
+class PatternLabelItem(QGraphicsTextItem):
+
+    Type = 70000 + 3
+
+
+    def __init__(self, parent = None, scene = None):
+
+        super(QGraphicsTextItem, self).__init__(parent, scene)
+        
 
 
 

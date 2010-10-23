@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sat Oct 23 10:56:07 2010
+# Created: Sat Oct 23 11:28:22 2010
 #      by: PyQt4 UI code generator 4.7.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -134,6 +134,14 @@ class Ui_MainWindow(object):
         icon6.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/fileprint.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionPrint.setIcon(icon6)
         self.actionPrint.setObjectName(_fromUtf8("actionPrint"))
+        self.actionShow_pattern_grid = QtGui.QAction(MainWindow)
+        self.actionShow_pattern_grid.setCheckable(True)
+        self.actionShow_pattern_grid.setChecked(True)
+        self.actionShow_pattern_grid.setObjectName(_fromUtf8("actionShow_pattern_grid"))
+        self.actionShow_legend = QtGui.QAction(MainWindow)
+        self.actionShow_legend.setCheckable(True)
+        self.actionShow_legend.setChecked(True)
+        self.actionShow_legend.setObjectName(_fromUtf8("actionShow_legend"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -145,6 +153,8 @@ class Ui_MainWindow(object):
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
         self.menuEdit.addAction(self.actionPreferences)
+        self.menuView.addAction(self.actionShow_pattern_grid)
+        self.menuView.addAction(self.actionShow_legend)
         self.menuHelp.addAction(self.actionAbout_sconcho)
         self.menuHelp.addAction(self.actionAbout_Qt4)
         self.menubar.addAction(self.menuFile.menuAction())
@@ -187,5 +197,7 @@ class Ui_MainWindow(object):
         self.actionQuit.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setText(QtGui.QApplication.translate("MainWindow", "Print", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+P", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_pattern_grid.setText(QtGui.QApplication.translate("MainWindow", "show pattern grid", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_legend.setText(QtGui.QApplication.translate("MainWindow", "show legend", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc
