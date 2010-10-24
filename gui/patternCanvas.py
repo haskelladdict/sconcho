@@ -27,7 +27,8 @@ from PyQt4.QtGui import QGraphicsScene, QGraphicsObject, QPen, QColor, \
                         QAction, QGraphicsItem, QMessageBox
 from PyQt4.QtSvg import QGraphicsSvgItem, QSvgWidget, QSvgRenderer
 from sconchoHelpers.settings import get_grid_dimensions, get_text_font
-import sconchoHelpers.canvas as canvasHelpers
+from sconchoHelpers.canvas import is_click_in_grid, is_click_on_labels, \
+                                  convert_pos_to_row_col
 from insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
 
 
@@ -56,7 +57,6 @@ class PatternCanvas(QGraphicsScene):
         self.__defaultColor  = Qt.white
         self.__selectedCells = set()
         self.__copySelection = set()
-        self.__rightClickPos = QPoint() # (row, col) position of last right click
 
         self.__unitCellDim = QSizeF(get_grid_dimensions(theSettings))
         self.__unitWidth   = self.__unitCellDim.width()
@@ -329,38 +329,46 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def item_at(self, pos):
-        """
-        Returns the item at the given column and row.
-        """
-
-        scenePos = \
-                    canvasHelpers.convert_row_col_to_pos(pos, self.__unitWidth,
-                                                        self.__unitHeight)
-
-        return self.itemAt(scenePos)
-
-
-
     def mousePressEvent(self, event):
         """
         Handle mouse press events directly on the canvas.
         """
 
         # we handle right clicks and propagate the rest
-        if (event.button() == Qt.RightButton):
-            self.__rightClickPos = \
-                canvasHelpers.convert_pos_to_row_col(event.scenePos(),
-                                                        self.__unitWidth,
-                                                        self.__unitHeight)
+        (col, row) = convert_pos_to_row_col(event.scenePos(),
+                                            self.__unitWidth,
+                                            self.__unitHeight)
+        
+        if event.button() == Qt.RightButton:
 
-            if canvasHelpers.is_row_col_in_grid(self.__rightClickPos,
-                                                self.__numColumns,
-                                                self.__numRows):
+            if is_click_in_grid(col, row, self.__numColumns, self.__numRows):
                 self.handle_right_click_on_grid(event)
 
+        elif event.button() == Qt.LeftButton:
+
+             if is_click_on_labels(col, row, self.__numColumns, self.__numRows):
+                 self.handle_right_click_on_labels(col, row)
+
+
+        return QGraphicsScene.mousePressEvent(self, event)
+
+
+
+
+    def handle_right_click_on_labels(self, col, row):
+        """ Deal with user clicks on the grid labels. """
+
+        assert (row == self.__numRows) or (col == self.__numColumns)
+
+        if row == self.__numRows:
+            selectedItems = get_column_items(self.items(), col)
+            
         else:
-            return QGraphicsScene.mousePressEvent(self, event)
+            selectedItems = get_row_items(self.items(), row)
+
+        for item in selectedItems:
+            item._select()
+
 
 
 
@@ -371,52 +379,14 @@ class PatternCanvas(QGraphicsScene):
         """
 
         gridMenu = QMenu()
-        # TODO: copy and paste needs some thinking about
-        # e.g. what should we do when a user pastes a selection
-        # that does not fit into the target area 
-        #copyAction = gridMenu.addAction("&Copy")
-        #pasteAction = gridMenu.addAction("&Paste")
-        #self.connect(copyAction, SIGNAL("triggered()"),
-        #             self.copy_selection)
-        #self.connect(pasteAction, SIGNAL("triggered()"),
-        #             self.paste_selection)
-        #gridMenu.addSeparator()
         rowAction = gridMenu.addAction("Insert/delete rows & columns")
-        gridMenu.addSeparator();
-        colorAction = gridMenu.addAction("Grab color");
+        #gridMenu.addSeparator();
+        #colorAction = gridMenu.addAction("Grab color");
 
         self.connect(rowAction, SIGNAL("triggered()"),
                         self.insert_delete_rows_columns)
 
         gridMenu.exec_(event.screenPos())
-
-
-
-    def copy_selection(self):
-        """
-        Copies the currently active selection.
-        """
-
-        self.__copySelection.clear()
-        self.__copySelection = self.__selectedCells
-
-
-
-    def paste_selection(self):
-        """
-        Pastes the selection currently stored in copySelection.
-        The upper left item in copySelection is copied into the
-        clicked cell.
-        NOTE: Pasting is not easy. We need to make sure that
-        the copied selection can fit seamlessly into the target
-        ares.
-        """
-
-        if not canvasHelpers.is_row_col_in_grid(self.__rightClickPos,
-                                                self.__numColumns,
-                                                self.__numRows):
-            return
-
 
 
 
@@ -774,32 +744,32 @@ class PatternGridItem(QGraphicsSvgItem):
         """
 
         if not self.__selected:
-            self.__select()
-            self.cell_selected.emit(self)
+            self._select()
         else:
-            self.__unselect()
-            self.cell_unselected.emit(self)
+            self._unselect()
 
 
 
-    def __unselect(self):
+    def _unselect(self):
         """
         Unselects a given selected cell. 
         """
 
         self.__selected = False
         self.__backColor = self.color
+        self.cell_selected.emit(self)
         self.update()
 
 
 
-    def __select(self):
+    def _select(self):
         """
         Selects a given unselected cell. 
         """
 
         self.__selected = True
         self.__backColor = self.__highlightedColor
+        self.cell_selected.emit(self)
         self.update()
 
 
@@ -822,7 +792,7 @@ class PatternGridItem(QGraphicsSvgItem):
         else:
             self.__backColor = Qt.white
 
-        self.__unselect()
+        self._unselect()
 
 
 
@@ -936,9 +906,9 @@ class PatternLabelItem(QGraphicsTextItem):
     Type = 70000 + 3
 
 
-    def __init__(self, parent = None, scene = None):
+    def __init__(self, text, parent = None, scene = None):
 
-        super(QGraphicsTextItem, self).__init__(parent, scene)
+        super(QGraphicsTextItem, self).__init__(text, parent, scene)
         
 
 
@@ -1169,3 +1139,32 @@ def arrange_label_items(legendItemInfo, legendItems):
                                  QMessageBox.Ok)
         
 
+
+def get_column_items(items, column):
+    """ Returns list of all PatternGridItems in column
+
+    NOTE: There is an issue if we encounter an item
+    which spans multiple columns. For now we ignore these.
+    """
+
+    colItems = []
+    for item in items:
+        if isinstance(item, PatternGridItem):
+            if (item.column == column) and (item.width == 1):
+                colItems.append(item)
+
+    return colItems
+    
+
+
+
+def get_row_items(items, row):
+    """ Returns list of all PatternGridItems in row"""
+
+    rowItems = []
+    for item in items:
+        if isinstance(item, PatternGridItem):
+            if item.row == row:
+                rowItems.append(item)
+
+    return rowItems
