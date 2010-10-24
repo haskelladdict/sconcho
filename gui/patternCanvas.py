@@ -757,8 +757,8 @@ class PatternGridItem(QGraphicsSvgItem):
 
         self.__selected = False
         self.__backColor = self.color
-        self.cell_selected.emit(self)
         self.update()
+        self.cell_unselected.emit(self)
 
 
 
@@ -769,8 +769,8 @@ class PatternGridItem(QGraphicsSvgItem):
 
         self.__selected = True
         self.__backColor = self.__highlightedColor
-        self.cell_selected.emit(self)
         self.update()
+        self.cell_selected.emit(self)
 
 
             
@@ -789,10 +789,8 @@ class PatternGridItem(QGraphicsSvgItem):
         # apply color if present
         if "backgroundColor" in newSymbol:
             self.__backColor = QColor(newSymbol["backgroundColor"])
-        else:
-            self.__backColor = Qt.white
 
-        self._unselect()
+        self.update()
 
 
 
@@ -1159,12 +1157,19 @@ def get_column_items(items, column):
 
 
 def get_row_items(items, row):
-    """ Returns list of all PatternGridItems in row"""
+    """ Returns list of all PatternGridItems in row.
+
+    NOTE: Since we want to select the whole row, we
+    have to make sure to deliver the items left to
+    right and *not* out of order.
+    """
 
     rowItems = []
     for item in items:
         if isinstance(item, PatternGridItem):
             if item.row == row:
                 rowItems.append(item)
-
+                
+    rowItems.sort(lambda x, y: cmp(x.column, y.column))
+    
     return rowItems
