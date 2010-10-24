@@ -342,6 +342,7 @@ def set_up_colors(widget, colors):
 #
 ###############################################################
 class ActiveSymbolWidget(QWidget):
+    """ Container Widget for currently active symbol """ 
 
 
     def __init__(self, parent = None):
@@ -352,8 +353,11 @@ class ActiveSymbolWidget(QWidget):
         self.color  = QColor(Qt.white)
         self.layout.setSizeConstraint(5)
         
-        self.label  = QLabel("Active Symbol")
+        self.activeSymbolLabel     = QLabel("Active Symbol")
+        self.inactiveSymbolLabel   = QLabel("No Active Symbol")
+        
         self.widget = None
+        self.label  = self.inactiveSymbolLabel
         self.layout.addWidget(self.label,0,0)
         self.setLayout(self.layout)
 
@@ -373,6 +377,19 @@ class ActiveSymbolWidget(QWidget):
             self.widget = SymbolDisplayItem(symbol, self.color)
             self.layout.addWidget(self.widget,0,1)
 
+            if self.label is self.inactiveSymbolLabel:
+                self.layout.removeWidget(self.label)
+                self.label.setParent(None)
+                self.label = self.activeSymbolLabel
+                self.layout.addWidget(self.label,0,0)       
+                
+        else:
+            if self.label is self.activeSymbolLabel:
+                self.layout.removeWidget(self.label)
+                self.label.setParent(None)
+                self.label = self.inactiveSymbolLabel
+                self.layout.addWidget(self.label,0,0)       
+            
 
 
     def active_color_changed(self, color):
@@ -385,7 +402,6 @@ class ActiveSymbolWidget(QWidget):
             self.widget.set_backcolor(color)
             self.color = color
         
-        
 
             
         
@@ -396,6 +412,7 @@ class ActiveSymbolWidget(QWidget):
 ##
 #########################################################
 class SymbolDisplayItem(QFrame):
+    """ Widget displaying currently active symbol and color """
 
     def __init__(self, symbol, color, parent = None):
 
