@@ -140,7 +140,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
                      self.activeSymbolWidget.active_symbol_changed)
         
-        (self.activeSymbolSelectorWidget, self.symbolSelectorWidgets) = \
+        (self.selectedSymbol, self.symbolSelectorWidgets) = \
                         generate_symbolWidgets(knittingSymbols,
                                                self.patternCategoryChooser,
                                                self.symbolSelectorLayout,
@@ -160,11 +160,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         one.
         """
 
-        self.symbolSelectorLayout.removeWidget(self.activeSymbolSelectorWidget)
-        self.activeSymbolSelectorWidget.setParent(None)
+        self.symbolSelectorLayout.removeWidget(self.selectedSymbol)
+        self.selectedSymbol.setParent(None)
 
-        self.activeSymbolSelectorWidget = self.symbolSelectorWidgets[categoryName]
-        self.symbolSelectorLayout.addWidget(self.activeSymbolSelectorWidget)
+        self.selectedSymbol = self.symbolSelectorWidgets[categoryName]
+        self.symbolSelectorLayout.addWidget(self.selectedSymbol)
         
         
 
@@ -426,9 +426,10 @@ class ActiveSymbolWidget(QWidget):
         widget (if there is one) after a user color change.
         """
 
+        self.color = color
+        
         if self.widget:
             self.widget.set_backcolor(color)
-            self.color = color
         
 
             
