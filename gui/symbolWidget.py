@@ -27,6 +27,61 @@ from PyQt4.QtSvg import QSvgWidget
 
 
 
+def generate_symbolWidgets(symbols, chooser, symbolLayout,
+                           synchronizer):
+    """ Generate all symbolSelectorWidgets.
+
+    For each category, we create a symbolSelectorWidget, add
+    the category to the selector, and store the widget in a dictionary
+    with the category name as key.
+    The mainWindow then installs the proper widget based on the
+    user selection.
+    """
+
+    selectorWidgets = {}
+    symbolsByCategory = sort_symbols_by_category(symbols)
+    for (symbolCategory, symbols) in symbolsByCategory:
+
+        chooser.addItem(symbolCategory)
+
+        # layout for current tab
+        currentWidget = QWidget()
+        layout        = QGridLayout()
+
+        # sort symbols in requested order
+        rawList = []
+        for symbol in symbols:
+            rawList.append((symbol["category_pos"].toInt()[0], symbol))
+
+        rawList.sort(lambda x,y: cmp(x[0], y[0])) 
+       
+        # add them to the tab
+        for (row, symbolEntry) in enumerate(rawList):
+            symbol = symbolEntry[1]
+            newItem = SymbolSelectorItem(symbol, synchronizer)
+            layout.addWidget(newItem, row, 0)
+            layout.addWidget(QLabel(symbol["name"]), row, 1)
+
+        currentWidget.setLayout(layout)
+        scrollArea = QScrollArea()
+        scrollArea.setWidget(currentWidget)
+        selectorWidgets[symbolCategory] = scrollArea
+
+    # make "basic" the top item if it exists, otherwise
+    # we pick whatever happens to be top
+    basicID = chooser.findText("basic")
+    if basicID != -1:
+        chooser.setCurrentIndex(basicID)
+        activeWidget = selectorWidgets[QString("basic")]
+    else:
+        activeWidget = selectorWidgets[chooser.currentText()]
+
+    symbolLayout.addWidget(activeWidget)
+
+    return (activeWidget, selectorWidgets)
+
+    
+
 def add_symbols_to_widget(symbols, widget, synchronizer):
     """
     Adds all passed knitting symbols to the tab widget.

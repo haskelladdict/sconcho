@@ -131,7 +131,7 @@
    <property name="minimumSize">
     <size>
      <width>350</width>
-     <height>89</height>
+     <height>154</height>
     </size>
    </property>
    <property name="features">
@@ -144,19 +144,16 @@
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <widget class="QTabWidget" name="symbolWidgetBase">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="currentIndex">
-        <number>-1</number>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QComboBox" name="patternCategoryChooser"/>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="symbolSelectorLayout"/>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>

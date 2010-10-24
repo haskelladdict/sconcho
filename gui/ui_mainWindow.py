@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sat Oct 23 14:14:16 2010
+# Created: Sun Oct 24 12:47:04 2010
 #      by: PyQt4 UI code generator 4.7.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -75,21 +75,22 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(4)
         sizePolicy.setHeightForWidth(self.dockWidget_3.sizePolicy().hasHeightForWidth())
         self.dockWidget_3.setSizePolicy(sizePolicy)
-        self.dockWidget_3.setMinimumSize(QtCore.QSize(350, 89))
+        self.dockWidget_3.setMinimumSize(QtCore.QSize(350, 154))
         self.dockWidget_3.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
         self.dockWidget_3.setObjectName(_fromUtf8("dockWidget_3"))
         self.dockWidgetContents_3 = QtGui.QWidget()
         self.dockWidgetContents_3.setObjectName(_fromUtf8("dockWidgetContents_3"))
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.dockWidgetContents_3)
+        self.verticalLayout_3 = QtGui.QVBoxLayout(self.dockWidgetContents_3)
+        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
+        self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.symbolWidgetBase = QtGui.QTabWidget(self.dockWidgetContents_3)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.symbolWidgetBase.sizePolicy().hasHeightForWidth())
-        self.symbolWidgetBase.setSizePolicy(sizePolicy)
-        self.symbolWidgetBase.setObjectName(_fromUtf8("symbolWidgetBase"))
-        self.verticalLayout_2.addWidget(self.symbolWidgetBase)
+        self.patternCategoryChooser = QtGui.QComboBox(self.dockWidgetContents_3)
+        self.patternCategoryChooser.setObjectName(_fromUtf8("patternCategoryChooser"))
+        self.verticalLayout_2.addWidget(self.patternCategoryChooser)
+        self.symbolSelectorLayout = QtGui.QVBoxLayout()
+        self.symbolSelectorLayout.setObjectName(_fromUtf8("symbolSelectorLayout"))
+        self.verticalLayout_2.addLayout(self.symbolSelectorLayout)
+        self.verticalLayout_3.addLayout(self.verticalLayout_2)
         self.dockWidget_3.setWidget(self.dockWidgetContents_3)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget_3)
         self.toolBar = QtGui.QToolBar(MainWindow)
@@ -171,7 +172,6 @@ class Ui_MainWindow(object):
         self.toolBar.addSeparator()
 
         self.retranslateUi(MainWindow)
-        self.symbolWidgetBase.setCurrentIndex(-1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

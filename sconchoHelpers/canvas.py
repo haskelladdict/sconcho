@@ -20,8 +20,6 @@
 #######################################################################
 
 from PyQt4.QtCore import QPoint, QPointF
-#from PyQt4.QtGui import QFont
-
 import math
 
 

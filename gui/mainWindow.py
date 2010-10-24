@@ -30,7 +30,7 @@ import sconchoHelpers.text as text
 import sconchoHelpers.settings as settings
 import sconchoIO.io as io
 import sconchoIO.symbolParser as parser
-from symbolWidget import add_symbols_to_widget, SymbolSynchronizer
+from symbolWidget import generate_symbolWidgets, SymbolSynchronizer
 from colorWidget import ColorWidget, ColorSynchronizer
 from patternCanvas import PatternCanvas
 
@@ -124,6 +124,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Proxy for adding all the knitting symbols to the symbolWidget
         and connecting it to the symbol changed slot.
+
+        NOTE: Unfortunately, the order of the connections below matters.
+        Connect the patternCategoryChooser only after it has been fully
+        set up. Otherwise we get spurious selector widget switches until
+        the chooser has established the correct order.
         """
 
         symbolTracker = SymbolSynchronizer()
@@ -134,11 +139,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(symbolTracker, 
                      SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
                      self.activeSymbolWidget.active_symbol_changed)
+        
+        (self.activeSymbolSelectorWidget, self.symbolSelectorWidgets) = \
+                        generate_symbolWidgets(knittingSymbols,
+                                               self.patternCategoryChooser,
+                                               self.symbolSelectorLayout,
+                                               symbolTracker)
 
-        add_symbols_to_widget(knittingSymbols, 
-                              self.symbolWidgetBase, symbolTracker)
+        self.connect(self.patternCategoryChooser,
+                     SIGNAL("currentIndexChanged(QString)"),
+                     self.update_symbol_widget)
+        
 
 
+    def update_symbol_widget(self, categoryName):
+        """ Update the currently visible symbolWidgetSelector
+
+        Triggered by the user choosing a new symbol category removes
+        the previous symbolSelectorWidget and installs the selected
+        one.
+        """
+
+        self.symbolSelectorLayout.removeWidget(self.activeSymbolSelectorWidget)
+        self.activeSymbolSelectorWidget.setParent(None)
+
+        self.activeSymbolSelectorWidget = self.symbolSelectorWidgets[categoryName]
+        self.symbolSelectorLayout.addWidget(self.activeSymbolSelectorWidget)
+        
+        
 
 
     def initialize_color_widget(self):
