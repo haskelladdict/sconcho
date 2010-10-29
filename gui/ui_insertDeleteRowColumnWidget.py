@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/insertDeleteRowColumnWidget.ui'
 #
-# Created: Thu Oct 28 22:50:35 2010
+# Created: Thu Oct 28 23:18:46 2010
 #      by: PyQt4 UI code generator 4.8
 #
 # WARNING! All changes made in this file will be lost!
@@ -154,7 +154,7 @@ class Ui_InsertDeleteRowColumnWidget(object):
         self.verticalLayout_2.addLayout(self.verticalLayout)
 
         self.retranslateUi(InsertDeleteRowColumnWidget)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(InsertDeleteRowColumnWidget)
 
     def retranslateUi(self, InsertDeleteRowColumnWidget):

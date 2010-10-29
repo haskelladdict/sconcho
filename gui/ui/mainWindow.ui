@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>sconcho - das geht nun wirklich nicht</string>
+   <string>sconcho: create your own pattern charts</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../icons.qrc">
@@ -138,7 +138,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>knitting symbols</string>
+    <string>sconcho: available knitting symbols</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
