@@ -23,6 +23,11 @@
 from PyQt4.QtCore import QString
 
 
+########################################################################
+##
+## gui/mainWindow.py messages
+##
+########################################################################
 sconchoDescription = QString(
     "<b>sconcho</b> is a knitting chart "
     "design tool capable of producing print quality charts.<br><br>"
@@ -64,3 +69,21 @@ unknownImageFormatTitle = QString("sconcho: Unknown image format")
 unknownImageFormatText  = QString("Unknown image format to export to. "
                                   "Please choose one of the supported image "
                                   "formats.")
+
+
+
+########################################################################
+##
+## sconchoIO/io.py messages
+##
+########################################################################
+domParserErrorTitle = QString("sconcho: DOM parser error")
+domParserErrorText  = QString("Error parsing\n %s \nat line %d column %d; %s")
+
+patternGridItemParseErrorTitle = QString("sconcho: Failed to parse pattern grid")
+patternGridItemParseErrorText  = QString("Failed to read pattern grid from "
+                                         "project file. The file may be damaged.")
+
+patternLegendItemParseErrorTitle = QString("sconcho: Failed to parse legend")
+patternLegendItemParseErrorText  = QString("Failed to read legend from "
+                                           "project file. The file may be damaged.")

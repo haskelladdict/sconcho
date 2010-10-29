@@ -27,6 +27,8 @@ from PyQt4.QtGui import QColor, QMessageBox, QImage, QPainter, \
 from PyQt4.QtXml import QDomDocument, QDomNode, QDomElement
 from gui.patternCanvas import PatternGridItem, PatternLegendItem, \
                               legendItem_symbol, legendItem_text
+import helpers.messages as msg
+
 
 
 
@@ -217,8 +219,8 @@ def read_project(readFileName):
     readDoc = QDomDocument()
     (status, errMsg, errLine, errCol) = readDoc.setContent(readFile, True)
     if not status:
-        QMessageBox.critical(None, "sconcho DOM Parser",
-                             "Error parsing\n %s \nat line %d column %d; %s"
+        QMessageBox.critical(None, msg.domParserErrorTitle,
+                             msg.domParserErrorText
                              % (unicode(readFileName), errLine, errCol,
                                 unicode(errMsg)))
 
@@ -298,9 +300,9 @@ def parse_patternGridItem(item):
                     "category" : category,
                     "name"     : name }
     except:
-        QMessageBox.critical(None, "Error", "Failed to parse pattern. " + \
-                            "Please check the file for an incomplete patternEntry.",
-                            QMessageBox.Ok)
+        QMessageBox.critical(None, msg.patternGridItemParseErrorTitle,
+                             msg.patternGridItemParseErrorText,
+                             QMessageBox.Close)
         return None
 
     return newItem
@@ -350,9 +352,9 @@ def parse_legendItem(item):
                     "labelYPos" : labelYPos, 
                     "color"     : color }
     except:
-        QMessageBox.critical(None, "Error", "Failed to parse legend. " + \
-                            "Please check the file for an incomplete legend entry.",
-                            QMessageBox.Ok)
+        QMessageBox.critical(None, msg.patternLegendItemParseErrorTitle,
+                             msg.patternLegendItemParseErrorText,
+                             QMessageBox.Close)
         return None
 
     return newItem
