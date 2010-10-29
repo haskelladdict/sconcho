@@ -367,7 +367,7 @@ class PatternCanvas(QGraphicsScene):
             selectedItems = get_row_items(self.items(), row)
 
         for item in selectedItems:
-            item._select()
+            item.press_item()
 
 
 
@@ -743,14 +743,24 @@ class PatternGridItem(QGraphicsSvgItem):
         Handle user press events on the item.
         """
 
+        self.press_item()
+
+
+
+    def press_item(self):
+        """
+        This functions dispatches all events trigger
+        by a press event on the item.
+        """
+
         if not self.__selected:
-            self._select()
+            self.__select()
         else:
-            self._unselect()
+            self.__unselect()
 
 
 
-    def _unselect(self):
+    def __unselect(self):
         """
         Unselects a given selected cell. 
         """
@@ -762,7 +772,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
 
-    def _select(self):
+    def __select(self):
         """
         Selects a given unselected cell. 
         """
