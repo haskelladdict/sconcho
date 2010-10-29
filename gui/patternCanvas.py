@@ -26,8 +26,8 @@ from PyQt4.QtGui import QGraphicsScene, QGraphicsObject, QPen, QColor, \
                         QBrush, QGraphicsTextItem, QFontMetrics, QMenu, \
                         QAction, QGraphicsItem, QMessageBox
 from PyQt4.QtSvg import QGraphicsSvgItem, QSvgWidget, QSvgRenderer
-from sconchoHelpers.settings import get_grid_dimensions, get_text_font
-from sconchoHelpers.canvas import is_click_in_grid, is_click_on_labels, \
+from helpers.settings import get_grid_dimensions, get_text_font
+from helpers.canvas import is_click_in_grid, is_click_on_labels, \
                                   convert_pos_to_row_col
 from insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
 

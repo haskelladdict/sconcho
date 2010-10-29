@@ -201,7 +201,7 @@
      <normaloff>:/icons/filenew.png</normaloff>:/icons/filenew.png</iconset>
    </property>
    <property name="text">
-    <string>New</string>
+    <string>New...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -213,7 +213,7 @@
      <normaloff>:/icons/fileopen.png</normaloff>:/icons/fileopen.png</iconset>
    </property>
    <property name="text">
-    <string>Open</string>
+    <string>Open...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -237,7 +237,7 @@
      <normaloff>:/icons/filesave.png</normaloff>:/icons/filesave.png</iconset>
    </property>
    <property name="text">
-    <string>Save as</string>
+    <string>Save as...</string>
    </property>
   </action>
   <action name="actionExport">
@@ -246,7 +246,7 @@
      <normaloff>:/icons/fileexport.png</normaloff>:/icons/fileexport.png</iconset>
    </property>
    <property name="text">
-    <string>Export</string>
+    <string>Export...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -270,7 +270,7 @@
      <normaloff>:/icons/fileprint.png</normaloff>:/icons/fileprint.png</iconset>
    </property>
    <property name="text">
-    <string>Print</string>
+    <string>Print...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>

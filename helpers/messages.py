@@ -45,3 +45,9 @@ sconchoDescription = QString(
     "http://www.gnu.org/licenses</a><br><br>"
     "Please contact the author via <a href=\"mailto:haskelladdict@users.sourceforge.org\">"
     "email</a> for suggestions, comments, or in case of problems")
+
+
+startNewPatternTitle = QString("sconcho: Start new project.")
+startNewPatternText  = QString("Starting a new project will erase your current "
+                               "one. Would you like to proceed?")
+

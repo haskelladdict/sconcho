@@ -26,8 +26,8 @@ from PyQt4.QtGui import qApp, QMainWindow, QMessageBox, QFileDialog, \
                         QFrame, QColor
 from PyQt4.QtSvg import QSvgWidget
 from ui_mainWindow import Ui_MainWindow
-import sconchoHelpers.text as text
-import sconchoHelpers.settings as settings
+import helpers.messages as msg
+import helpers.settings as settings
 import sconchoIO.io as io
 import sconchoIO.symbolParser as parser
 from symbolWidget import generate_symbolWidgets, SymbolSynchronizer
@@ -195,7 +195,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Show the about sconcho dialog.
         """
-        QMessageBox.about(self, "sconcho", text.sconchoDescription)
+        QMessageBox.about(self, "sconcho", msg.sconchoDescription)
 
 
 
@@ -214,10 +214,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         current pattern.
         """
 
-        answer = QMessageBox.question(self, "start new pattern",
-                                      "Starting a new project will erase " \
-                                      "your current pattern. Do you want to " \
-                                      "proceed?",
+        answer = QMessageBox.question(self, msg.startNewPatternTitle,
+                                      msg.startNewPatternText,
                                       QMessageBox.Ok, QMessageBox.Cancel)
 
         if answer == QMessageBox.Ok:
