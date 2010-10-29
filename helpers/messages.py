@@ -47,7 +47,20 @@ sconchoDescription = QString(
     "email</a> for suggestions, comments, or in case of problems")
 
 
-startNewPatternTitle = QString("sconcho: Start new project.")
+startNewPatternTitle = QString("sconcho: Start new project")
 startNewPatternText  = QString("Starting a new project will erase your current "
                                "one. Would you like to proceed?")
 
+saveSconchoProjectTitle = QString("sconcho: Save project")
+openSconchoProjectTitle = QString("sconcho: Open project")
+exportPatternTitle      = QString("sconcho: Export pattern")
+
+unknownSpfExtensionTitle = QString("sconcho: Unknown extension")
+unknownSpfExtensionText  = QString("Unknown extension for sconcho project file. "
+                                   "Please save a sconcho patter file with a "
+                                   ".spf extenstion.")
+
+unknownImageFormatTitle = QString("sconcho: Unknown image format")
+unknownImageFormatText  = QString("Unknown image format to export to. "
+                                  "Please choose one of the supported image "
+                                  "formats.")

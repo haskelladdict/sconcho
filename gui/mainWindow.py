@@ -246,7 +246,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         location = self.__saveFilePath if self.__saveFilePath else QDir.homePath()
         saveFilePath = QFileDialog.getSaveFileName(self,
-                                                   "save as sconcho pattern file",
+                                                   msg.saveSconchoProjectTitle,
                                                    location,
                                                    "sconcho pattern files (*.spf)")
 
@@ -259,10 +259,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not extension:
                 saveFilePath = saveFilePath + ".spf"
             else:
-                QMessageBox.warning(self, "Warning",
-                                    "Unknown extension " + extension +
-                                    " - please save as .spf!",
-                                    QMessageBox.Ok)
+                QMessageBox.warning(self, msg.unknownSpfExtensionTitle,
+                                    msg.unknownSpfExtensionText,
+                                    QMessageBox.Close)
                 return
 
         self.set_project_save_file(saveFilePath)
@@ -279,7 +278,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         readFilePath = QFileDialog.getOpenFileName(self,
-                                                   "open sconcho pattern file",
+                                                   msg.openSconchoProjectTitle,
                                                    QDir.currentPath(),
                                                    "sconcho pattern files (*.spf)")
 
@@ -303,7 +302,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         exportFilePath = QFileDialog.getSaveFileName(self,
-                                                     "Export pattern as image file",
+                                                     msg.exportPatternTitle,
                                                      QDir.homePath(),
                                                      "Image files (*.png *.tif)")
 
@@ -313,9 +312,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # check the extension; if none is present add .spf
         extension = QFileInfo(exportFilePath).completeSuffix()
         if extension != "png" and extension != "tif":
-            QMessageBox.warning(self, "Warning",
-                                "Unknown image file format " + extension,
-                                QMessageBox.Ok)
+            QMessageBox.warning(self, msg.unknownImageFormatTitle,
+                                msg.unknownImageFormatText,
+                                QMessageBox.Close)
             return
 
         io.export_scene(self.__canvas, exportFilePath)
