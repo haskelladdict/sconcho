@@ -63,8 +63,12 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
         for (row, symbolEntry) in enumerate(rawList):
             symbol = symbolEntry[1]
             newItem = SymbolSelectorItem(symbol, synchronizer)
+            newLabel = SymbolSelectorLabel(symbol)
             layout.addWidget(newItem, row, 0)
-            layout.addWidget(QLabel(symbol["name"]), row, 1)
+            layout.addWidget(newLabel, row, 1)
+
+            QObject.connect(newLabel, SIGNAL("label_clicked()"),
+                            newItem.click_me)
 
         currentWidget.setLayout(layout)
         scrollArea = QScrollArea()
@@ -162,7 +166,7 @@ class SymbolSelectorItem(QFrame):
 
     def __init__(self, symbol, synchronizer, parent = None):
 
-        QFrame.__init__(self, parent)
+        super(QFrame, self).__init__(parent)
         self.__synchronizer = synchronizer
         self.__symbol = symbol
 
@@ -216,6 +220,14 @@ class SymbolSelectorItem(QFrame):
                                       "border-color: black;" \
                                       "background-color: " + backColor + ";"
 
+
+    def click_me(self):
+        """
+        Encapsulates all events when somebody clicks on us.
+        """
+        
+        self.__synchronizer.select(self)
+        
     
 
     def mousePressEvent(self, event): 
@@ -224,7 +236,7 @@ class SymbolSelectorItem(QFrame):
         for selecting.
         """
 
-        self.__synchronizer.select(self)
+        self.click_me()
 
 
 
@@ -243,6 +255,37 @@ class SymbolSelectorItem(QFrame):
         """
 
         self.setStyleSheet(self.__unselectedStyleSheet)
+
+
+
+
+#########################################################
+## 
+## class for managing a single symbol label
+##
+#########################################################
+class SymbolSelectorLabel(QLabel):
+
+    # signals
+    label_clicked = pyqtSignal()
+
+
+    def __init__(self, symbol, parent = None):
+
+        super(QLabel, self).__init__(symbol["name"], parent)
+
+        # define and set stylesheets
+        self.setToolTip(symbol["description"])
+        
+
+
+    def mousePressEvent(self, event): 
+        """
+        Acts on mouse press events and uses the synchronizer
+        for selecting.
+        """
+
+        self.label_clicked.emit()
 
 
 
