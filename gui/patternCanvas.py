@@ -665,6 +665,22 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def toggle_label_visibility(self, status):
+        """
+        Per request from main window toggle
+        the visibility of the labels.
+        """
+
+        for item in self.items():
+            if isinstance(item, PatternLabelItem):
+                if status:
+                    item.show()
+                else:
+                    item.hide()
+
+
+
+
     def toggle_legend_visibility(self, status):
         """
         Per request from main window toggle the legend
@@ -683,6 +699,7 @@ class PatternCanvas(QGraphicsScene):
             
 
 
+
     def toggle_pattern_grid_visibility(self, status):
         """
         Per request from main window toggle the pattern grid
@@ -690,8 +707,7 @@ class PatternCanvas(QGraphicsScene):
         """
 
         for item in self.items():
-            if isinstance(item, PatternGridItem) or \
-               isinstance(item, PatternLabelItem):
+            if isinstance(item, PatternGridItem):
                 if status:
                     item.show()
                 else:

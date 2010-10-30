@@ -117,6 +117,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPrint, SIGNAL("triggered()"),
                      self.print_dialog)
 
+        self.connect(self.actionShow_grid_labels, SIGNAL("toggled(bool)"),
+                     self.__canvas.toggle_label_visibility)
+        
         self.connect(self.actionShow_legend, SIGNAL("toggled(bool)"),
                      self.__canvas.toggle_legend_visibility)
 

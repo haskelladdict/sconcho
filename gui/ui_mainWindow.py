@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Thu Oct 28 23:18:45 2010
+# Created: Sat Oct 30 10:45:27 2010
 #      by: PyQt4 UI code generator 4.8
 #
 # WARNING! All changes made in this file will be lost!
@@ -144,6 +144,10 @@ class Ui_MainWindow(object):
         self.actionShow_legend.setCheckable(True)
         self.actionShow_legend.setChecked(True)
         self.actionShow_legend.setObjectName(_fromUtf8("actionShow_legend"))
+        self.actionShow_grid_labels = QtGui.QAction(MainWindow)
+        self.actionShow_grid_labels.setCheckable(True)
+        self.actionShow_grid_labels.setChecked(True)
+        self.actionShow_grid_labels.setObjectName(_fromUtf8("actionShow_grid_labels"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -156,6 +160,7 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionQuit)
         self.menuEdit.addAction(self.actionPreferences)
         self.menuView.addAction(self.actionShow_pattern_grid)
+        self.menuView.addAction(self.actionShow_grid_labels)
         self.menuView.addAction(self.actionShow_legend)
         self.menuHelp.addAction(self.actionAbout_sconcho)
         self.menuHelp.addAction(self.actionAbout_Qt4)
@@ -200,5 +205,6 @@ class Ui_MainWindow(object):
         self.actionPrint.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+P", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_pattern_grid.setText(QtGui.QApplication.translate("MainWindow", "show pattern grid", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_legend.setText(QtGui.QApplication.translate("MainWindow", "show legend", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_grid_labels.setText(QtGui.QApplication.translate("MainWindow", "show grid labels", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc
