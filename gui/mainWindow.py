@@ -295,7 +295,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         (patternGridItems, legendItems, colors) = io.read_project(readFilePath)
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
-        self.__canvas.load_previous_canvas(knittingSymbols, patternGridItems,
+        self.__canvas.load_previous_pattern(knittingSymbols, patternGridItems,
                                            legendItems)
         set_up_colors(self.__colorWidget, colors)
         readFileName = QFileInfo(readFilePath).fileName()

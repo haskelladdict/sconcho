@@ -221,6 +221,7 @@ class SymbolSelectorItem(QFrame):
                                       "background-color: " + backColor + ";"
 
 
+
     def click_me(self):
         """
         Encapsulates all events when somebody clicks on us.

@@ -54,10 +54,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         self.setupUi(self)
 
         # set the maximum of the spinbox
-        #self.__numRows = numRows
         self.set_upper_row_limit(numRows)
-
-        #self.__numColumns = numCols
         self.set_upper_column_limit(numCols)
 
         # install some connections
@@ -85,8 +82,6 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if pivot <= 0:
             return
 
-        #self.__numRows += numRows
-        #self.set_upper_row_limit(self.__numRows)
         self.insert_row.emit(numRows, insertMode, pivot)
         
         
@@ -101,8 +96,6 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if deadRowID <= 0:
             return
 
-        #self.__numRows -= 1
-        #self.set_upper_row_limit(self.__numRows)
         self.delete_row.emit(deadRowID)
 
 
@@ -119,8 +112,6 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if pivot <= 0:
             return
 
-        #self.__numColumns += numColumns
-        #self.set_upper_column_limit(self.__numColumns)
         self.insert_column.emit(numColumns, insertMode, pivot)
 
 
@@ -135,8 +126,6 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if deadColumnID <=0:
             return
 
-        #self.__numColumns -= 1
-        #self.set_upper_column_limit(self.__numColumns)
         self.delete_column.emit(deadColumnID)
         
 

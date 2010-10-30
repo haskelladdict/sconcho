@@ -27,7 +27,8 @@ from __future__ import absolute_import
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
                           Qt, QRectF)
 from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
-                        QPrinter, QPrintDialog, QDialog)
+                         QPrinter, QPrintDialog, QDialog, QApplication,
+                         QCursor)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from gui.patternCanvas import (PatternGridItem, PatternLegendItem,
                                legendItem_symbol, legendItem_text)
@@ -40,7 +41,9 @@ def save_project(canvas, colors, settings, saveFileName):
     """
     Toplevel writer routine.
     """
-
+    
+    QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+    
     writeFile = QFile(saveFileName)
     if not writeFile.open(QIODevice.WriteOnly | QIODevice.Truncate):
         return
@@ -57,6 +60,8 @@ def save_project(canvas, colors, settings, saveFileName):
     # save it
     writeDoc.save(writeStream, 4)
     writeFile.close()
+    
+    QApplication.restoreOverrideCursor()
 
 
 
@@ -216,6 +221,8 @@ def read_project(readFileName):
     Toplevel reader routine.
     """
 
+    QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+    
     readFile = QFile(readFileName)
     if not readFile.open(QIODevice.ReadOnly):
         return
@@ -259,6 +266,8 @@ def read_project(readFileName):
             projectColors = parse_colors(item)
 
         node = node.nextSibling()
+
+    QApplication.restoreOverrideCursor()
 
     return (patternGridItems, legendItems, projectColors)
 
@@ -385,7 +394,9 @@ def export_scene(canvas, exportFileName):
     """
     This function exports the scene to a file.
     """
-
+    
+    QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+    
     # NOTE: We seem to need the 1px buffer region to avoid
     # the image being cut off
     theScene = canvas.itemsBoundingRect()
@@ -403,6 +414,8 @@ def export_scene(canvas, exportFileName):
     painter.end()
     finalImage.save(exportFileName)
 
+    QApplication.restoreOverrideCursor()
+
 
 
 def print_scene(canvas):
@@ -410,6 +423,8 @@ def print_scene(canvas):
     This function prints the content of the canvas.
     """
 
+    QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+    
     aPrinter = QPrinter(QPrinter.HighResolution)
     printDialog = QPrintDialog(aPrinter)
     
@@ -425,5 +440,4 @@ def print_scene(canvas):
         canvas.render(painter, QRectF(), theScene)
         painter.end()
 
-
-
+    QApplication.restoreOverrideCursor()

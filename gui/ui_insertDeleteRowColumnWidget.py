@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/insertDeleteRowColumnWidget.ui'
 #
-# Created: Sat Oct 30 10:45:27 2010
+# Created: Sat Oct 30 11:48:19 2010
 #      by: PyQt4 UI code generator 4.8
 #
 # WARNING! All changes made in this file will be lost!
@@ -35,6 +35,7 @@ class Ui_InsertDeleteRowColumnWidget(object):
         self.horizontalLayout.addWidget(self.label)
         self.numInsertRows = QtGui.QSpinBox(self.tab)
         self.numInsertRows.setMinimum(1)
+        self.numInsertRows.setMaximum(1000)
         self.numInsertRows.setObjectName(_fromUtf8("numInsertRows"))
         self.horizontalLayout.addWidget(self.numInsertRows)
         self.label_2 = QtGui.QLabel(self.tab)
@@ -92,6 +93,7 @@ class Ui_InsertDeleteRowColumnWidget(object):
         self.horizontalLayout_3.addWidget(self.label_4)
         self.numInsertColumns = QtGui.QSpinBox(self.tab_3)
         self.numInsertColumns.setMinimum(1)
+        self.numInsertColumns.setMaximum(1000)
         self.numInsertColumns.setObjectName(_fromUtf8("numInsertColumns"))
         self.horizontalLayout_3.addWidget(self.numInsertColumns)
         self.label_5 = QtGui.QLabel(self.tab_3)
