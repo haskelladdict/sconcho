@@ -21,14 +21,14 @@
 
 from __future__ import division
 from __future__ import print_function
-#from __future__ import unicode_literals
+from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           QString, Qt, QSize, QFile)
-from PyQt4.QtGui import (qApp, QMainWindow, QMessageBox, QFileDialog,
-                        QWidget, QGridLayout, QHBoxLayout, QLabel, 
-                        QFrame, QColor)
+from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
+                         QWidget, QGridLayout, QHBoxLayout, QLabel, 
+                         QFrame, QColor)
 from PyQt4.QtSvg import QSvgWidget
 from gui.ui_mainWindow import Ui_MainWindow
 import util.helpers.messages as msg
@@ -63,6 +63,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__saveFilePath = None
         self.__colorWidget  = None
+        self.__canvasIsSaved = True
 
         # set up the statusBar
         self.activeSymbolWidget = ActiveSymbolWidget()
@@ -91,7 +92,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         
         self.connect(self.actionQuit, SIGNAL("triggered()"),
-            qApp, SLOT("quit()"))
+                     self.quit_sconcho)
 
         self.connect(self.actionAbout_sconcho, SIGNAL("triggered()"),
                      self.show_about_sconcho)
@@ -125,9 +126,43 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.actionShow_pattern_grid, SIGNAL("toggled(bool)"),
                      self.__canvas.toggle_pattern_grid_visibility)
-
-
         
+        self.connect(self.__canvas, SIGNAL("scene_changed()"),
+                     self.canvas_changed)
+
+
+
+    def canvas_changed(self):
+        """
+        This function marks the canvas as dirty, aka it needs
+        to be saved.
+        """
+
+        self.__canvasIsSaved = False
+
+
+
+    def quit_sconcho(self):
+        """
+        Quit sconcho. If the canvas is currently dirty, we ask the
+        user if she wants to save it.
+        """
+
+        if not self.__canvasIsSaved:
+            messageBox = QMessageBox.question(self,
+                            msg.wantToSavePatternTitle, 
+                            msg.wantToSavePatternText,
+                            QMessageBox.Yes | QMessageBox.No)
+
+            if (messageBox == QMessageBox.Yes):
+                self.save_as_pattern_dialog()
+
+        quit()
+
+            
+
+         
+
     def initialize_symbol_widget(self, knittingSymbols):
         """
         Proxy for adding all the knitting symbols to the symbolWidget
@@ -233,18 +268,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def save_pattern_dialog(self):
         """
-        This function opens a save pattern dialog.
+        This function checks if we already have a filename.
+        If yes, save it, if not, ask for one.
         """
 
         if not self.__saveFilePath:
-            if not self.save_as_pattern_dialog():
-                return
-
-        io.save_project(self.__canvas, self.__colorWidget.get_all_colors(),
-                        self.__settings, self.__saveFilePath)
-        
-        saveFileName = QFileInfo(self.__saveFilePath).fileName()
-        self.statusBar().showMessage("successfully saved " + saveFileName, 3000)
+            self.save_as_pattern_dialog()
+        else:
+            self.__save_pattern()
 
 
 
@@ -286,10 +317,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
 
         self.set_project_save_file(saveFilePath)
+        self.__save_pattern()
+
+
+
+    def __save_pattern(self):
+        """
+        Main save routine.
+        """
+
         io.save_project(self.__canvas, self.__colorWidget.get_all_colors(),
-                        self.__settings, saveFilePath)
-        saveFileName = QFileInfo(saveFilePath).fileName()
+                        self.__settings, self.__saveFilePath)
+        
+        saveFileName = QFileInfo(self.__saveFilePath).fileName()
         self.statusBar().showMessage("successfully saved " + saveFileName, 3000)
+        self.__canvasIsSaved = True
+
 
 
 

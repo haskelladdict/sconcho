@@ -50,6 +50,7 @@ class PatternCanvas(QGraphicsScene):
 
     # signals
     row_col_count_changed = pyqtSignal(QString, int)
+    scene_changed = pyqtSignal()
     
 
     def __init__(self, theSettings, defaultSymbol, parent = None):
@@ -356,9 +357,10 @@ class PatternCanvas(QGraphicsScene):
              if is_click_on_labels(col, row, self.__numColumns, self.__numRows):
                  self.handle_right_click_on_labels(col, row)
 
+        # tell our main window that something changed
+        self.scene_changed.emit()
 
         return QGraphicsScene.mousePressEvent(self, event)
-
 
 
 

@@ -56,40 +56,45 @@ sconchoDescription = QString(
     "email</a> for suggestions, comments, or in case of problems")
 
 
-startNewPatternTitle = QString("sconcho: Start new project")
-startNewPatternText  = QString("Starting a new project will erase your current "
-                               "one. Would you like to proceed?")
+startNewPatternTitle = "sconcho: Start new project"
+startNewPatternText  = ("Starting a new project will erase your current "
+                       "one. Would you like to proceed?")
 
-saveSconchoProjectTitle = QString("sconcho: Save project")
-openSconchoProjectTitle = QString("sconcho: Open project")
-exportPatternTitle      = QString("sconcho: Export pattern")
+saveSconchoProjectTitle = "sconcho: Save project"
+openSconchoProjectTitle = "sconcho: Open project"
+exportPatternTitle      = "sconcho: Export pattern"
 
-unknownSpfExtensionTitle = QString("sconcho: Unknown extension")
-unknownSpfExtensionText  = QString("Unknown extension for sconcho project file. "
-                                   "Please save a sconcho patter file with a "
-                                   ".spf extenstion.")
+unknownSpfExtensionTitle = "sconcho: Unknown extension"
+unknownSpfExtensionText  = ("Unknown extension for sconcho project file. "
+                           "Please save a sconcho patter file with a "
+                           ".spf extenstion.")
 
-unknownImageFormatTitle = QString("sconcho: Unknown image format")
-unknownImageFormatText  = QString("Unknown image format to export to. "
-                                  "Please choose one of the supported image "
-                                  "formats.")
+unknownImageFormatTitle = "sconcho: Unknown image format"
+unknownImageFormatText  = ("Unknown image format to export to. "
+                           "Please choose one of the supported image "
+                           "formats.")
 
-patternFileExistsTitle = QString("sconcho: Pattern file exists")
+patternFileExistsTitle = "sconcho: Pattern file exists"
 patternFileExistsText = ("The pattern file %s already exists.\n"
                         "Do you want to overwrite it?")
+
+wantToSavePatternTitle = "sconcho: Pattern file not saved"
+wantToSavePatternText = ("Would you like to save your pattern "
+                         "before exiting sconcho?")
+
 
 ########################################################################
 ##
 ## sconchoIO/io.py messages
 ##
 ########################################################################
-domParserErrorTitle = QString("sconcho: DOM parser error")
+domParserErrorTitle = "sconcho: DOM parser error"
 domParserErrorText  = ("Error parsing\n %s \nat line %d column %d; %s")
 
-patternGridItemParseErrorTitle = QString("sconcho: Failed to parse pattern grid")
-patternGridItemParseErrorText  = QString("Failed to read pattern grid from "
-                                         "project file. The file may be damaged.")
+patternGridItemParseErrorTitle = "sconcho: Failed to parse pattern grid"
+patternGridItemParseErrorText  = ("Failed to read pattern grid from "
+                                  "project file. The file may be damaged.")
 
-patternLegendItemParseErrorTitle = QString("sconcho: Failed to parse legend")
-patternLegendItemParseErrorText  = QString("Failed to read legend from "
-                                           "project file. The file may be damaged.")
+patternLegendItemParseErrorTitle = "sconcho: Failed to parse legend"
+patternLegendItemParseErrorText  = ("Failed to read legend from "
+                                    "project file. The file may be damaged.")
