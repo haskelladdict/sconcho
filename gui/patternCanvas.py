@@ -30,13 +30,13 @@ from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF,
                           QPoint)
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
-                         QAction, QGraphicsItem, QMessageBox, QApplication,
-                         QCursor)
+                         QAction, QGraphicsItem, QMessageBox)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 from util.helpers.settings import get_grid_dimensions, get_text_font
 from util.helpers.canvas import (is_click_in_grid, is_click_on_labels, 
                             convert_pos_to_row_col)
 from gui.insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
+from util.helpers.misc import wait_cursor
 
 
 
@@ -322,7 +322,7 @@ class PatternCanvas(QGraphicsScene):
                         self.removeItem(item)
 
                     # insert as many new items as we can fit
-                    numNewItems = totalWidth/width
+                    numNewItems = int(totalWidth/width)
                     for i in range(0,numNewItems):
                         item = self.create_pattern_grid_item(origin,
                                     self.__unitCellDim, column, row, width, 1,
@@ -420,14 +420,12 @@ class PatternCanvas(QGraphicsScene):
         addDeleteDialog.exec_()
 
 
-
+    @wait_cursor
     def insert_row(self, num, mode, rowPivot):
         """
         Deals with requests to insert a row. This operation might
         take some time so we switch to a wait cursor.
         """
-
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
 
         pivot = self.convert_canvas_row_to_internal(rowPivot)
         assert(pivot >= 0 and pivot < self.__numRows)
@@ -451,17 +449,14 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
         self.row_col_count_changed.emit("numRows", self.__numRows)
 
-        QApplication.restoreOverrideCursor()
 
 
-
+    @wait_cursor
     def delete_row(self, canvasRow):
         """
         Deals with requests to delete a specific row.
         """
 
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-        
         row = self.convert_canvas_row_to_internal(canvasRow)
 
         for graphicsItem in self.items():
@@ -476,17 +471,14 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
         self.row_col_count_changed.emit("numRows", self.__numRows)
 
-        QApplication.restoreOverrideCursor()
-
         
 
+    @wait_cursor
     def insert_column(self, num, mode, columnPivot):
         """
         Deals with requests to insert a column.
         """
 
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-        
         pivot = self.convert_canvas_column_to_internal(columnPivot)
         assert(pivot >= 0 and pivot < self.__numColumns)
 
@@ -522,17 +514,14 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
         self.row_col_count_changed.emit("numColumns", self.__numColumns)          
 
-        QApplication.restoreOverrideCursor()
 
 
-
+    @wait_cursor
     def delete_column(self, deadColumn):
         """
         Deals with requests to delete a specific column.
         """
 
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-        
         column = self.convert_canvas_column_to_internal(deadColumn)
 
         # in order for deleting of a column at deadColumn to succeed
@@ -560,8 +549,6 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
         self.row_col_count_changed.emit("numColumns", self.__numColumns)
         
-        QApplication.restoreOverrideCursor()
-
 
 
     def convert_canvas_row_to_internal(self, row):
@@ -653,6 +640,7 @@ class PatternCanvas(QGraphicsScene):
         
 
 
+    @wait_cursor
     def load_previous_pattern(self, knittingSymbols, patternGridItemInfo,
                           legendItemInfo):
         """
@@ -660,8 +648,6 @@ class PatternCanvas(QGraphicsScene):
         based on the passed canvas items.
         """
         
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-
         self.__clear_canvas()
 
         # need this to determine the number of columns
@@ -699,8 +685,6 @@ class PatternCanvas(QGraphicsScene):
         self.__numColumns = maxCol + 1
         self.__textLabels = []
         self.set_up_labels()
-
-        QApplication.restoreOverrideCursor()
 
 
 
@@ -1244,3 +1228,8 @@ def get_row_items(items, row):
     rowItems.sort(lambda x, y: cmp(x.column, y.column))
     
     return rowItems
+
+
+
+
+

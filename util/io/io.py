@@ -27,22 +27,20 @@ from __future__ import absolute_import
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
                           Qt, QRectF)
 from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
-                         QPrinter, QPrintDialog, QDialog, QApplication,
-                         QCursor)
+                         QPrinter, QPrintDialog, QDialog)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from gui.patternCanvas import (PatternGridItem, PatternLegendItem,
                                legendItem_symbol, legendItem_text)
+from util.helpers.misc import wait_cursor
 import util.helpers.messages as msg
 
 
 
-
+@wait_cursor
 def save_project(canvas, colors, settings, saveFileName):
     """
     Toplevel writer routine.
     """
-    
-    QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
     
     writeFile = QFile(saveFileName)
     if not writeFile.open(QIODevice.WriteOnly | QIODevice.Truncate):
@@ -61,8 +59,6 @@ def save_project(canvas, colors, settings, saveFileName):
     writeDoc.save(writeStream, 4)
     writeFile.close()
     
-    QApplication.restoreOverrideCursor()
-
 
 
 def initialize_DOM(writeDoc):
@@ -215,14 +211,12 @@ def write_colors(writeDoc, root, colors):
 
 
 
-
+@wait_cursor
 def read_project(readFileName):
     """
     Toplevel reader routine.
     """
 
-    QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-    
     readFile = QFile(readFileName)
     if not readFile.open(QIODevice.ReadOnly):
         return
@@ -266,8 +260,6 @@ def read_project(readFileName):
             projectColors = parse_colors(item)
 
         node = node.nextSibling()
-
-    QApplication.restoreOverrideCursor()
 
     return (patternGridItems, legendItems, projectColors)
 
@@ -389,13 +381,12 @@ def parse_colors(node):
     return colors
 
 
-            
+
+@wait_cursor
 def export_scene(canvas, exportFileName):
     """
     This function exports the scene to a file.
     """
-    
-    QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
     
     # NOTE: We seem to need the 1px buffer region to avoid
     # the image being cut off
@@ -414,17 +405,14 @@ def export_scene(canvas, exportFileName):
     painter.end()
     finalImage.save(exportFileName)
 
-    QApplication.restoreOverrideCursor()
 
 
-
+@wait_cursor
 def print_scene(canvas):
     """
     This function prints the content of the canvas.
     """
 
-    QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-    
     aPrinter = QPrinter(QPrinter.HighResolution)
     printDialog = QPrintDialog(aPrinter)
     
@@ -439,5 +427,3 @@ def print_scene(canvas):
         painter.setRenderHints(QPainter.TextAntialiasing)
         canvas.render(painter, QRectF(), theScene)
         painter.end()
-
-    QApplication.restoreOverrideCursor()
