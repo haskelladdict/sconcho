@@ -19,6 +19,10 @@
 #
 #######################################################################
 
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
 
 from PyQt4.QtCore import QString
 
@@ -70,7 +74,9 @@ unknownImageFormatText  = QString("Unknown image format to export to. "
                                   "Please choose one of the supported image "
                                   "formats.")
 
-
+patternFileExistsTitle = QString("sconcho: Pattern file exists")
+patternFileExistsText = ("The pattern file %s already exists.\n"
+                        "Do you want to overwrite it?")
 
 ########################################################################
 ##
@@ -78,7 +84,7 @@ unknownImageFormatText  = QString("Unknown image format to export to. "
 ##
 ########################################################################
 domParserErrorTitle = QString("sconcho: DOM parser error")
-domParserErrorText  = QString("Error parsing\n %s \nat line %d column %d; %s")
+domParserErrorText  = ("Error parsing\n %s \nat line %d column %d; %s")
 
 patternGridItemParseErrorTitle = QString("sconcho: Failed to parse pattern grid")
 patternGridItemParseErrorText  = QString("Failed to read pattern grid from "

@@ -21,11 +21,11 @@
 
 from __future__ import division
 from __future__ import print_function
-from __future__ import unicode_literals
+#from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
-                          QString, Qt, QSize)
+                          QString, Qt, QSize, QFile)
 from PyQt4.QtGui import (qApp, QMainWindow, QMessageBox, QFileDialog,
                         QWidget, QGridLayout, QHBoxLayout, QLabel, 
                         QFrame, QColor)
@@ -237,7 +237,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         if not self.__saveFilePath:
-            self.save_as_pattern_dialog()
+            if not self.save_as_pattern_dialog():
+                return
 
         io.save_project(self.__canvas, self.__colorWidget.get_all_colors(),
                         self.__settings, self.__saveFilePath)
@@ -266,6 +267,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if extension != "spf":
             if not extension:
                 saveFilePath = saveFilePath + ".spf"
+                
+                # since we added the extension QFileDialog might not
+                # have detected a file collision
+                if QFile(saveFilePath).exists():
+                    saveFileName = QFileInfo(saveFilePath).fileName()
+                    messageBox = QMessageBox.question(self,
+                                    msg.patternFileExistsTitle, 
+                                    msg.patternFileExistsText % saveFileName,
+                                    QMessageBox.Ok | QMessageBox.Cancel)
+
+                    if (messageBox == QMessageBox.Cancel):
+                        return
             else:
                 QMessageBox.warning(self, msg.unknownSpfExtensionTitle,
                                     msg.unknownSpfExtensionText,
