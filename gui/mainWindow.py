@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
-                          QString, Qt, QSize, QFile)
+                          QString, Qt, QSize, QFile, QTimer)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
                          QFrame, QColor)
@@ -83,6 +83,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # set up all the connections
         self.__set_up_connections()
+
+        # set up timers
+        self.__set_up_timers()
         
 
 
@@ -132,6 +135,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
+    def __set_up_timers(self):
+        """
+        Set up timers.
+        """
+
+        saveTimer = QTimer(self)
+        self.connect(saveTimer, SIGNAL("timeout()"), self.__save_pattern)
+        saveTimer.start(10000)
+
+
+
+
     def canvas_changed(self):
         """
         This function marks the canvas as dirty, aka it needs
@@ -158,8 +173,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.save_as_pattern_dialog()
 
         quit()
-
-            
 
          
 
@@ -323,8 +336,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __save_pattern(self):
         """
-        Main save routine.
+        Main save routine. If there is no filepath we return (e.g.
+        when called by the saveTimer).
         """
+
+        if not self.__saveFilePath:
+            return
 
         io.save_project(self.__canvas, self.__colorWidget.get_all_colors(),
                         self.__settings, self.__saveFilePath)

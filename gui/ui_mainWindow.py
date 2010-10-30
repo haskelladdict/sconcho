@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sat Oct 30 11:48:19 2010
+# Created: Sat Oct 30 18:09:34 2010
 #      by: PyQt4 UI code generator 4.8
 #
 # WARNING! All changes made in this file will be lost!
@@ -158,7 +158,6 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionPrint)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
-        self.menuEdit.addAction(self.actionPreferences)
         self.menuView.addAction(self.actionShow_pattern_grid)
         self.menuView.addAction(self.actionShow_grid_labels)
         self.menuView.addAction(self.actionShow_legend)

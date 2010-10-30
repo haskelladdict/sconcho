@@ -99,7 +99,6 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
