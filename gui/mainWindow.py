@@ -231,23 +231,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def save_as_pattern_dialog(self):
+    def save_pattern_dialog(self):
         """
         This function opens a save pattern dialog.
         """
 
         if not self.__saveFilePath:
-            self.save_pattern_dialog()
+            self.save_as_pattern_dialog()
 
-        io.save_project(self.__canvas, None, self.__settings,
-                        self.__saveFilePath)
+        io.save_project(self.__canvas, self.__colorWidget.get_all_colors(),
+                        self.__settings, self.__saveFilePath)
         
         saveFileName = QFileInfo(self.__saveFilePath).fileName()
         self.statusBar().showMessage("successfully saved " + saveFileName, 3000)
 
 
 
-    def save_pattern_dialog(self):
+    def save_as_pattern_dialog(self):
         """
         This function opens a save as pattern dialog.
         """
