@@ -19,20 +19,25 @@
 #
 #######################################################################
 
-from PyQt4.QtCore import SIGNAL, SLOT, QSettings, QDir, QFileInfo, \
-                         QString, Qt, QSize
-from PyQt4.QtGui import qApp, QMainWindow, QMessageBox, QFileDialog, \
-                        QWidget, QGridLayout, QHBoxLayout, QLabel, \
-                        QFrame, QColor
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
+
+from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
+                          QString, Qt, QSize)
+from PyQt4.QtGui import (qApp, QMainWindow, QMessageBox, QFileDialog,
+                        QWidget, QGridLayout, QHBoxLayout, QLabel, 
+                        QFrame, QColor)
 from PyQt4.QtSvg import QSvgWidget
-from ui_mainWindow import Ui_MainWindow
-import helpers.messages as msg
-import helpers.settings as settings
-import sconchoIO.io as io
-import sconchoIO.symbolParser as parser
-from symbolWidget import generate_symbolWidgets, SymbolSynchronizer
-from colorWidget import ColorWidget, ColorSynchronizer
-from patternCanvas import PatternCanvas
+from gui.ui_mainWindow import Ui_MainWindow
+import util.helpers.messages as msg
+import util.helpers.settings as settings
+import util.io.io as io
+import util.io.symbolParser as parser
+from gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
+from gui.colorWidget import (ColorWidget, ColorSynchronizer)
+from gui.patternCanvas import PatternCanvas
 
 
 

@@ -19,10 +19,14 @@
 #
 #######################################################################
 
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
 
-from PyQt4.QtCore import QString, pyqtSignal, QObject, Qt, SIGNAL
-from PyQt4.QtGui import QFrame, QWidget, QColor, QPushButton, \
-                        QHBoxLayout, QColorDialog
+from PyQt4.QtCore import (QString, pyqtSignal, QObject, Qt, SIGNAL)
+from PyQt4.QtGui import (QFrame, QWidget, QColor, QPushButton, 
+                         QHBoxLayout, QColorDialog)
 
 
 

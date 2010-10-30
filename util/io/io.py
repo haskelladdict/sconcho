@@ -19,15 +19,19 @@
 #
 #######################################################################
 
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
 
-from PyQt4.QtCore import QFile, QTextStream, QIODevice, QString, \
-                         Qt, QRectF
-from PyQt4.QtGui import QColor, QMessageBox, QImage, QPainter, \
-                        QPrinter, QPrintDialog, QDialog
-from PyQt4.QtXml import QDomDocument, QDomNode, QDomElement
-from gui.patternCanvas import PatternGridItem, PatternLegendItem, \
-                              legendItem_symbol, legendItem_text
-import helpers.messages as msg
+from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
+                          Qt, QRectF)
+from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
+                        QPrinter, QPrintDialog, QDialog)
+from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
+from gui.patternCanvas import (PatternGridItem, PatternLegendItem,
+                               legendItem_symbol, legendItem_text)
+import util.helpers.messages as msg
 
 
 

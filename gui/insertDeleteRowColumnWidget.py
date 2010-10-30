@@ -19,9 +19,14 @@
 #
 #######################################################################
 
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
+
 from PyQt4.QtCore import SIGNAL, pyqtSignal, QString
 from PyQt4.QtGui import QDialog
-from ui_insertDeleteRowColumnWidget import Ui_InsertDeleteRowColumnWidget
+from gui.ui_insertDeleteRowColumnWidget import Ui_InsertDeleteRowColumnWidget
 
 
 
