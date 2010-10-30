@@ -36,16 +36,20 @@ import util.io.symbolParser as parser
 # more spiffy lateron
 SYMBOL_PATHS = ["../symbols"]
 
-print(1/2)
-# main startup routine
-if __name__ == "__main__":
+
+def main():
     """
     Main routine starting up the sconcho framework.
     """
-
+    
     app = QApplication(sys.argv)
     window = MainWindow(SYMBOL_PATHS)
     window.show()
     sys.exit(app.exec_())
     
-    
+
+
+# start execution
+if __name__ == "__main__":
+   
+    main()
