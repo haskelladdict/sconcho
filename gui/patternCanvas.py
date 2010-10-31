@@ -745,7 +745,7 @@ class PatternGridItem(QGraphicsSvgItem):
                  defaultSymbol, defaultColor = Qt.white,
                  parent = None):
 
-        super(QGraphicsSvgItem, self).__init__(parent)
+        super(PatternGridItem, self).__init__(parent)
 
         self.origin  = QPointF(0.0, 0.0)
         self.unitDim = unitDim
@@ -874,7 +874,7 @@ class PatternLegendItem(QGraphicsSvgItem):
                  defaultSymbol, defaultColor = Qt.white,
                  zValue = 0, parent = None):
 
-        super(QGraphicsSvgItem, self).__init__(parent)
+        super(PatternLegendItem, self).__init__(parent)
         
         self.setZValue(zValue)
 
@@ -948,7 +948,7 @@ class PatternLabelItem(QGraphicsTextItem):
 
     def __init__(self, text, parent = None, scene = None):
 
-        super(QGraphicsTextItem, self).__init__(text, parent, scene)
+        super(PatternLabelItem, self).__init__(text, parent, scene)
         
 
 

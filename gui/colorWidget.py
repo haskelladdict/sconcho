@@ -39,7 +39,7 @@ class ColorWidget(QWidget):
 
     def __init__(self, synchronizer, colors, parent = None):
 
-        super(QWidget, self).__init__(parent)
+        super(ColorWidget, self).__init__(parent)
 
         self.__synchronizer = synchronizer
 
@@ -104,7 +104,7 @@ class ColorSelectorItem(QFrame):
 
     def __init__(self, color, synchronizer, parent = None):
 
-        super(QFrame, self).__init__(parent)
+        super(ColorSelectorItem, self).__init__(parent)
 
         self.__synchronizer = synchronizer
         self.color = QColor(color)

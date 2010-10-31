@@ -39,6 +39,7 @@ import util.io.symbolParser as parser
 from gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
 from gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from gui.patternCanvas import PatternCanvas
+from util.helpers.exceptions import PatternReadError
 
 
 
@@ -56,7 +57,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Initialize the main window.
         """
 
-        super(QMainWindow, self).__init__(parent)
+        super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
         self.__settings = QSettings("sconcho", "settings")
@@ -360,12 +361,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not readFilePath:
             return
 
-        (patternGridItems, legendItems, colors) = io.read_project(readFilePath)
+        
+        readFileName = QFileInfo(readFilePath).fileName()
+
+        try:
+            (patternGridItems, legendItems, colors) = io.read_project(readFilePath)
+        except PatternReadError:
+            return
+            
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
         self.__canvas.load_previous_pattern(knittingSymbols, patternGridItems,
                                            legendItems)
         set_up_colors(self.__colorWidget, colors)
-        readFileName = QFileInfo(readFilePath).fileName()
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
         self.set_project_save_file(readFilePath)
 
@@ -447,7 +454,7 @@ class ActiveSymbolWidget(QWidget):
 
     def __init__(self, parent = None):
 
-        super(QWidget, self).__init__(parent)
+        super(ActiveSymbolWidget, self).__init__(parent)
 
         self.layout = QGridLayout()
         self.color  = QColor(Qt.white)

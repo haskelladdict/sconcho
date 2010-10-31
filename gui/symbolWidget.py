@@ -166,7 +166,7 @@ class SymbolSelectorItem(QFrame):
 
     def __init__(self, symbol, synchronizer, parent = None):
 
-        super(QFrame, self).__init__(parent)
+        super(SymbolSelectorItem, self).__init__(parent)
         self.__synchronizer = synchronizer
         self.__symbol = symbol
 
@@ -270,7 +270,7 @@ class SymbolSelectorLabel(QLabel):
 
     def __init__(self, symbol, parent = None):
 
-        super(QLabel, self).__init__(symbol["name"], parent)
+        super(SymbolSelectorLabel, self).__init__(symbol["name"], parent)
 
         # define and set stylesheets
         self.setToolTip(symbol["description"])

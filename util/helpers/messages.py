@@ -93,8 +93,10 @@ domParserErrorText  = ("Error parsing\n %s \nat line %d column %d; %s")
 
 patternGridItemParseErrorTitle = "sconcho: Failed to parse pattern grid"
 patternGridItemParseErrorText  = ("Failed to read pattern grid from "
-                                  "project file. The file may be damaged.")
+                                  "project file. The file may be damaged "
+                                  "and can not be read.")
 
 patternLegendItemParseErrorTitle = "sconcho: Failed to parse legend"
 patternLegendItemParseErrorText  = ("Failed to read legend from "
-                                    "project file. The file may be damaged.")
+                                    "project file. The file may be damaged "
+                                    "and can not be read.")

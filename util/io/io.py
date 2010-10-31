@@ -27,12 +27,15 @@ from __future__ import absolute_import
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
                           Qt, QRectF)
 from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
-                         QPrinter, QPrintDialog, QDialog)
+                         QPrinter, QPrintDialog, QDialog,
+                         QApplication)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from gui.patternCanvas import (PatternGridItem, PatternLegendItem,
                                legendItem_symbol, legendItem_text)
 from util.helpers.misc import wait_cursor
+from util.helpers.exceptions import PatternReadError
 import util.helpers.messages as msg
+
 
 
 
@@ -224,10 +227,12 @@ def read_project(readFileName):
     readDoc = QDomDocument()
     (status, errMsg, errLine, errCol) = readDoc.setContent(readFile, True)
     if not status:
+        QApplication.restoreOverrideCursor()
         QMessageBox.critical(None, msg.domParserErrorTitle,
                              msg.domParserErrorText
                              % (unicode(readFileName), errLine, errCol,
                                 unicode(errMsg)))
+        raise PatternReadError()
 
     root = readDoc.documentElement()
     if root.tagName() != "sconcho":
@@ -305,10 +310,11 @@ def parse_patternGridItem(item):
                     "category" : category,
                     "name"     : name }
     except:
+        QApplication.restoreOverrideCursor()
         QMessageBox.critical(None, msg.patternGridItemParseErrorTitle,
                              msg.patternGridItemParseErrorText,
                              QMessageBox.Close)
-        return None
+        raise PatternReadError()
 
     return newItem
 
@@ -357,10 +363,11 @@ def parse_legendItem(item):
                     "labelYPos" : labelYPos, 
                     "color"     : color }
     except:
+        QApplication.restoreOverrideCursor()
         QMessageBox.critical(None, msg.patternLegendItemParseErrorTitle,
                              msg.patternLegendItemParseErrorText,
                              QMessageBox.Close)
-        return None
+        raise PatternReadError()
 
     return newItem
 
