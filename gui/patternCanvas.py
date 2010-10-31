@@ -26,10 +26,10 @@ from __future__ import absolute_import
 
 import operator
 from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF, 
-                          SIGNAL, QObject, QString, QPoint)
+                          SIGNAL, QObject, QString, QPoint, QRect)
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
-                         QAction, QGraphicsItem, QMessageBox)
+                         QAction, QGraphicsItem, QMessageBox, QRubberBand)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 from util.helpers.settings import get_grid_dimensions, get_text_font
 from util.helpers.canvas import (is_click_in_grid, is_click_on_labels, 
@@ -335,7 +335,6 @@ class PatternCanvas(QGraphicsScene):
         Handle mouse press events directly on the canvas.
         """
 
-        # we handle right clicks and propagate the rest
         (col, row) = convert_pos_to_row_col(event.scenePos(),
                                             self.__unitWidth,
                                             self.__unitHeight)
@@ -347,7 +346,7 @@ class PatternCanvas(QGraphicsScene):
 
         elif event.button() == Qt.LeftButton:
 
-             if is_click_on_labels(col, row, self.__numColumns, self.__numRows):
+            if is_click_on_labels(col, row, self.__numColumns, self.__numRows):
                  self.handle_right_click_on_labels(col, row)
 
         # tell our main window that something changed

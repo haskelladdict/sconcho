@@ -70,7 +70,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # set up the statusBar
         self.activeSymbolWidget = ActiveSymbolWidget()
         self.statusBar().addPermanentWidget(self.activeSymbolWidget)
-        
+
         self.__symbolPaths = symbolPaths
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
         self.__canvas = PatternCanvas(self.__settings, 
@@ -168,10 +168,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             messageBox = QMessageBox.question(self,
                             msg.wantToSavePatternTitle, 
                             msg.wantToSavePatternText,
-                            QMessageBox.Yes | QMessageBox.No)
+                            QMessageBox.Save | QMessageBox.Discard
+                            | QMessageBox.Cancel)
 
-            if (messageBox == QMessageBox.Yes):
+            if (messageBox == QMessageBox.Save):
                 self.save_pattern_dialog()
+            elif (messageBox == QMessageBox.Cancel):
+                return
 
         quit()
 
