@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sun Oct 31 13:25:00 2010
+# Created: Sun Oct 31 13:49:31 2010
 #      by: PyQt4 UI code generator 4.8
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.graphicsView = QtGui.QGraphicsView(self.centralwidget)
+        self.graphicsView = PatternView(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(20)
@@ -207,4 +207,5 @@ class Ui_MainWindow(object):
         self.actionShow_legend.setText(QtGui.QApplication.translate("MainWindow", "show legend", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_grid_labels.setText(QtGui.QApplication.translate("MainWindow", "show grid labels", None, QtGui.QApplication.UnicodeUTF8))
 
+from patternView import PatternView
 import icons_rc

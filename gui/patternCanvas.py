@@ -356,6 +356,19 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def select_region(self, region):
+        """ This function selects items based on a whole region.
+
+        The region is typically a QPolygonF coming from our
+        view via a rubberBand selection.
+        """
+
+        for item in self.items(region):
+            if isinstance(item, PatternGridItem):
+                item.press_item()
+
+
+
     def handle_right_click_on_labels(self, col, row):
         """ Deal with user clicks on the grid labels. """
 
