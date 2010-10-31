@@ -24,6 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+from functools import partial
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           QString, Qt, QSize, QFile, QTimer)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
@@ -107,10 +108,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.new_pattern_dialog)
 
         self.connect(self.actionSave, SIGNAL("triggered()"),
-                     self.save_pattern_dialog)
+                     partial(self.save_pattern_dialog,"save"))
 
         self.connect(self.actionSave_as, SIGNAL("triggered()"),
-                     self.save_as_pattern_dialog)
+                     partial(self.save_pattern_dialog,"save as"))
         
         self.connect(self.actionOpen, SIGNAL("triggered()"),
                      self.read_pattern_dialog)
@@ -279,57 +280,48 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def save_pattern_dialog(self):
+    def save_pattern_dialog(self, mode):
         """
-        This function checks if we already have a filename.
-        If yes, save it, if not, ask for one.
-        """
-
-        if not self.__saveFilePath:
-            self.save_as_pattern_dialog()
-        else:
-            self.__save_pattern()
-
-
-
-    def save_as_pattern_dialog(self):
-        """
-        This function opens a save as pattern dialog.
+        If necessary, fire up a save pattern dialog and then save.
         """
 
-        location = self.__saveFilePath if self.__saveFilePath else QDir.homePath()
-        saveFilePath = QFileDialog.getSaveFileName(self,
-                                                   msg.saveSconchoProjectTitle,
-                                                   location,
-                                                   "sconcho pattern files (*.spf)")
+        if (mode == "save as") or (not self.__saveFilePath): 
+            location = self.__saveFilePath if self.__saveFilePath \
+                       else QDir.homePath()
+            saveFilePath = QFileDialog.getSaveFileName(self,
+                                                msg.saveSconchoProjectTitle,
+                                                location,
+                                                "sconcho pattern files (*.spf)")
 
-        if not saveFilePath:
-            return
-
-        # check the extension; if none is present add .spf
-        extension = QFileInfo(saveFilePath).completeSuffix()
-        if extension != "spf":
-            if not extension:
-                saveFilePath = saveFilePath + ".spf"
-                
-                # since we added the extension QFileDialog might not
-                # have detected a file collision
-                if QFile(saveFilePath).exists():
-                    saveFileName = QFileInfo(saveFilePath).fileName()
-                    messageBox = QMessageBox.question(self,
-                                    msg.patternFileExistsTitle, 
-                                    msg.patternFileExistsText % saveFileName,
-                                    QMessageBox.Ok | QMessageBox.Cancel)
-
-                    if (messageBox == QMessageBox.Cancel):
-                        return
-            else:
-                QMessageBox.warning(self, msg.unknownSpfExtensionTitle,
-                                    msg.unknownSpfExtensionText,
-                                    QMessageBox.Close)
+            if not saveFilePath:
                 return
 
-        self.set_project_save_file(saveFilePath)
+            # check the extension; if none is present add .spf
+            extension = QFileInfo(saveFilePath).completeSuffix()
+            if extension != "spf":
+                if not extension:
+                    saveFilePath = saveFilePath + ".spf"
+
+                    # since we added the extension QFileDialog might not
+                    # have detected a file collision
+                    if QFile(saveFilePath).exists():
+                        saveFileName = QFileInfo(saveFilePath).fileName()
+                        messageBox = QMessageBox.question(self,
+                                        msg.patternFileExistsTitle, 
+                                        msg.patternFileExistsText % saveFileName,
+                                        QMessageBox.Ok | QMessageBox.Cancel)
+
+                        if (messageBox == QMessageBox.Cancel):
+                            return
+                else:
+                    QMessageBox.warning(self, msg.unknownSpfExtensionTitle,
+                                        msg.unknownSpfExtensionText,
+                                        QMessageBox.Close)
+                    return
+
+            self.set_project_save_file(saveFilePath)
+
+        # ready to save
         self.__save_pattern()
 
 
@@ -339,15 +331,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Main save routine. If there is no filepath we return (e.g.
         when called by the saveTimer).
         """
-
+        
+        
         if not self.__saveFilePath:
             return
+
+        saveFileName = QFileInfo(self.__saveFilePath).fileName()
+        self.statusBar().showMessage("saving " + saveFileName)
 
         io.save_project(self.__canvas, self.__colorWidget.get_all_colors(),
                         self.__settings, self.__saveFilePath)
         
-        saveFileName = QFileInfo(self.__saveFilePath).fileName()
-        self.statusBar().showMessage("successfully saved " + saveFileName, 3000)
+        self.statusBar().showMessage("successfully saved " + saveFileName, 2000)
         self.__canvasIsSaved = True
 
 
