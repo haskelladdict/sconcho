@@ -26,8 +26,7 @@ from __future__ import absolute_import
 
 import operator
 from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF, 
-                          pyqtSignal, SIGNAL, QObject, QString, 
-                          QPoint)
+                          SIGNAL, QObject, QString, QPoint)
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
                          QAction, QGraphicsItem, QMessageBox)
@@ -48,10 +47,6 @@ from util.helpers.misc import wait_cursor
 #########################################################
 class PatternCanvas(QGraphicsScene):
 
-    # signals
-    row_col_count_changed = pyqtSignal(QString, int)
-    scene_changed = pyqtSignal()
-    
 
     def __init__(self, theSettings, defaultSymbol, parent = None):
 
@@ -264,10 +259,8 @@ class PatternCanvas(QGraphicsScene):
         item = PatternGridItem(unitDim, col, row, width, height,
                                 knittingSymbol, color)
         item.setPos(origin)
-        self.connect(item, SIGNAL("cell_selected(PyQt_PyObject)"),
-                        self.grid_cell_activated)
-        self.connect(item, SIGNAL("cell_unselected(PyQt_PyObject)"),
-                        self.grid_cell_inactivated)
+        self.connect(item, SIGNAL("cell_selected"), self.grid_cell_activated)
+        self.connect(item, SIGNAL("cell_unselected"), self.grid_cell_inactivated)
         return item
 
 
@@ -358,7 +351,7 @@ class PatternCanvas(QGraphicsScene):
                  self.handle_right_click_on_labels(col, row)
 
         # tell our main window that something changed
-        self.scene_changed.emit()
+        self.emit(SIGNAL("scene_changed"))
 
         return QGraphicsScene.mousePressEvent(self, event)
 
@@ -408,16 +401,12 @@ class PatternCanvas(QGraphicsScene):
         addDeleteDialog = InsertDeleteRowColumnWidget(self.__numRows,
                                                         self.__numColumns)
 
-        self.connect(addDeleteDialog, SIGNAL("insert_row(int, QString, int)"), 
-                        self.insert_row)
-        self.connect(addDeleteDialog, SIGNAL("delete_row(int)"),
-                        self.delete_row)
-        self.connect(addDeleteDialog, SIGNAL("insert_column(int, QString, int)"),
-                        self.insert_column)
-        self.connect(addDeleteDialog, SIGNAL("delete_column(int)"),
-                        self.delete_column)
-        self.connect(self, SIGNAL("row_col_count_changed(QString, int)"),
-                        addDeleteDialog.row_col_count_changed)
+        self.connect(addDeleteDialog, SIGNAL("insert_row"), self.insert_row)
+        self.connect(addDeleteDialog, SIGNAL("delete_row"), self.delete_row)
+        self.connect(addDeleteDialog, SIGNAL("insert_column"), self.insert_column)
+        self.connect(addDeleteDialog, SIGNAL("delete_column"), self.delete_column)
+        self.connect(self, SIGNAL("row_col_count_changed"),
+                     addDeleteDialog.row_col_count_changed)
 
         addDeleteDialog.exec_()
 
@@ -449,7 +438,7 @@ class PatternCanvas(QGraphicsScene):
 
         self.__numRows += num
         self.set_up_labels()
-        self.row_col_count_changed.emit("numRows", self.__numRows)
+        self.emit(SIGNAL("row_col_count_changed"), "numRows", self.__numRows)
 
 
 
@@ -471,7 +460,7 @@ class PatternCanvas(QGraphicsScene):
         self.__numRows -= 1
         self.__activeItems = []
         self.set_up_labels()
-        self.row_col_count_changed.emit("numRows", self.__numRows)
+        self.emit(SIGNAL("row_col_count_changed"), "numRows", self.__numRows)
 
         
 
@@ -514,7 +503,7 @@ class PatternCanvas(QGraphicsScene):
 
         self.__numColumns += num
         self.set_up_labels()
-        self.row_col_count_changed.emit("numColumns", self.__numColumns)          
+        self.emit(SIGNAL("row_col_count_changed"), "numColumns", self.__numColumns)
 
 
 
@@ -549,7 +538,7 @@ class PatternCanvas(QGraphicsScene):
         self.__numColumns -= 1
         self.__activeItems = []
         self.set_up_labels()
-        self.row_col_count_changed.emit("numColumns", self.__numColumns)
+        self.emit(SIGNAL("row_col_count_changed"), "numColumns", self.__numColumns)
         
 
 
@@ -751,10 +740,6 @@ class PatternGridItem(QGraphicsSvgItem):
 
     Type = 70000 + 1
 
-    # signal for notifying if active widget changes
-    cell_selected   = pyqtSignal("PyQt_PyObject")
-    cell_unselected = pyqtSignal("PyQt_PyObject")
-
 
     def __init__(self, unitDim, col, row, width, height,
                  defaultSymbol, defaultColor = Qt.white,
@@ -815,7 +800,7 @@ class PatternGridItem(QGraphicsSvgItem):
         self.__selected = False
         self.__backColor = self.color
         self.update()
-        self.cell_unselected.emit(self)
+        self.emit(SIGNAL("cell_unselected"), self)
 
 
 
@@ -827,7 +812,7 @@ class PatternGridItem(QGraphicsSvgItem):
         self.__selected = True
         self.__backColor = self.__highlightedColor
         self.update()
-        self.cell_selected.emit(self)
+        self.emit(SIGNAL("cell_selected"), self)
 
 
             

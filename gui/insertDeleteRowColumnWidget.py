@@ -24,7 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import SIGNAL, pyqtSignal, QString
+from PyQt4.QtCore import SIGNAL, QString
 from PyQt4.QtGui import QDialog
 from gui.ui_insertDeleteRowColumnWidget import Ui_InsertDeleteRowColumnWidget
 
@@ -38,11 +38,6 @@ from gui.ui_insertDeleteRowColumnWidget import Ui_InsertDeleteRowColumnWidget
 ##########################################################################
 class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
 
-    # install signals
-    insert_row    = pyqtSignal(int, QString, int)
-    delete_row    = pyqtSignal(int)
-    insert_column = pyqtSignal(int, QString, int)
-    delete_column = pyqtSignal(int)
 
 
     def __init__(self, numRows, numCols, parent = None):
@@ -82,7 +77,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if pivot <= 0:
             return
 
-        self.insert_row.emit(numRows, insertMode, pivot)
+        self.emit(SIGNAL("insert_row"), numRows, insertMode, pivot)
         
         
         
@@ -96,7 +91,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if deadRowID <= 0:
             return
 
-        self.delete_row.emit(deadRowID)
+        self.emit(SIGNAL("delete_row"), deadRowID)
 
 
 
@@ -112,7 +107,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if pivot <= 0:
             return
 
-        self.insert_column.emit(numColumns, insertMode, pivot)
+        self.emit(SIGNAL("insert_column"), numColumns, insertMode, pivot)
 
 
 
@@ -126,7 +121,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if deadColumnID <=0:
             return
 
-        self.delete_column.emit(deadColumnID)
+        self.emit(SIGNAL("delete_column"), deadColumnID)
         
 
 

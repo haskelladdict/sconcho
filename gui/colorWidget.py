@@ -24,7 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QString, pyqtSignal, QObject, Qt, SIGNAL)
+from PyQt4.QtCore import (QString, QObject, Qt, SIGNAL)
 from PyQt4.QtGui import (QFrame, QWidget, QColor, QPushButton, 
                          QHBoxLayout, QColorDialog)
 
@@ -206,9 +206,6 @@ class ColorSelectorItem(QFrame):
 #########################################################
 class ColorSynchronizer(QObject):
 
-    # signal for notifying if active widget changes
-    synchronized_object_changed = pyqtSignal("PyQt_PyObject")
-
 
     def __init__(self, parent = None):
 
@@ -226,14 +223,16 @@ class ColorSynchronizer(QObject):
 
         if self.__activeWidget == target:
             self.__activeWidget.activate_me()
-            self.synchronized_object_changed.emit(self.__activeWidget.get_content())
+            self.emit(SIGNAL("synchronized_object_changed"),
+                      self.__activeWidget.get_content())
         else:
             if self.__activeWidget:
                 self.__activeWidget.inactivate_me()
                 
             self.__activeWidget = target
             self.__activeWidget.activate_me()
-            self.synchronized_object_changed.emit(self.__activeWidget.get_content())
+            self.emit(SIGNAL("synchronized_object_changed"),
+                      self.__activeWidget.get_content())
 
 
 

@@ -24,7 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QString, QSize, pyqtSignal, QObject, SIGNAL)
+from PyQt4.QtCore import (QString, QSize, QObject, SIGNAL)
 from PyQt4.QtGui import (QFrame, QGridLayout, QWidgetItem, QWidget, 
                          QHBoxLayout, QLabel, QScrollArea)
 from PyQt4.QtSvg import QSvgWidget
@@ -267,9 +267,6 @@ class SymbolSelectorItem(QFrame):
 #########################################################
 class SymbolSelectorLabel(QLabel):
 
-    # signals
-    label_clicked = pyqtSignal()
-
 
     def __init__(self, symbol, parent = None):
 
@@ -286,7 +283,7 @@ class SymbolSelectorLabel(QLabel):
         for selecting.
         """
 
-        self.label_clicked.emit()
+        self.emit(SIGNAL("label_clicked"))
 
 
 
@@ -298,16 +295,12 @@ class SymbolSelectorLabel(QLabel):
 #########################################################
 class SymbolSynchronizer(QObject):
 
-    # signal for notifying if active widget changes
-    synchronized_object_changed = pyqtSignal("PyQt_PyObject")
-
 
     def __init__(self, parent = None):
 
         QObject.__init__(self, parent)
         self.__activeWidget = None
 
-    
     
     def select(self, target):
         """
@@ -319,14 +312,15 @@ class SymbolSynchronizer(QObject):
         if self.__activeWidget == target:
             self.__activeWidget.inactivate_me()
             self.__activeWidget = None
-            self.synchronized_object_changed.emit(None)
+            self.emit(SIGNAL("synchronized_object_changed"), None)
         else:
             if self.__activeWidget:
                 self.__activeWidget.inactivate_me()
 
             self.__activeWidget = target
             self.__activeWidget.activate_me()
-            self.synchronized_object_changed.emit(self.__activeWidget.get_content())
+            self.emit(SIGNAL("synchronized_object_changed"),
+                      self.__activeWidget.get_content())
 
 
 

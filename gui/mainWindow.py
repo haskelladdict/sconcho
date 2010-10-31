@@ -131,7 +131,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionShow_pattern_grid, SIGNAL("toggled(bool)"),
                      self.__canvas.toggle_pattern_grid_visibility)
         
-        self.connect(self.__canvas, SIGNAL("scene_changed()"),
+        self.connect(self.__canvas, SIGNAL("scene_changed"),
                      self.canvas_changed)
 
 
@@ -144,7 +144,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         saveTimer = QTimer(self)
         self.connect(saveTimer, SIGNAL("timeout()"), self.__save_pattern)
         saveTimer.start(10000)
-
 
 
 
@@ -171,7 +170,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             QMessageBox.Yes | QMessageBox.No)
 
             if (messageBox == QMessageBox.Yes):
-                self.save_as_pattern_dialog()
+                self.save_pattern_dialog()
 
         quit()
 
@@ -190,11 +189,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         symbolTracker = SymbolSynchronizer()
         self.connect(symbolTracker, 
-                     SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
+                     SIGNAL("synchronized_object_changed"),
                      self.__canvas.set_active_symbol)
 
         self.connect(symbolTracker, 
-                     SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
+                     SIGNAL("synchronized_object_changed"),
                      self.activeSymbolWidget.active_symbol_changed)
         
         (self.selectedSymbol, self.symbolSelectorWidgets) = \
@@ -204,7 +203,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                symbolTracker)
 
         self.connect(self.patternCategoryChooser,
-                     SIGNAL("currentIndexChanged(QString)"),
+                     SIGNAL("currentIndexChanged"),
                      self.update_symbol_widget)
         
 
@@ -234,11 +233,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         colorTracker = ColorSynchronizer()
         self.connect(colorTracker, 
-                     SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
+                     SIGNAL("synchronized_object_changed"),
                      self.__canvas.set_active_color)
 
         self.connect(colorTracker, 
-                     SIGNAL("synchronized_object_changed(PyQt_PyObject)"),
+                     SIGNAL("synchronized_object_changed"),
                      self.activeSymbolWidget.active_color_changed)
 
         colorList = [Qt.white, Qt.red, Qt.blue, Qt.black, Qt.darkGray, \
