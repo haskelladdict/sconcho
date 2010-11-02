@@ -109,10 +109,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.new_pattern_dialog)
 
         self.connect(self.actionSave, SIGNAL("triggered()"),
-                     partial(self.save_pattern_dialog,"save"))
+                     partial(self.save_pattern_dialog, "save"))
 
         self.connect(self.actionSave_as, SIGNAL("triggered()"),
-                     partial(self.save_pattern_dialog,"save as"))
+                     partial(self.save_pattern_dialog, "save as"))
         
         self.connect(self.actionOpen, SIGNAL("triggered()"),
                      self.read_pattern_dialog)

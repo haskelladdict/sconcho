@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import operator
+from functools import partial
 from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF, 
                           SIGNAL, QObject, QString, QPoint, QRect)
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
@@ -335,19 +336,23 @@ class PatternCanvas(QGraphicsScene):
         Handle mouse press events directly on the canvas.
         """
 
-        (col, row) = convert_pos_to_row_col(event.scenePos(),
+        (row, col) = convert_pos_to_row_col(event.scenePos(),
                                             self.__unitWidth,
                                             self.__unitHeight)
         
         if event.button() == Qt.RightButton:
 
             if is_click_in_grid(col, row, self.__numColumns, self.__numRows):
-                self.handle_right_click_on_grid(event)
+                self.handle_right_click_on_grid(event, col, row)
+
+            # don't propagate this events
+            return
 
         elif event.button() == Qt.LeftButton:
 
             if is_click_on_labels(col, row, self.__numColumns, self.__numRows):
                  self.handle_right_click_on_labels(col, row)
+
 
         # tell our main window that something changed
         self.emit(SIGNAL("scene_changed"))
@@ -386,7 +391,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def handle_right_click_on_grid(self, event):
+    def handle_right_click_on_grid(self, event, row, col):
         """
         Handles a right click on the pattern grid by
         displaying a QMenu with options.
@@ -398,20 +403,21 @@ class PatternCanvas(QGraphicsScene):
         #colorAction = gridMenu.addAction("Grab color");
 
         self.connect(rowAction, SIGNAL("triggered()"),
-                        self.insert_delete_rows_columns)
+                     partial(self.insert_delete_rows_columns, row, col))
 
         gridMenu.exec_(event.screenPos())
 
 
 
-    def insert_delete_rows_columns(self):
+    def insert_delete_rows_columns(self, row, col):
         """
         This method manages the addition and deletion of rows and columns
         via a widget.
         """
 
         addDeleteDialog = InsertDeleteRowColumnWidget(self.__numRows,
-                                                        self.__numColumns)
+                                                      self.__numColumns,
+                                                      row, col)
 
         self.connect(addDeleteDialog, SIGNAL("insert_row"), self.insert_row)
         self.connect(addDeleteDialog, SIGNAL("delete_row"), self.delete_row)

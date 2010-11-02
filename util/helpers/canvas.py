@@ -39,7 +39,7 @@ def convert_pos_to_row_col(mousePos, cellWidth, cellHeight):
     column = int( math.floor( mousePos.x()/cellWidth ) )
     row    = int( math.floor( mousePos.y()/cellHeight ) )
 
-    return (column, row )
+    return (row, column)
 
 
 
