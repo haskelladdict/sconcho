@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>insert/delete rows and columns</string>
+   <string>sconcho: insert/delete rows and columns</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

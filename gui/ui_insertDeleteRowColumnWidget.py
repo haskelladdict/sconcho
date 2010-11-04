@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/insertDeleteRowColumnWidget.ui'
 #
-# Created: Tue Nov  2 21:36:27 2010
+# Created: Thu Nov  4 11:18:07 2010
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,6 +13,7 @@ class Ui_InsertDeleteRowColumnWidget(object):
     def setupUi(self, InsertDeleteRowColumnWidget):
         InsertDeleteRowColumnWidget.setObjectName("InsertDeleteRowColumnWidget")
         InsertDeleteRowColumnWidget.resize(636, 157)
+        InsertDeleteRowColumnWidget.setSizeGripEnabled(True)
         self.verticalLayout_2 = QtGui.QVBoxLayout(InsertDeleteRowColumnWidget)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.verticalLayout = QtGui.QVBoxLayout()
@@ -155,7 +156,7 @@ class Ui_InsertDeleteRowColumnWidget(object):
         QtCore.QMetaObject.connectSlotsByName(InsertDeleteRowColumnWidget)
 
     def retranslateUi(self, InsertDeleteRowColumnWidget):
-        InsertDeleteRowColumnWidget.setWindowTitle(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "insert/delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
+        InsertDeleteRowColumnWidget.setWindowTitle(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "sconcho: insert/delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "insert", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "rows", None, QtGui.QApplication.UnicodeUTF8))
         self.insertRowMode.setItemText(0, QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "below", None, QtGui.QApplication.UnicodeUTF8))
