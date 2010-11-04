@@ -434,9 +434,9 @@ class PatternCanvas(QGraphicsScene):
                      self.insert_column)
         self.connect(self.addDeleteRowColDialog, SIGNAL("delete_column"), 
                      self.delete_column)
-        self.connect(self, SIGNAL("row_col_count_changed"),
-                     self.addDeleteRowColDialog.row_col_count_changed)
-        
+        self.connect(self, SIGNAL("column_count_changed"), 
+                     self.addDeleteRowColDialog.set_upper_column_limit)
+
         self.addDeleteRowColDialog.raise_()
         self.addDeleteRowColDialog.show()
 
@@ -469,7 +469,6 @@ class PatternCanvas(QGraphicsScene):
 
         self.__numRows += num
         self.set_up_labels()
-        self.emit(SIGNAL("row_col_count_changed"), "numRows", self.__numRows)
 
 
 
@@ -491,8 +490,6 @@ class PatternCanvas(QGraphicsScene):
         self.__numRows -= 1
         self.__activeItems = []
         self.set_up_labels()
-        self.emit(SIGNAL("row_col_count_changed"), "numRows", self.__numRows)
-
         
 
     @wait_cursor
@@ -534,9 +531,7 @@ class PatternCanvas(QGraphicsScene):
 
         self.__numColumns += num
         self.set_up_labels()
-        self.emit(SIGNAL("row_col_count_changed"), "numColumns", 
-                  self.__numColumns)
-
+        self.emit(SIGNAL("col_count_changed"), self.__numColumns)
 
 
     @wait_cursor
@@ -570,9 +565,8 @@ class PatternCanvas(QGraphicsScene):
         self.__numColumns -= 1
         self.__activeItems = []
         self.set_up_labels()
-        self.emit(SIGNAL("row_col_count_changed"), "numColumns", 
-                  self.__numColumns)
-        
+        self.emit(SIGNAL("col_count_changed"), self.__numColumns)
+
 
 
     def convert_canvas_row_to_internal(self, row):
