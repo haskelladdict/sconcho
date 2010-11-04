@@ -139,7 +139,6 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         widgets.
         """
 
-        print(self.__numCols)
         if self.__numCols <= 1:
             QMessageBox.warning(self, msg.numColTooSmallTitle,
                                 msg.numColTooSmallText,

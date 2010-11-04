@@ -91,6 +91,17 @@ numColTooSmallTitle = "sconcho: Column delete error"
 numColTooSmallText = ("There has to be at least one column remaining.\n"
                       "Cannot delete the last column.")
 
+
+noColInsertLayoutTitle = "sconcho: Cannot insert column"
+noColInsertLayoutText = ("Cannot insert requested columns at the specified "
+                         "location due to the current layout.")
+
+
+noColDeleteLayoutTitle = "sconcho: Cannot delete column"
+noColDeleteLayoutText = ("Cannot delete requested column at the specified "
+                         "location due to the current layout.")
+
+
 ########################################################################
 ##
 ## sconchoIO/io.py messages

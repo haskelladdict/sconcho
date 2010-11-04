@@ -37,6 +37,7 @@ from util.helpers.canvas import (is_click_in_grid, is_click_on_labels,
                             convert_pos_to_row_col)
 from gui.insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
 from util.helpers.misc import wait_cursor
+import util.helpers.messages as msg
 
 
 
@@ -518,7 +519,9 @@ class PatternCanvas(QGraphicsScene):
                     rowCounter += 1
 
         if rowCounter != self.__numRows:
-            print("Error: Can not insert column(s) due to layout")
+            QMessageBox.warning(None, msg.noColInsertLayoutTitle,
+                                msg.noColInsertLayoutText,
+                                QMessageBox.Close)
             return
 
         for graphicsItem in self.items():
@@ -552,7 +555,9 @@ class PatternCanvas(QGraphicsScene):
                     rowCounter += 1
 
         if rowCounter != self.__numRows:
-            print("Error: Can not delete column due to layout")
+            QMessageBox.warning(None, msg.noColDeleteLayoutTitle,
+                                msg.noColDeleteLayoutText,
+                                QMessageBox.Close)
             return
 
         for graphicsItem in self.items():
