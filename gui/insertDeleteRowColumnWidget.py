@@ -24,7 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import SIGNAL, QString
+from PyQt4.QtCore import (Qt, SIGNAL, QString)
 from PyQt4.QtGui import QDialog
 from gui.ui_insertDeleteRowColumnWidget import Ui_InsertDeleteRowColumnWidget
 
@@ -39,22 +39,20 @@ from gui.ui_insertDeleteRowColumnWidget import Ui_InsertDeleteRowColumnWidget
 class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
 
 
-
     def __init__(self, numRows, numCols, row, col, parent = None):
         """
         Initialize the dialog.
         """
 
-        QDialog.__init__(self, parent)
+        super(InsertDeleteRowColumnWidget, self).__init__(parent)
         self.setupUi(self)
-
-        # set interface to row/column user clicked on
-        self.insertRowPivot.setValue(numRows - row)
-        self.insertColumnPivot.setValue(numCols - col)
 
         # set the maximum of the spinbox
         self.set_upper_row_limit(numRows)
         self.set_upper_column_limit(numCols)
+
+        # set the current values for row/column to be changed
+        self.set_row_col(row, col)
 
         # install some connections
         self.connect(self.closeButton, SIGNAL("clicked()"), self.close)
@@ -139,6 +137,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         self.insertRowPivot.setMaximum(numRows)
         self.deleteRowID.setMinimum(1)
         self.deleteRowID.setMaximum(numRows)
+        self.__numRows = numRows
         
 
 
@@ -152,6 +151,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         self.insertColumnPivot.setMaximum(numCols)
         self.deleteColumnID.setMinimum(1)
         self.deleteColumnID.setMaximum(numCols)
+        self.__numCols = numCols
 
 
     def row_col_count_changed(self, type, num):
@@ -165,3 +165,12 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
             self.set_upper_column_limit(num)
         else:
             print("Error: asked to adjust ", type, " which is unknown.")
+
+
+    def set_row_col(self, row, col):
+        """ Set the current value of row/column entry to
+        be changed.
+        """
+
+        self.insertRowPivot.setValue(self.__numRows - row)
+        self.insertColumnPivot.setValue(self.__numCols - col)

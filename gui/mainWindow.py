@@ -135,6 +135,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.__canvas, SIGNAL("scene_changed"),
                      self.canvas_changed)
 
+        self.connect(self.actionInsert_delete_rows_and_columns, 
+                     SIGNAL("triggered()"),
+                     partial(self.__canvas.insert_delete_rows_columns, 1, 1))
 
 
     def __set_up_timers(self):

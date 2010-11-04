@@ -71,6 +71,8 @@ class PatternCanvas(QGraphicsScene):
         self.__textFont    = get_text_font(theSettings)
         self.__textLabels  = []
 
+        self.addDeleteRowColDialog = None
+
         self.legend = {}
 
         self.set_up_main_grid()
@@ -232,7 +234,7 @@ class PatternCanvas(QGraphicsScene):
         to the collection of selected cells and try to paint
         them.
         """
-
+        
         self.__selectedCells.add(item)
         self.paint_cells()
 
@@ -324,7 +326,7 @@ class PatternCanvas(QGraphicsScene):
                                     self.__activeSymbol, self.__activeColor)
                         self.addItem(item)
                         origin = QPointF(origin.x() + (width * self.__unitWidth),
-                                            origin.y())
+                                         origin.y())
                         column = column + width
 
                 self.__selectedCells.clear()
@@ -343,7 +345,7 @@ class PatternCanvas(QGraphicsScene):
         if event.button() == Qt.RightButton:
 
             if is_click_in_grid(col, row, self.__numColumns, self.__numRows):
-                self.handle_right_click_on_grid(event, col, row)
+                self.handle_right_click_on_grid(event, row, col)
 
             # don't propagate this events
             return
@@ -398,7 +400,7 @@ class PatternCanvas(QGraphicsScene):
         """
 
         gridMenu = QMenu()
-        rowAction = gridMenu.addAction("Insert/delete rows & columns")
+        rowAction = gridMenu.addAction("Insert/delete rows and columns")
         #gridMenu.addSeparator();
         #colorAction = gridMenu.addAction("Grab color");
 
@@ -415,18 +417,29 @@ class PatternCanvas(QGraphicsScene):
         via a widget.
         """
 
-        addDeleteDialog = InsertDeleteRowColumnWidget(self.__numRows,
-                                                      self.__numColumns,
-                                                      row, col)
+        if not self.addDeleteRowColDialog:
+            self.addDeleteRowColDialog = \
+                InsertDeleteRowColumnWidget(self.__numRows,
+                                            self.__numColumns,
+                                            row, col)
+        else:
+            self.addDeleteRowColDialog.set_row_col(row,col)
 
-        self.connect(addDeleteDialog, SIGNAL("insert_row"), self.insert_row)
-        self.connect(addDeleteDialog, SIGNAL("delete_row"), self.delete_row)
-        self.connect(addDeleteDialog, SIGNAL("insert_column"), self.insert_column)
-        self.connect(addDeleteDialog, SIGNAL("delete_column"), self.delete_column)
+
+        self.connect(self.addDeleteRowColDialog, SIGNAL("insert_row"), 
+                     self.insert_row)
+        self.connect(self.addDeleteRowColDialog, SIGNAL("delete_row"), 
+                     self.delete_row)
+        self.connect(self.addDeleteRowColDialog, SIGNAL("insert_column"), 
+                     self.insert_column)
+        self.connect(self.addDeleteRowColDialog, SIGNAL("delete_column"), 
+                     self.delete_column)
         self.connect(self, SIGNAL("row_col_count_changed"),
-                     addDeleteDialog.row_col_count_changed)
+                     self.addDeleteRowColDialog.row_col_count_changed)
+        
+        self.addDeleteRowColDialog.raise_()
+        self.addDeleteRowColDialog.show()
 
-        addDeleteDialog.exec_()
 
 
     @wait_cursor
@@ -521,7 +534,8 @@ class PatternCanvas(QGraphicsScene):
 
         self.__numColumns += num
         self.set_up_labels()
-        self.emit(SIGNAL("row_col_count_changed"), "numColumns", self.__numColumns)
+        self.emit(SIGNAL("row_col_count_changed"), "numColumns", 
+                  self.__numColumns)
 
 
 
@@ -556,7 +570,8 @@ class PatternCanvas(QGraphicsScene):
         self.__numColumns -= 1
         self.__activeItems = []
         self.set_up_labels()
-        self.emit(SIGNAL("row_col_count_changed"), "numColumns", self.__numColumns)
+        self.emit(SIGNAL("row_col_count_changed"), "numColumns", 
+                  self.__numColumns)
         
 
 
@@ -1086,7 +1101,7 @@ def shift_items_row_wise(item, num, unitCellHeight):
     yShift = num * unitCellHeight
     item.prepareGeometryChange()
     item.row += num
-    item.translate(0.0, yShift)
+    item.setPos(item.pos() + QPointF(0.0, yShift))
 
 
 

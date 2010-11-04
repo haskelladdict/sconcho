@@ -80,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>1137</width>
-     <height>28</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -118,8 +118,15 @@
     <addaction name="actionAbout_sconcho"/>
     <addaction name="actionAbout_Qt4"/>
    </widget>
+   <widget class="QMenu" name="menuGrid">
+    <property name="title">
+     <string>Grid</string>
+    </property>
+    <addaction name="actionInsert_delete_rows_and_columns"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuGrid"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -310,6 +317,11 @@
    </property>
    <property name="text">
     <string>show grid labels</string>
+   </property>
+  </action>
+  <action name="actionInsert_delete_rows_and_columns">
+   <property name="text">
+    <string>insert/delete rows and columns</string>
    </property>
   </action>
  </widget>
