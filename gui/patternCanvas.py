@@ -531,7 +531,7 @@ class PatternCanvas(QGraphicsScene):
 
         self.__numColumns += num
         self.set_up_labels()
-        self.emit(SIGNAL("col_count_changed"), self.__numColumns)
+        self.emit(SIGNAL("column_count_changed"), self.__numColumns)
 
 
     @wait_cursor
@@ -565,7 +565,7 @@ class PatternCanvas(QGraphicsScene):
         self.__numColumns -= 1
         self.__activeItems = []
         self.set_up_labels()
-        self.emit(SIGNAL("col_count_changed"), self.__numColumns)
+        self.emit(SIGNAL("column_count_changed"), self.__numColumns)
 
 
 

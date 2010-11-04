@@ -82,6 +82,14 @@ wantToSavePatternTitle = "sconcho: Pattern file not saved"
 wantToSavePatternText = ("Would you like to save your pattern "
                          "before exiting sconcho?")
 
+numRowTooSmallTitle = "sconcho: Row delete error"
+numRowTooSmallText = ("There has to be at least one row remaining.\n"
+                      "Cannot delete the last row.")
+
+
+numColTooSmallTitle = "sconcho: Column delete error"
+numColTooSmallText = ("There has to be at least one column remaining.\n"
+                      "Cannot delete the last column.")
 
 ########################################################################
 ##

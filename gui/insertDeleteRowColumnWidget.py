@@ -25,9 +25,9 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PyQt4.QtCore import (Qt, SIGNAL, QString)
-from PyQt4.QtGui import QDialog
+from PyQt4.QtGui import (QDialog, QMessageBox)
 from gui.ui_insertDeleteRowColumnWidget import Ui_InsertDeleteRowColumnWidget
-
+import util.helpers.messages as msg
 
 
 ##########################################################################
@@ -91,15 +91,21 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
 
         NOTE: Row deletion always succeeds (short of a bug) and
         we can directly update the widget limits.
+
+        We make sure that there is at least one row left.
         """
 
-        deadRowID = self.deleteRowID.value()
-
-        if deadRowID <= 0:
+        if self.__numRows <= 1:
+            QMessageBox.warning(self, msg.numRowTooSmallTitle,
+                                msg.numRowTooSmallText,
+                                QMessageBox.Close)
             return
 
+
+        deadRowID = self.deleteRowID.value()
         self.set_upper_row_limit(self.__numRows - 1)
         self.emit(SIGNAL("delete_row"), deadRowID)
+
 
 
     def insert_column_button_pressed(self):
@@ -133,11 +139,15 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         widgets.
         """
 
-        deadColumnID = self.deleteColumnID.value()
+        print(self.__numCols)
+        if self.__numCols <= 1:
+            QMessageBox.warning(self, msg.numColTooSmallTitle,
+                                msg.numColTooSmallText,
+                                QMessageBox.Close)
 
-        if deadColumnID <=0:
             return
 
+        deadColumnID = self.deleteColumnID.value()
         self.emit(SIGNAL("delete_column"), deadColumnID)
         
 
@@ -160,7 +170,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         Sets the upper limit of the column selectors based
         on the number of available columns.
         """
-        
+
         self.insertColumnPivot.setMinimum(1)
         self.insertColumnPivot.setMaximum(numCols)
         self.deleteColumnID.setMinimum(1)
