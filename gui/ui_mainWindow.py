@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Thu Nov  4 11:18:07 2010
+# Created: Thu Nov  4 11:19:40 2010
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -75,6 +75,7 @@ class Ui_MainWindow(object):
         self.dockWidget_3.setSizePolicy(sizePolicy)
         self.dockWidget_3.setMinimumSize(QtCore.QSize(350, 154))
         self.dockWidget_3.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
+        self.dockWidget_3.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
         self.dockWidget_3.setObjectName("dockWidget_3")
         self.dockWidgetContents_3 = QtGui.QWidget()
         self.dockWidgetContents_3.setObjectName("dockWidgetContents_3")
