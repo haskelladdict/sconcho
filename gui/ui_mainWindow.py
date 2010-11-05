@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Thu Nov  4 21:22:42 2010
+# Created: Thu Nov  4 21:46:12 2010
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -72,16 +72,16 @@ class Ui_MainWindow(object):
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
-        self.dockWidget_3 = QtGui.QDockWidget(MainWindow)
+        self.symbolDockWidget = QtGui.QDockWidget(MainWindow)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(4)
-        sizePolicy.setHeightForWidth(self.dockWidget_3.sizePolicy().hasHeightForWidth())
-        self.dockWidget_3.setSizePolicy(sizePolicy)
-        self.dockWidget_3.setMinimumSize(QtCore.QSize(350, 154))
-        self.dockWidget_3.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
-        self.dockWidget_3.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
-        self.dockWidget_3.setObjectName(_fromUtf8("dockWidget_3"))
+        sizePolicy.setHeightForWidth(self.symbolDockWidget.sizePolicy().hasHeightForWidth())
+        self.symbolDockWidget.setSizePolicy(sizePolicy)
+        self.symbolDockWidget.setMinimumSize(QtCore.QSize(350, 154))
+        self.symbolDockWidget.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
+        self.symbolDockWidget.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
+        self.symbolDockWidget.setObjectName(_fromUtf8("symbolDockWidget"))
         self.dockWidgetContents_3 = QtGui.QWidget()
         self.dockWidgetContents_3.setObjectName(_fromUtf8("dockWidgetContents_3"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.dockWidgetContents_3)
@@ -95,8 +95,8 @@ class Ui_MainWindow(object):
         self.symbolSelectorLayout.setObjectName(_fromUtf8("symbolSelectorLayout"))
         self.verticalLayout_2.addLayout(self.symbolSelectorLayout)
         self.verticalLayout_3.addLayout(self.verticalLayout_2)
-        self.dockWidget_3.setWidget(self.dockWidgetContents_3)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget_3)
+        self.symbolDockWidget.setWidget(self.dockWidgetContents_3)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.symbolDockWidget)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setObjectName(_fromUtf8("toolBar"))
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
@@ -193,7 +193,7 @@ class Ui_MainWindow(object):
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menuGrid.setTitle(QtGui.QApplication.translate("MainWindow", "&Grid", None, QtGui.QApplication.UnicodeUTF8))
-        self.dockWidget_3.setWindowTitle(QtGui.QApplication.translate("MainWindow", "sconcho: available knitting symbols", None, QtGui.QApplication.UnicodeUTF8))
+        self.symbolDockWidget.setWindowTitle(QtGui.QApplication.translate("MainWindow", "sconcho: available knitting symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout_sconcho.setText(QtGui.QApplication.translate("MainWindow", "About sconcho", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout_Qt4.setText(QtGui.QApplication.translate("MainWindow", "About Qt4", None, QtGui.QApplication.UnicodeUTF8))

@@ -44,9 +44,12 @@ def main():
     """
     
     app = QApplication(sys.argv)
+    app.setOrganizationName("Markus Dittrich")
+    app.setOrganizationDomain("sconcho.sourceforge.net")
+    app.setApplicationName("sconcho")
     window = MainWindow(SYMBOL_PATHS)
     window.show()
-    sys.exit(app.exec_())
+    app.exec_()
     
 
 

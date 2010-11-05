@@ -60,8 +60,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-        self.__settings = QSettings("sconcho", "settings")
-        settings.initialize(self.__settings)
+        self.restore_settings()
 
         self.__saveFilePath = None
         self.__colorWidget  = None
@@ -91,6 +90,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
 
+    def restore_settings(self):
+        """ Restore the previously saved settings """
+        
+        self.__settings = QSettings()
+        self.restoreState(self.__settings.value("MainWindow/State").toByteArray())
+        settings.initialize(self.__settings)
+
+
+                          
     def __set_up_connections(self):
         """
         Set up all connections required by MainWindow.
@@ -140,6 +148,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      partial(self.__canvas.insert_delete_rows_columns, 1, 1))
 
 
+
     def __set_up_timers(self):
         """
         Set up timers.
@@ -160,6 +169,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__canvasIsSaved = False
 
 
+
+    def closeEvent(self, event):
+
+        print('good bye')
+
+        
 
     def quit_sconcho(self):
         """
@@ -359,10 +374,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         This function opens a read pattern dialog.
         """
 
-        readFilePath = QFileDialog.getOpenFileName(self,
-                                                   msg.openSconchoProjectTitle,
-                                                   QDir.currentPath(),
-                                                   "sconcho pattern files (*.spf)")
+        readFilePath = \
+             QFileDialog.getOpenFileName(self,
+                                         msg.openSconchoProjectTitle,
+                                         QDir.currentPath(),
+                                         "sconcho pattern files (*.spf)")
 
         if not readFilePath:
             return
@@ -428,21 +444,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__saveFilePath = fileName
         self.setWindowTitle(QFileInfo(fileName).fileName())
-
-
-
-
-def set_up_colors(widget, colors):
-    """
-    Sets the colors of ColorSelectorItems in the widget to
-    the requested colors.
-    """
-
-    assert (len(widget.colorWidgets) == len(colors))
-
-    for (i, item) in enumerate(widget.colorWidgets):
-        item.set_content(colors[i])
-        item.repaint()
 
 
 
@@ -575,4 +576,27 @@ class SymbolDisplayItem(QFrame):
                                "border-color: black;" \
                                "background-color: " + self.backColor.name() + ";"
 
-    
+
+
+
+
+################################################################
+##
+## Helper functions
+##
+################################################################
+
+def set_up_colors(widget, colors):
+    """
+    Sets the colors of ColorSelectorItems in the widget to
+    the requested colors.
+    """
+
+    assert (len(widget.colorWidgets) == len(colors))
+
+    for (i, item) in enumerate(widget.colorWidgets):
+        item.set_content(colors[i])
+        item.repaint()
+
+
+
