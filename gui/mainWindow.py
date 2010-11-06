@@ -105,7 +105,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         
         self.connect(self.actionQuit, SIGNAL("triggered()"),
-                     self.quit_sconcho)
+                     self.close)
 
         self.connect(self.actionAbout_sconcho, SIGNAL("triggered()"),
                      self.show_about_sconcho)
@@ -171,12 +171,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def closeEvent(self, event):
-
-        print('good bye')
-
-        
-
-    def quit_sconcho(self):
         """
         Quit sconcho. If the canvas is currently dirty, we ask the
         user if she wants to save it.
@@ -192,11 +186,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if (messageBox == QMessageBox.Save):
                 self.save_pattern_dialog()
             elif (messageBox == QMessageBox.Cancel):
-                return
+                event.ignore()
 
-        quit()
 
-         
 
     def initialize_symbol_widget(self, knittingSymbols):
         """

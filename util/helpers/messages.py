@@ -79,8 +79,9 @@ patternFileExistsText = ("The pattern file %s already exists.\n"
                         "Do you want to overwrite it?")
 
 wantToSavePatternTitle = "sconcho: Pattern file not saved"
-wantToSavePatternText = ("Would you like to save your pattern "
-                         "before exiting sconcho?")
+wantToSavePatternText = ("Your pattern has unsaved changes. Please save or "
+                         "discard these changes or press cancel to continue "
+                         "with editing your pattern.")
 
 numRowTooSmallTitle = "sconcho: Row delete error"
 numRowTooSmallText = ("There has to be at least one row remaining.\n"
