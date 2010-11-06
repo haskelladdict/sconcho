@@ -77,19 +77,21 @@ class ColorWidget(QWidget):
         activeColorWidget = self.__synchronizer.get_active_widget()
         activeColorWidget.set_content(color)
         activeColorWidget.activate()
-        #self.__synchronizer.select(activeColorWidget)
 
 
 
     def get_all_colors(self):
-        """
-        Returns a list with all colors currently available in
-        the ColorSelectorItems.
+        """ Returns a list with of (color, state) tuples currently available
+        as ColorSelectorItems.
+
+        The state it 1 if the item is active and 0 for the inactive rest.
         """
 
+        activeWidget = self.__synchronizer.get_active_widget()
         allColors = []
         for item in self.colorWidgets:
-            allColors.append(item.get_content())
+            state = 1 if item == activeWidget else 0
+            allColors.append((item.get_content(), state))
 
         return allColors
             

@@ -57,9 +57,9 @@ sconchoDescription = QString(
     "email</a> for suggestions, comments, or in case of problems")
 
 
-startNewPatternTitle = "sconcho: Start new project"
-startNewPatternText  = ("Would you like to save your current project "
-                        "before continuing.")
+#startNewPatternTitle = "sconcho: Start new project"
+#startNewPatternText  = ("Would you like to save your current project "
+#                        "before continuing.")
 
 saveSconchoProjectTitle = "sconcho: Save project"
 openSconchoProjectTitle = "sconcho: Open project"

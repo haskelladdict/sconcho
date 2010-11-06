@@ -309,19 +309,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         their previous pattern or cancel.
         """
 
-        if not self.__canvasIsSaved:
-            answer = QMessageBox.question(self, msg.startNewPatternTitle,
-                                          msg.startNewPatternText,
-                                          QMessageBox.Save |
-                                          QMessageBox.Discard |
-                                          QMessageBox.Cancel)
-
-            if answer == QMessageBox.Save:
-                status = self.save_pattern_dialog("save")
-                if not status:
-                    return
-                elif answer == QMessageBox.Cancel:
-                    return
+        if not self.__ok_to_continue_without_saving():
+            return
 
         # start new canvas
         self.clear_project_save_file()
@@ -395,9 +384,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-
     def read_pattern_dialog(self):
         """ This function opens a read pattern dialog. """
+
+        if not self.__ok_to_continue_without_saving():
+            return
 
         readFilePath = \
              QFileDialog.getOpenFileName(self,
@@ -478,6 +469,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("sconcho: The more the better")
 
 
+
+    def __ok_to_continue_without_saving(self):
+        """ This function checks if the user would like to
+        save the current pattern. Returns True if the pattern
+        was save or the user discarded changes, and False if
+        the user canceled.
+        """
+
+        status = True
+        if not self.__canvasIsSaved:
+            answer = QMessageBox.question(self, msg.wantToSavePatternTitle,
+                                          msg.wantToSavePatternText,
+                                          QMessageBox.Save |
+                                          QMessageBox.Discard |
+                                          QMessageBox.Cancel)
+
+            if answer == QMessageBox.Save:
+                savedOk = self.save_pattern_dialog("save")
+                if not savedOk:
+                    status = False
+            elif answer == QMessageBox.Cancel:
+                status = False
+
+        return status
+        
 
 
 
@@ -621,13 +637,18 @@ class SymbolDisplayItem(QFrame):
 def set_up_colors(widget, colors):
     """
     Sets the colors of ColorSelectorItems in the widget to
-    the requested colors.
+    the requested colors. Also activates the previously
+    active item.
     """
 
     assert (len(widget.colorWidgets) == len(colors))
 
     for (i, item) in enumerate(widget.colorWidgets):
-        item.set_content(colors[i])
+        (color, state) = colors[i]
+        item.set_content(color)
+        if state == 1:
+            item.activate()
+            
         item.repaint()
 
 

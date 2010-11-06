@@ -206,11 +206,20 @@ def write_colors(writeDoc, root, colors):
     
     mainTag = writeDoc.createElement("projectColors")
     root.appendChild(mainTag)
-    
-    for item in colors:
+
+    helper = QString()
+    for (color, state) in colors:
         colorTag = writeDoc.createElement("color")
         mainTag.appendChild(colorTag)
-        colorTag.appendChild(writeDoc.createTextNode(item.name()))
+
+        nameTag = writeDoc.createElement("name")
+        colorTag.appendChild(nameTag)
+        nameTag.appendChild(writeDoc.createTextNode(color.name()))
+
+        activityTag = writeDoc.createElement("active")
+        colorTag.appendChild(activityTag)
+        helper.setNum(state)
+        activityTag.appendChild(writeDoc.createTextNode(helper))
 
 
 
@@ -381,8 +390,20 @@ def parse_colors(node):
     colors = []
     while not node.isNull():
         if node.toElement().tagName() == "color":
-            colors.append(QColor(node.firstChild().toText().data()))
 
+            colorNode = node.firstChild()
+            while not colorNode.isNull():
+                
+                if colorNode.toElement().tagName() == "name":
+                    name = colorNode.firstChild().toText().data()
+
+                if colorNode.toElement().tagName() == "active":
+                    (state, status) = colorNode.firstChild().toText().data().toInt()
+
+                colorNode = colorNode.nextSibling()
+                
+            colors.append((QColor(name), state))
+            
         node = node.nextSibling()
 
     return colors
