@@ -651,9 +651,11 @@ class PatternCanvas(QGraphicsScene):
 
         # clear GraphicsScene
         self.clear()
+        self.update()
 
         # clear all caches
         self.legend.clear()
+
 
 
     def create_new_canvas(self):
@@ -665,6 +667,7 @@ class PatternCanvas(QGraphicsScene):
         # we probably should add a dialog here
         self.__numRows    = 10
         self.__numColumns = 10
+        self.addDeleteRowColDialog = None
         
         self.__clear_canvas()
         self.__textLabels = []
