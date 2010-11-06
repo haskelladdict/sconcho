@@ -26,7 +26,8 @@ from __future__ import absolute_import
 
 from functools import partial
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
-                          QString, Qt, QSize, QFile, QTimer)
+                          QString, Qt, QSize, QFile, QTimer, QVariant,
+                          QPoint)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
                          QFrame, QColor)
@@ -60,7 +61,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-        self.restore_settings()
+        self.__settings = self.__restore_settings()
 
         self.__saveFilePath = None
         self.__colorWidget  = None
@@ -90,12 +91,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
 
-    def restore_settings(self):
+    def __restore_settings(self):
         """ Restore the previously saved settings """
         
-        self.__settings = QSettings()
-        self.restoreState(self.__settings.value("MainWindow/State").toByteArray())
-        settings.initialize(self.__settings)
+        newSettings = QSettings()
+        newSize = newSettings.value("MainWindow/Size",
+                                    QVariant(QSize(1200, 800))).toSize()
+        self.resize(newSize)
+
+        newPosition = newSettings.value("MainWindow/Position",
+                                        QVariant(QPoint(0,0))).toPoint()
+        self.move(newPosition)
+        
+        self.restoreState(newSettings.value("MainWindow/State").toByteArray())
+        settings.initialize(newSettings)
+
+        return newSettings
+
+
+
+    def __save_settings(self):
+        """ Save all settings. """
+        
+        self.__settings.setValue("MainWindow/Size", QVariant(self.size()))
+        self.__settings.setValue("MainWindow/Position", QVariant(self.pos()))
+        self.__settings.setValue("MainWindow/State", QVariant(self.saveState()))
 
 
                           
@@ -187,6 +207,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.save_pattern_dialog()
             elif (messageBox == QMessageBox.Cancel):
                 event.ignore()
+
+        # before we exit save our settings
+        self.__save_settings()
+        
 
 
 
