@@ -76,7 +76,8 @@ class ColorWidget(QWidget):
 
         activeColorWidget = self.__synchronizer.get_active_widget()
         activeColorWidget.set_content(color)
-        self.__synchronizer.select(activeColorWidget)
+        activeColorWidget.activate()
+        #self.__synchronizer.select(activeColorWidget)
 
 
 
@@ -122,20 +123,23 @@ class ColorSelectorItem(QFrame):
         
 
     def get_content(self):
-        """
-        Returns the color content controled by this widget.
-        """
+        """ Returns the color content controled by this widget. """
 
         return self.color
 
 
+
     def set_content(self, color):
-        """
-        Sets the current color of the selector.
-        """
+        """ Sets the current color of the selector. """
 
         self.color = color
         self.define_stylesheets()
+
+
+
+    def activate(self):
+        """ Activate ourselves. """
+
         self.__synchronizer.select(self)
 
 

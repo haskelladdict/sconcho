@@ -83,6 +83,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.setScene(self.__canvas)
         self.connect(self.__canvas, SIGNAL("adjust_view"),
                      self.graphicsView.adjust_scene)
+        self.graphicsView.adjust_scene()
 
         # set up all the connections
         self.__set_up_connections()
@@ -373,9 +374,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def __save_pattern(self):
-        """
-        Main save routine. If there is no filepath we return (e.g.
-        when called by the saveTimer).
+        """ Main save routine.
+
+        If there is no filepath we return (e.g. when called by the saveTimer).
         """
         
         if not self.__saveFilePath:
@@ -396,9 +397,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def read_pattern_dialog(self):
-        """
-        This function opens a read pattern dialog.
-        """
+        """ This function opens a read pattern dialog. """
 
         readFilePath = \
              QFileDialog.getOpenFileName(self,

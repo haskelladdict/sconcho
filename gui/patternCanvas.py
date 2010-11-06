@@ -166,12 +166,12 @@ class PatternCanvas(QGraphicsScene):
             new_entry = change_count(entry, 1)
             self.legend[legendID] = new_entry
         else:
-            (item, textItem) = self.add_legend_item(item.symbol, item.color)
+            (item, textItem) = self.__add_legend_item(item.symbol, item.color)
             self.legend[legendID] = [1, item, textItem]
 
 
 
-    def add_legend_item(self, symbol, color):
+    def __add_legend_item(self, symbol, color):
         """
         This adds a new legend entry including an PatternLegendItem
         and a textual description. This function also attemps to be
@@ -204,6 +204,8 @@ class PatternCanvas(QGraphicsScene):
         textItem.setPlainText(symbol["description"])
         self.addItem(textItem)
 
+        self.emit(SIGNAL("adjust_view"))
+        
         return (item, textItem)
 
 
