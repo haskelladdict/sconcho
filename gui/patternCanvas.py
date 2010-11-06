@@ -470,6 +470,8 @@ class PatternCanvas(QGraphicsScene):
 
         self.__numRows += num
         self.set_up_labels()
+        self.emit(SIGNAL("adjust_view"))
+        self.emit(SIGNAL("scene_changed"))
 
 
 
@@ -491,7 +493,10 @@ class PatternCanvas(QGraphicsScene):
         self.__numRows -= 1
         self.__activeItems = []
         self.set_up_labels()
+        self.emit(SIGNAL("adjust_view"))
+        self.emit(SIGNAL("scene_changed"))
         
+
 
     @wait_cursor
     def insert_column(self, num, mode, columnPivot):
@@ -535,6 +540,9 @@ class PatternCanvas(QGraphicsScene):
         self.__numColumns += num
         self.set_up_labels()
         self.emit(SIGNAL("column_count_changed"), self.__numColumns)
+        self.emit(SIGNAL("adjust_view"))
+        self.emit(SIGNAL("scene_changed"))
+
 
 
     @wait_cursor
@@ -571,6 +579,8 @@ class PatternCanvas(QGraphicsScene):
         self.__activeItems = []
         self.set_up_labels()
         self.emit(SIGNAL("column_count_changed"), self.__numColumns)
+        self.emit(SIGNAL("adjust_view"))
+        self.emit(SIGNAL("scene_changed"))
 
 
 

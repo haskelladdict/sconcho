@@ -81,7 +81,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # we set a manual scene rectangle for our view. we
         # should be a little smarter about this in the future
         self.graphicsView.setScene(self.__canvas)
-        self.graphicsView.setSceneRect( -100, -100, 2000, 2000)
+        self.connect(self.__canvas, SIGNAL("adjust_view"),
+                     self.graphicsView.adjust_scene)
 
         # set up all the connections
         self.__set_up_connections()

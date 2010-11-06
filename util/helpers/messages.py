@@ -52,7 +52,8 @@ sconchoDescription = QString(
     "License along with this program. "
     "If not, see <a href=\"http://www.gnu.org/licenses/\">"
     "http://www.gnu.org/licenses</a><br><br>"
-    "Please contact the author via <a href=\"mailto:haskelladdict@users.sourceforge.org\">"
+    "Please contact the author via "
+    "<a href=\"mailto:haskelladdict@users.sourceforge.org\">"
     "email</a> for suggestions, comments, or in case of problems")
 
 

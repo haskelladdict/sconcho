@@ -97,4 +97,10 @@ class PatternView(QGraphicsView):
             self.rubberBand.hide()
             
 
-            
+
+    def adjust_scene(self):
+        """ Make sure we have some space around the grid. """
+
+        sceneRect = self.scene().sceneRect()
+        sceneRect.adjust(-50,-50,50,50)
+        self.setSceneRect(sceneRect)
