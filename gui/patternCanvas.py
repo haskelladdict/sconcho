@@ -470,6 +470,9 @@ class PatternCanvas(QGraphicsScene):
         for row in range(0, num):
             self.__create_row(pivot + shift + row)
 
+        shift_legend_down(self.legend, num, self.__unitHeight,
+                          self.__numColumns, self.__unitWidth)
+        
         self.__numRows += num
         self.set_up_labels()
         self.emit(SIGNAL("adjust_view"))
@@ -539,6 +542,10 @@ class PatternCanvas(QGraphicsScene):
         for column in range(0, num):
             self.__create_column(pivot + shift + column)
 
+
+        shift_legend_right(self.legend, num, self.__unitWidth,
+                          self.__numRows, self.__unitHeight)
+        
         self.__numColumns += num
         self.set_up_labels()
         self.emit(SIGNAL("column_count_changed"), self.__numColumns)
@@ -919,7 +926,7 @@ class PatternLegendItem(QGraphicsSvgItem):
 
     def __init__(self, unitDim, width, height,
                  defaultSymbol, defaultColor = Qt.white,
-                 zValue = 0, parent = None):
+                 zValue = 1, parent = None):
 
         super(PatternLegendItem, self).__init__(parent)
         
@@ -1127,7 +1134,56 @@ def shift_items_column_wise(item, num, unitCellWidth):
     xShift = num * unitCellWidth
     item.prepareGeometryChange()
     item.column += num
-    item.translate(xShift, 0.0)
+    item.setPos(item.pos() + QPointF(xShift, 0.0))
+
+
+
+def shift_legend_down(legendList, numAdditionalRows, unitCellHeight,
+                      numColumns, unitWidth):
+    """ Shift all legend items below the grid down by
+    numAdditionalRows """
+
+    yShift = numAdditionalRows * unitCellHeight
+
+    for item in legendList.values():
+        symbol = legendItem_symbol(item)
+        text   = legendItem_text(item)
+
+        # we ignore all items above or right of the
+        # pattern grid
+        if (symbol.scenePos().y() >= 0) and \
+           (symbol.scenePos().x() <= numColumns * unitWidth):
+
+            symbol.prepareGeometryChange()
+            symbol.setPos(symbol.pos() + QPointF(0.0, yShift))
+            
+            text.prepareGeometryChange()
+            text.setPos(text.pos() + QPointF(0.0, yShift))
+
+    
+
+def shift_legend_right(legendList, numAdditionalColumns, unitCellWidth,
+                      numRows, unitHeight):
+    """ Shift all legend items to the right of the grid right by
+    numAdditionalColumns """
+
+    xShift = numAdditionalColumns * unitCellWidth
+
+    for item in legendList.values():
+        symbol = legendItem_symbol(item)
+        text   = legendItem_text(item)
+
+        # we ignore all items above or right of the
+        # pattern grid
+        if (symbol.scenePos().x() >= 0) and \
+           (symbol.scenePos().y() >= 0) and \
+           (symbol.scenePos().y() <= numRows * unitHeight):
+
+            symbol.prepareGeometryChange()
+            symbol.setPos(symbol.pos() + QPointF(xShift, 0.0))
+            
+            text.prepareGeometryChange()
+            text.setPos(text.pos() + QPointF(xShift, 0.0))
 
 
 
@@ -1139,8 +1195,8 @@ def compute_max_legend_y_coordinate(legendList):
 
     yList = [0]
     for item in legendList.values():
-        yList.append(item[1].scenePos().y())
-        yList.append(item[2].scenePos().y())
+        yList.append(legendItem_symbol(item).scenePos().y())
+        yList.append(legendItem_text(item).scenePos().y())
     
     return max(yList)
 
