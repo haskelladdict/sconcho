@@ -284,6 +284,7 @@ def read_project(readFileName):
     patternGridItems = []
     legendItems      = []
     projectColors    = None
+    activeSymbol     = None
     
     node = root.firstChild()
     while not node.isNull():
@@ -304,9 +305,13 @@ def read_project(readFileName):
             item = node.firstChild()
             projectColors = parse_colors(item)
 
+        elif node.toElement().tagName() == "activeSymbol":
+            item = node.firstChild()
+            activeSymbol = parse_activeSymbol(item)
+
         node = node.nextSibling()
 
-    return (patternGridItems, legendItems, projectColors)
+    return (patternGridItems, legendItems, projectColors, activeSymbol)
 
 
 
@@ -441,6 +446,34 @@ def parse_colors(node):
 
 
 
+def parse_activeSymbol(node):
+    """ Parse the active symbol selected in the saved project.
+
+    None means no active symbol was selected.
+    """
+
+    activeSymbol = {}
+    
+    while not node.isNull():
+        
+        if node.toElement().tagName() == "patternName":
+            activeSymbol["name"] = node.firstChild().toText().data()
+
+        if node.toElement().tagName() == "patternCategory":
+            activeSymbol["category"] = node.firstChild().toText().data()
+            
+        node = node.nextSibling()
+
+    return activeSymbol
+
+
+
+
+#############################################################################
+#
+# routines for exporting a project to an image file
+#
+#############################################################################
 @wait_cursor
 def export_scene(canvas, exportFileName):
     """
@@ -466,6 +499,12 @@ def export_scene(canvas, exportFileName):
 
 
 
+
+#############################################################################
+#
+# routines for printing a project 
+#
+#############################################################################
 @wait_cursor
 def print_scene(canvas):
     """

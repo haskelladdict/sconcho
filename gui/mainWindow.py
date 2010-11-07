@@ -28,7 +28,8 @@ import platform
 from functools import partial
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           QString, Qt, QSize, QFile, QTimer, QVariant,
-                          QPoint, PYQT_VERSION_STR, QT_VERSION_STR)
+                          QPoint, PYQT_VERSION_STR, QT_VERSION_STR,
+                          QObject)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
                          QFrame, QColor, QApplication)
@@ -245,8 +246,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(symbolTracker, 
                      SIGNAL("synchronized_object_changed"),
                      self.set_project_dirty)
+
+        self.connect(self,
+                     SIGNAL("unselect_active_symbol"),
+                     symbolTracker.unselect)
         
-        (self.selectedSymbol, self.symbolSelectorWidgets) = \
+        (self.selectedSymbol, self.symbolSelector,
+         self.symbolSelectorWidgets) = \
                         generate_symbolWidgets(knittingSymbols,
                                                self.patternCategoryChooser,
                                                self.symbolSelectorLayout,
@@ -269,7 +275,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.symbolSelectorLayout.removeWidget(self.selectedSymbol)
         self.selectedSymbol.setParent(None)
 
-        self.selectedSymbol = self.symbolSelectorWidgets[categoryName]
+        self.selectedSymbol = self.symbolSelector[categoryName]
         self.symbolSelectorLayout.addWidget(self.selectedSymbol)
         
         
@@ -419,7 +425,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         readFileName = QFileInfo(readFilePath).fileName()
 
         try:
-            (patternGridItems, legendItems, colors) = io.read_project(readFilePath)
+            (patternGridItems, legendItems, colors, activeItem) = \
+                               io.read_project(readFilePath)
         except PatternReadError:
             return
             
@@ -427,6 +434,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__canvas.load_previous_pattern(knittingSymbols, patternGridItems,
                                            legendItems)
         set_up_colors(self.__colorWidget, colors)
+        self.activate_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
         self.set_project_save_file(readFilePath)
 
@@ -513,6 +521,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return status
         
 
+
+    def activate_symbolSelectorItem(self, symbolWidgets, activeItem):
+        """ Activate the requested item.
+
+        If activeItem is None we inactivate whatever symbolSelectorWidget
+        is currently selected. Otherwise activate the proper widget.
+        The activeItem comes directly from the parser so we have to
+        be careful.
+        """
+
+        try:
+            name = activeItem["name"]
+        except:
+            return
+
+        if name == "None":
+            self.emit(SIGNAL("unselect_active_symbol"))
+
+        try:
+            category = activeItem["category"]
+        except:
+            return
+
+        if (name, category) in symbolWidgets:
+            symbolWidgets[(name, category)].click_me()
+        
 
 
 ###############################################################

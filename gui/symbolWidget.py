@@ -43,6 +43,7 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
     """
 
     selectorWidgets = {}
+    widgetList = {}
     symbolsByCategory = sort_symbols_by_category(symbols)
     for (symbolCategory, symbols) in symbolsByCategory:
 
@@ -70,6 +71,8 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
             QObject.connect(newLabel, SIGNAL("label_clicked()"),
                             newItem.click_me)
 
+            widgetList[(symbol["name"], symbol["category"])] = newItem
+
         currentWidget.setLayout(layout)
         scrollArea = QScrollArea()
         scrollArea.setWidget(currentWidget)
@@ -86,7 +89,7 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
 
     symbolLayout.addWidget(activeWidget)
 
-    return (activeWidget, selectorWidgets)
+    return (activeWidget, selectorWidgets, widgetList)
 
     
 
@@ -241,7 +244,7 @@ class SymbolSelectorItem(QFrame):
 
 
 
-    def activate_me(self):
+    def set_active_look(self):
         """
         This slot activates the item.
         """
@@ -250,7 +253,7 @@ class SymbolSelectorItem(QFrame):
 
 
 
-    def inactivate_me(self):
+    def set_inactive_look(self):
         """
         This slot inactivates the item.
         """
@@ -310,24 +313,28 @@ class SymbolSynchronizer(QObject):
         """
 
         if self.__activeWidget == target:
-            self.__activeWidget.inactivate_me()
-            self.__activeWidget = None
-            self.emit(SIGNAL("synchronized_object_changed"), None)
+            self.unselect()
         else:
             if self.__activeWidget:
-                self.__activeWidget.inactivate_me()
+                self.__activeWidget.set_inactive_look()
 
             self.__activeWidget = target
-            self.__activeWidget.activate_me()
+            self.__activeWidget.set_active_look()
             self.emit(SIGNAL("synchronized_object_changed"),
                       self.__activeWidget.get_content())
 
 
 
+    def unselect(self):
+        """ Unselect the currently active widget. """
+
+        self.__activeWidget.set_inactive_look()
+        self.__activeWidget = None
+        self.emit(SIGNAL("synchronized_object_changed"), None)
+
+
+
     def get_active_widget(self):
-        """
-        Simply returns the active widget
-        to anybody who cares to know.
-        """
+        """ Return the active widget to anybody who cares to know. """
 
         return self.__activeWidget
