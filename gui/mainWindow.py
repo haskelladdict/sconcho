@@ -68,7 +68,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__saveFilePath = None
         self.__colorWidget  = None
-        self.__canvasIsSaved = True
+        self.__projectIsDirty = False
 
         # set up the statusBar
         self.activeSymbolWidget = ActiveSymbolWidget()
@@ -166,7 +166,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.__canvas.toggle_pattern_grid_visibility)
         
         self.connect(self.__canvas, SIGNAL("scene_changed"),
-                     self.canvas_changed)
+                     self.set_project_dirty)
 
         self.connect(self.actionInsert_delete_rows_and_columns, 
                      SIGNAL("triggered()"),
@@ -185,14 +185,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def canvas_changed(self):
+    def set_project_dirty(self):
         """
         This function marks the canvas as dirty, aka it needs
         to be saved.
         """
 
-        self.__canvasIsSaved = False
+        self.__projectIsDirty = True
         self.setWindowModified(True)
+
+
+
+    def set_project_clean(self):
+        """
+        This function marks the project as clean, aka it does not need
+        to be saved.
+        """
+
+        self.__projectIsDirty = False
+        self.setWindowModified(False)
 
 
 
@@ -230,6 +241,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(symbolTracker, 
                      SIGNAL("synchronized_object_changed"),
                      self.activeSymbolWidget.active_symbol_changed)
+        
+        self.connect(symbolTracker, 
+                     SIGNAL("synchronized_object_changed"),
+                     self.set_project_dirty)
         
         (self.selectedSymbol, self.symbolSelectorWidgets) = \
                         generate_symbolWidgets(knittingSymbols,
@@ -375,11 +390,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar().showMessage("saving " + saveFileName)
 
         io.save_project(self.__canvas, self.__colorWidget.get_all_colors(),
-                        self.__settings, self.__saveFilePath)
+                        self.__settings, self.activeSymbolWidget.get_symbol(),
+                        self.__saveFilePath)
         
         self.statusBar().showMessage("successfully saved " + saveFileName, 2000)
-        self.__canvasIsSaved = True
-        self.setWindowModified(False)
+        self.set_project_clean()
 
         return True
 
@@ -481,7 +496,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         status = True
-        if not self.__canvasIsSaved:
+        if self.__projectIsDirty:
             answer = QMessageBox.question(self, msg.wantToSavePatternTitle,
                                           msg.wantToSavePatternText,
                                           QMessageBox.Save |
@@ -528,6 +543,14 @@ class ActiveSymbolWidget(QWidget):
 
 
 
+    def get_symbol(self):
+        """ Returns the current active symbol. """
+
+        return self.widget.get_symbol() if self.widget \
+               else None
+        
+
+
     def active_symbol_changed(self, symbol):
         """
         Update the displayed active Widget after
@@ -549,6 +572,8 @@ class ActiveSymbolWidget(QWidget):
                 self.layout.addWidget(self.label,0,0)       
                 
         else:
+            self.widget = None
+            
             if self.label is self.activeSymbolLabel:
                 self.layout.removeWidget(self.label)
                 self.label.setParent(None)
@@ -604,6 +629,14 @@ class SymbolDisplayItem(QFrame):
             
         self.setLayout(layout)
 
+
+
+    def get_symbol(self):
+        """ Return our symbol. """
+
+        return self.__symbol
+
+    
 
 
     def set_backcolor(self, color):

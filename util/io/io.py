@@ -38,9 +38,13 @@ import util.helpers.messages as msg
 
 
 
-
+#############################################################################
+#
+# routines for writing a project
+#
+#############################################################################
 @wait_cursor
-def save_project(canvas, colors, settings, saveFileName):
+def save_project(canvas, colors, settings, activeSymbol, saveFileName):
     """
     Toplevel writer routine.
     """
@@ -57,6 +61,7 @@ def save_project(canvas, colors, settings, saveFileName):
     write_patternGridItems(writeDoc, root, canvas)
     write_patternLegendItems(writeDoc, root, canvas)
     write_colors(writeDoc, root, colors)
+    write_activeSymbol(writeDoc, root, activeSymbol)
 
     # save it
     writeDoc.save(writeStream, 4)
@@ -223,6 +228,32 @@ def write_colors(writeDoc, root, colors):
 
 
 
+def write_activeSymbol(writeDoc, root, activeSymbol):
+    """ Write the currently active symbol. """
+
+    mainTag = writeDoc.createElement("activeSymbol")
+    root.appendChild(mainTag)
+
+    if activeSymbol:
+        nameTag = writeDoc.createElement("patternName")
+        mainTag.appendChild(nameTag)
+        nameTag.appendChild(writeDoc.createTextNode(activeSymbol["name"]))
+
+        categoryTag = writeDoc.createElement("patternCategory")
+        mainTag.appendChild(categoryTag)
+        categoryTag.appendChild(writeDoc.createTextNode(activeSymbol["category"]))
+    else:
+        nameTag = writeDoc.createElement("patternName")
+        mainTag.appendChild(nameTag)
+        nameTag.appendChild(writeDoc.createTextNode("None"))
+
+
+
+#############################################################################
+#
+# routines for parsing a project
+#
+#############################################################################
 @wait_cursor
 def read_project(readFileName):
     """
