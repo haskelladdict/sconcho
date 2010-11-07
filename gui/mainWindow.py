@@ -198,17 +198,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         user if she wants to save it.
         """
 
-        if not self.__canvasIsSaved:
-            messageBox = QMessageBox.question(self,
-                            msg.wantToSavePatternTitle, 
-                            msg.wantToSavePatternText,
-                            QMessageBox.Save | QMessageBox.Discard
-                            | QMessageBox.Cancel)
-
-            if (messageBox == QMessageBox.Save):
-                self.save_pattern_dialog("save")
-            elif (messageBox == QMessageBox.Cancel):
-                event.ignore()
+        if not self.__ok_to_continue_without_saving():
+            return
 
         # before we exit save our settings
         self.__save_settings()
