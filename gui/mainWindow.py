@@ -30,7 +30,7 @@ from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo,
                           QPoint)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
-                         QFrame, QColor)
+                         QFrame, QColor, QApplication)
 from PyQt4.QtSvg import QSvgWidget
 from gui.ui_mainWindow import Ui_MainWindow
 import util.helpers.messages as msg
@@ -42,6 +42,8 @@ from gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from gui.patternCanvas import PatternCanvas
 from util.helpers.exceptions import PatternReadError
 
+
+__version__ = "0.1.0"
 
 
 #######################################################################
@@ -282,7 +284,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Show the about sconcho dialog.
         """
-        QMessageBox.about(self, "sconcho", msg.sconchoDescription)
+        QMessageBox.about(self, QApplication.applicationName(),
+                          msg.sconchoDescription)
 
 
 
@@ -448,7 +451,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """ Stores the name of the currently operated on file. """
 
         self.__saveFilePath = fileName
-        self.setWindowTitle("sconcho: " + QFileInfo(fileName).fileName())
+        self.setWindowTitle(QApplication.applicationName() \
+                            + QFileInfo(fileName).fileName())
 
 
 
@@ -457,7 +461,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         self.__saveFilePath = None
-        self.setWindowTitle("sconcho: The more the better")
+        self.setWindowTitle(QApplication.applicationName() \
+                            + " The more the better")
 
 
 

@@ -36,7 +36,6 @@ import util.io.symbolParser as parser
 # more spiffy lateron
 SYMBOL_PATHS = ["../symbols"]
 
-__version__ = "0.1.0"
 
 def main():
     """

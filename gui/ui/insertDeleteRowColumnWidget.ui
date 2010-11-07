@@ -34,7 +34,10 @@
            <item>
             <widget class="QLabel" name="label">
              <property name="text">
-              <string>insert</string>
+              <string>&amp;insert</string>
+             </property>
+             <property name="buddy">
+              <cstring>numInsertRows</cstring>
              </property>
             </widget>
            </item>
@@ -51,7 +54,10 @@
            <item>
             <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>rows</string>
+              <string>row&amp;s</string>
+             </property>
+             <property name="buddy">
+              <cstring>insertRowMode</cstring>
              </property>
             </widget>
            </item>
@@ -72,7 +78,10 @@
            <item>
             <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>row</string>
+              <string>&amp;row</string>
+             </property>
+             <property name="buddy">
+              <cstring>insertRowPivot</cstring>
              </property>
             </widget>
            </item>
@@ -102,7 +111,7 @@
            <item>
             <widget class="QPushButton" name="insertRowButton">
              <property name="text">
-              <string>insert</string>
+              <string>Insert Row</string>
              </property>
             </widget>
            </item>
@@ -120,7 +129,10 @@
            <item>
             <widget class="QLabel" name="label_7">
              <property name="text">
-              <string>delete row</string>
+              <string>&amp;delete row</string>
+             </property>
+             <property name="buddy">
+              <cstring>deleteRowID</cstring>
              </property>
             </widget>
            </item>
@@ -150,7 +162,7 @@
            <item>
             <widget class="QPushButton" name="deleteRowButton">
              <property name="text">
-              <string>delete</string>
+              <string>Delete Row</string>
              </property>
             </widget>
            </item>
@@ -168,7 +180,10 @@
            <item>
             <widget class="QLabel" name="label_4">
              <property name="text">
-              <string>insert</string>
+              <string>&amp;insert</string>
+             </property>
+             <property name="buddy">
+              <cstring>numInsertColumns</cstring>
              </property>
             </widget>
            </item>
@@ -185,7 +200,10 @@
            <item>
             <widget class="QLabel" name="label_5">
              <property name="text">
-              <string>columns</string>
+              <string>column&amp;s</string>
+             </property>
+             <property name="buddy">
+              <cstring>insertColumnMode</cstring>
              </property>
             </widget>
            </item>
@@ -206,7 +224,10 @@
            <item>
             <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>column</string>
+              <string>&amp;column</string>
+             </property>
+             <property name="buddy">
+              <cstring>insertColumnPivot</cstring>
              </property>
             </widget>
            </item>
@@ -236,7 +257,7 @@
            <item>
             <widget class="QPushButton" name="insertColumnButton">
              <property name="text">
-              <string>insert</string>
+              <string>Insert Column</string>
              </property>
             </widget>
            </item>
@@ -254,7 +275,10 @@
            <item>
             <widget class="QLabel" name="label_8">
              <property name="text">
-              <string>delete column</string>
+              <string>&amp;delete column</string>
+             </property>
+             <property name="buddy">
+              <cstring>deleteColumnID</cstring>
              </property>
             </widget>
            </item>
@@ -284,7 +308,7 @@
            <item>
             <widget class="QPushButton" name="deleteColumnButton">
              <property name="text">
-              <string>delete</string>
+              <string>Delete Column</string>
              </property>
             </widget>
            </item>
@@ -348,6 +372,22 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>numInsertRows</tabstop>
+  <tabstop>insertRowMode</tabstop>
+  <tabstop>insertRowPivot</tabstop>
+  <tabstop>insertRowButton</tabstop>
+  <tabstop>deleteRowID</tabstop>
+  <tabstop>deleteRowButton</tabstop>
+  <tabstop>numInsertColumns</tabstop>
+  <tabstop>insertColumnMode</tabstop>
+  <tabstop>insertColumnPivot</tabstop>
+  <tabstop>insertColumnButton</tabstop>
+  <tabstop>deleteColumnID</tabstop>
+  <tabstop>deleteColumnButton</tabstop>
+  <tabstop>closeButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
