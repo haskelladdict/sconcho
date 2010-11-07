@@ -32,29 +32,30 @@ from PyQt4.QtCore import QString
 ## gui/mainWindow.py messages
 ##
 ########################################################################
-sconchoDescription = QString(
-    "<b>sconcho</b> is a knitting chart "
-    "design tool capable of producing print quality charts.<br><br>"
-    "Copyright (C) 2009-2010 Markus Dittrich<br><br>"
-    "This is a complete rewrite of the original C++/Qt4 version of sconcho "
-    "ported to python/PyQt4.<br><br>"
-    "Many thanks to Susan Dittrich for continued testing, advice, "
-    "support, and generation of the SVG knitting symbols.<br><br>"
-    "This program is free software: you can redistribute it and/or "
+sconchoDescription = (
+    "<b>sconcho</b> v. %s"
+    "<p>sconcho is a knitting chart "
+    "design tool capable of producing print quality charts."
+    "<p>Copyright &copy; 2009-2010 Markus Dittrich"
+    "<p>Many thanks to Susan Dittrich for continued testing, advice, "
+    "support, and generation of the SVG knitting symbols."
+    "<p>This program is free software: you can redistribute it and/or "
     "modify it under the terms of the GNU General Public License "
     "as published by the Free Software Foundation, either version 3 "
-    "of the License, or (at your option) any later version.<br><br>"
-    "This program is distributed in the hope that it will be useful, "
+    "of the License, or (at your option) any later version."
+    "<p>This program is distributed in the hope that it will be useful, "
     "but WITHOUT ANY WARRANTY; without even the implied warranty of "
     "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the "
     "GNU General Public License for more details.<br>"
     "You should have received a copy of the GNU General Public "
     "License along with this program. "
     "If not, see <a href=\"http://www.gnu.org/licenses/\">"
-    "http://www.gnu.org/licenses</a><br><br>"
-    "Please contact the author via "
+    "http://www.gnu.org/licenses</a>"
+    "<p>Please contact the author via "
     "<a href=\"mailto:haskelladdict@users.sourceforge.org\">"
-    "email</a> for suggestions, comments, or in case of problems")
+    "email</a> for suggestions, comments, or in case of problems"
+    "<p>sconcho uses the following resources:"
+    "<p>python %s  -  Qt %s  - PyQt %s on %s")
 
 
 saveSconchoProjectTitle = "sconcho: Save project"

@@ -24,10 +24,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import platform
 from functools import partial
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           QString, Qt, QSize, QFile, QTimer, QVariant,
-                          QPoint)
+                          QPoint, PYQT_VERSION_STR, QT_VERSION_STR)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
                          QFrame, QColor, QApplication)
@@ -285,7 +286,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Show the about sconcho dialog.
         """
         QMessageBox.about(self, QApplication.applicationName(),
-                          msg.sconchoDescription)
+                          msg.sconchoDescription % (__version__,
+                                                    platform.python_version(),
+                                                    QT_VERSION_STR,
+                                                    PYQT_VERSION_STR,
+                                                    platform.system()))
 
 
 
