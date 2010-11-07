@@ -98,11 +98,6 @@
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>&amp;View</string>
@@ -125,7 +120,6 @@
     <addaction name="actionInsert_delete_rows_and_columns"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
    <addaction name="menuGrid"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
@@ -216,6 +210,12 @@
    <property name="text">
     <string>&amp;New...</string>
    </property>
+   <property name="toolTip">
+    <string>New pattern</string>
+   </property>
+   <property name="statusTip">
+    <string>New pattern</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
    </property>
@@ -227,6 +227,12 @@
    </property>
    <property name="text">
     <string>&amp;Open...</string>
+   </property>
+   <property name="toolTip">
+    <string>Open saved project</string>
+   </property>
+   <property name="statusTip">
+    <string>Open saved project</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -240,6 +246,12 @@
    <property name="text">
     <string>&amp;Save</string>
    </property>
+   <property name="toolTip">
+    <string>Save project</string>
+   </property>
+   <property name="statusTip">
+    <string>Save project</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
@@ -252,6 +264,12 @@
    <property name="text">
     <string>Save  &amp;as...</string>
    </property>
+   <property name="toolTip">
+    <string>Save project as</string>
+   </property>
+   <property name="statusTip">
+    <string>Save project as</string>
+   </property>
   </action>
   <action name="actionExport">
    <property name="icon">
@@ -260,6 +278,12 @@
    </property>
    <property name="text">
     <string>&amp;Export...</string>
+   </property>
+   <property name="toolTip">
+    <string>Export as image file</string>
+   </property>
+   <property name="statusTip">
+    <string>Export as image file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -273,6 +297,12 @@
    <property name="text">
     <string>&amp;Quit</string>
    </property>
+   <property name="toolTip">
+    <string>Quit sconcho</string>
+   </property>
+   <property name="statusTip">
+    <string>Quit sconcho</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
@@ -284,6 +314,9 @@
    </property>
    <property name="text">
     <string>&amp;Print...</string>
+   </property>
+   <property name="statusTip">
+    <string>Print</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -299,6 +332,12 @@
    <property name="text">
     <string>show pattern grid</string>
    </property>
+   <property name="toolTip">
+    <string>toggle visibility of pattern grid</string>
+   </property>
+   <property name="statusTip">
+    <string>toggle visibility of pattern </string>
+   </property>
   </action>
   <action name="actionShow_legend">
    <property name="checkable">
@@ -309,6 +348,12 @@
    </property>
    <property name="text">
     <string>show legend</string>
+   </property>
+   <property name="toolTip">
+    <string>toggle visibility of legend</string>
+   </property>
+   <property name="statusTip">
+    <string>toggle visibility of legend</string>
    </property>
   </action>
   <action name="actionShow_grid_labels">
@@ -321,9 +366,18 @@
    <property name="text">
     <string>show grid labels</string>
    </property>
+   <property name="toolTip">
+    <string>toggle visbility of grid labels</string>
+   </property>
+   <property name="statusTip">
+    <string>toggle visbility of grid labels</string>
+   </property>
   </action>
   <action name="actionInsert_delete_rows_and_columns">
    <property name="text">
+    <string>insert/delete rows and columns</string>
+   </property>
+   <property name="statusTip">
     <string>insert/delete rows and columns</string>
    </property>
   </action>

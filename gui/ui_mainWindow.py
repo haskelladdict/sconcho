@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sun Nov  7 06:12:53 2010
+# Created: Sun Nov  7 06:32:53 2010
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -60,8 +60,6 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
-        self.menuEdit = QtGui.QMenu(self.menubar)
-        self.menuEdit.setObjectName(_fromUtf8("menuEdit"))
         self.menuView = QtGui.QMenu(self.menubar)
         self.menuView.setObjectName(_fromUtf8("menuView"))
         self.menuHelp = QtGui.QMenu(self.menubar)
@@ -171,7 +169,6 @@ class Ui_MainWindow(object):
         self.menuHelp.addAction(self.actionAbout_Qt4)
         self.menuGrid.addAction(self.actionInsert_delete_rows_and_columns)
         self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuGrid.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
@@ -189,7 +186,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "sconcho: create your own pattern charts", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menuGrid.setTitle(QtGui.QApplication.translate("MainWindow", "&Grid", None, QtGui.QApplication.UnicodeUTF8))
@@ -199,22 +195,42 @@ class Ui_MainWindow(object):
         self.actionAbout_Qt4.setText(QtGui.QApplication.translate("MainWindow", "About Qt4", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPreferences.setText(QtGui.QApplication.translate("MainWindow", "Preferences", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew.setText(QtGui.QApplication.translate("MainWindow", "&New...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew.setToolTip(QtGui.QApplication.translate("MainWindow", "New pattern", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew.setStatusTip(QtGui.QApplication.translate("MainWindow", "New pattern", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+N", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen.setText(QtGui.QApplication.translate("MainWindow", "&Open...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOpen.setToolTip(QtGui.QApplication.translate("MainWindow", "Open saved project", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOpen.setStatusTip(QtGui.QApplication.translate("MainWindow", "Open saved project", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "&Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setToolTip(QtGui.QApplication.translate("MainWindow", "Save project", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setStatusTip(QtGui.QApplication.translate("MainWindow", "Save project", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave_as.setText(QtGui.QApplication.translate("MainWindow", "Save  &as...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave_as.setToolTip(QtGui.QApplication.translate("MainWindow", "Save project as", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave_as.setStatusTip(QtGui.QApplication.translate("MainWindow", "Save project as", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExport.setText(QtGui.QApplication.translate("MainWindow", "&Export...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport.setToolTip(QtGui.QApplication.translate("MainWindow", "Export as image file", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport.setStatusTip(QtGui.QApplication.translate("MainWindow", "Export as image file", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExport.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+E", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "&Quit", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionQuit.setToolTip(QtGui.QApplication.translate("MainWindow", "Quit sconcho", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionQuit.setStatusTip(QtGui.QApplication.translate("MainWindow", "Quit sconcho", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setText(QtGui.QApplication.translate("MainWindow", "&Print...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPrint.setStatusTip(QtGui.QApplication.translate("MainWindow", "Print", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+P", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_pattern_grid.setText(QtGui.QApplication.translate("MainWindow", "show pattern grid", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_pattern_grid.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle visibility of pattern grid", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_pattern_grid.setStatusTip(QtGui.QApplication.translate("MainWindow", "toggle visibility of pattern ", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_legend.setText(QtGui.QApplication.translate("MainWindow", "show legend", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_legend.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle visibility of legend", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_legend.setStatusTip(QtGui.QApplication.translate("MainWindow", "toggle visibility of legend", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_grid_labels.setText(QtGui.QApplication.translate("MainWindow", "show grid labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_grid_labels.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle visbility of grid labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_grid_labels.setStatusTip(QtGui.QApplication.translate("MainWindow", "toggle visbility of grid labels", None, QtGui.QApplication.UnicodeUTF8))
         self.actionInsert_delete_rows_and_columns.setText(QtGui.QApplication.translate("MainWindow", "insert/delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionInsert_delete_rows_and_columns.setStatusTip(QtGui.QApplication.translate("MainWindow", "insert/delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
 
 from patternView import PatternView
 import icons_rc
