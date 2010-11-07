@@ -192,6 +192,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         self.__canvasIsSaved = False
+        self.setWindowModified(True)
 
 
 
@@ -378,6 +379,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.statusBar().showMessage("successfully saved " + saveFileName, 2000)
         self.__canvasIsSaved = True
+        self.setWindowModified(False)
 
         return True
 
@@ -456,8 +458,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """ Stores the name of the currently operated on file. """
 
         self.__saveFilePath = fileName
-        self.setWindowTitle(QApplication.applicationName() \
-                            + QFileInfo(fileName).fileName())
+        self.setWindowTitle(QApplication.applicationName() + ": " \
+                            + QFileInfo(fileName).fileName() + "[*]")
 
 
 
@@ -467,7 +469,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__saveFilePath = None
         self.setWindowTitle(QApplication.applicationName() \
-                            + " The more the better")
+                            + " The more the better[*]")
 
 
 
