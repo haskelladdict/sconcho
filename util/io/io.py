@@ -27,8 +27,7 @@ from __future__ import absolute_import
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
                           Qt, QRectF)
 from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
-                         QPrinter, QPrintDialog, QDialog,
-                         QApplication)
+                         QPrinter, QPrintDialog, QDialog)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from gui.patternCanvas import (PatternGridItem, PatternLegendItem,
                                legendItem_symbol, legendItem_text)
@@ -267,7 +266,6 @@ def read_project(readFileName):
     readDoc = QDomDocument()
     (status, errMsg, errLine, errCol) = readDoc.setContent(readFile, True)
     if not status:
-        QApplication.restoreOverrideCursor()
         QMessageBox.critical(None, msg.domParserErrorTitle,
                              msg.domParserErrorText
                              % (unicode(readFileName), errLine, errCol,
@@ -355,7 +353,6 @@ def parse_patternGridItem(item):
                     "category" : category,
                     "name"     : name }
     except:
-        QApplication.restoreOverrideCursor()
         QMessageBox.critical(None, msg.patternGridItemParseErrorTitle,
                              msg.patternGridItemParseErrorText,
                              QMessageBox.Close)
@@ -408,7 +405,6 @@ def parse_legendItem(item):
                     "labelYPos" : labelYPos, 
                     "color"     : color }
     except:
-        QApplication.restoreOverrideCursor()
         QMessageBox.critical(None, msg.patternLegendItemParseErrorTitle,
                              msg.patternLegendItemParseErrorText,
                              QMessageBox.Close)
@@ -437,8 +433,14 @@ def parse_colors(node):
                     (state, status) = colorNode.firstChild().toText().data().toInt()
 
                 colorNode = colorNode.nextSibling()
-                
-            colors.append((QColor(name), state))
+
+            try:
+                colors.append((QColor(name), state))
+            except:
+                QMessageBox.critical(None, msg.patternColorParseErrorTitle,
+                                     msg.patternColorParseErrorText,
+                                     QMessageBox.Close)
+                raise PatternReadError()
             
         node = node.nextSibling()
 

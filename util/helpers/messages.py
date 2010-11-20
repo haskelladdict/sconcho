@@ -114,3 +114,9 @@ patternLegendItemParseErrorTitle = "sconcho: Failed to parse legend"
 patternLegendItemParseErrorText  = ("Failed to read legend from "
                                     "project file. The file may be damaged "
                                     "and can not be read.")
+
+
+patternColorParseErrorTitle = "sconcho: Failed to parse color information"
+patternColorParseErrorText  = ("Failed to read project colors from "
+                               "project file. The file may be damaged "
+                               "and can not be read.")

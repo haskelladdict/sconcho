@@ -25,6 +25,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import functools
+
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (QApplication, QCursor)
 
@@ -34,11 +36,15 @@ def wait_cursor(func):
     Wrapps a function and makes sure the cursor is shown
     as Qt.WaitCursor for the duration.
     """
-
+    
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-        result = func(*args, **kwargs)
-        QApplication.restoreOverrideCursor()
+        try:
+            result = func(*args, **kwargs)
+        finally:
+            QApplication.restoreOverrideCursor()
+
         return result
 
     return wrapper
