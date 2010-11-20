@@ -45,7 +45,7 @@ from gui.patternCanvas import PatternCanvas
 from util.helpers.exceptions import PatternReadError
 
 
-__version__ = "0.1.0"
+__version__ = "0.1.0_a2"
 
 
 #######################################################################
