@@ -29,6 +29,7 @@ import math
 from PyQt4.QtCore import (Qt, SIGNAL, QString, QDir, QFileInfo)
 from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
                          QImageReader)
+
 from gui.ui_exportBitmapWidget import Ui_ExportBitmapWidget
 
 import util.helpers.messages as msg
@@ -50,6 +51,7 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
 
         super(ExportBitmapWidget, self).__init__(parent)
         self.setupUi(self)
+        self.determine_image_formats()
 
         self.width = math.floor(size.width())
         self.height = math.floor(size.height())
@@ -69,6 +71,15 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
         self.connect(self.browseButton, SIGNAL("pressed()"),
                      self.open_file_selector)
 
+
+    
+    def determine_image_formats(self):
+        """ Determine and store all image formats we can
+        support. 
+        """
+
+        self.formats = ["*.%s" % unicode(format).lower() for \
+                            format in QImageReader.supportedImageFormats()]
 
 
     def update_height_spinner(self, newWidth):
@@ -111,15 +122,11 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
     def open_file_selector(self):
         """ Open a file selector and ask for the name """
 
-        #formats = ["*.%s" % unicode(format).lower() for \
-        #           format in QImageReader.supportedImageFormats()]
-        #formatsAsString = " ".join(formats)
-
-
+        formatsString = " ".join(self.formats)
         exportFilePath = QFileDialog.getSaveFileName(self,
-                                                     msg.exportPatternTitle,
-                                                     QDir.homePath(),
-                                                     "Image files (*.png *.tif)") 
+                                        msg.exportPatternTitle,
+                                        QDir.homePath(),
+                                        "Image files (%s)" % formatsString) 
 
         if exportFilePath:
             self.fileNameEdit.setText(exportFilePath)
@@ -140,8 +147,8 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
 
 
         # check the extension; if none is present add .spf
-        extension = QFileInfo(exportFilePath).completeSuffix()
-        if extension != "png" and extension != "tif":
+        extension = "*.%s" % QFileInfo(exportFilePath).completeSuffix()
+        if extension not in self.formats:
             QMessageBox.warning(self, msg.unknownImageFormatTitle,
                                 msg.unknownImageFormatText,
                                 QMessageBox.Close)

@@ -54,6 +54,8 @@ class PatternCanvas(QGraphicsScene):
 
         super(PatternCanvas, self).__init__()
 
+        self.setBackgroundBrush(QBrush(Qt.white))
+
         self.__settings = theSettings
 
         self.__activeSymbol  = None

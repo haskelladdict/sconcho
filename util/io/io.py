@@ -488,8 +488,6 @@ def export_scene(canvas, width, height, exportFileName):
     theScene = canvas.itemsBoundingRect()
     theScene.adjust(-margin, -margin, margin, margin)
 
-    print(theScene)
-    print(width, height)
     finalImage = QImage(width+2*margin, height+2*margin, 
                         QImage.Format_ARGB32_Premultiplied )
     painter = QPainter(finalImage)
