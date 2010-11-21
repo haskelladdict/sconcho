@@ -28,7 +28,7 @@ import math
 
 from PyQt4.QtCore import (Qt, SIGNAL, QString, QDir, QFileInfo)
 from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
-                         QImageReader)
+                         QImageReader, QDialogButtonBox)
 
 from gui.ui_exportBitmapWidget import Ui_ExportBitmapWidget
 
@@ -55,21 +55,33 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
 
         self.width = math.floor(size.width())
         self.height = math.floor(size.height())
+        self.__originalWidth = self.width
+        self.scaling = 100.0
         self.fileName = None
         self.__aspectRatio = size.width()/size.height()
         
         self.widthSpinner.setValue(self.width)
         self.heightSpinner.setValue(self.height)
+        self.scalingSpinner.setValue(self.scaling)
 
         # synchronize spin boxes
-        self.connect(self.widthSpinner, SIGNAL("valueChanged(int)"),
-                     self.update_height_spinner)
+        self.connect(self.widthSpinner, SIGNAL("editingFinished()"),
+                     self.width_update)
 
-        self.connect(self.heightSpinner, SIGNAL("valueChanged(int)"),
-                     self.update_width_spinner)
+        self.connect(self.heightSpinner, SIGNAL("editingFinished()"),
+                     self.height_update)
 
+        self.connect(self.scalingSpinner, SIGNAL("editingFinished()"),
+                     self.scaling_update)
+        
         self.connect(self.browseButton, SIGNAL("pressed()"),
                      self.open_file_selector)
+
+        self.connect(self.cancelButton, SIGNAL("pressed()"),
+                     self.close)
+
+        self.connect(self.exportButton, SIGNAL("pressed()"),
+                     self.accept)
 
 
     
@@ -88,43 +100,57 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
 
 
 
-    def update_height_spinner(self, newWidth):
+    def width_update(self):
         """ Update height spinner after width change.
 
         Update according to the correct aspect ratio.
         """
 
-        if newWidth <= 0:
-            self.heightSpinner.setValue(0)
+        newWidth = self.widthSpinner.value()
 
         self.width = newWidth
-        self.height = newWidth/self.__aspectRatio
+        self.height = self.width/self.__aspectRatio
+        self.scaling = self.width/self.__originalWidth * 100.0
 
-        # need to block signals during updating to avoid
-        # infinite loop
-        self.heightSpinner.blockSignals(True)
         self.heightSpinner.setValue(self.height)
-        self.heightSpinner.blockSignals(False)
+        self.scalingSpinner.setValue(self.scaling)
 
 
 
-    def update_width_spinner(self, newHeight):
+    def height_update(self):
         """ Update width spinner after height change.
 
         Update according to the correct aspect ratio.
         """
 
+        newHeight = self.heightSpinner.value()
+        
         self.width = newHeight * self.__aspectRatio
         self.height = newHeight
+        self.scaling = self.width/self.__originalWidth * 100.0
 
-        # need to block signals during updating to avoid
-        # infinite loop
-        self.widthSpinner.blockSignals(True)
         self.widthSpinner.setValue(self.width)
-        self.widthSpinner.blockSignals(False)
+        self.scalingSpinner.setValue(self.scaling)
 
 
 
+    def scaling_update(self):
+        """ Update scaling spinner after height change.
+
+        Update according to the correct aspect ratio.
+        """
+
+        newScale = self.scalingSpinner.value()
+
+        self.scaling = newScale
+        self.width = self.__originalWidth * self.scaling / 100.0
+        self.height = self.width/self.__aspectRatio
+
+        self.widthSpinner.setValue(self.width)
+        self.heightSpinner.setValue(self.height)
+
+
+        
     def open_file_selector(self):
         """ Open a file selector and ask for the name """
 
@@ -164,3 +190,14 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
         self.filePath = exportFilePath
 
         QDialog.accept(self)
+
+
+
+    def keyPressEvent(self, event):
+        """ We catch the return key so we don't open
+        up the browse menu. """
+
+        if event.key() == Qt.Key_Return:
+            return
+
+        QDialog.keyPressEvent(self, event)
