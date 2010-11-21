@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sun Nov 21 16:04:18 2010
+# Created: Sun Nov 21 16:12:34 2010
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -88,9 +88,9 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.patternCategoryChooser = QtGui.QComboBox(self.dockWidgetContents_3)
-        self.patternCategoryChooser.setObjectName(_fromUtf8("patternCategoryChooser"))
-        self.verticalLayout_2.addWidget(self.patternCategoryChooser)
+        self.symbolCategoryChooser = QtGui.QComboBox(self.dockWidgetContents_3)
+        self.symbolCategoryChooser.setObjectName(_fromUtf8("symbolCategoryChooser"))
+        self.verticalLayout_2.addWidget(self.symbolCategoryChooser)
         self.symbolSelectorLayout = QtGui.QVBoxLayout()
         self.symbolSelectorLayout.setObjectName(_fromUtf8("symbolSelectorLayout"))
         self.verticalLayout_2.addLayout(self.symbolSelectorLayout)

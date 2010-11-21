@@ -166,7 +166,7 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QComboBox" name="patternCategoryChooser"/>
+        <widget class="QComboBox" name="symbolCategoryChooser"/>
        </item>
        <item>
         <layout class="QVBoxLayout" name="symbolSelectorLayout"/>

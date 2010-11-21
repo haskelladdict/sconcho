@@ -241,7 +241,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         and connecting it to the symbol changed slot.
 
         NOTE: Unfortunately, the order of the connections below matters.
-        Connect the patternCategoryChooser only after it has been fully
+        Connect the symbolCategoryChooser only after it has been fully
         set up. Otherwise we get spurious selector widget switches until
         the chooser has established the correct order.
         """
@@ -266,12 +266,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         (self.selectedSymbol, self.symbolSelector,
          self.symbolSelectorWidgets) = \
                         generate_symbolWidgets(knittingSymbols,
-                                               self.patternCategoryChooser,
+                                               self.symbolCategoryChooser,
                                                self.symbolSelectorLayout,
                                                symbolTracker)
 
-        self.connect(self.patternCategoryChooser,
-                     SIGNAL("currentIndexChanged"),
+        self.connect(self.symbolCategoryChooser,
+                     SIGNAL("currentIndexChanged(QString)"),
                      self.update_symbol_widget)
         
 
@@ -283,7 +283,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         the previous symbolSelectorWidget and installs the selected
         one.
         """
-
+        
         self.symbolSelectorLayout.removeWidget(self.selectedSymbol)
         self.selectedSymbol.setParent(None)
 
