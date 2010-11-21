@@ -90,6 +90,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.setScene(self.__canvas)
         self.connect(self.__canvas, SIGNAL("adjust_view"),
                      self.graphicsView.adjust_scene)
+        self.connect(self.__canvas, SIGNAL("active_color_changed"),
+                     self.__colorWidget.set_active_color)
         self.graphicsView.adjust_scene()
 
         # set up all the connections

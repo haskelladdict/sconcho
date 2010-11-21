@@ -406,11 +406,14 @@ class PatternCanvas(QGraphicsScene):
 
         gridMenu = QMenu()
         rowAction = gridMenu.addAction("Insert/delete rows and columns")
-        #gridMenu.addSeparator();
-        #colorAction = gridMenu.addAction("Grab color");
+        gridMenu.addSeparator();
+        colorAction = gridMenu.addAction("Grab color");
 
         self.connect(rowAction, SIGNAL("triggered()"),
                      partial(self.insert_delete_rows_columns, row, col))
+        
+        self.connect(colorAction, SIGNAL("triggered()"),
+                     partial(self.grab_color_from_cell, event))
 
         gridMenu.exec_(event.screenPos())
 
@@ -445,6 +448,23 @@ class PatternCanvas(QGraphicsScene):
         self.addDeleteRowColDialog.raise_()
         self.addDeleteRowColDialog.show()
 
+
+
+    def grab_color_from_cell(self, event):
+        """ Extract the color from the selected cell
+        and add it to the currently active color selector.
+        """
+
+        allItems = self.items(event.scenePos())
+        
+        if len(allItems) != 1:
+            print("Error: Grab Color: expected 1 item, found %d" % \
+                  len(allItems))
+            return
+
+        color = allItems[0].color
+        self.emit(SIGNAL("active_color_changed"), color)
+        
 
 
     @wait_cursor

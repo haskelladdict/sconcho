@@ -74,6 +74,13 @@ class ColorWidget(QWidget):
         color = QColorDialog.getColor(Qt.white, None,
                                       "Select custom color")
 
+        self.set_active_color(color)
+
+
+
+    def set_active_color(self, color):
+        """ Set the color of the currently active color widget """
+
         activeColorWidget = self.__synchronizer.get_active_widget()
         activeColorWidget.set_content(color)
         activeColorWidget.activate()
