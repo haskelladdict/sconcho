@@ -26,6 +26,7 @@ from __future__ import absolute_import
 
 import platform
 from functools import partial
+
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           QString, Qt, QSize, QFile, QTimer, QVariant,
                           QPoint, PYQT_VERSION_STR, QT_VERSION_STR,
@@ -34,6 +35,7 @@ from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
                          QFrame, QColor, QApplication)
 from PyQt4.QtSvg import QSvgWidget
+
 from gui.ui_mainWindow import Ui_MainWindow
 import util.helpers.messages as msg
 import util.helpers.settings as settings
@@ -42,6 +44,7 @@ import util.io.symbolParser as parser
 from gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
 from gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from gui.patternCanvas import PatternCanvas
+from gui.exportBitmapWidget import ExportBitmapWidget
 from util.helpers.exceptions import PatternReadError
 
 
@@ -445,25 +448,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         This function opens and export pattern dialog.
         """
 
-        exportFilePath = QFileDialog.getSaveFileName(self,
-                                                     msg.exportPatternTitle,
-                                                     QDir.homePath(),
-                                                     "Image files (*.png *.tif)")
-
-        if not exportFilePath:
-            return
-
-        # check the extension; if none is present add .spf
-        extension = QFileInfo(exportFilePath).completeSuffix()
-        if extension != "png" and extension != "tif":
-            QMessageBox.warning(self, msg.unknownImageFormatTitle,
-                                msg.unknownImageFormatText,
-                                QMessageBox.Close)
-            return
-
-        io.export_scene(self.__canvas, exportFilePath)
-        exportFileName = QFileInfo(exportFilePath).fileName()
-        self.statusBar().showMessage("successfully exported " + exportFileName,
+        canvasSize = self.__canvas.itemsBoundingRect()
+        exportDialog = ExportBitmapWidget(canvasSize, self)
+        if exportDialog.exec_():
+            width = exportDialog.width
+            height = exportDialog.height
+            exportFilePath = exportDialog.filePath
+            
+            io.export_scene(self.__canvas, width, height, exportFilePath)
+            exportFileName = QFileInfo(exportFilePath).fileName()
+            self.statusBar().showMessage("successfully exported " + exportFileName,
                                      3000)
 
 

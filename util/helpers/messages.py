@@ -64,13 +64,16 @@ exportPatternTitle      = "sconcho: Export pattern"
 
 
 unknownImageFormatTitle = "sconcho: Unknown image format"
-unknownImageFormatText  = ("Unknown image format to export to. "
+unknownImageFormatText  = ("Unknown image format for exporting as bitmap. "
                            "Please choose one of the supported image "
                            "formats.")
 
 patternFileExistsTitle = "sconcho: Pattern file exists"
 patternFileExistsText = ("The pattern file %s already exists.\n"
                         "Do you want to overwrite it?")
+
+noFilePathTitle = "sconcho: File name missing"
+noFilePathText = ("No filename was given. Please enter one.")
 
 wantToSavePatternTitle = "sconcho: Pattern file not saved"
 wantToSavePatternText = ("Your pattern has unsaved changes. Please save or "

@@ -477,7 +477,7 @@ def parse_activeSymbol(node):
 #
 #############################################################################
 @wait_cursor
-def export_scene(canvas, exportFileName):
+def export_scene(canvas, width, height, exportFileName):
     """
     This function exports the scene to a file.
     """
@@ -487,8 +487,7 @@ def export_scene(canvas, exportFileName):
     theScene = canvas.itemsBoundingRect()
     theScene.adjust(-10, -10, 10, 10)
 
-    finalImage = QImage(theScene.width()*3, theScene.height()*3,
-                        QImage.Format_ARGB32_Premultiplied )
+    finalImage = QImage(width+10, height+10, QImage.Format_ARGB32_Premultiplied )
     painter = QPainter(finalImage)
     painter.setRenderHints(QPainter.SmoothPixmapTransform )
     painter.setRenderHints(QPainter.HighQualityAntialiasing )

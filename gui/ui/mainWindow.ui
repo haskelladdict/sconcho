@@ -80,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>1137</width>
-     <height>28</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -277,7 +277,7 @@
      <normaloff>:/icons/fileexport.png</normaloff>:/icons/fileexport.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Export...</string>
+    <string>&amp;Export Bitmap...</string>
    </property>
    <property name="toolTip">
     <string>Export as image file</string>
