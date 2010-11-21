@@ -1,6 +1,16 @@
 11-09-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
 
+	* Release of 0.1_a2 (second alpha)
+	* fixed bugs and improved budy cursor handling
+	* added export bitmap dialog and improved saving
+	  of bitmaps.
+
+
+11-09-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
+
 	* Initial release of first 0.1 alpha version
+
+
 
 
 Copyright 2009, 2010 Markus Dittrich
