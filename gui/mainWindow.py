@@ -457,8 +457,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             io.export_scene(self.__canvas, width, height, exportFilePath)
             exportFileName = QFileInfo(exportFilePath).fileName()
-            self.statusBar().showMessage("successfully exported " + exportFileName,
-                                     3000)
+            self.statusBar().showMessage("successfully exported " + 
+                                         exportFileName, 3000)
 
 
 

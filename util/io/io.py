@@ -484,10 +484,14 @@ def export_scene(canvas, width, height, exportFileName):
     
     # NOTE: We seem to need the 1px buffer region to avoid
     # the image being cut off
+    margin = 10
     theScene = canvas.itemsBoundingRect()
-    theScene.adjust(-10, -10, 10, 10)
+    theScene.adjust(-margin, -margin, margin, margin)
 
-    finalImage = QImage(width+10, height+10, QImage.Format_ARGB32_Premultiplied )
+    print(theScene)
+    print(width, height)
+    finalImage = QImage(width+2*margin, height+2*margin, 
+                        QImage.Format_ARGB32_Premultiplied )
     painter = QPainter(finalImage)
     painter.setRenderHints(QPainter.SmoothPixmapTransform )
     painter.setRenderHints(QPainter.HighQualityAntialiasing )

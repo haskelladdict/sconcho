@@ -98,7 +98,7 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
         """
 
         self.width = newHeight * self.__aspectRatio
-        self.heigh = newHeight
+        self.height = newHeight
 
         # need to block signals during updating to avoid
         # infinite loop
