@@ -509,7 +509,6 @@ def export_scene(canvas, width, height, exportFileName):
 # routines for printing a project 
 #
 #############################################################################
-@wait_cursor
 def print_scene(canvas):
     """
     This function prints the content of the canvas.

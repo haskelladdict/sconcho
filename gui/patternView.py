@@ -25,9 +25,9 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import operator
-from PyQt4.QtCore import (Qt, QRect, QSize, QPointF, QSizeF) 
-from PyQt4.QtGui import (QGraphicsView, QRubberBand)
-
+from PyQt4.QtCore import (Qt, QRect, QSize, QPointF, QSizeF,
+                          QRectF) 
+from PyQt4.QtGui import (QGraphicsView, QRubberBand, QPainter)
 
 
 
@@ -42,6 +42,9 @@ class PatternView(QGraphicsView):
     def __init__(self, parent = None):
 
         super(PatternView, self).__init__()
+
+        self.setRenderHint(QPainter.Antialiasing)
+        self.setRenderHint(QPainter.TextAntialiasing)
 
         # initialize the rubberBand
         self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
@@ -106,3 +109,20 @@ class PatternView(QGraphicsView):
         sceneRect = self.scene().sceneRect()
         sceneRect.adjust(-100, -100, 100, 100)
         self.setSceneRect(sceneRect)
+
+
+    def zoom_in(self):
+        """ Zoom in by 10% """
+
+        self.scale(1.1, 1.1)
+
+
+    def zoom_out(self):
+        """ Zoom out by 10% """
+
+        self.scale(0.9, 0.9)
+
+
+    def fit_scene(self):
+
+        self.fitInView(self.scene().sceneRect(), Qt.KeepAspectRatio)

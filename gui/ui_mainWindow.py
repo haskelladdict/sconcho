@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sun Nov 21 13:31:42 2010
+# Created: Sun Nov 21 16:04:18 2010
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -62,6 +62,8 @@ class Ui_MainWindow(object):
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
         self.menuView = QtGui.QMenu(self.menubar)
         self.menuView.setObjectName(_fromUtf8("menuView"))
+        self.menu_Zoom = QtGui.QMenu(self.menuView)
+        self.menu_Zoom.setObjectName(_fromUtf8("menu_Zoom"))
         self.menuHelp = QtGui.QMenu(self.menubar)
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
         self.menuGrid = QtGui.QMenu(self.menubar)
@@ -152,6 +154,21 @@ class Ui_MainWindow(object):
         self.actionShow_grid_labels.setObjectName(_fromUtf8("actionShow_grid_labels"))
         self.actionInsert_delete_rows_and_columns = QtGui.QAction(MainWindow)
         self.actionInsert_delete_rows_and_columns.setObjectName(_fromUtf8("actionInsert_delete_rows_and_columns"))
+        self.actionZoom_In = QtGui.QAction(MainWindow)
+        icon7 = QtGui.QIcon()
+        icon7.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-in.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionZoom_In.setIcon(icon7)
+        self.actionZoom_In.setObjectName(_fromUtf8("actionZoom_In"))
+        self.actionZoom_Out = QtGui.QAction(MainWindow)
+        icon8 = QtGui.QIcon()
+        icon8.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionZoom_Out.setIcon(icon8)
+        self.actionZoom_Out.setObjectName(_fromUtf8("actionZoom_Out"))
+        self.actionFit = QtGui.QAction(MainWindow)
+        icon9 = QtGui.QIcon()
+        icon9.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-best-fit.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionFit.setIcon(icon9)
+        self.actionFit.setObjectName(_fromUtf8("actionFit"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -162,6 +179,12 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionPrint)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
+        self.menu_Zoom.addAction(self.actionZoom_In)
+        self.menu_Zoom.addAction(self.actionZoom_Out)
+        self.menu_Zoom.addAction(self.actionFit)
+        self.menuView.addSeparator()
+        self.menuView.addAction(self.menu_Zoom.menuAction())
+        self.menuView.addSeparator()
         self.menuView.addAction(self.actionShow_pattern_grid)
         self.menuView.addAction(self.actionShow_grid_labels)
         self.menuView.addAction(self.actionShow_legend)
@@ -179,6 +202,9 @@ class Ui_MainWindow(object):
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionPrint)
         self.toolBar.addSeparator()
+        self.toolBar.addAction(self.actionZoom_In)
+        self.toolBar.addAction(self.actionZoom_Out)
+        self.toolBar.addAction(self.actionFit)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -187,6 +213,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "sconcho: create your own pattern charts[*]", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_Zoom.setTitle(QtGui.QApplication.translate("MainWindow", "&Zoom", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menuGrid.setTitle(QtGui.QApplication.translate("MainWindow", "&Grid", None, QtGui.QApplication.UnicodeUTF8))
         self.symbolDockWidget.setWindowTitle(QtGui.QApplication.translate("MainWindow", "sconcho: available knitting symbols", None, QtGui.QApplication.UnicodeUTF8))
@@ -220,17 +247,20 @@ class Ui_MainWindow(object):
         self.actionPrint.setText(QtGui.QApplication.translate("MainWindow", "&Print...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setStatusTip(QtGui.QApplication.translate("MainWindow", "Print", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+P", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShow_pattern_grid.setText(QtGui.QApplication.translate("MainWindow", "show pattern grid", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_pattern_grid.setText(QtGui.QApplication.translate("MainWindow", "Show &Pattern Grid", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_pattern_grid.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle visibility of pattern grid", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_pattern_grid.setStatusTip(QtGui.QApplication.translate("MainWindow", "toggle visibility of pattern ", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShow_legend.setText(QtGui.QApplication.translate("MainWindow", "show legend", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_legend.setText(QtGui.QApplication.translate("MainWindow", "Show &Legend", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_legend.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle visibility of legend", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_legend.setStatusTip(QtGui.QApplication.translate("MainWindow", "toggle visibility of legend", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShow_grid_labels.setText(QtGui.QApplication.translate("MainWindow", "show grid labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_grid_labels.setText(QtGui.QApplication.translate("MainWindow", "Show &Grid Labels", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_grid_labels.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle visbility of grid labels", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_grid_labels.setStatusTip(QtGui.QApplication.translate("MainWindow", "toggle visbility of grid labels", None, QtGui.QApplication.UnicodeUTF8))
         self.actionInsert_delete_rows_and_columns.setText(QtGui.QApplication.translate("MainWindow", "insert/delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
         self.actionInsert_delete_rows_and_columns.setStatusTip(QtGui.QApplication.translate("MainWindow", "insert/delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionZoom_In.setText(QtGui.QApplication.translate("MainWindow", "Zoom &In", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionZoom_Out.setText(QtGui.QApplication.translate("MainWindow", "Zoom &Out", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFit.setText(QtGui.QApplication.translate("MainWindow", "&Fit", None, QtGui.QApplication.UnicodeUTF8))
 
 from patternView import PatternView
 import icons_rc

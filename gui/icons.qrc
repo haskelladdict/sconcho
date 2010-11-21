@@ -7,7 +7,6 @@
   <file>icons/fileprint.png</file>
   <file>icons/filenew.png</file>
   <file>icons/filesave.png</file>
-  <file>icons/viewmagfit.png</file>
   <file>icons/histogram.png</file>
   <file>icons/key.png</file>
   <file>icons/kcontrol.png</file>
@@ -19,7 +18,9 @@
   <file>icons/sconcho_icon.png</file>
   <file>icons/stop.png</file>
   <file>icons/up.png</file>
-  <file>icons/viewmag-.png</file>
-  <file>icons/viewmag+.png</file>
+  <file>icons/zoom-in.svg</file>
+  <file>icons/zoom-out.svg</file>
+  <file>icons/zoom-original.svg</file>
+  <file>icons/zoom-best-fit.svg</file>
 </qresource>
 </RCC>

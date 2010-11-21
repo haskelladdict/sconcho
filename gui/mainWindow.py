@@ -48,7 +48,7 @@ from gui.exportBitmapWidget import ExportBitmapWidget
 from util.helpers.exceptions import PatternReadError
 
 
-__version__ = "0.1.0_a2"
+__version__ = "0.1.0_a3"
 
 
 #######################################################################
@@ -178,7 +178,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("triggered()"),
                      partial(self.__canvas.insert_delete_rows_columns, 1, 1))
 
+        self.connect(self.actionZoom_In, SIGNAL("triggered()"),
+                     self.graphicsView.zoom_in)
 
+        self.connect(self.actionZoom_Out, SIGNAL("triggered()"),
+                     self.graphicsView.zoom_out)
+
+        self.connect(self.actionFit, SIGNAL("triggered()"),
+                     self.graphicsView.fit_scene)
 
     def __set_up_timers(self):
         """
