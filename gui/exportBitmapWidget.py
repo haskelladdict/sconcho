@@ -76,10 +76,16 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
     def determine_image_formats(self):
         """ Determine and store all image formats we can
         support. 
+
+        NOTE: qt-4.7 seems to offer gif format even if it
+        doesn't support it always so we manually punt it.
         """
 
         self.formats = ["*.%s" % unicode(format).lower() for \
                             format in QImageReader.supportedImageFormats()]
+
+        self.formats.remove("*.gif")
+
 
 
     def update_height_spinner(self, newWidth):
