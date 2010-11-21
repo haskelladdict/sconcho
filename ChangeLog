@@ -1,4 +1,13 @@
-11-09-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
+11-21-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
+
+	* Release of 0.1_a3
+	* several bugfixes
+	* improved export bitmap dialog
+	* added ability to zoom and reset view
+	* added ability to grab color 
+
+
+11-20-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
 
 	* Release of 0.1_a2 (second alpha)
 	* fixed bugs and improved budy cursor handling
