@@ -57,7 +57,8 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
         self.height = math.floor(size.height())
         self.__originalWidth = self.width
         self.scaling = 100.0
-        self.fileName = None
+        self.fileName = None 
+        self.fileNameEdit.setText(QDir.homePath() + "/")
         self.__aspectRatio = size.width()/size.height()
         
         self.widthSpinner.setValue(self.width)
