@@ -713,21 +713,23 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def create_new_canvas(self):
+    def create_new_canvas(self, numRows = 10, numColumns = 10):
         """
         Create a complete new and blank canvas.
         """
 
         # reset the number of columns/rows to 10
         # we probably should add a dialog here
-        self.__numRows    = 10
-        self.__numColumns = 10
+        self.__numRows    = numRows
+        self.__numColumns = numColumns
         self.addDeleteRowColDialog = None
         
         self.__clear_canvas()
         self.__textLabels = []
         self.set_up_main_grid()
         self.set_up_labels()
+
+        self.emit(SIGNAL("adjust_view"))
         
 
 

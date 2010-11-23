@@ -45,10 +45,11 @@ from gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
 from gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from gui.patternCanvas import PatternCanvas
 from gui.exportBitmapWidget import ExportBitmapWidget
+from gui.newPatternWidget import NewPatternWidget
 from util.helpers.exceptions import PatternReadError
 
 
-__version__ = "0.1.0_a3"
+__version__ = "0.1.0_a4"
 
 
 #######################################################################
@@ -346,9 +347,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.__ok_to_continue_without_saving():
             return
 
-        # start new canvas
-        self.clear_project_save_file()
-        self.__canvas.create_new_canvas()
+
+        newPattern = NewPatternWidget(self)
+        if newPattern.exec_():
+            
+            # start new canvas
+            self.clear_project_save_file()
+            self.__canvas.create_new_canvas(newPattern.num_rows,
+                                            newPattern.num_columns)
+
 
 
 
