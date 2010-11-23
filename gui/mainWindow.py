@@ -81,7 +81,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__symbolPaths = symbolPaths
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
         self.__canvas = PatternCanvas(self.__settings, 
-                                      knittingSymbols[QString("basic::knit")])
+                                      knittingSymbols[QString("basic::knit")],
+                                      self)
         self.initialize_symbol_widget(knittingSymbols)
         self.initialize_color_widget()
 

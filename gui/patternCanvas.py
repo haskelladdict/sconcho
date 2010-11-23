@@ -446,7 +446,7 @@ class PatternCanvas(QGraphicsScene):
             self.addDeleteRowColDialog = \
                 InsertDeleteRowColumnWidget(self.__numRows,
                                             self.__numColumns,
-                                            row, col)
+                                            row, col, self.parent())
         else:
             self.addDeleteRowColDialog.set_row_col(row,col)
 
