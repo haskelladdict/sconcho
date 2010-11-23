@@ -6,6 +6,7 @@
     <patternName>nostitch</patternName>
     <patternDescription>no stitch (ignore this space)</patternDescription>
     <patternWidth>1</patternWidth>
+    <backgroundColor>#6a6a6a</backgroundColor>
   </knittingSymbol>
 </sconcho>
 
