@@ -328,6 +328,9 @@ class SymbolSynchronizer(QObject):
     def unselect(self):
         """ Unselect the currently active widget. """
 
+        if not self.__activeWidget:
+            return
+
         self.__activeWidget.set_inactive_look()
         self.__activeWidget = None
         self.emit(SIGNAL("synchronized_object_changed"), None)
