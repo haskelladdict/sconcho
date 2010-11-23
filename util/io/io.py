@@ -481,7 +481,8 @@ def export_scene(canvas, width, height, exportFileName):
     """
     This function exports the scene to a file.
     """
-    
+    canvas.clear_all_selected_cells()
+
     # NOTE: We seem to need the 1px buffer region to avoid
     # the image being cut off
     margin = 10

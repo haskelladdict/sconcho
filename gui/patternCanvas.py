@@ -52,7 +52,7 @@ class PatternCanvas(QGraphicsScene):
 
     def __init__(self, theSettings, defaultSymbol, parent = None):
 
-        super(PatternCanvas, self).__init__()
+        super(PatternCanvas, self).__init__(parent)
 
         self.setBackgroundBrush(QBrush(Qt.white))
 
@@ -233,6 +233,22 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+
+    def clear_all_selected_cells(self):
+        """ Unselects all currently selected cells. """
+
+        while self.__selectedCells:
+            item = self.__selectedCells.pop()
+            item.press_item()
+            
+            # FIXME: This is a hack to force qt to
+            # redraw the items right away. There has
+            # to be a better way
+            item.hide()
+            item.show()
+
+        
+
     def grid_cell_activated(self, item):
         """
         If a grid cell notifies it has been activated add it
@@ -248,10 +264,11 @@ class PatternCanvas(QGraphicsScene):
     def grid_cell_inactivated(self, item):
         """
         If a grid cell notifies it has been in-activated remove
-        it from the collectoin of selected cells.
+        it from the collection of selected cells if present.
         """
 
-        self.__selectedCells.remove(item)
+        if item in self.__selectedCells:
+            self.__selectedCells.remove(item)
         self.paint_cells()
 
 
@@ -859,7 +876,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
     def press_item(self):
         """
-        This functions dispatches all events trigger
+        This functions dispatches all events triggered
         by a press event on the item.
         """
 
