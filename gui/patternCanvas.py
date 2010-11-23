@@ -552,27 +552,34 @@ class PatternCanvas(QGraphicsScene):
         pivot = self.convert_canvas_column_to_internal(columnPivot)
         assert(pivot >= 0 and pivot < self.__numColumns)
 
+        isExternalColumn = False
         if mode == QString("left of"):
             cmpOp = operator.__ge__
             shift = 0
+            if pivot == 0:
+                isExternalColumn = True
         else:
             cmpOp = operator.__gt__
             shift = 1
+            if pivot == self.__numColumns - 1:
+                isExternalColumn = True
 
         # in order for inserting of a column at left or right of a
         # pivot to work each row has to have a cell that starts at
         # this pivot or right of it.
+        # Obviously, we can always add columns at the edges.
         rowCounter = 0
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem):
                 if graphicsItem.column == (pivot + shift):
                     rowCounter += 1
 
-        if rowCounter != self.__numRows:
-            QMessageBox.warning(None, msg.noColInsertLayoutTitle,
+        if not isExternalColumn:
+            if rowCounter != self.__numRows:
+                QMessageBox.warning(None, msg.noColInsertLayoutTitle,
                                 msg.noColInsertLayoutText,
                                 QMessageBox.Close)
-            return
+                return
 
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem):

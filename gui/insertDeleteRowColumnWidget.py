@@ -183,5 +183,5 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         be changed.
         """
 
-        self.insertRowPivot.setValue(self.__numRows - row)
-        self.insertColumnPivot.setValue(self.__numCols - col)
+        self.insertRowPivot.setValue(self.__numRows - row + 1)
+        self.insertColumnPivot.setValue(self.__numCols - col + 1)
