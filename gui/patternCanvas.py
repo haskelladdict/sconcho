@@ -1016,6 +1016,9 @@ class PatternLegendItem(QGraphicsSvgItem):
             print("failed to load")
             return
 
+        # apply color if present
+        if "backgroundColor" in newSymbol:
+            self.color = QColor(newSymbol["backgroundColor"])
 
 
     def boundingRect(self):
