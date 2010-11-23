@@ -81,7 +81,6 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         if pivot <= 0:
             return
 
-        self.set_upper_row_limit(self.__numRows + addRows)
         self.emit(SIGNAL("insert_row"), addRows, insertMode, pivot)
         
         
@@ -103,7 +102,6 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
 
 
         deadRowID = self.deleteRowID.value()
-        self.set_upper_row_limit(self.__numRows - 1)
         self.emit(SIGNAL("delete_row"), deadRowID)
 
 
@@ -161,6 +159,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         self.deleteRowID.setMinimum(1)
         self.deleteRowID.setMaximum(numRows)
         self.__numRows = numRows
+        print("row ", self.__numRows)
         
 
 
@@ -175,6 +174,7 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
         self.deleteColumnID.setMinimum(1)
         self.deleteColumnID.setMaximum(numCols)
         self.__numCols = numCols
+        print("column ", self.__numCols)
 
 
 
