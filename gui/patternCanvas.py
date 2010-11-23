@@ -452,13 +452,13 @@ class PatternCanvas(QGraphicsScene):
 
 
         self.connect(self.addDeleteRowColDialog, SIGNAL("insert_row"), 
-                     self.insert_row)
+                     self.insert_grid_row)
         self.connect(self.addDeleteRowColDialog, SIGNAL("delete_row"), 
-                     self.delete_row)
+                     self.delete_grid_row)
         self.connect(self.addDeleteRowColDialog, SIGNAL("insert_column"), 
-                     self.insert_column)
+                     self.insert_grid_column)
         self.connect(self.addDeleteRowColDialog, SIGNAL("delete_column"), 
-                     self.delete_column)
+                     self.delete_grid_column)
         self.connect(self, SIGNAL("column_count_changed"), 
                      self.addDeleteRowColDialog.set_upper_column_limit)
 
@@ -485,7 +485,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     @wait_cursor
-    def insert_row(self, num, mode, rowPivot):
+    def insert_grid_row(self, num, mode, rowPivot):
         """
         Deals with requests to insert a row. This operation might
         take some time so we switch to a wait cursor.
@@ -520,11 +520,11 @@ class PatternCanvas(QGraphicsScene):
 
 
     @wait_cursor
-    def delete_row(self, canvasRow):
+    def delete_grid_row(self, canvasRow):
         """
         Deals with requests to delete a specific row.
         """
-
+        
         row = self.convert_canvas_row_to_internal(canvasRow)
 
         for graphicsItem in self.items():
@@ -535,6 +535,7 @@ class PatternCanvas(QGraphicsScene):
                     shift_items_row_wise(graphicsItem, -1, self.__unitHeight)
 
         self.__numRows -= 1
+        #print(self.__numRows)
         self.__activeItems = []
         self.set_up_labels()
         self.emit(SIGNAL("adjust_view"))
@@ -543,7 +544,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     @wait_cursor
-    def insert_column(self, num, mode, columnPivot):
+    def insert_grid_column(self, num, mode, columnPivot):
         """
         Deals with requests to insert a column.
         """
@@ -594,7 +595,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     @wait_cursor
-    def delete_column(self, deadColumn):
+    def delete_grid_column(self, deadColumn):
         """
         Deals with requests to delete a specific column.
         """
