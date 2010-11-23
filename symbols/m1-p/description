@@ -2,7 +2,7 @@
 <sconcho>
   <knittingSymbol>
     <svgName>m1-p</svgName>  
-    <category>basic:1</category>
+    <category>basic</category>
     <patternName>M1-p</patternName>
     <patternDescription>make 1 purl</patternDescription>
     <patternWidth>1</patternWidth>

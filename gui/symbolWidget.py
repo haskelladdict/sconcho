@@ -154,7 +154,7 @@ def sort_symbols_by_category(symbols):
         sortedSymbols.append((key,value))
 
     sortedSymbols.sort(lambda x,y: cmp(x[0],y[0]))
-    
+
     return sortedSymbols
 
 

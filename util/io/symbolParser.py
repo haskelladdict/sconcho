@@ -27,6 +27,9 @@ from __future__ import absolute_import
 from PyQt4.QtCore import (QDir, QFile, QString, QStringList)
 from PyQt4.QtXml import QDomDocument
 
+# need this for sorting symbol entries
+# at the end of the category list
+__LARGE_INT__ = 100000
 
 
 def parse_all_symbols(symbolTopLevelPaths):
@@ -130,7 +133,7 @@ def parse_symbol_description(node):
             splitEntry = entry.split(":")
             if len(splitEntry) == 1:
                 content["category"] = QString(splitEntry.first())
-                content["category_pos"] = QString("0")
+                content["category_pos"] = QString("%d" % __LARGE_INT__)
             elif len(splitEntry) == 2:
                 content["category"] = QString(splitEntry.first())
                 content["category_pos"] = QString(splitEntry.last())
