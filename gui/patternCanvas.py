@@ -834,6 +834,7 @@ class PatternGridItem(QGraphicsSvgItem):
         
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
+        self.__pen.setJoinStyle(Qt.MiterJoin)
         self.__pen.setColor(Qt.black)
 
         self.__selected  = False
@@ -968,6 +969,7 @@ class PatternLegendItem(QGraphicsSvgItem):
         
         self.__pen = QPen()
         self.__pen.setWidthF(1.0)
+        self.__pen.setJoinStyle(Qt.MiterJoin)
         self.__pen.setColor(Qt.black)
 
 
