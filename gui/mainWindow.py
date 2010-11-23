@@ -154,7 +154,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      partial(self.save_pattern_dialog, "save as"))
         
         self.connect(self.actionOpen, SIGNAL("triggered()"),
-                     self.read_pattern_dialog)
+                     self.read_project_dialog)
 
         self.connect(self.actionExport, SIGNAL("triggered()"),
                      self.export_pattern_dialog)
@@ -401,7 +401,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         If there is no filepath we return (e.g. when called by the saveTimer).
         """
         
-        if not self.__saveFilePath:
+        if not self.__saveFilePath or not self.__projectIsDirty:
             return False
 
         saveFileName = QFileInfo(self.__saveFilePath).fileName()
@@ -418,7 +418,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def read_pattern_dialog(self):
+    def read_project_dialog(self):
         """ This function opens a read pattern dialog. """
 
         if not self.__ok_to_continue_without_saving():
