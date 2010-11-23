@@ -831,9 +831,10 @@ class PatternGridItem(QGraphicsSvgItem):
         self.height  = height
         self.size    = QSizeF(self.unitDim.width() * width,
                               self.unitDim.height() * height)
-        
+
+        self.__penSize = 1.0
         self.__pen = QPen()
-        self.__pen.setWidthF(1.0)
+        self.__pen.setWidthF(self.__penSize)
         self.__pen.setJoinStyle(Qt.MiterJoin)
         self.__pen.setColor(Qt.black)
 
@@ -918,7 +919,9 @@ class PatternGridItem(QGraphicsSvgItem):
         Return the bounding rectangle of the item.
         """
 
-        return QRectF(self.origin, self.size)
+        halfPen = self.__penSize * 0.5
+        return QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
+                                                       halfPen, halfPen)
         
 
 
@@ -967,8 +970,9 @@ class PatternLegendItem(QGraphicsSvgItem):
         self.symbol = None
         self.__set_symbol(defaultSymbol)
         
+        self.__penSize = 1.0
         self.__pen = QPen()
-        self.__pen.setWidthF(1.0)
+        self.__pen.setWidthF(self.__penSize)
         self.__pen.setJoinStyle(Qt.MiterJoin)
         self.__pen.setColor(Qt.black)
 
@@ -994,7 +998,9 @@ class PatternLegendItem(QGraphicsSvgItem):
         Return the bounding rectangle of the item.
         """
 
-        return QRectF(self.origin, self.size)
+        halfPen = self.__penSize * 0.5
+        return QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
+                                                       halfPen, halfPen)
         
 
 
