@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/newPatternWidget.ui'
 #
-# Created: Tue Nov 23 17:53:24 2010
+# Created: Wed Nov 24 10:08:15 2010
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!

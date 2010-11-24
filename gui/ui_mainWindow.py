@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Tue Nov 23 17:53:24 2010
+# Created: Wed Nov 24 10:08:15 2010
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -42,7 +42,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.colorWidgetContainer = QtGui.QWidget(self.scrollArea)
-        self.colorWidgetContainer.setGeometry(QtCore.QRect(0, 0, 757, 76))
+        self.colorWidgetContainer.setGeometry(QtCore.QRect(0, 0, 759, 78))
         self.colorWidgetContainer.setObjectName("colorWidgetContainer")
         self.horizontalLayout = QtGui.QHBoxLayout(self.colorWidgetContainer)
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -51,7 +51,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addLayout(self.verticalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1137, 30))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1137, 25))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -164,6 +164,9 @@ class Ui_MainWindow(object):
         icon9.addPixmap(QtGui.QPixmap(":/icons/zoom-best-fit.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionFit.setIcon(icon9)
         self.actionFit.setObjectName("actionFit")
+        self.actionSconcho_Manual = QtGui.QAction(MainWindow)
+        self.actionSconcho_Manual.setIcon(icon)
+        self.actionSconcho_Manual.setObjectName("actionSconcho_Manual")
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -183,6 +186,8 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.actionShow_pattern_grid)
         self.menuView.addAction(self.actionShow_grid_labels)
         self.menuView.addAction(self.actionShow_legend)
+        self.menuHelp.addAction(self.actionSconcho_Manual)
+        self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAbout_sconcho)
         self.menuHelp.addAction(self.actionAbout_Qt4)
         self.menuGrid.addAction(self.actionInsert_delete_rows_and_columns)
@@ -256,6 +261,7 @@ class Ui_MainWindow(object):
         self.actionZoom_In.setText(QtGui.QApplication.translate("MainWindow", "Zoom &In", None, QtGui.QApplication.UnicodeUTF8))
         self.actionZoom_Out.setText(QtGui.QApplication.translate("MainWindow", "Zoom &Out", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFit.setText(QtGui.QApplication.translate("MainWindow", "&Fit", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSconcho_Manual.setText(QtGui.QApplication.translate("MainWindow", "Sconcho Manual", None, QtGui.QApplication.UnicodeUTF8))
 
 from patternView import PatternView
 import icons_rc

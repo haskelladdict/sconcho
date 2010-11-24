@@ -46,6 +46,7 @@ from gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from gui.patternCanvas import PatternCanvas
 from gui.exportBitmapWidget import ExportBitmapWidget
 from gui.newPatternWidget import NewPatternWidget
+from gui.sconchoManual import SconchoManual
 from util.helpers.exceptions import PatternReadError
 
 
@@ -145,6 +146,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.actionAbout_Qt4, SIGNAL("triggered()"),
                      self.show_about_qt4)
+
+        self.connect(self.actionSconcho_Manual, SIGNAL("triggered()"),
+                     self.show_sconcho_manual)
 
         self.connect(self.actionNew, SIGNAL("triggered()"),
                      self.new_pattern_dialog)
@@ -317,10 +321,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
 
+    def show_sconcho_manual(self):
+        """ Show the sconcho manual. """
+
+        manual = SconchoManual(self)
+        manual.exec_()
+
+
+
     def show_about_sconcho(self):
-        """
-        Show the about sconcho dialog.
-        """
+        """ Show the about sconcho dialog. """
+        
         QMessageBox.about(self, QApplication.applicationName(),
                           msg.sconchoDescription % (__version__,
                                                     platform.python_version(),
@@ -331,9 +342,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def show_about_qt4(self):
-        """
-        Show the about Qt dialog.
-        """
+        """ Show the about Qt dialog. """
+        
         QMessageBox.aboutQt(self)
 
 

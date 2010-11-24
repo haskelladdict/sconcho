@@ -3,6 +3,7 @@ all:
 	pyuic4 -o ui_insertDeleteRowColumnWidget.py ui/insertDeleteRowColumnWidget.ui
 	pyuic4 -o ui_exportBitmapWidget.py ui/exportBitmapWidget.ui
 	pyuic4 -o ui_newPatternWidget.py ui/newPatternWidget.ui
+	pyuic4 -o ui_sconchoManual.py ui/sconchoManual.ui
 	pyrcc4 -o icons_rc.py icons.qrc
 
 
