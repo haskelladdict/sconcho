@@ -74,7 +74,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__saveFilePath = None
         self.__colorWidget  = None
-        self.__projectIsDirty = False
 
         # set up the statusBar
         self.activeSymbolWidget = ActiveSymbolWidget()
@@ -102,6 +101,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # set up timers
         self.__set_up_timers()
+
+        # nothing happened so far
+        self.__projectIsDirty = False
         
 
 
@@ -298,7 +300,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         
 
-
     def initialize_color_widget(self):
         """
         Proxy for adding all the color selectors to the color selector
@@ -314,8 +315,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("synchronized_object_changed"),
                      self.activeSymbolWidget.active_color_changed)
 
-        colorList = [Qt.white, Qt.red, Qt.blue, Qt.black, Qt.darkGray, \
-                     Qt.cyan, Qt.yellow, Qt.green, Qt.magenta]
+        self.connect(colorTracker, 
+                     SIGNAL("synchronized_object_changed"),
+                     self.set_project_dirty)
+
+        colorList = [QColor(name) for name in [Qt.white, Qt.red, Qt.blue, \
+                        Qt.black, Qt.darkGray, Qt.cyan, Qt.yellow, Qt.green, 
+                        Qt.magenta]]
         self.__colorWidget = ColorWidget(colorTracker, colorList)
         self.colorWidgetContainer.layout().addWidget(self.__colorWidget)
         
@@ -409,8 +415,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.set_project_save_file(saveFilePath)
 
         # ready to save
-        status = self.__save_pattern()
-        return status
+        return self.__save_pattern()
     
 
 
@@ -426,13 +431,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         saveFileName = QFileInfo(self.__saveFilePath).fileName()
         self.statusBar().showMessage("saving " + saveFileName)
 
-        io.save_project(self.__canvas, self.__colorWidget.get_all_colors(),
-                        self.__settings, self.activeSymbolWidget.get_symbol(),
-                        self.__saveFilePath)
+        (status, errMsg) = io.save_project_bin(self.__canvas, 
+                                         self.__colorWidget.get_all_colors(),
+                                         self.activeSymbolWidget.get_symbol(),
+                                         self.__saveFilePath)
+
+        if not status:
+            QMessageBox.critical(self, msg.errorSavingProjectTitle,
+                                 errMsg, QMessageBox.Close)
+            return False
         
         self.statusBar().showMessage("successfully saved " + saveFileName, 2000)
         self.set_project_clean()
-
         return True
 
 
@@ -455,15 +465,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         readFileName = QFileInfo(readFilePath).fileName()
 
-        try:
-            (patternGridItems, legendItems, colors, activeItem) = \
+        (status, errMsg, patternGridItems, legendItems, colors, activeItem) = \
                                io.read_project(readFilePath)
-        except PatternReadError:
+           
+        if not status:
+            QMessageBox.critical(self, msg.errorOpeningProjectTitle,
+                                 errMsg, QMessageBox.Close)
             return
-            
+
+        # add newly loaded project
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
         self.__canvas.load_previous_pattern(knittingSymbols, patternGridItems,
-                                           legendItems)
+                                            legendItems) 
         set_up_colors(self.__colorWidget, colors)
         self.activate_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)

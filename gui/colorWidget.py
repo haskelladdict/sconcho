@@ -59,7 +59,7 @@ class ColorWidget(QWidget):
             newItem = ColorSelectorItem(color, synchronizer)
             layout.addWidget(newItem)
             self.colorWidgets.append(newItem)
-            if color == Qt.white:
+            if color == QColor(Qt.white):
                 synchronizer.select(newItem)
 
         self.setLayout(layout)

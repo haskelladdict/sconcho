@@ -68,36 +68,41 @@ unknownImageFormatText  = ("Unknown image format for exporting as bitmap. "
                            "Please choose one of the supported image "
                            "formats.")
 
-patternFileExistsTitle = "sconcho: Pattern file exists"
+patternFileExistsTitle = "sconcho: Pattern File Exists"
 patternFileExistsText = ("The pattern file %s already exists.\n"
                         "Do you want to overwrite it?")
 
-noFilePathTitle = "sconcho: File name missing"
+noFilePathTitle = "sconcho: File Name Missing"
 noFilePathText = ("No filename was given. Please enter one.")
 
-wantToSavePatternTitle = "sconcho: Pattern file not saved"
+wantToSavePatternTitle = "sconcho: Pattern File Not Saved"
 wantToSavePatternText = ("Your pattern has unsaved changes. Please save or "
                          "discard these changes or press cancel to continue "
                          "with editing your pattern.")
 
-numRowTooSmallTitle = "sconcho: Row delete error"
+numRowTooSmallTitle = "sconcho: Row Delete Error"
 numRowTooSmallText = ("There has to be at least one row remaining.\n"
                       "Cannot delete the last row.")
 
 
-numColTooSmallTitle = "sconcho: Column delete error"
+numColTooSmallTitle = "sconcho: Column Delete Error"
 numColTooSmallText = ("There has to be at least one column remaining.\n"
                       "Cannot delete the last column.")
 
 
-noColInsertLayoutTitle = "sconcho: Cannot insert column"
+noColInsertLayoutTitle = "sconcho: Cannot Insert Column"
 noColInsertLayoutText = ("Cannot insert requested columns at the specified "
                          "location due to the current layout.")
 
 
-noColDeleteLayoutTitle = "sconcho: Cannot delete column"
+noColDeleteLayoutTitle = "sconcho: Cannot Delete Column"
 noColDeleteLayoutText = ("Cannot delete requested column at the specified "
                          "location due to the current layout.")
+
+
+errorSavingProjectTitle = "sconcho: Error Saving Project"
+
+errorOpeningProjectTitle = "sconcho: Error Opening Project"
 
 
 ########################################################################
