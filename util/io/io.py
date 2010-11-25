@@ -578,6 +578,7 @@ def export_scene(canvas, width, height, exportFileName):
 
     finalImage = QImage(width+2*margin, height+2*margin, 
                         QImage.Format_ARGB32_Premultiplied )
+    finalImage.fill(1)
 
     painter = QPainter(finalImage)
     painter.setRenderHints(QPainter.SmoothPixmapTransform )
