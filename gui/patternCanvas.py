@@ -1059,9 +1059,9 @@ class PatternLabelItem(QGraphicsTextItem):
     Type = 70000 + 3
 
 
-    def __init__(self, text, parent = None, scene = None):
+    def __init__(self, text, parent = None):
 
-        super(PatternLabelItem, self).__init__(text, parent, scene)
+        super(PatternLabelItem, self).__init__(text, parent)
         
 
 
