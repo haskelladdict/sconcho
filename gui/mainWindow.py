@@ -363,6 +363,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             # start new canvas
             self.clear_project_save_file()
+            self.set_project_dirty()
             self.__canvas.create_new_canvas(newPattern.num_rows,
                                             newPattern.num_columns)
 
