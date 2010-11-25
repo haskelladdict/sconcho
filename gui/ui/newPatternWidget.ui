@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>New Pattern Grid</string>
+   <string>sconcho: New Pattern Grid</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

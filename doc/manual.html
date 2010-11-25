@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
 <title>Sconcho Manual</title>
 <style type="text/css">
 
 /*
 :Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 5951 2009-05-18 18:03:10Z milde $
+:Id: $Id: html4css1.css 6253 2010-03-02 00:24:53Z milde $
 :Copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
@@ -157,15 +157,21 @@ h2.subtitle {
 hr.docutils {
   width: 75% }
 
-img.align-left, .figure.align-left{
+img.align-left, .figure.align-left, object.align-left {
   clear: left ;
   float: left ;
   margin-right: 1em }
 
-img.align-right, .figure.align-right {
+img.align-right, .figure.align-right, object.align-right {
   clear: right ;
   float: right ;
   margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 .align-left {
   text-align: left }
@@ -314,67 +320,52 @@ at a later time. Charts can be exported in a variety of image formats and also
 printed to a printer of saved in PDF or PostScript format.</p>
 <hr class="docutils" />
 <p><strong>Starting a new Project</strong></p>
-<p>After startup sconcho by default presents a pattern grid with 10 rows and
-10 columns. The grid size can be changed by either</p>
+<p>After startup, sconcho by default presents a pattern grid with 10 rows and
+10 columns. This initial grid size can be changed by either</p>
 <blockquote>
-<ul>
-<li><dl class="first docutils">
-<dt>starting a new project (<strong>File -&gt; New</strong>) and specifying the proper</dt>
-<dd><p class="first last">size in the <em>New Pattern Grid</em> dialog.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>adding the proper number of rows with the</dt>
-<dd><p class="first last"><em>insert/delete rows and columns</em> dialog (<strong>Grid -&gt; insert/delete row
-and columns</strong>).</p>
-</dd>
-</dl>
-</li>
+<ul class="simple">
+<li>starting a new project (<strong>File -&gt; New</strong>) and specifying the proper size in the <em>New Pattern Grid</em> dialog.</li>
+<li>adding the proper number of rows with the <em>Insert/Delete Rows and Columns</em> dialog (<strong>Grid -&gt; Insert/Delete Rows and Columns</strong>).</li>
 </ul>
 </blockquote>
 <hr class="docutils" />
 <p><strong>Adding Symbols to Pattern Grid</strong></p>
-<p>Symbols are added to the pattern grid via selecting grid cells and
-then adding the activated symbol from the list of available knitting
-symbols. The presently active symbol (including its background
-color) is indicated in the <em>Active Symbol Tool</em> in the lower
-right hand corner. If no symbol is selected the <em>Active Symbol Tool</em>
-displays <strong>No Active Symbol</strong>.</p>
-<p>Individual grid cells can be selected in 3 ways:</p>
+<p>Symbols are added to the pattern grid via selecting grid cells. These
+cells will then be filled with the currently active knitting symbol from
+the list of available knitting symbols.</p>
+<p>The presently active symbol (including its background color) is indicated
+in the <em>Active Symbol Tool</em> in the lower right hand corner. If no symbol is
+selected the <em>Active Symbol Tool</em> displays <strong>No Active Symbol</strong>.</p>
+<p>Grid cells can be selected in 3 ways:</p>
 <blockquote>
 <ol class="arabic simple">
-<li>by using the right mouse button to click on them</li>
-<li>by clicking on the row or column labels selecting the respecive
-row or column.</li>
-<li>a rectangular area can be selected with the <em>Rubberband Tool</em>
-by holding down the <strong>Shift</strong> key and the right mouse button and
-then dragging the mouse.</li>
+<li>individual grid cells can be selected by using the right mouse button to click on them</li>
+<li>complete rows or columns can be selected by clicking on the row or column labels</li>
+<li>a rectangular area can be selected with the <em>Rubberband Tool</em> by holding down the <strong>Shift</strong> key and the right mouse button and then dragging the mouse.</li>
 </ol>
 </blockquote>
 <p>Without an active symbol (the <em>Active Symbol Tool</em>
 shows <strong>No Active Symbol</strong>) selecting grid cells will highlight
 them in a light grey color. As soon as a symbol is activated it
 will be inserted into the the highlighted grid cells. If a
-symbol is active while selecting grid cells, the symbol will be
-inserted immediately into the highlighted cells.</p>
+symbol is already active while selecting grid cells, the symbol will be
+inserted into the highlighted cells immediately.</p>
 <p><strong>Note:</strong> If a symbol is active which spans more than a single
-cell - a 3 stitch cable for example -- the proper number of cells
-has to be selected first before the symbol will be inserted.
-If cells are highlighted initially without an active symbol and
-followed by choosing an active symbol, sconcho will only add the
-symbol if the whole selection can be completely filled any number
-of symbols; sconcho will not just fill some part of the selection.</p>
+cell - a 3 stitch cable for example -- it will only
+be inserted if the selected grid cells can fit the symbols
+exactly (there could be more than one if the <em>Rubberband Tool</em> is
+used).</p>
 <hr class="docutils" />
 <p><strong>Changing a Symbol's Background Color</strong></p>
-<p>With the exception of the <strong>no-stitch</strong> symbol, the background of
+<p>With the exception of the <strong>no-stitch</strong> symbol, the default background of
 all symbols is <em>white</em>. The color of the active symbol can be changed
 by choosing one of the predefined colors in the <em>Color Selector Tool</em>.
 The currently selected color is indicated in the <em>Active Symbol Tool</em>.
-Each of the predefined color selectors can be customized by
-clicking on the <em>customize color</em> button and selecting a color.
+The color in each of the predefined color selectors can be customized by
+clicking on the <em>Customize Color</em> button and changing the color.
 In addition, one can also load a color from any grid cell into the
-currently selected color selector by <strong>Left Mouse Click -&gt; Grab Color</strong>.</p>
+currently active color selector by grabbing the color via
+<strong>Left Mouse Click -&gt; Grab Color</strong>.</p>
 </div>
 </body>
 </html>

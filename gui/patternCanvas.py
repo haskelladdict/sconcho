@@ -422,9 +422,9 @@ class PatternCanvas(QGraphicsScene):
         """
 
         gridMenu = QMenu()
-        rowAction = gridMenu.addAction("Insert/delete rows and columns")
+        rowAction = gridMenu.addAction("Insert/Delete Rows and Columns")
         gridMenu.addSeparator();
-        colorAction = gridMenu.addAction("Grab color");
+        colorAction = gridMenu.addAction("Grab Color");
 
         self.connect(rowAction, SIGNAL("triggered()"),
                      partial(self.insert_delete_rows_columns, row, col))
