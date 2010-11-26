@@ -738,37 +738,48 @@ class PatternCanvas(QGraphicsScene):
                           legendItemInfo):
         """
         Clear curent canvas and establishes a new canvas
-        based on the passed canvas items.
+        based on the passed canvas items. Returns True on success
+        and False otherwise.
+        NOTE: We have to be able to deal with bogus data (from a
+        corrupted file perhaps).
         """
         
-        self.__clear_canvas()
-
-        # need this to determine the number of columns
-        # and rows
+        # need this to determine the number of columns and rows
         maxCol = 0
         maxRow = 0
+        allItems = []
 
-        for newItem in patternGridItemInfo:
-            colID    = newItem["column"]
-            rowID    = newItem["row"]
-            width    = newItem["width"]
-            height   = newItem["height"]
-            name     = newItem["name"]
-            color    = QColor(newItem["color"])
-            category = newItem["category"]
-            symbolID = category + "::" + name
-            location = QPointF(colID * self.__unitWidth,
-                                rowID * self.__unitHeight)
-            symbol   = knittingSymbols[symbolID]
-            item     = self.create_pattern_grid_item(location, self.__unitCellDim,
-                                                        colID, rowID, width, height,
-                                                        symbol, color)
+        try:
+            for newItem in patternGridItemInfo:
+                colID    = newItem["column"]
+                rowID    = newItem["row"]
+                width    = newItem["width"]
+                height   = newItem["height"]
+                name     = newItem["name"]
+                color    = QColor(newItem["color"])
+                category = newItem["category"]
+                symbolID = category + "::" + name
+                location = QPointF(colID * self.__unitWidth,
+                                    rowID * self.__unitHeight)
+                symbol   = knittingSymbols[symbolID]
+                itemData = (location, self.__unitCellDim, colID, rowID, width, 
+                            height, symbol, color)
+                allItems.append(itemData)
+
+                # update trackers
+                maxCol = max(maxCol, colID)
+                maxRow = max(maxRow, rowID)
+        except KeyError as e:
+            QMessageBox.critical(None, msg.errorFailedToSetupGridTitle,
+                                 msg.errorFailedToSetupGridText % e,
+                                 QMessageBox.Close)
+            return False
+ 
+        
+        self.__clear_canvas()
+        for entry in allItems:
+            item = self.create_pattern_grid_item(*entry)
             self.addItem(item)
-
-            # update trackers
-            maxCol = max(maxCol, colID)
-            maxRow = max(maxRow, rowID)
-            
 
         arrange_label_items(legendItemInfo, self.legend )
 
@@ -1337,9 +1348,9 @@ def arrange_label_items(legendItemInfo, legendItems):
             legendTextItem.setPlainText(item["description"])
 
         else:
-            QMessageBox.critical(None, "Error", "A legend item found in the " + \
-                                 "opened file doesn't match the pattern.",
-                                 QMessageBox.Ok)
+            QMessageBox.critical(None, msg.errorMatchingLegendItemTitle,
+                                 msg.errorMatchingLegendItemText,
+                                 QMessageBox.Close)
         
 
 

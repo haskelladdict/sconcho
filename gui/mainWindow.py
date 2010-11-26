@@ -475,8 +475,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # add newly loaded project
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
-        self.__canvas.load_previous_pattern(knittingSymbols, patternGridItems,
-                                            legendItems) 
+        if not self.__canvas.load_previous_pattern(knittingSymbols, 
+                                                   patternGridItems,
+                                                   legendItems):
+            return
+
         set_up_colors(self.__colorWidget, colors)
         self.activate_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)

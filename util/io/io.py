@@ -71,6 +71,11 @@ def save_project_bin(canvas, colors, activeSymbol, saveFileName):
         stream.writeInt32(len(legendItems))
         stream.writeInt32(len(colors))
 
+        # the next are 5 dummy entries so we can add more
+        # output within the same API
+        for count in range(5):
+            stream.writeInt32(0)
+
         # write content
         write_patternGridItems_bin(stream, patternGridItems)
         write_legendItems_bin(stream, legendItems)
@@ -204,6 +209,10 @@ def read_project(openFileName):
         numGridItems   = stream.readInt32()
         numLegendItems = stream.readInt32()
         numColors      = stream.readInt32()
+
+        # the next are 5 dummy entries we just skip
+        for count in range(5):
+            stream.readInt32()
 
         # write elements
         patternGridItems = read_patternGridItems(stream, numGridItems)

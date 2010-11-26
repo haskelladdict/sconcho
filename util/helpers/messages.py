@@ -105,6 +105,17 @@ errorSavingProjectTitle = "sconcho: Error Saving Project"
 errorOpeningProjectTitle = "sconcho: Error Opening Project"
 
 
+errorMatchingLegendItemTitle = "sconcho: Error Loading Legend"
+errorMatchingLegendItemText = ("A legend item found in the opened project "
+                               "does not match any in the pattern.")
+
+
+errorFailedToSetupGridTitle = "sconcho: Error Setting up Project"
+errorFailedToSetupGridText = ("Could not re-create pattern grid from "
+                              "opened project file. sconcho encountered "
+                              "the following error %s.")
+
+
 ########################################################################
 ##
 ## sconchoIO/io.py messages
