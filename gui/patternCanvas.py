@@ -743,7 +743,7 @@ class PatternCanvas(QGraphicsScene):
         # need this to determine the number of columns and rows
         maxCol = 0
         maxRow = 0
-        allItems = []
+        allPatternGridItems = []
 
         try:
             for newItem in patternGridItemInfo:
@@ -758,26 +758,43 @@ class PatternCanvas(QGraphicsScene):
                 location = QPointF(colID * self.__unitWidth,
                                     rowID * self.__unitHeight)
                 symbol   = knittingSymbols[symbolID]
-                itemData = (location, self.__unitCellDim, colID, rowID, width, 
-                            height, symbol, color)
-                allItems.append(itemData)
+                allPatternGridItems.append((location, self.__unitCellDim, 
+                                            colID, rowID, width, 
+                                            height, symbol, color))
 
                 # update trackers
                 maxCol = max(maxCol, colID)
                 maxRow = max(maxRow, rowID)
         except KeyError as e:
-            QMessageBox.critical(None, msg.errorFailedToSetupGridTitle,
-                                 msg.errorFailedToSetupGridText % e,
+            QMessageBox.critical(None, msg.errorLoadingGridTitle,
+                                 msg.errorLoadingGridText % e,
                                  QMessageBox.Close)
             return False
- 
-        
+
+        allLegendItems = []
+        try:
+            for item in legendItemInfo:
+                legendID  = generate_legend_id(item, item["color"])
+                itemXPos  = item["itemXPos"]
+                itemYPos  = item["itemYPos"]
+                labelXPos = item["labelXPos"]
+                labelYPos = item["labelYPos"]
+                description = item["description"]
+                allLegendItems.append((legendID, itemXPos, itemYPos, 
+                                       labelXPos, labelYPos, description))
+        except KeyError as e:
+            QMessageBox.critical(None, msg.errorLoadingLegendTitle,
+                                 msg.errorLoadingLegendText % e,
+                                 QMessageBox.Close)
+            return False
+
         self.__clear_canvas()
-        for entry in allItems:
+        for entry in allPatternGridItems:
             item = self.create_pattern_grid_item(*entry)
             self.addItem(item)
 
-        arrange_label_items(legendItemInfo, self.legend )
+        for entry in allLegendItems:
+            arrange_label_item(self.legend, *entry)
 
         # need to clear our label cache, otherwise set_up_labels()
         # will try to remove non-existing items
@@ -787,6 +804,7 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
 
         self.emit(SIGNAL("adjust_view"))
+        return True
 
 
 
@@ -1319,35 +1337,34 @@ def generate_legend_id(symbol, color):
 
     name = symbol["name"]
     category = symbol["category"]
-    
+
     return (name, category, color.name())
 
 
 
 
-def arrange_label_items(legendItemInfo, legendItems):
+def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos, 
+                       labelYPos, description):
     """
     Position all label items (pairs of PatternGridItem
     and PatternLegendItem) as requested in dict legendItems
     which comes from a parsed spf file.
     """
     
-    for item in legendItemInfo:
-        legendID = generate_legend_id(item, item["color"])
-        if legendID in legendItems:
-            
-            legendItem = legendItems[legendID]
-            legendPatternItem = legendItem_symbol(legendItem)
-            legendTextItem = legendItem_text(legendItem)
-            legendPatternItem.setPos(item["itemXPos"], item["itemYPos"])
-            legendTextItem.setPos(item["labelXPos"], item["labelYPos"])
-            legendTextItem.setPlainText(item["description"])
-
-        else:
-            QMessageBox.critical(None, msg.errorMatchingLegendItemTitle,
-                                 msg.errorMatchingLegendItemText,
-                                 QMessageBox.Close)
+    if legendID in legendItems:
         
+        legendItem = legendItems[legendID]
+        legendPatternItem = legendItem_symbol(legendItem)
+        legendTextItem = legendItem_text(legendItem)
+        legendPatternItem.setPos(itemXPos, itemYPos)
+        legendTextItem.setPos(labelXPos, labelYPos)
+        legendTextItem.setPlainText(description)
+
+    else:
+        QMessageBox.critical(None, msg.errorMatchingLegendItemTitle,   
+                             msg.errorMatchingLegendItemText,
+                             QMessageBox.Close)
+
 
 
 def get_column_items(items, column):

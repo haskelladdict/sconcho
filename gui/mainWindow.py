@@ -749,7 +749,7 @@ def set_up_colors(widget, colors):
     active item.
     """
 
-    assert (len(widget.colorWidgets) == len(colors))
+    assert (len(widget.colorWidgets) >= len(colors))
 
     for (i, item) in enumerate(widget.colorWidgets):
         (color, state) = colors[i]
