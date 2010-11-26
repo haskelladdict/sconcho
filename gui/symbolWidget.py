@@ -24,9 +24,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QString, QSize, QObject, SIGNAL)
+from PyQt4.QtCore import (QString, QSize, QObject, SIGNAL, Qt)
 from PyQt4.QtGui import (QFrame, QGridLayout, QWidgetItem, QWidget, 
-                         QHBoxLayout, QLabel, QScrollArea)
+                         QHBoxLayout, QLabel, QScrollArea, QMenu)
 from PyQt4.QtSvg import QSvgWidget
 
 
@@ -238,10 +238,23 @@ class SymbolSelectorItem(QFrame):
         """
         Acts on mouse press events and uses the synchronizer
         for selecting.
+
+        A right mouse click selects. A left mouse click opens
+        up a menu.
         """
 
-        self.click_me()
+        if event.button() == Qt.RightButton:
+            itemMenu = QMenu()
+            addLegendAction = itemMenu.addAction("Add to legend")
+            self.connect(addLegendAction, SIGNAL("triggered()"),
+                         self.add_me_to_legend)
+            itemMenu.exec_(event.globalPos())
+        else:
+            self.click_me()
 
+
+    def add_me_to_legend(self):
+        print("add me")
 
 
     def set_active_look(self):
