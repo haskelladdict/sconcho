@@ -56,13 +56,13 @@ class InsertDeleteRowColumnWidget(QDialog, Ui_InsertDeleteRowColumnWidget):
 
         # install some connections
         self.connect(self.closeButton, SIGNAL("clicked()"), self.close)
-        self.connect(self.insertRowButton, SIGNAL("clicked()"),
+        self.connect(self.insertRowButton, SIGNAL("pressed()"),
                      self.insert_row_button_pressed)
-        self.connect(self.deleteRowButton, SIGNAL("clicked()"),
+        self.connect(self.deleteRowButton, SIGNAL("pressed()"),
                      self.delete_row_button_pressed)
-        self.connect(self.insertColumnButton, SIGNAL("clicked()"),
+        self.connect(self.insertColumnButton, SIGNAL("pressed()"),
                      self.insert_column_button_pressed)
-        self.connect(self.deleteColumnButton, SIGNAL("clicked()"),
+        self.connect(self.deleteColumnButton, SIGNAL("pressed()"),
                      self.delete_column_button_pressed)
 
 
