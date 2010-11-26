@@ -39,6 +39,7 @@ from PyQt4.QtSvg import QSvgWidget
 from gui.ui_mainWindow import Ui_MainWindow
 import util.helpers.messages as msg
 import util.helpers.settings as settings
+import util.helpers.misc as misc
 import util.io.io as io
 import util.io.symbolParser as parser
 from gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
@@ -71,9 +72,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.__settings = self.__restore_settings()
-
-        self.__saveFilePath = None
         self.__colorWidget  = None
+
+        self.clear_project_save_file()
 
         # set up the statusBar
         self.activeSymbolWidget = ActiveSymbolWidget()
@@ -529,8 +530,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         self.__saveFilePath = None
-        self.setWindowTitle(QApplication.applicationName() \
-                            + " The more the better[*]")
+        self.setWindowTitle(QApplication.applicationName() + ": "\
+                            + misc.get_random_window_title() + "[*]")
 
 
 

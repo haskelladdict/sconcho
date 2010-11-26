@@ -26,10 +26,12 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import functools
+import random
 
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (QApplication, QCursor)
 
+import util.helpers.messages as msg
 
 def wait_cursor(func):
     """
@@ -48,4 +50,12 @@ def wait_cursor(func):
         return result
 
     return wrapper
+
+
+def get_random_window_title():
+    """ This function randomly picks a title from the list
+    of available ones. """
+
+    num = len(msg.mainWindowTitles)
+    return (msg.mainWindowTitles[random.randint(0, num-1)])
 

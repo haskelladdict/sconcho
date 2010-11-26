@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>sconcho: create your own pattern charts[*]</string>
+   <string/>
   </property>
   <property name="windowIcon">
    <iconset resource="../icons.qrc">
@@ -80,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>1137</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
