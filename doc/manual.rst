@@ -68,4 +68,46 @@ currently active color selector by grabbing the color via
 **Left Mouse Click -> Grab Color**.
 
 
+-----
 
+**Changing the Legend Layout**
+
+For each new symbol and color used, sconcho places a legend entry
+consisting of a symbol and its description on the canvas. Both the symbol 
+and the text can be moved anywhere on the canvas and the default description 
+for a symbol can be changed.
+
+If no legend is desired at all it can be turned off via unchecking
+**View -> Show Legend**.  
+
+
+-----
+
+**Inserting and Deleting Columns and Rows in the Chart**
+
+Additional rows and columns can be inserted into and deleted from an 
+already existing chart using the *Insert/Delete Rows and Columns* dialog 
+(**Grid -> Insert/Delete Rows and Columns**). Here, it is important to keep 
+in mind that while it is always possible to add and remove rows, columns can 
+be added only if the new row does not appear within an already existing 
+multi-cell symbol. Similarly, a column can be removed only if it is not 
+part of a multi-cell symbol.
+
+
+----
+
+**Saving and Opening Sconcho Projects**
+
+Sconcho projects can be saved in a platform independend binary 
+format called *sconcho project format (SPF)*. SPF files typically end
+with the extension .spf. SPF files can then be re-opened in sconcho.
+
+
+----
+
+**Exporting and Printing Charts**
+
+You can either print your sconcho project on a printer (or print
+to a PDF file on some platforms) or export it as a bitmapped image
+file such as jped, tif, or png. The number of available image 
+file formats depends on the operating system.
