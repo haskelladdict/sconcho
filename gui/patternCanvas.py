@@ -779,6 +779,8 @@ class PatternCanvas(QGraphicsScene):
         self.__textLabels = []
         self.set_up_labels()
 
+        self.emit(SIGNAL("adjust_view"))
+
 
 
     def toggle_label_visibility(self, status):
