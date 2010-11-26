@@ -1,5 +1,15 @@
 11-21-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
 
+	* Release of 0.1_a4
+	* many bugfixes
+	* replaced old and slow xml spf file format with more
+	  efficient binary version.
+	* added "New Project" dialog with column/row number selector
+	* added "Sconcho Manual" under help.
+
+
+11-21-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
+
 	* Release of 0.1_a3
 	* several bugfixes
 	* improved export bitmap dialog
