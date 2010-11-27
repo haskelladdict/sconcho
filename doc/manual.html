@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
 <title>Sconcho Manual</title>
 <style type="text/css">
 
 /*
 :Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 5951 2009-05-18 18:03:10Z milde $
+:Id: $Id: html4css1.css 6253 2010-03-02 00:24:53Z milde $
 :Copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
@@ -157,15 +157,21 @@ h2.subtitle {
 hr.docutils {
   width: 75% }
 
-img.align-left, .figure.align-left{
+img.align-left, .figure.align-left, object.align-left {
   clear: left ;
   float: left ;
   margin-right: 1em }
 
-img.align-right, .figure.align-right {
+img.align-right, .figure.align-right, object.align-right {
   clear: right ;
   float: right ;
   margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 .align-left {
   text-align: left }
@@ -364,9 +370,9 @@ currently active color selector by grabbing the color via
 <p><strong>Changing the Legend Layout</strong></p>
 <p>For each new symbol and color used, sconcho places a legend entry
 consisting of a symbol and its description on the canvas. Both the symbol
-and the text can be moved anywhere on the canvas and the default description
-for a symbol can be changed.</p>
-<p>If no legend is desired at all it can be turned off via unchecking
+and the text can be moved separately anywhere on the canvas and the
+default description for a symbol can be changed.</p>
+<p>If no legend is desired at all it can be turned off via un-checking
 <strong>View -&gt; Show Legend</strong>.</p>
 <hr class="docutils" />
 <p><strong>Inserting and Deleting Columns and Rows in the Chart</strong></p>
@@ -379,14 +385,14 @@ multi-cell symbol. Similarly, a column can be removed only if it is not
 part of a multi-cell symbol.</p>
 <hr class="docutils" />
 <p><strong>Saving and Opening Sconcho Projects</strong></p>
-<p>Sconcho projects can be saved in a platform independend binary
+<p>Sconcho projects can be saved in a platform independent binary
 format called <em>sconcho project format (SPF)</em>. SPF files typically end
 with the extension .spf. SPF files can then be re-opened in sconcho.</p>
 <hr class="docutils" />
 <p><strong>Exporting and Printing Charts</strong></p>
 <p>You can either print your sconcho project on a printer (or print
 to a PDF file on some platforms) or export it as a bitmapped image
-file such as jped, tif, or png. The number of available image
+file such as jped, tif, or png. The available image
 file formats depends on the operating system.</p>
 </div>
 </body>

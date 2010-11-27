@@ -243,14 +243,14 @@ class SymbolSelectorItem(QFrame):
         up a menu.
         """
 
-        if event.button() == Qt.RightButton:
-            itemMenu = QMenu()
-            addLegendAction = itemMenu.addAction("Add to legend")
-            self.connect(addLegendAction, SIGNAL("triggered()"),
-                         self.add_me_to_legend)
-            itemMenu.exec_(event.globalPos())
-        else:
-            self.click_me()
+        #if event.button() == Qt.RightButton:
+            #itemMenu = QMenu()
+            #addLegendAction = itemMenu.addAction("Add to legend")
+            #self.connect(addLegendAction, SIGNAL("triggered()"),
+            #             self.add_me_to_legend)
+            #itemMenu.exec_(event.globalPos())
+        #else:
+        self.click_me()
 
 
     def add_me_to_legend(self):

@@ -74,10 +74,10 @@ currently active color selector by grabbing the color via
 
 For each new symbol and color used, sconcho places a legend entry
 consisting of a symbol and its description on the canvas. Both the symbol 
-and the text can be moved anywhere on the canvas and the default description 
-for a symbol can be changed.
+and the text can be moved separately anywhere on the canvas and the 
+default description for a symbol can be changed.
 
-If no legend is desired at all it can be turned off via unchecking
+If no legend is desired at all it can be turned off via un-checking
 **View -> Show Legend**.  
 
 
@@ -98,7 +98,7 @@ part of a multi-cell symbol.
 
 **Saving and Opening Sconcho Projects**
 
-Sconcho projects can be saved in a platform independend binary 
+Sconcho projects can be saved in a platform independent binary 
 format called *sconcho project format (SPF)*. SPF files typically end
 with the extension .spf. SPF files can then be re-opened in sconcho.
 
@@ -109,5 +109,5 @@ with the extension .spf. SPF files can then be re-opened in sconcho.
 
 You can either print your sconcho project on a printer (or print
 to a PDF file on some platforms) or export it as a bitmapped image
-file such as jped, tif, or png. The number of available image 
+file such as jped, tif, or png. The available image 
 file formats depends on the operating system.
