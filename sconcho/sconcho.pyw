@@ -38,7 +38,6 @@ import util.symbolParser as parser
 # more spiffy lateron
 SYMBOL_PATHS = [currPath + "/symbols"]
 
-
 def sconcho_launcher():
     """
     Main routine starting up the sconcho framework.
