@@ -1,0 +1,3 @@
+recursive-include sconcho/symbols *
+include sconcho/doc/*.html
+include ChangeLog
