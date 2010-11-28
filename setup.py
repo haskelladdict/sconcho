@@ -1,15 +1,61 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
+import os, sys
+import string
 
-setup(name='sconcho',
-      version='0.1_a5',
-      description='Program for Generating Knitting Charts',
-      author='Markus Dittrich',
-      author_email='haskelladdict@users.sourceforge.net',
-      url='http://sconcho.sourceforge.net/',
-      license='GNU GPLv3',
-      packages=['sconcho', 'sconcho.util', 'sconcho.gui'], 
-      scripts=['sconcho.pyw']
-     )
 
+def check_dependencies():
+    """ Make sure we have python and pyQt with their
+    proper versions installed.
+    """
+
+    # python 
+    if sys.version_info < (2, 6, 0) or sys.version_info >= (2, 7, 0):
+        print('Sorry, sconcho needs python version 2.6')
+        print("Python Version detected: %d.%d.%d" % sys.version_info[:3])
+        exit(5)
+    print("Python Version: %d.%d.%d" % sys.version_info[:3])
+    
+    try:
+        from PyQt4.QtCore import qVersion
+    except ImportError as msg:
+        print('Sorry, please install PyQt4.')
+        print('Error: %s' % msg)
+        exit(1)
+    print("Found PyQt")
+
+
+
+def get_symbol_files():
+    """ get a list of all symbol files. 
+    NOTE: This is only one level deep! 
+    """
+
+    fileList = []
+    for root, subFolders, files in os.walk("sconcho/symbols"):
+        newRoot = string.replace(root,"sconcho/","") 
+        for aFile in files:
+            fileList.append(os.path.join(newRoot, aFile))
+    
+    return fileList
+
+
+
+if __name__ == "__main__":
+
+    check_dependencies()
+    symbolFiles = get_symbol_files()
+
+    setup(name='sconcho',
+        version='0.1_a5',
+        description='Program for Generating Knitting Charts',
+        author='Markus Dittrich',
+        author_email='haskelladdict@users.sourceforge.net',
+        url='http://sconcho.sourceforge.net/',
+        license='GNU GPLv3',
+        packages=['sconcho', 'sconcho.util', 'sconcho.gui'], 
+        package_data = {'sconcho': symbolFiles, 
+                        'sconcho': ['doc/manual.html']},
+        scripts=['sconcho.pyw']
+        )
