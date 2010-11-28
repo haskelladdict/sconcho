@@ -24,11 +24,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore  import QUrl
+
+from PyQt4.QtCore  import (QUrl, QString)
 from PyQt4.QtGui import QDialog 
 
 from gui.ui_sconchoManual import Ui_SconchoManual
-
 
 
 ##########################################################################
@@ -39,7 +39,7 @@ from gui.ui_sconchoManual import Ui_SconchoManual
 class SconchoManual(QDialog, Ui_SconchoManual):
 
 
-    def __init__(self, parent = None):
+    def __init__(self, manualPath, parent = None):
         """
         Initialize the dialog.
         """
@@ -47,6 +47,6 @@ class SconchoManual(QDialog, Ui_SconchoManual):
         super(SconchoManual, self).__init__(parent)
         self.setupUi(self)
 
-        url = QUrl("../doc/manual.html")
+        url = QUrl(QString(manualPath))
         self.helpBrowser.setSource(url)
 

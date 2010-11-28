@@ -27,16 +27,13 @@ from __future__ import absolute_import
 
 import os, sys
 
-# retrieve that path where we execute
+# set up path to symbols and docs
 currPath = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 from PyQt4.QtGui import QApplication
 from gui.mainWindow import MainWindow
 import util.symbolParser as parser
 
-# for now hardcode the path; this has to become a bit
-# more spiffy lateron
-SYMBOL_PATHS = [currPath + "/symbols"]
 
 def sconcho_launcher():
     """
@@ -47,7 +44,7 @@ def sconcho_launcher():
     app.setOrganizationName("Markus Dittrich")
     app.setOrganizationDomain("sconcho.sourceforge.net")
     app.setApplicationName("sconcho")
-    window = MainWindow(SYMBOL_PATHS)
+    window = MainWindow(currPath)
     window.show()
     app.exec_()
     

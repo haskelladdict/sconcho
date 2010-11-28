@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2010 Markus Dittrich
+# (c) 2009 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -24,7 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-import platform
+import platform, os
 from functools import partial
 
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
@@ -51,7 +51,8 @@ from gui.sconchoManual import SconchoManual
 from util.exceptions import PatternReadError
 
 
-__version__ = "0.1.0_a4"
+__version__ = "0.1.0_a5"
+
 
 
 #######################################################################
@@ -63,7 +64,7 @@ __version__ = "0.1.0_a4"
 #######################################################################
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    def __init__(self, symbolPaths, filename = None, parent = None):
+    def __init__(self, topLevelPath, filename = None, parent = None):
         """
         Initialize the main window.
         """
@@ -80,7 +81,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.activeSymbolWidget = ActiveSymbolWidget()
         self.statusBar().addPermanentWidget(self.activeSymbolWidget)
 
-        self.__symbolPaths = symbolPaths
+        self.__topLevelPath = topLevelPath
+        self.__symbolPaths = [os.path.join(topLevelPath, "symbols")]
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
         self.__canvas = PatternCanvas(self.__settings, 
                                       knittingSymbols[QString("basic::knit")],
@@ -331,7 +333,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_sconcho_manual(self):
         """ Show the sconcho manual. """
 
-        manual = SconchoManual(self)
+        manualPath = os.path.join(self.__topLevelPath, "doc/manual.html")
+        manual = SconchoManual(manualPath, self)
         manual.exec_()
 
 
