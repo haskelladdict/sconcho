@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 ########################################################################
 #
@@ -28,7 +27,8 @@ from __future__ import absolute_import
 import os, sys
 
 # set up path to symbols and docs
-currPath = os.path.dirname(os.path.abspath(sys.argv[0]))
+currPath = os.path.dirname(__file__)
+sys.path.append(currPath)
 
 from PyQt4.QtGui import QApplication
 from gui.mainWindow import MainWindow
