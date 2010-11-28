@@ -30,7 +30,7 @@ sys.path.append("../")
 
 from PyQt4.QtGui import QApplication
 from gui.mainWindow import MainWindow
-import util.io.symbolParser as parser
+import util.symbolParser as parser
 
 # for now hardcode the path; this has to become a bit
 # more spiffy lateron

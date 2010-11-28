@@ -31,9 +31,9 @@ from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from gui.patternCanvas import (PatternGridItem, PatternLegendItem,
                                legendItem_symbol, legendItem_text)
-from util.helpers.misc import wait_cursor
-from util.helpers.exceptions import PatternReadError
-import util.helpers.messages as msg
+from util.misc import wait_cursor
+from util.exceptions import PatternReadError
+import util.messages as msg
 
 # magick number to specify binary API
 MAGIC_NUMBER = 0xA3D1

@@ -32,12 +32,12 @@ from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor,
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
                          QAction, QGraphicsItem, QMessageBox, QRubberBand)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
-from util.helpers.settings import get_grid_dimensions, get_text_font
-from util.helpers.canvas import (is_click_in_grid, is_click_on_labels, 
+from util.settings import get_grid_dimensions, get_text_font
+from util.canvas import (is_click_in_grid, is_click_on_labels, 
                             convert_pos_to_row_col)
 from gui.insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
-from util.helpers.misc import wait_cursor
-import util.helpers.messages as msg
+from util.misc import wait_cursor
+import util.messages as msg
 
 
 

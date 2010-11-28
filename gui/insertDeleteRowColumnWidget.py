@@ -27,7 +27,7 @@ from __future__ import absolute_import
 from PyQt4.QtCore import (Qt, SIGNAL, QString)
 from PyQt4.QtGui import (QDialog, QMessageBox)
 from gui.ui_insertDeleteRowColumnWidget import Ui_InsertDeleteRowColumnWidget
-import util.helpers.messages as msg
+import util.messages as msg
 
 
 ##########################################################################

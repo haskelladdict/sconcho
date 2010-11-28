@@ -32,7 +32,7 @@ from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
 
 from gui.ui_exportBitmapWidget import Ui_ExportBitmapWidget
 
-import util.helpers.messages as msg
+import util.messages as msg
 
 
 ##########################################################################

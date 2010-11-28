@@ -31,7 +31,7 @@ import random
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (QApplication, QCursor)
 
-import util.helpers.messages as msg
+import util.messages as msg
 
 def wait_cursor(func):
     """

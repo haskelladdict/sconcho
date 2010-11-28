@@ -37,18 +37,18 @@ from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
 from PyQt4.QtSvg import QSvgWidget
 
 from gui.ui_mainWindow import Ui_MainWindow
-import util.helpers.messages as msg
-import util.helpers.settings as settings
-import util.helpers.misc as misc
-import util.io.io as io
-import util.io.symbolParser as parser
+import util.messages as msg
+import util.settings as settings
+import util.misc as misc
+import util.io as io
+import util.symbolParser as parser
 from gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
 from gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from gui.patternCanvas import PatternCanvas
 from gui.exportBitmapWidget import ExportBitmapWidget
 from gui.newPatternWidget import NewPatternWidget
 from gui.sconchoManual import SconchoManual
-from util.helpers.exceptions import PatternReadError
+from util.exceptions import PatternReadError
 
 
 __version__ = "0.1.0_a4"
