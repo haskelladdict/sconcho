@@ -986,6 +986,9 @@ class PatternGridItem(QGraphicsSvgItem):
         painter.setPen(self.__pen)
         brush = QBrush(self.__backColor)
         painter.setBrush(brush)
+        halfPen = self.__penSize * 0.5
+        painter.drawRect(QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
+                                                                 halfPen, halfPen))
         painter.drawRect(QRectF(self.origin, self.size))
         self.renderer().render(painter, QRectF(self.origin, self.size))
 
@@ -1068,7 +1071,10 @@ class PatternLegendItem(QGraphicsSvgItem):
         painter.setPen(self.__pen)
         brush = QBrush(self.color)
         painter.setBrush(brush)
-        painter.drawRect(QRectF(self.origin, self.size))
+        halfPen = self.__penSize * 0.5
+        painter.drawRect(QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
+                                                                 halfPen, halfPen))
+
         self.renderer().render(painter, QRectF(self.origin, self.size))
 
 
