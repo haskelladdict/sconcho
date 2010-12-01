@@ -64,7 +64,7 @@ __version__ = "0.1.0_a5"
 #######################################################################
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    def __init__(self, topLevelPath, filename = None, parent = None):
+    def __init__(self, topLevelPath, fileName = None, parent = None):
         """
         Initialize the main window.
         """
@@ -107,6 +107,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # nothing happened so far
         self.__projectIsDirty = False
+
+        # read project if we received a filename
+        if fileName:
+            self.__read_project(fileName)
         
 
 
@@ -466,8 +470,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not readFilePath:
             return
 
+        self.__read_project(readFilePath)
+
         
-        readFileName = QFileInfo(readFilePath).fileName()
+
+    def __read_project(self, readFilePath):
+        """ This function does the hard work for opening a 
+        sconcho project file.
+        """
 
         (status, errMsg, patternGridItems, legendItems, colors, activeItem) = \
                                io.read_project(readFilePath)
@@ -486,6 +496,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         set_up_colors(self.__colorWidget, colors)
         self.activate_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
+        readFileName = QFileInfo(readFilePath).fileName()
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
         self.set_project_save_file(readFilePath)
 

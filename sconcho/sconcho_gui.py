@@ -35,22 +35,15 @@ from gui.mainWindow import MainWindow
 import util.symbolParser as parser
 
 
-def sconcho_launcher():
+def sconcho_gui_launcher(fileName = None):
     """
     Main routine starting up the sconcho framework.
     """
-    
+   
     app = QApplication(sys.argv)
     app.setOrganizationName("Markus Dittrich")
     app.setOrganizationDomain("sconcho.sourceforge.net")
     app.setApplicationName("sconcho")
-    window = MainWindow(currPath)
+    window = MainWindow(currPath, fileName)
     window.show()
     app.exec_()
-    
-
-
-# start execution
-if __name__ == "__main__":
-   
-    sconcho_launcher()
