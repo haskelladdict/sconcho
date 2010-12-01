@@ -591,7 +591,7 @@ def export_scene(canvas, width, height, exportFileName):
 
     painter = QPainter(finalImage)
     painter.setRenderHints(QPainter.SmoothPixmapTransform )
-    #painter.setRenderHints(QPainter.HighQualityAntialiasing )
+    painter.setRenderHints(QPainter.Antialiasing )
     painter.setRenderHints(QPainter.TextAntialiasing )
     painter.setBackgroundMode(Qt.TransparentMode )
 
