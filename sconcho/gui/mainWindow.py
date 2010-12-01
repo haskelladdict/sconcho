@@ -464,7 +464,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         readFilePath = \
              QFileDialog.getOpenFileName(self,
                                          msg.openSconchoProjectTitle,
-                                         QDir.currentPath(),
+                                         QDir.homePath(),
                                          "sconcho pattern files (*.spf)")
 
         if not readFilePath:
