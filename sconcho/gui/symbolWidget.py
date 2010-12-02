@@ -243,18 +243,30 @@ class SymbolSelectorItem(QFrame):
         up a menu.
         """
 
-        #if event.button() == Qt.RightButton:
-            #itemMenu = QMenu()
-            #addLegendAction = itemMenu.addAction("Add to legend")
-            #self.connect(addLegendAction, SIGNAL("triggered()"),
-            #             self.add_me_to_legend)
-            #itemMenu.exec_(event.globalPos())
-        #else:
-        self.click_me()
+        if event.button() == Qt.RightButton:
+            itemMenu = QMenu()
+            addLegendAction = itemMenu.addAction("Add to legend")
+            self.connect(addLegendAction, SIGNAL("triggered()"),
+                         self.add_me_to_legend)
+            itemMenu.exec_(event.globalPos())
+        else:
+            self.click_me()
+
 
 
     def add_me_to_legend(self):
-        print("add me")
+        """ Tell canvas to add us to the legend. 
+    
+        We use the synchronizer to "convey the message"
+        since the main window knows of the synchronizer only
+        but not us. This seems a little hackish
+        but otherwise we'd have to connect each symbol
+        widget to the main window individually.
+        """
+       
+        self.__synchronizer.add_to_legend(self.get_content())
+        
+
 
 
     def set_active_look(self):
@@ -354,3 +366,17 @@ class SymbolSynchronizer(QObject):
         """ Return the active widget to anybody who cares to know. """
 
         return self.__activeWidget
+
+
+
+    def add_to_legend(self, symbol):
+        """ Conveys that symbol has requested to be added to 
+        the legend.
+        """
+
+        self.emit(SIGNAL("add_symbol_to_legend"), symbol)
+
+
+
+
+

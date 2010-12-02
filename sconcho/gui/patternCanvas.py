@@ -173,6 +173,21 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def add_extra_symbol_to_legend(self, symbol):
+        """ Adds a symbol to the legend per user request. 
+
+        NOTE: This could be any symbol, especially one not
+        currently in the pattern grid. In order to distinguisht 
+        """
+
+        
+        print(symbol["name"])
+
+
+
+
+
+
     def __add_legend_item(self, symbol, color):
         """
         This adds a new legend entry including an PatternLegendItem
@@ -1356,7 +1371,7 @@ def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos,
     and PatternLegendItem) as requested in dict legendItems
     which comes from a parsed spf file.
     """
-    
+   
     if legendID in legendItems:
         
         legendItem = legendItems[legendID]

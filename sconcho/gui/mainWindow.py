@@ -267,6 +267,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.__canvas.set_active_symbol)
 
         self.connect(symbolTracker, 
+                     SIGNAL("add_symbol_to_legend"),
+                     self.__canvas.add_extra_symbol_to_legend)
+
+        self.connect(symbolTracker, 
                      SIGNAL("synchronized_object_changed"),
                      self.activeSymbolWidget.active_symbol_changed)
         
@@ -277,6 +281,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self,
                      SIGNAL("unselect_active_symbol"),
                      symbolTracker.unselect)
+       
         
         (self.selectedSymbol, self.symbolSelector,
          self.symbolSelectorWidgets) = \
