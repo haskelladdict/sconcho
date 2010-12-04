@@ -130,12 +130,12 @@ errorLoadingLegendText = ("Could not load legend from "
 ## list of possible main window titles
 ##
 ########################################################################
-mainWindowTitles = [QString("Oops, I charted ...."),
-                    QString("Chart this!"),
-                    QString("Happy knitting!"),
-                    QString("Pearls before swine"),
-                    QString("Knit happens"),
-                    QString("Knit or die!")]
+knittingQuotes = [QString("Oops, I charted ...."),
+                  QString("Chart this!"),
+                  QString("Happy knitting!"),
+                  QString("Pearls before swine"),
+                  QString("Knit happens"),
+                  QString("Knit or die!")]
 
 
 

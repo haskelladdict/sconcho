@@ -42,24 +42,32 @@ def initialize(settings):
     if preferenceFont.isEmpty():
       settings.setValue( "global/font", "Arial,10,-1,5,50,0,0,0,0,0" )
 
+    labelFont = settings.value( "global/labelFont" ).toString()
+    if labelFont.isEmpty():
+      settings.setValue( "global/labelFont", "Arial,10,-1,5,50,0,0,0,0,0" )
+
+    legendFont = settings.value( "global/legendFont" ).toString()
+    if preferenceFont.isEmpty():
+      settings.setValue( "global/legendFont", "Arial,10,-1,5,50,0,0,0,0,0" )
+
     exportPatternGrid =  \
-        settings.value( "global/export_pattern_grid" ).toString()
+        settings.value( "global/exportPatternGrid" ).toString()
     if exportPatternGrid.isEmpty():
-        settings.setValue( "global/export_pattern_grid", "true" )
+        settings.setValue( "global/exportPatternGrid", "True" )
 
-    exportLegend = settings.value( "global/export_legend" ).toString()
+    exportLegend = settings.value( "global/exportLegend" ).toString()
     if exportLegend.isEmpty():
-        settings.setValue( "global/export_legend", "true" )
+        settings.setValue( "global/exportLegend", "True" )
 
-    cellWidth = settings.value( "global/cell_width" ).toString()
+    cellWidth = settings.value( "global/cellWidth" ).toString()
     if cellWidth.isEmpty():
         defaultWidth = QString(GRID_CELL_WIDTH)
-        settings.setValue( "global/cell_width", defaultWidth )
+        settings.setValue( "global/cellWidth", defaultWidth )
 
-    cellHeight = settings.value( "global/cell_height" ).toString()
+    cellHeight = settings.value( "global/cellHeight" ).toString()
     if cellHeight.isEmpty():
         defaultHeight = QString(GRID_CELL_HEIGHT)
-        settings.setValue( "global/cell_height", defaultHeight )
+        settings.setValue( "global/cellHeight", defaultHeight )
 
 
 
@@ -70,9 +78,9 @@ def get_grid_dimensions(settings):
     """
 
     (cellWidth, widthStatus) = \
-                settings.value("global/cell_width").toString().toInt()
+                settings.value("global/cellWidth").toString().toInt()
     (cellHeight, heightStatus) = \
-                 settings.value("global/cell_height").toString().toInt()
+                 settings.value("global/cellHeight").toString().toInt()
 
     if not widthStatus or not heightStatus:
         print("Error: Failed to retrieve grid dimensions from settings.")
@@ -91,6 +99,62 @@ def get_text_font(settings):
 
     font = QFont()
     if not font.fromString(fontString):
-        print("Error: Failed to retrive font from settings.")
+        print("Error: Failed to retrieve font from settings.")
 
     return font
+
+
+
+def get_label_font(settings):
+    """
+    Helper function for extracting the currently label font
+    from settings.
+    """
+
+    labelFontString = settings.value("global/labelFont").toString()
+
+    font = QFont()
+    if not font.fromString(labelFontString):
+        print("Error: Failed to retrieve label font from settings.")
+
+    return font
+
+
+
+def set_label_font(settings, newLabelFont):
+    """
+    Helper function for extracting the currently label font
+    from settings.
+    """
+
+    fontString = newLabelFont.toString()
+    settings.setValue( "global/labelFont", fontString)
+
+
+
+def get_legend_font(settings):
+    """
+    Helper function for extracting the currently legend font
+    from settings.
+    """
+
+    legendFontString = settings.value("global/legendFont").toString()
+
+    font = QFont()
+    if not font.fromString(legendFontString):
+        print("Error: Failed to retrieve legend font from settings.")
+
+    return font
+
+
+
+def set_legend_font(settings, newLegendFont):
+    """
+    Helper function for extracting the currently legend font
+    from settings.
+    """
+
+    fontString = newLegendFont.toString()
+    settings.setValue( "global/legendFont", fontString)
+
+

@@ -75,6 +75,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__settings = self.__restore_settings()
         self.__colorWidget  = None
+        self.__preferencesDialog = None
 
         self.clear_project_save_file()
 
@@ -538,9 +539,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def open_preferences_dialog(self):
         """ Open the preferences dialog. """
 
-        print("are here")
-        foo = PreferencesDialog(self)
-        foo.exec_()
+        
+        if not self.__preferencesDialog:
+            self.__preferencesDialog = PreferencesDialog(self.__settings, self)
+            
+            self.connect(self.__preferencesDialog, 
+                         SIGNAL("label_font_changed"),
+                         self.__canvas.label_font_changed)
+
+            self.connect(self.__preferencesDialog, 
+                         SIGNAL("legend_font_changed"),
+                         self.__canvas.legend_font_changed)
+        
+        self.__preferencesDialog.raise_()
+        self.__preferencesDialog.show()
 
 
 
@@ -559,7 +571,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__saveFilePath = None
         self.setWindowTitle(QApplication.applicationName() + ": "\
-                            + misc.get_random_window_title() + "[*]")
+                            + misc.get_random_knitting_quote() + "[*]")
 
 
 

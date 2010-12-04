@@ -26,6 +26,7 @@ from __future__ import absolute_import
 
 import operator
 from functools import partial
+
 from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF, 
                           SIGNAL, QObject, QString, QPoint, QRect)
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
@@ -33,7 +34,9 @@ from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor,
                          QAction, QGraphicsItem, QMessageBox, 
                          QGraphicsItemGroup)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
-from util.settings import get_grid_dimensions, get_text_font
+
+from util.settings import (get_grid_dimensions, get_label_font,
+                           get_legend_font)
 from util.canvas import (is_click_in_grid, is_click_on_labels, 
                             convert_pos_to_row_col)
 from gui.insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
@@ -72,10 +75,11 @@ class PatternCanvas(QGraphicsScene):
         self.__numRows     = 10
         self.__numColumns  = 10
 
-        self.__textFont    = get_text_font(theSettings)
+        self.__labelFont    = get_label_font(self.settings)
+        self.__legendFont   = get_legend_font(self.settings)
         self.__textLabels  = []
 
-        self.addDeleteRowColDialog = None
+        self.insertDeleteRowColDialog = None
 
         self.gridLegend = {}
 
@@ -106,7 +110,7 @@ class PatternCanvas(QGraphicsScene):
             self.removeItem(label)
         self.__textLabels = []
             
-        fm = QFontMetrics(self.__textFont)
+        fm = QFontMetrics(self.__labelFont)
         
         # row labels
         xPos = self.__unitWidth * self.__numColumns
@@ -115,7 +119,7 @@ class PatternCanvas(QGraphicsScene):
 
             yPos = self.__unitHeight * row
             item.setPos(xPos, yPos)
-            item.setFont(self.__textFont)
+            item.setFont(self.__labelFont)
             self.addItem(item)
             self.__textLabels.append(item)
 
@@ -128,7 +132,7 @@ class PatternCanvas(QGraphicsScene):
             
             xPos = self.__unitWidth * col + (self.__unitWidth * 0.6 -textWidth)
             item.setPos(xPos, yPos)
-            item.setFont(self.__textFont)
+            item.setFont(self.__labelFont)
 
             self.addItem(item)
             self.__textLabels.append(item)
@@ -205,6 +209,7 @@ class PatternCanvas(QGraphicsScene):
         textItem.setFlag(QGraphicsItem.ItemIsMovable)
         textItem.setTextInteractionFlags(Qt.TextEditorInteraction);
         textItem.setPlainText(symbol["description"])
+        textItem.setFont(self.__legendFont)
         self.addItem(textItem)
 
         self.emit(SIGNAL("adjust_view"))
@@ -440,28 +445,31 @@ class PatternCanvas(QGraphicsScene):
         """
         This method manages the addition and deletion of rows and columns
         via a widget.
+
+        NOTE: Make sure the signals are only connected *once* inside the
+        if. Otherwise weird things are bound to happen (like multiple
+        deletes, inserts, etc.)
         """
 
-        if not self.addDeleteRowColDialog:
-            self.addDeleteRowColDialog = \
+        if not self.insertDeleteRowColDialog:
+            self.insertDeleteRowColDialog = \
                 InsertDeleteRowColumnWidget(self.__numRows,
                                             self.__numColumns,
                                             row, col, self.parent())
+            self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_row"), 
+                         self.insert_grid_row)
+            self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_row"), 
+                         self.delete_grid_row)
+            self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_column"), 
+                         self.insert_grid_column)
+            self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_column"), 
+                         self.delete_grid_column)
         else:
-            self.addDeleteRowColDialog.set_row_col(row,col)
+            self.insertDeleteRowColDialog.set_row_col(row,col)
 
 
-        self.connect(self.addDeleteRowColDialog, SIGNAL("insert_row"), 
-                     self.insert_grid_row)
-        self.connect(self.addDeleteRowColDialog, SIGNAL("delete_row"), 
-                     self.delete_grid_row)
-        self.connect(self.addDeleteRowColDialog, SIGNAL("insert_column"), 
-                     self.insert_grid_column)
-        self.connect(self.addDeleteRowColDialog, SIGNAL("delete_column"), 
-                     self.delete_grid_column)
-
-        self.addDeleteRowColDialog.raise_()
-        self.addDeleteRowColDialog.show()
+        self.insertDeleteRowColDialog.raise_()
+        self.insertDeleteRowColDialog.show()
 
 
 
@@ -513,7 +521,7 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
         self.emit(SIGNAL("adjust_view"))
         self.emit(SIGNAL("scene_changed"))
-        self.addDeleteRowColDialog.set_upper_row_limit(self.__numRows)
+        self.insertDeleteRowColDialog.set_upper_row_limit(self.__numRows)
 
 
 
@@ -536,7 +544,7 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
         self.emit(SIGNAL("adjust_view"))
         self.emit(SIGNAL("scene_changed"))
-        self.addDeleteRowColDialog.set_upper_row_limit(self.__numRows)
+        self.insertDeleteRowColDialog.set_upper_row_limit(self.__numRows)
         
 
 
@@ -593,7 +601,7 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
         self.emit(SIGNAL("adjust_view"))
         self.emit(SIGNAL("scene_changed"))
-        self.addDeleteRowColDialog.set_upper_column_limit(self.__numColumns)
+        self.insertDeleteRowColDialog.set_upper_column_limit(self.__numColumns)
 
 
 
@@ -631,7 +639,7 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_labels()
         self.emit(SIGNAL("adjust_view"))
         self.emit(SIGNAL("scene_changed"))
-        self.addDeleteRowColDialog.set_upper_column_limit(self.__numColumns)
+        self.insertDeleteRowColDialog.set_upper_column_limit(self.__numColumns)
 
 
 
@@ -718,7 +726,7 @@ class PatternCanvas(QGraphicsScene):
         # we probably should add a dialog here
         self.__numRows    = numRows
         self.__numColumns = numColumns
-        self.addDeleteRowColDialog = None
+        self.insertDeleteRowColDialog = None
         
         self.__clear_canvas()
         self.__textLabels = []
@@ -823,6 +831,17 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def label_font_changed(self):
+        """ This slot is called when the label font has
+        been changed.
+        """
+        
+        self.__labelFont = get_label_font(self.settings)
+        for item in self.items():
+            if isinstance(item, PatternLabelItem):
+                item.setFont(self.__labelFont)
+                
+
 
     def toggle_legend_visibility(self, status):
         """
@@ -839,7 +858,17 @@ class PatternCanvas(QGraphicsScene):
             for item in self.gridLegend.values():
                 legendItem_symbol(item).hide()
                 legendItem_text(item).hide()
-            
+
+
+
+    def legend_font_changed(self):
+        """ This slot is called when the label font has
+        been changed.
+        """
+        
+        self.__legendFont = get_legend_font(self.settings)
+        for item in self.gridLegend.values():
+            legendItem_text(item).setFont(self.__legendFont)
 
 
 

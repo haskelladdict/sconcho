@@ -52,10 +52,10 @@ def wait_cursor(func):
     return wrapper
 
 
-def get_random_window_title():
+def get_random_knitting_quote():
     """ This function randomly picks a title from the list
     of available ones. """
 
-    num = len(msg.mainWindowTitles)
-    return (msg.mainWindowTitles[random.randint(0, num-1)])
+    num = len(msg.knittingQuotes)
+    return (msg.knittingQuotes[random.randint(0, num-1)])
 

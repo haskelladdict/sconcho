@@ -73,6 +73,9 @@
             </item>
            </layout>
           </item>
+          <item>
+           <widget class="QLineEdit" name="legendExampleText"/>
+          </item>
          </layout>
         </widget>
        </item>
@@ -101,7 +104,7 @@
          <property name="title">
           <string>Label Font</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="0" column="0">
@@ -115,7 +118,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QFontComboBox" name="labelFontComboBox_4"/>
+             <widget class="QFontComboBox" name="labelFontComboBox"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_11">
@@ -144,6 +147,9 @@
              <widget class="QComboBox" name="labelSizeComboBox"/>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="labelExampleText"/>
           </item>
          </layout>
         </widget>
@@ -222,7 +228,7 @@
    <sender>pushButton</sender>
    <signal>clicked()</signal>
    <receiver>PreferencesDialog</receiver>
-   <slot>close()</slot>
+   <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>368</x>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferencesDialog.ui'
 #
-# Created: Sat Dec  4 12:23:49 2010
+# Created: Sat Dec  4 15:56:56 2010
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -54,6 +54,9 @@ class Ui_PreferencesDialog(object):
         self.legendSizeComboBox.setObjectName(_fromUtf8("legendSizeComboBox"))
         self.gridLayout.addWidget(self.legendSizeComboBox, 2, 1, 1, 1)
         self.verticalLayout_4.addLayout(self.gridLayout)
+        self.legendExampleText = QtGui.QLineEdit(self.groupBox)
+        self.legendExampleText.setObjectName(_fromUtf8("legendExampleText"))
+        self.verticalLayout_4.addWidget(self.legendExampleText)
         self.verticalLayout_2.addWidget(self.groupBox)
         spacerItem = QtGui.QSpacerItem(20, 74, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem)
@@ -64,17 +67,17 @@ class Ui_PreferencesDialog(object):
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.groupBox_2 = QtGui.QGroupBox(self.labelTab)
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
-        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.groupBox_2)
-        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.verticalLayout_5 = QtGui.QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
         self.gridLayout_3 = QtGui.QGridLayout()
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         self.label_10 = QtGui.QLabel(self.groupBox_2)
         self.label_10.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_10.setObjectName(_fromUtf8("label_10"))
         self.gridLayout_3.addWidget(self.label_10, 0, 0, 1, 1)
-        self.labelFontComboBox_4 = QtGui.QFontComboBox(self.groupBox_2)
-        self.labelFontComboBox_4.setObjectName(_fromUtf8("labelFontComboBox_4"))
-        self.gridLayout_3.addWidget(self.labelFontComboBox_4, 0, 1, 1, 1)
+        self.labelFontComboBox = QtGui.QFontComboBox(self.groupBox_2)
+        self.labelFontComboBox.setObjectName(_fromUtf8("labelFontComboBox"))
+        self.gridLayout_3.addWidget(self.labelFontComboBox, 0, 1, 1, 1)
         self.label_11 = QtGui.QLabel(self.groupBox_2)
         self.label_11.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_11.setObjectName(_fromUtf8("label_11"))
@@ -89,7 +92,10 @@ class Ui_PreferencesDialog(object):
         self.labelSizeComboBox = QtGui.QComboBox(self.groupBox_2)
         self.labelSizeComboBox.setObjectName(_fromUtf8("labelSizeComboBox"))
         self.gridLayout_3.addWidget(self.labelSizeComboBox, 2, 1, 1, 1)
-        self.horizontalLayout_2.addLayout(self.gridLayout_3)
+        self.verticalLayout_5.addLayout(self.gridLayout_3)
+        self.labelExampleText = QtGui.QLineEdit(self.groupBox_2)
+        self.labelExampleText.setObjectName(_fromUtf8("labelExampleText"))
+        self.verticalLayout_5.addWidget(self.labelExampleText)
         self.verticalLayout.addWidget(self.groupBox_2)
         self.groupBox_3 = QtGui.QGroupBox(self.labelTab)
         self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
@@ -120,7 +126,7 @@ class Ui_PreferencesDialog(object):
 
         self.retranslateUi(PreferencesDialog)
         self.tabWidget.setCurrentIndex(0)
-        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), PreferencesDialog.close)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), PreferencesDialog.hide)
         QtCore.QMetaObject.connectSlotsByName(PreferencesDialog)
 
     def retranslateUi(self, PreferencesDialog):
