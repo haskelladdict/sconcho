@@ -36,7 +36,7 @@ from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor,
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 
 from util.settings import (get_grid_dimensions, get_label_font,
-                           get_legend_font)
+                           get_legend_font, get_label_interval)
 from util.canvas import (is_click_in_grid, is_click_on_labels, 
                             convert_pos_to_row_col)
 from gui.insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
@@ -104,7 +104,12 @@ class PatternCanvas(QGraphicsScene):
         FIXME: This function currently recreates all labels instead
         of just shifting around existing ones. The latter should
         probably be more efficient.
+
+        NOTE: The ranges below are somewhat weird because we count
+        backward.
         """
+
+        interval = get_label_interval(self.settings)
 
         for label in self.__textLabels:
             self.removeItem(label)
@@ -114,7 +119,7 @@ class PatternCanvas(QGraphicsScene):
         
         # row labels
         xPos = self.__unitWidth * self.__numColumns
-        for row in range(0, self.__numRows):
+        for row in range(self.__numRows - 1, -1, -interval):
             item = PatternLabelItem(unicode(self.__numRows - row))
 
             yPos = self.__unitHeight * row
@@ -125,7 +130,7 @@ class PatternCanvas(QGraphicsScene):
 
         # column labels
         yPos = self.__unitHeight * self.__numRows
-        for col in range(0, self.__numColumns):
+        for col in range(self.__numColumns - 1, -1, -interval):
             labelText = QString(unicode(self.__numColumns - col))
             textWidth = fm.width(labelText)
             item = PatternLabelItem(labelText)

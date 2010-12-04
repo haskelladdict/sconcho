@@ -133,7 +133,7 @@ errorLoadingLegendText = ("Could not load legend from "
 knittingQuotes = [QString("Oops, I charted ...."),
                   QString("Chart this!"),
                   QString("Happy knitting!"),
-                  QString("Pearls before swine"),
+                  QString("Purls before swine"),
                   QString("Knit happens"),
                   QString("Knit or die!")]
 

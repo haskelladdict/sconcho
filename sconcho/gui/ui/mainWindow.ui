@@ -441,7 +441,7 @@
      <normaloff>:/icons/gtk-preferences.png</normaloff>:/icons/gtk-preferences.png</iconset>
    </property>
    <property name="text">
-    <string>Preferences</string>
+    <string>P&amp;references</string>
    </property>
   </action>
  </widget>

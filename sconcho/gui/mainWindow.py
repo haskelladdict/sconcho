@@ -207,6 +207,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionFit, SIGNAL("triggered()"),
                      self.graphicsView.fit_scene)
 
+
+
     def __set_up_timers(self):
         """
         Set up timers.
@@ -550,6 +552,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.connect(self.__preferencesDialog, 
                          SIGNAL("legend_font_changed"),
                          self.__canvas.legend_font_changed)
+
+            self.connect(self.__preferencesDialog, 
+                         SIGNAL("label_interval_changed"),
+                         self.__canvas.set_up_labels)
+
         
         self.__preferencesDialog.raise_()
         self.__preferencesDialog.show()

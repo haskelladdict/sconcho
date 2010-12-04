@@ -34,46 +34,43 @@ GRID_CELL_HEIGHT = "30"
 
 
 def initialize(settings):
-    """
-    Initializes some basic settings if none exist.
-    """
+    """ Initializes some basic settings if none exist. """
 
-    preferenceFont = settings.value( "global/font" ).toString()
-    if preferenceFont.isEmpty():
-      settings.setValue( "global/font", "Arial,10,-1,5,50,0,0,0,0,0" )
-
-    labelFont = settings.value( "global/labelFont" ).toString()
+    labelFont = settings.value("global/labelFont" ).toString()
     if labelFont.isEmpty():
-      settings.setValue( "global/labelFont", "Arial,10,-1,5,50,0,0,0,0,0" )
+      settings.setValue("global/labelFont", "Arial,10,-1,5,50,0,0,0,0,0")
 
     legendFont = settings.value( "global/legendFont" ).toString()
-    if preferenceFont.isEmpty():
-      settings.setValue( "global/legendFont", "Arial,10,-1,5,50,0,0,0,0,0" )
+    if legendFont.isEmpty():
+      settings.setValue("global/legendFont", "Arial,10,-1,5,50,0,0,0,0,0")
 
     exportPatternGrid =  \
-        settings.value( "global/exportPatternGrid" ).toString()
+        settings.value("global/exportPatternGrid").toString()
     if exportPatternGrid.isEmpty():
-        settings.setValue( "global/exportPatternGrid", "True" )
+        settings.setValue("global/exportPatternGrid", "True")
 
-    exportLegend = settings.value( "global/exportLegend" ).toString()
+    exportLegend = settings.value("global/exportLegend").toString()
     if exportLegend.isEmpty():
-        settings.setValue( "global/exportLegend", "True" )
+        settings.setValue("global/exportLegend", "True")
 
-    cellWidth = settings.value( "global/cellWidth" ).toString()
+    labelInterval = settings.value("global/labelInterval").toString()
+    if labelInterval.isEmpty():
+        settings.setValue("global/labelInterval", "1")
+
+    cellWidth = settings.value("global/cellWidth").toString()
     if cellWidth.isEmpty():
         defaultWidth = QString(GRID_CELL_WIDTH)
-        settings.setValue( "global/cellWidth", defaultWidth )
+        settings.setValue("global/cellWidth", defaultWidth )
 
-    cellHeight = settings.value( "global/cellHeight" ).toString()
+    cellHeight = settings.value("global/cellHeight").toString()
     if cellHeight.isEmpty():
         defaultHeight = QString(GRID_CELL_HEIGHT)
-        settings.setValue( "global/cellHeight", defaultHeight )
+        settings.setValue("global/cellHeight", defaultHeight)
 
 
 
 def get_grid_dimensions(settings):
-    """
-    Helper function returning a tuple with width and height
+    """ Helper function returning a tuple with width and height
     for grid cells.
     """
 
@@ -90,8 +87,7 @@ def get_grid_dimensions(settings):
 
 
 def get_text_font(settings):
-    """
-    Helper function for extracting the currently selected text font
+    """ Helper function for extracting the currently selected text font
     from settings.
     """
 
@@ -106,8 +102,7 @@ def get_text_font(settings):
 
 
 def get_label_font(settings):
-    """
-    Helper function for extracting the currently label font
+    """ Helper function for extracting the currently label font
     from settings.
     """
 
@@ -122,8 +117,7 @@ def get_label_font(settings):
 
 
 def set_label_font(settings, newLabelFont):
-    """
-    Helper function for extracting the currently label font
+    """ Helper function for extracting the currently label font
     from settings.
     """
 
@@ -133,8 +127,7 @@ def set_label_font(settings, newLabelFont):
 
 
 def get_legend_font(settings):
-    """
-    Helper function for extracting the currently legend font
+    """ Helper function for extracting the currently legend font
     from settings.
     """
 
@@ -149,12 +142,36 @@ def get_legend_font(settings):
 
 
 def set_legend_font(settings, newLegendFont):
-    """
-    Helper function for extracting the currently legend font
+    """ Helper function for extracting the currently legend font
     from settings.
     """
 
     fontString = newLegendFont.toString()
-    settings.setValue( "global/legendFont", fontString)
+    settings.setValue("global/legendFont", fontString)
+
+
+
+def get_label_interval(settings):
+    """ Helper function for extracting the currentl interval
+    with which the labels are spaced.
+    """
+
+    legendIntervalString = settings.value("global/labelInterval").toString()
+    (legendInterval, status) = legendIntervalString.toInt()
+
+    if not status:
+        return 1
+
+    return legendInterval
+
+
+
+def set_label_interval(settings, interval):
+    """ Helper function for extracting the currentl interval
+    with which the labels are spaced.
+    """
+
+    settings.setValue("global/labelInterval", QString(unicode(interval)))
+
 
 

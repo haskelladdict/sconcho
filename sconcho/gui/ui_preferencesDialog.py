@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferencesDialog.ui'
 #
-# Created: Sat Dec  4 15:56:56 2010
+# Created: Sat Dec  4 17:39:36 2010
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -106,9 +106,11 @@ class Ui_PreferencesDialog(object):
         self.label_13 = QtGui.QLabel(self.groupBox_3)
         self.label_13.setObjectName(_fromUtf8("label_13"))
         self.horizontalLayout_3.addWidget(self.label_13)
-        self.comboBox = QtGui.QComboBox(self.groupBox_3)
-        self.comboBox.setObjectName(_fromUtf8("comboBox"))
-        self.horizontalLayout_3.addWidget(self.comboBox)
+        self.labelIntervalSpinner = QtGui.QSpinBox(self.groupBox_3)
+        self.labelIntervalSpinner.setMinimum(1)
+        self.labelIntervalSpinner.setMaximum(10)
+        self.labelIntervalSpinner.setObjectName(_fromUtf8("labelIntervalSpinner"))
+        self.horizontalLayout_3.addWidget(self.labelIntervalSpinner)
         self.horizontalLayout_4.addLayout(self.horizontalLayout_3)
         self.verticalLayout.addWidget(self.groupBox_3)
         self.tabWidget.addTab(self.labelTab, _fromUtf8(""))
@@ -125,7 +127,7 @@ class Ui_PreferencesDialog(object):
         self.verticalLayout_3.addLayout(self.horizontalLayout)
 
         self.retranslateUi(PreferencesDialog)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), PreferencesDialog.hide)
         QtCore.QMetaObject.connectSlotsByName(PreferencesDialog)
 
@@ -140,7 +142,7 @@ class Ui_PreferencesDialog(object):
         self.label_10.setText(QtGui.QApplication.translate("PreferencesDialog", "Family", None, QtGui.QApplication.UnicodeUTF8))
         self.label_11.setText(QtGui.QApplication.translate("PreferencesDialog", "Style", None, QtGui.QApplication.UnicodeUTF8))
         self.label_12.setText(QtGui.QApplication.translate("PreferencesDialog", "Size", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_3.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Label Interval", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_3.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Label Properties", None, QtGui.QApplication.UnicodeUTF8))
         self.label_13.setText(QtGui.QApplication.translate("PreferencesDialog", "Interval", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.labelTab), QtGui.QApplication.translate("PreferencesDialog", "Labels", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))

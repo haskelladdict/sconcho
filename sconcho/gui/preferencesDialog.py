@@ -29,7 +29,8 @@ from PyQt4.QtGui import (QDialog, QFontDatabase)
 
 import util.misc as misc
 from util.settings import (get_label_font, get_legend_font, 
-                           set_legend_font, set_label_font)
+                           set_legend_font, set_label_font,
+                           get_label_interval, set_label_interval)
 from gui.ui_preferencesDialog import Ui_PreferencesDialog
 
 
@@ -50,6 +51,29 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.setupUi(self)
 
         self.settings = settings
+        self.set_up_font_selectors()
+        self.set_up_label_interval_selector()
+
+
+
+    def set_up_font_selectors(self):
+        """ Extract the currently active font.
+
+        Extract the font for labels and legend and set up
+        the font selectors correspondingly.
+        """
+
+        legendFont = get_legend_font(self.settings)
+        self.legendFontComboBox.setCurrentFont(legendFont)
+        self.legendExampleText.setText(misc.get_random_knitting_quote())
+        self.legendExampleText.setFont(legendFont)
+        self.update_legend_font_display(legendFont)
+
+        labelFont = get_label_font(self.settings)
+        self.labelFontComboBox.setCurrentFont(labelFont)
+        self.labelExampleText.setText(misc.get_random_knitting_quote())
+        self.labelExampleText.setFont(labelFont)
+        self.update_label_font_display(labelFont)
 
         self.connect(self.legendFontComboBox, 
                      SIGNAL("currentFontChanged(QFont)"),
@@ -59,10 +83,6 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      SIGNAL("currentFontChanged(QFont)"),
                      self.update_label_font_display)
 
-        self.set_up_font_selectors()
-
-        # connect these slots after updating the font selectors
-        # otherwise they will be called multiple times initially
         self.connect(self.legendFontComboBox, 
                      SIGNAL("currentIndexChanged(int)"),
                      self.update_current_legend_font)
@@ -86,26 +106,6 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.connect(self.labelSizeComboBox, 
                      SIGNAL("currentIndexChanged(int)"),
                      self.update_current_label_font)
-
-
-
-
-    def set_up_font_selectors(self):
-        """ Extract the currently active font.
-
-        Extract the font for labels and legend and set up
-        the font selectors correspondingly.
-        """
-
-        legendFont = get_legend_font(self.settings)
-        self.legendFontComboBox.setCurrentFont(legendFont)
-        self.legendExampleText.setText(misc.get_random_knitting_quote())
-        self.legendExampleText.setFont(legendFont)
-
-        labelFont = get_label_font(self.settings)
-        self.labelFontComboBox.setCurrentFont(labelFont)
-        self.labelExampleText.setText(misc.get_random_knitting_quote())
-        self.labelExampleText.setFont(labelFont)
 
 
 
@@ -236,3 +236,20 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.emit(SIGNAL("label_font_changed"))
 
 
+
+    def set_up_label_interval_selector(self):
+        """ Sets up the label interval selector. """
+       
+        interval = get_label_interval(self.settings)
+        self.labelIntervalSpinner.setValue(interval)
+        self.connect(self.labelIntervalSpinner,
+                     SIGNAL("valueChanged(int)"),
+                     self.change_label_interval)
+
+
+
+    def change_label_interval(self, interval):
+        """ Sets the new label interval and lets the canvas know. """
+
+        set_label_interval(self.settings, interval)
+        self.emit(SIGNAL("label_interval_changed"))
