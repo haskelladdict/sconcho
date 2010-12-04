@@ -80,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>1137</width>
-     <height>26</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -95,6 +95,8 @@
     <addaction name="actionExport"/>
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrefs"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -431,6 +433,15 @@
    </property>
    <property name="text">
     <string>Sconcho Manual</string>
+   </property>
+  </action>
+  <action name="actionPrefs">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/gtk-preferences.png</normaloff>:/icons/gtk-preferences.png</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences</string>
    </property>
   </action>
  </widget>

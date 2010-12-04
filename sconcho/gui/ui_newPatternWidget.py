@@ -2,53 +2,58 @@
 
 # Form implementation generated from reading ui file 'ui/newPatternWidget.ui'
 #
-# Created: Fri Nov 26 16:36:32 2010
-#      by: PyQt4 UI code generator 4.7.4
+# Created: Sat Dec  4 12:23:49 2010
+#      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
 
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    _fromUtf8 = lambda s: s
+
 class Ui_NewPatternWidget(object):
     def setupUi(self, NewPatternWidget):
-        NewPatternWidget.setObjectName("NewPatternWidget")
+        NewPatternWidget.setObjectName(_fromUtf8("NewPatternWidget"))
         NewPatternWidget.resize(288, 178)
         self.verticalLayout = QtGui.QVBoxLayout(NewPatternWidget)
-        self.verticalLayout.setObjectName("verticalLayout")
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label = QtGui.QLabel(NewPatternWidget)
-        self.label.setObjectName("label")
+        self.label.setObjectName(_fromUtf8("label"))
         self.verticalLayout.addWidget(self.label)
         self.gridLayout = QtGui.QGridLayout()
-        self.gridLayout.setObjectName("gridLayout")
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.label_2 = QtGui.QLabel(NewPatternWidget)
-        self.label_2.setObjectName("label_2")
+        self.label_2.setObjectName(_fromUtf8("label_2"))
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
         self.rowSpinner = QtGui.QSpinBox(NewPatternWidget)
         self.rowSpinner.setMaximum(10000)
-        self.rowSpinner.setProperty("value", 10)
-        self.rowSpinner.setObjectName("rowSpinner")
+        self.rowSpinner.setProperty(_fromUtf8("value"), 10)
+        self.rowSpinner.setObjectName(_fromUtf8("rowSpinner"))
         self.gridLayout.addWidget(self.rowSpinner, 0, 1, 1, 1)
         self.label_3 = QtGui.QLabel(NewPatternWidget)
-        self.label_3.setObjectName("label_3")
+        self.label_3.setObjectName(_fromUtf8("label_3"))
         self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
         self.columnSpinner = QtGui.QSpinBox(NewPatternWidget)
         self.columnSpinner.setMaximum(1000)
-        self.columnSpinner.setProperty("value", 10)
-        self.columnSpinner.setObjectName("columnSpinner")
+        self.columnSpinner.setProperty(_fromUtf8("value"), 10)
+        self.columnSpinner.setObjectName(_fromUtf8("columnSpinner"))
         self.gridLayout.addWidget(self.columnSpinner, 1, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         spacerItem = QtGui.QSpacerItem(20, 16, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
         self.buttonBox = QtGui.QDialogButtonBox(NewPatternWidget)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
+        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.verticalLayout.addWidget(self.buttonBox)
         self.label_2.setBuddy(self.rowSpinner)
         self.label_3.setBuddy(self.columnSpinner)
 
         self.retranslateUi(NewPatternWidget)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), NewPatternWidget.accept)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), NewPatternWidget.close)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), NewPatternWidget.accept)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), NewPatternWidget.close)
         QtCore.QMetaObject.connectSlotsByName(NewPatternWidget)
 
     def retranslateUi(self, NewPatternWidget):

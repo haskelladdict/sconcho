@@ -47,6 +47,7 @@ from gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from gui.patternCanvas import PatternCanvas
 from gui.exportBitmapWidget import ExportBitmapWidget
 from gui.newPatternWidget import NewPatternWidget
+from gui.preferencesDialog import PreferencesDialog
 from gui.sconchoManual import SconchoManual
 from util.exceptions import PatternReadError
 
@@ -162,6 +163,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionNew, SIGNAL("triggered()"),
                      self.new_pattern_dialog)
 
+        self.connect(self.actionPrefs, SIGNAL("triggered()"),
+                     self.open_preferences_dialog)
+
         self.connect(self.actionSave, SIGNAL("triggered()"),
                      partial(self.save_pattern_dialog, "save"))
 
@@ -175,7 +179,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.export_pattern_dialog)
 
         self.connect(self.actionPrint, SIGNAL("triggered()"),
-                     self.print_dialog)
+                     self.open_print_dialog)
 
         self.connect(self.actionShow_grid_labels, SIGNAL("toggled(bool)"),
                      self.__canvas.toggle_label_visibility)
@@ -522,13 +526,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def print_dialog(self):
+    def open_print_dialog(self):
         """
         This member function calls print routine.
         """
 
         io.print_scene(self.__canvas)
         
+
+
+    def open_preferences_dialog(self):
+        """ Open the preferences dialog. """
+
+        print("are here")
+        foo = PreferencesDialog(self)
+        foo.exec_()
+
 
 
     def set_project_save_file(self, fileName):

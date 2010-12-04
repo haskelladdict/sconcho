@@ -2,33 +2,38 @@
 
 # Form implementation generated from reading ui file 'ui/sconchoManual.ui'
 #
-# Created: Fri Nov 26 16:36:33 2010
-#      by: PyQt4 UI code generator 4.7.4
+# Created: Sat Dec  4 12:23:49 2010
+#      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
 
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    _fromUtf8 = lambda s: s
+
 class Ui_SconchoManual(object):
     def setupUi(self, SconchoManual):
-        SconchoManual.setObjectName("SconchoManual")
+        SconchoManual.setObjectName(_fromUtf8("SconchoManual"))
         SconchoManual.resize(554, 545)
         self.verticalLayout = QtGui.QVBoxLayout(SconchoManual)
-        self.verticalLayout.setObjectName("verticalLayout")
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.helpBrowser = QtGui.QTextBrowser(SconchoManual)
-        self.helpBrowser.setObjectName("helpBrowser")
+        self.helpBrowser.setObjectName(_fromUtf8("helpBrowser"))
         self.verticalLayout.addWidget(self.helpBrowser)
         self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.pushButton = QtGui.QPushButton(SconchoManual)
-        self.pushButton.setObjectName("pushButton")
+        self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.horizontalLayout.addWidget(self.pushButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.retranslateUi(SconchoManual)
-        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL("clicked()"), SconchoManual.accept)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), SconchoManual.accept)
         QtCore.QMetaObject.connectSlotsByName(SconchoManual)
 
     def retranslateUi(self, SconchoManual):
