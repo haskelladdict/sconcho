@@ -78,7 +78,6 @@ class PatternCanvas(QGraphicsScene):
         self.addDeleteRowColDialog = None
 
         self.gridLegend = {}
-        self.extraLegend = []
 
         self.set_up_main_grid()
         self.set_up_labels()
@@ -175,19 +174,6 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def add_extra_symbol_to_legend(self, symbol):
-        """ Adds a symbol to the legend per user request. 
-
-        NOTE: This could be any symbol, especially one not
-        currently in the pattern grid. 
-        """
-
-        
-        (item, textItem) = self.__add_legend_item(symbol, QColor(Qt.white))
-        self.extraLegend.append((item, textItem))
-
-
-
     def __add_legend_item(self, symbol, color):
         """
         This adds a new legend entry including an PatternLegendItem
@@ -195,8 +181,7 @@ class PatternCanvas(QGraphicsScene):
         sort of smart about where to put the item.
         """
 
-        legendYmax = compute_max_legend_y_coordinate(self.gridLegend,
-                                                     self.extraLegend)
+        legendYmax = compute_max_legend_y_coordinate(self.gridLegend)
         canvasYmax = (self.__numRows + 1) * self.__unitHeight
 
         yMax = max(legendYmax, canvasYmax)
@@ -247,12 +232,6 @@ class PatternCanvas(QGraphicsScene):
             new_entry = change_count(entry, -1)
             self.gridLegend[legendID] = new_entry
 
-
-
-    def delete_legend_item(self, item):
-
-        print("deleter")
-        print(id(item))
 
 
     def clear_all_selected_cells(self):
@@ -1083,24 +1062,6 @@ class PatternLegendItem(QGraphicsSvgItem):
         
 
 
-    def mousePressEvent(self, event):
-        """
-        Handle user press events on the item.
-        """
-
-        if event.button() == Qt.RightButton:
-
-            ourScene = self.scene()
-            gridMenu = QMenu()
-            deleteAction = gridMenu.addAction("delete legend item")
-            self.connect(deleteAction, SIGNAL("triggered()"),
-                         partial(ourScene.delete_legend_item, self))
-            gridMenu.exec_(event.screenPos())
-
-
-        return QGraphicsItem.mousePressEvent(self, event)
-
-
 
     def paint(self, painter, option, widget):
         """
@@ -1318,7 +1279,7 @@ def shift_legend_right(legendList, numAdditionalColumns, unitCellWidth,
 
 
 
-def compute_max_legend_y_coordinate(gridLegend, extraLegend):
+def compute_max_legend_y_coordinate(gridLegend):
     """
     Given the current list of existing legend items
     figure out the largest y coordinate among them all.
@@ -1329,10 +1290,6 @@ def compute_max_legend_y_coordinate(gridLegend, extraLegend):
         yList.append(legendItem_symbol(item).scenePos().y())
         yList.append(legendItem_text(item).scenePos().y())
 
-    for item in extraLegend:
-        yList.append(item[0].scenePos().y())
-        yList.append(item[1].scenePos().y())
-    
     return max(yList)
 
 
