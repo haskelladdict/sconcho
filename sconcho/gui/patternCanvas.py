@@ -30,7 +30,8 @@ from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF,
                           SIGNAL, QObject, QString, QPoint, QRect)
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
-                         QAction, QGraphicsItem, QMessageBox, QRubberBand)
+                         QAction, QGraphicsItem, QMessageBox, 
+                         QGraphicsItemGroup)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 from util.settings import get_grid_dimensions, get_text_font
 from util.canvas import (is_click_in_grid, is_click_on_labels, 
@@ -56,7 +57,7 @@ class PatternCanvas(QGraphicsScene):
 
         self.setBackgroundBrush(QBrush(Qt.white))
 
-        self.__settings = theSettings
+        self.settings = theSettings
 
         self.__activeSymbol  = None
         self.__defaultSymbol = defaultSymbol
@@ -76,7 +77,8 @@ class PatternCanvas(QGraphicsScene):
 
         self.addDeleteRowColDialog = None
 
-        self.legend = {}
+        self.gridLegend = {}
+        self.extraLegend = []
 
         self.set_up_main_grid()
         self.set_up_labels()
@@ -163,13 +165,13 @@ class PatternCanvas(QGraphicsScene):
         """
 
         legendID = generate_legend_id(item.symbol, item.color)
-        if legendID in self.legend:
-            entry = self.legend[legendID]
+        if legendID in self.gridLegend:
+            entry = self.gridLegend[legendID]
             new_entry = change_count(entry, 1)
-            self.legend[legendID] = new_entry
+            self.gridLegend[legendID] = new_entry
         else:
             (item, textItem) = self.__add_legend_item(item.symbol, item.color)
-            self.legend[legendID] = [1, item, textItem]
+            self.gridLegend[legendID] = [1, item, textItem]
 
 
 
@@ -177,14 +179,12 @@ class PatternCanvas(QGraphicsScene):
         """ Adds a symbol to the legend per user request. 
 
         NOTE: This could be any symbol, especially one not
-        currently in the pattern grid. In order to distinguisht 
+        currently in the pattern grid. 
         """
 
         
-        print(symbol["name"])
-
-
-
+        (item, textItem) = self.__add_legend_item(symbol, QColor(Qt.white))
+        self.extraLegend.append((item, textItem))
 
 
 
@@ -195,7 +195,8 @@ class PatternCanvas(QGraphicsScene):
         sort of smart about where to put the item.
         """
 
-        legendYmax = compute_max_legend_y_coordinate(self.legend)
+        legendYmax = compute_max_legend_y_coordinate(self.gridLegend,
+                                                     self.extraLegend)
         canvasYmax = (self.__numRows + 1) * self.__unitHeight
 
         yMax = max(legendYmax, canvasYmax)
@@ -222,7 +223,7 @@ class PatternCanvas(QGraphicsScene):
         self.addItem(textItem)
 
         self.emit(SIGNAL("adjust_view"))
-        
+       
         return (item, textItem)
 
 
@@ -235,18 +236,23 @@ class PatternCanvas(QGraphicsScene):
 
 
         legendID = generate_legend_id(item.symbol, item.color)
-        assert(legendID in self.legend)
+        assert(legendID in self.gridLegend)
 
-        entry = self.legend[legendID]
+        entry = self.gridLegend[legendID]
         if legendItem_count(entry) == 1:
             self.removeItem(legendItem_symbol(entry))
             self.removeItem(legendItem_text(entry))
-            del self.legend[legendID]
+            del self.gridLegend[legendID]
         else:
             new_entry = change_count(entry, -1)
-            self.legend[legendID] = new_entry
+            self.gridLegend[legendID] = new_entry
 
 
+
+    def delete_legend_item(self, item):
+
+        print("deleter")
+        print(id(item))
 
 
     def clear_all_selected_cells(self):
@@ -384,8 +390,8 @@ class PatternCanvas(QGraphicsScene):
             if is_click_in_grid(col, row, self.__numColumns, self.__numRows):
                 self.handle_right_click_on_grid(event, row, col)
 
-            # don't propagate this events
-            return
+                # don't propagate this event
+                return
 
         elif event.button() == Qt.LeftButton:
 
@@ -521,7 +527,7 @@ class PatternCanvas(QGraphicsScene):
         for row in range(0, num):
             self.__create_row(pivot + shift + row)
 
-        shift_legend_down(self.legend, num, self.__unitHeight,
+        shift_legend_down(self.gridLegend, num, self.__unitHeight,
                           self.__numColumns, self.__unitWidth)
         
         self.__numRows += num
@@ -601,7 +607,7 @@ class PatternCanvas(QGraphicsScene):
             self.__create_column(pivot + shift + column)
 
 
-        shift_legend_right(self.legend, num, self.__unitWidth,
+        shift_legend_right(self.gridLegend, num, self.__unitWidth,
                           self.__numRows, self.__unitHeight)
         
         self.__numColumns += num
@@ -720,7 +726,7 @@ class PatternCanvas(QGraphicsScene):
         self.update()
 
         # clear all caches
-        self.legend.clear()
+        self.gridLegend.clear()
 
 
 
@@ -809,7 +815,7 @@ class PatternCanvas(QGraphicsScene):
             self.addItem(item)
 
         for entry in allLegendItems:
-            arrange_label_item(self.legend, *entry)
+            arrange_label_item(self.gridLegend, *entry)
 
         # need to clear our label cache, otherwise set_up_labels()
         # will try to remove non-existing items
@@ -846,12 +852,12 @@ class PatternCanvas(QGraphicsScene):
         """
 
         if status:
-            for item in self.legend.values():
+            for item in self.gridLegend.values():
                 legendItem_symbol(item).show()
                 legendItem_text(item).show()
 
         else:
-            for item in self.legend.values():
+            for item in self.gridLegend.values():
                 legendItem_symbol(item).hide()
                 legendItem_text(item).hide()
             
@@ -1004,7 +1010,6 @@ class PatternGridItem(QGraphicsSvgItem):
         halfPen = self.__penSize * 0.5
         painter.drawRect(QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
                                                                  halfPen, halfPen))
-        painter.drawRect(QRectF(self.origin, self.size))
         self.renderer().render(painter, QRectF(self.origin, self.size))
 
 
@@ -1049,7 +1054,6 @@ class PatternLegendItem(QGraphicsSvgItem):
 
 
 
-
     def __set_symbol(self, newSymbol):
         """
         Adds a new svg image of a knitting symbol to the
@@ -1067,6 +1071,7 @@ class PatternLegendItem(QGraphicsSvgItem):
             self.color = QColor(newSymbol["backgroundColor"])
 
 
+
     def boundingRect(self):
         """
         Return the bounding rectangle of the item.
@@ -1076,6 +1081,25 @@ class PatternLegendItem(QGraphicsSvgItem):
         return QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
                                                        halfPen, halfPen)
         
+
+
+    def mousePressEvent(self, event):
+        """
+        Handle user press events on the item.
+        """
+
+        if event.button() == Qt.RightButton:
+
+            ourScene = self.scene()
+            gridMenu = QMenu()
+            deleteAction = gridMenu.addAction("delete legend item")
+            self.connect(deleteAction, SIGNAL("triggered()"),
+                         partial(ourScene.delete_legend_item, self))
+            gridMenu.exec_(event.screenPos())
+
+
+        return QGraphicsItem.mousePressEvent(self, event)
+
 
 
     def paint(self, painter, option, widget):
@@ -1294,16 +1318,20 @@ def shift_legend_right(legendList, numAdditionalColumns, unitCellWidth,
 
 
 
-def compute_max_legend_y_coordinate(legendList):
+def compute_max_legend_y_coordinate(gridLegend, extraLegend):
     """
     Given the current list of existing legend items
     figure out the largest y coordinate among them all.
     """
 
     yList = [0]
-    for item in legendList.values():
+    for item in gridLegend.values():
         yList.append(legendItem_symbol(item).scenePos().y())
         yList.append(legendItem_text(item).scenePos().y())
+
+    for item in extraLegend:
+        yList.append(item[0].scenePos().y())
+        yList.append(item[1].scenePos().y())
     
     return max(yList)
 
