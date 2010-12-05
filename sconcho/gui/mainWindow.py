@@ -55,7 +55,6 @@ from util.exceptions import PatternReadError
 __version__ = "0.1.0_a5"
 
 
-
 #######################################################################
 #
 #
@@ -73,7 +72,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-        self.__settings = self.__restore_settings()
+        self.settings = self.__restore_settings()
         self.__colorWidget  = None
         self.__preferencesDialog = None
 
@@ -86,7 +85,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__topLevelPath = topLevelPath
         self.__symbolPaths = [os.path.join(topLevelPath, "symbols")]
         knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
-        self.__canvas = PatternCanvas(self.__settings, 
+        self.__canvas = PatternCanvas(self.settings, 
                                       knittingSymbols[QString("basic::knit")],
                                       self)
         self.initialize_symbol_widget(knittingSymbols)
@@ -138,9 +137,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __save_settings(self):
         """ Save all settings. """
         
-        self.__settings.setValue("MainWindow/Size", QVariant(self.size()))
-        self.__settings.setValue("MainWindow/Position", QVariant(self.pos()))
-        self.__settings.setValue("MainWindow/State", QVariant(self.saveState()))
+        self.settings.setValue("MainWindow/Size", QVariant(self.size()))
+        self.settings.setValue("MainWindow/Position", QVariant(self.pos()))
+        self.settings.setValue("MainWindow/State", QVariant(self.saveState()))
 
 
                           
@@ -447,10 +446,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         saveFileName = QFileInfo(self.__saveFilePath).fileName()
         self.statusBar().showMessage("saving " + saveFileName)
 
-        (status, errMsg) = io.save_project_bin(self.__canvas, 
-                                         self.__colorWidget.get_all_colors(),
-                                         self.activeSymbolWidget.get_symbol(),
-                                         self.__saveFilePath)
+        (status, errMsg) = io.save_project(self.__canvas, 
+                                           self.__colorWidget.get_all_colors(),
+                                           self.activeSymbolWidget.get_symbol(),
+                                           self.settings, self.__saveFilePath)
 
         if not status:
             QMessageBox.critical(self, msg.errorSavingProjectTitle,
@@ -488,7 +487,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         (status, errMsg, patternGridItems, legendItems, colors, activeItem) = \
-                               io.read_project(readFilePath)
+                               io.read_project(self.settings, readFilePath)
            
         if not status:
             QMessageBox.critical(self, msg.errorOpeningProjectTitle,
@@ -507,6 +506,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         readFileName = QFileInfo(readFilePath).fileName()
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
         self.set_project_save_file(readFilePath)
+        self.set_project_clean()
 
 
 
@@ -543,21 +543,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         
         if not self.__preferencesDialog:
-            self.__preferencesDialog = PreferencesDialog(self.__settings, self)
+            self.__preferencesDialog = PreferencesDialog(self.settings, self)
             
             self.connect(self.__preferencesDialog, 
                          SIGNAL("label_font_changed"),
                          self.__canvas.label_font_changed)
 
             self.connect(self.__preferencesDialog, 
+                         SIGNAL("label_font_changed"),
+                         self.set_project_dirty)
+
+            self.connect(self.__preferencesDialog, 
                          SIGNAL("legend_font_changed"),
                          self.__canvas.legend_font_changed)
+
+            self.connect(self.__preferencesDialog, 
+                         SIGNAL("legend_font_changed"),
+                         self.set_project_dirty)
 
             self.connect(self.__preferencesDialog, 
                          SIGNAL("label_interval_changed"),
                          self.__canvas.set_up_labels)
 
-        
+            self.connect(self.__preferencesDialog, 
+                         SIGNAL("label_interval_changed"),
+                         self.set_project_dirty)
+
+       
         self.__preferencesDialog.raise_()
         self.__preferencesDialog.show()
 

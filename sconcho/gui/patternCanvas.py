@@ -75,8 +75,6 @@ class PatternCanvas(QGraphicsScene):
         self.__numRows     = 10
         self.__numColumns  = 10
 
-        self.__labelFont    = get_label_font(self.settings)
-        self.__legendFont   = get_legend_font(self.settings)
         self.__textLabels  = []
 
         self.insertDeleteRowColDialog = None
@@ -109,13 +107,15 @@ class PatternCanvas(QGraphicsScene):
         backward.
         """
 
-        interval = get_label_interval(self.settings)
+        interval  = get_label_interval(self.settings)
+        labelFont = get_label_font(self.settings)
 
         for label in self.__textLabels:
             self.removeItem(label)
         self.__textLabels = []
-            
-        fm = QFontMetrics(self.__labelFont)
+           
+
+        fm = QFontMetrics(labelFont)
         
         # row labels
         xPos = self.__unitWidth * self.__numColumns
@@ -124,7 +124,7 @@ class PatternCanvas(QGraphicsScene):
 
             yPos = self.__unitHeight * row
             item.setPos(xPos, yPos)
-            item.setFont(self.__labelFont)
+            item.setFont(labelFont)
             self.addItem(item)
             self.__textLabels.append(item)
 
@@ -137,7 +137,7 @@ class PatternCanvas(QGraphicsScene):
             
             xPos = self.__unitWidth * col + (self.__unitWidth * 0.6 -textWidth)
             item.setPos(xPos, yPos)
-            item.setFont(self.__labelFont)
+            item.setFont(labelFont)
 
             self.addItem(item)
             self.__textLabels.append(item)
@@ -214,7 +214,7 @@ class PatternCanvas(QGraphicsScene):
         textItem.setFlag(QGraphicsItem.ItemIsMovable)
         textItem.setTextInteractionFlags(Qt.TextEditorInteraction);
         textItem.setPlainText(symbol["description"])
-        textItem.setFont(self.__legendFont)
+        textItem.setFont(get_legend_font(self.settings))
         self.addItem(textItem)
 
         self.emit(SIGNAL("adjust_view"))
@@ -841,10 +841,10 @@ class PatternCanvas(QGraphicsScene):
         been changed.
         """
         
-        self.__labelFont = get_label_font(self.settings)
+        labelFont = get_label_font(self.settings)
         for item in self.items():
             if isinstance(item, PatternLabelItem):
-                item.setFont(self.__labelFont)
+                item.setFont(labelFont)
                 
 
 
@@ -871,9 +871,9 @@ class PatternCanvas(QGraphicsScene):
         been changed.
         """
         
-        self.__legendFont = get_legend_font(self.settings)
+        legendFont = get_legend_font(self.settings)
         for item in self.gridLegend.values():
-            legendItem_text(item).setFont(self.__legendFont)
+            legendItem_text(item).setFont(legendFont)
 
 
 

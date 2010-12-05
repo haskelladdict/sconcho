@@ -27,13 +27,17 @@ from __future__ import absolute_import
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
                           Qt, QRectF, QDataStream)
 from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
-                         QPrinter, QPrintDialog, QDialog)
+                         QPrinter, QPrintDialog, QDialog, QFont)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from gui.patternCanvas import (PatternGridItem, PatternLegendItem,
                                legendItem_symbol, legendItem_text)
 from util.misc import wait_cursor
 from util.exceptions import PatternReadError
 import util.messages as msg
+from util.settings import (get_label_font, get_legend_font,
+                           set_legend_font, set_label_font,
+                           get_label_interval, set_label_interval)
+
 
 # magick number to specify binary API
 MAGIC_NUMBER = 0xA3D1
@@ -46,12 +50,12 @@ API_VERSION  = 1
 #
 #############################################################################
 @wait_cursor
-def save_project_bin(canvas, colors, activeSymbol, saveFileName):
+def save_project(canvas, colors, activeSymbol, settings, saveFileName):
     """ Toplevel writer routine. """
 
     # prepare data structures
     patternGridItems = get_patternGridItems(canvas)
-    legendItems      = canvas.legend.values()
+    legendItems      = canvas.gridLegend.values()
 
     status = None
     handle = None
@@ -77,10 +81,11 @@ def save_project_bin(canvas, colors, activeSymbol, saveFileName):
             stream.writeInt32(0)
 
         # write content
-        write_patternGridItems_bin(stream, patternGridItems)
-        write_legendItems_bin(stream, legendItems)
-        write_colors_bin(stream, colors)
-        write_active_symbol_bin(stream, activeSymbol)
+        write_patternGridItems(stream, patternGridItems)
+        write_legendItems(stream, legendItems)
+        write_colors(stream, colors)
+        write_active_symbol(stream, activeSymbol)
+        write_settings(stream, settings)
 
     except (IOError, OSError) as e:
         status = "Failed to save: %s " % e
@@ -108,7 +113,7 @@ def get_patternGridItems(canvas):
 
 
 
-def write_patternGridItems_bin(stream, items):
+def write_patternGridItems(stream, items):
     """ Write all patternGridItems to our output stream """
 
     for item in items:
@@ -122,7 +127,7 @@ def write_patternGridItems_bin(stream, items):
 
 
 
-def write_legendItems_bin(stream, items):
+def write_legendItems(stream, items):
     """ Write all legendItems to our output stream. """
 
     for item in items:
@@ -141,7 +146,7 @@ def write_legendItems_bin(stream, items):
 
 
 
-def write_colors_bin(stream, items):
+def write_colors(stream, items):
     """ Write all colors to our output stream. """
     
     for (color, state) in items:
@@ -150,7 +155,7 @@ def write_colors_bin(stream, items):
 
 
 
-def write_active_symbol_bin(stream, activeSymbol):
+def write_active_symbol(stream, activeSymbol):
     """ Write the info regarding the active symbol """
 
     if activeSymbol:
@@ -158,6 +163,20 @@ def write_active_symbol_bin(stream, activeSymbol):
         stream << QString(activeSymbol["name"])
     else:
         stream << QString("None") << QString("None")
+
+
+
+def write_settings(stream, settings):
+    """ Write all settings such as fonts for labels and legend """
+
+    labelFont     = get_label_font(settings)
+    labelInterval = get_label_interval(settings)
+    legendFont    = get_legend_font(settings)
+
+    stream << labelFont
+    stream.writeInt32(labelInterval)
+    stream << legendFont
+
 
 
 
@@ -169,7 +188,7 @@ def write_active_symbol_bin(stream, activeSymbol):
 #
 #############################################################################
 @wait_cursor
-def read_project(openFileName):
+def read_project(settings, openFileName):
     """ Toplevel reader routine. """
 
     status = None
@@ -219,6 +238,7 @@ def read_project(openFileName):
         legendItems      = read_legendItems(stream, numLegendItems)
         colors           = read_colors(stream, numColors)
         activeSymbol     = read_active_symbol(stream)
+        read_settings(stream, settings)
 
 
     except (IOError, OSError) as e:
@@ -334,6 +354,26 @@ def read_active_symbol(stream):
         activeSymbol ["name"]     = name
 
     return activeSymbol
+
+
+
+def read_settings(stream, settings):
+    """ Write all settings such as fonts for labels and legend.
+    
+    NOTE: This function doesn't return anything and changes
+    the settings directly."""
+
+    labelFont     = QFont()
+    legendFont    = QFont()
+
+    stream >> labelFont
+    labelInterval = stream.readInt32()
+    stream >> legendFont
+
+    set_label_font(settings, labelFont)
+    set_label_interval(settings, labelInterval)
+    set_legend_font(settings, legendFont)
+
 
 
 
