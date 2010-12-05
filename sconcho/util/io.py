@@ -370,9 +370,16 @@ def read_settings(stream, settings):
     labelInterval = stream.readInt32()
     stream >> legendFont
 
-    set_label_font(settings, labelFont)
-    set_label_interval(settings, labelInterval)
-    set_legend_font(settings, legendFont)
+    # make sure we parsed something sensible before 
+    # touching the settings
+    if labelFont.family():
+        set_label_font(settings, labelFont)
+
+    if labelInterval != 0:
+        set_label_interval(settings, labelInterval)
+
+    if legendFont.family():
+        set_legend_font(settings, legendFont)
 
 
 
