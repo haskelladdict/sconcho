@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PyQt4.QtCore import (QSettings, QString, QSize)
-from PyQt4.QtGui import QFont
+from PyQt4.QtGui import (QFont, QFontDatabase)
 
 
 ### some global settings (is there a better way to do this)
@@ -121,8 +121,9 @@ def set_label_font(settings, newLabelFont):
     from settings.
     """
 
-    fontString = newLabelFont.toString()
-    settings.setValue( "global/labelFont", fontString)
+    if fontDatabase_has_font(newLabelFont):
+        fontString = newLabelFont.toString()
+        settings.setValue( "global/labelFont", fontString)
 
 
 
@@ -146,8 +147,9 @@ def set_legend_font(settings, newLegendFont):
     from settings.
     """
 
-    fontString = newLegendFont.toString()
-    settings.setValue("global/legendFont", fontString)
+    if fontDatabase_has_font(newLegendFont):
+        fontString = newLegendFont.toString()
+        settings.setValue("global/legendFont", fontString)
 
 
 
@@ -175,3 +177,12 @@ def set_label_interval(settings, interval):
 
 
 
+def fontDatabase_has_font(font):
+    """ This is helper function checks if a certain font family
+    exists on the current system.
+    """
+
+    fontDatabase = QFontDatabase()
+    families = fontDatabase.families()
+    
+    return families.contains(font.family())

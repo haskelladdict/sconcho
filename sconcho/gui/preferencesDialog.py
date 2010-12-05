@@ -136,7 +136,6 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         self.legendStyleComboBox.setCurrentIndex(targetStyleIndex)
 
-
         availableSizes  = fontDatabase.pointSizes(fontFamily)
         targetSize      = newLegendFont.pointSize()
         targetSizeIndex = 0
