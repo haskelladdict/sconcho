@@ -25,7 +25,8 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
-                          Qt, QRectF, QDataStream, QSize, QRect)
+                          Qt, QRectF, QDataStream, QSize, QRect, 
+                          QFileInfo)
 from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
                          QPrinter, QPrintDialog, QDialog, QFont)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
@@ -622,7 +623,7 @@ def parse_activeSymbol(node):
 #
 #############################################################################
 @wait_cursor
-def export_scene(canvas, width, height, exportFileName, svg = False):
+def export_scene(canvas, width, height, exportFileName):
     """
     This function exports the scene to a file.
     """
@@ -633,6 +634,10 @@ def export_scene(canvas, width, height, exportFileName, svg = False):
     margin = 10
     theScene = canvas.itemsBoundingRect()
     theScene.adjust(-margin, -margin, margin, margin)
+
+    # check if user requested an svg file
+    svg = True if QFileInfo(exportFileName).completeSuffix() == "svg" \
+            else False
 
     if svg:
         generator = QSvgGenerator()
