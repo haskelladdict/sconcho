@@ -25,10 +25,12 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
-                          Qt, QRectF, QDataStream)
+                          Qt, QRectF, QDataStream, QSize, QRect)
 from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
                          QPrinter, QPrintDialog, QDialog, QFont)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
+from PyQt4.QtSvg import QSvgGenerator
+
 from gui.patternCanvas import (PatternGridItem, PatternLegendItem,
                                legendItem_symbol, legendItem_text)
 from util.misc import wait_cursor
@@ -620,7 +622,7 @@ def parse_activeSymbol(node):
 #
 #############################################################################
 @wait_cursor
-def export_scene(canvas, width, height, exportFileName):
+def export_scene(canvas, width, height, exportFileName, svg = False):
     """
     This function exports the scene to a file.
     """
@@ -632,11 +634,20 @@ def export_scene(canvas, width, height, exportFileName):
     theScene = canvas.itemsBoundingRect()
     theScene.adjust(-margin, -margin, margin, margin)
 
-    finalImage = QImage(width+2*margin, height+2*margin, 
-                        QImage.Format_ARGB32_Premultiplied )
-    finalImage.fill(1)
+    if svg:
+        generator = QSvgGenerator()
+        generator.setFileName(exportFileName)
+        generator.setSize(QSize(200, 200))
+        generator.setViewBox(QRect(0, 0, 200, 200))
+        generator.setTitle("sconcho SVG image")
+        #svgGenerator.setDescription(tr("An SVG drawing created by the SVG Generator "
+        #                         "Example provided with Qt.")); 
+    else:
+        finalImage = QImage(width+2*margin, height+2*margin, 
+                            QImage.Format_ARGB32_Premultiplied )
+        finalImage.fill(1)
 
-    painter = QPainter(finalImage)
+    painter = QPainter(generator)
     painter.setRenderHints(QPainter.SmoothPixmapTransform )
     painter.setRenderHints(QPainter.Antialiasing )
     painter.setRenderHints(QPainter.TextAntialiasing )
@@ -644,7 +655,9 @@ def export_scene(canvas, width, height, exportFileName):
 
     canvas.render(painter, QRectF(), theScene )
     painter.end()
-    finalImage.save(exportFileName)
+
+    if not svg:
+        finalImage.save(exportFileName)
 
 
 
