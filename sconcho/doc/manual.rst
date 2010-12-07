@@ -110,4 +110,17 @@ with the extension .spf. SPF files can then be re-opened in sconcho.
 You can either print your sconcho project on a printer (or print
 to a PDF file on some platforms) or export it as a bitmapped image
 file such as jped, tif, or png. The available image 
-file formats depends on the operating system.
+file formats depends on the operating system. Soncho project can 
+also be saved in svg format.
+
+
+----
+
+**Changing the Label and Legend Properties**
+
+The font and size of the labels or the legend can be changed independently in 
+the preferences dialog (**File -> Preferences**). Furthermore the preferences
+dialog allows one to select the *interval i* with which the labels are displayed.
+By default, i is set to 1. Both the label and legend font, size as well as label 
+interval are saved in sconcho project files and will be restored upon loading a
+previously saved project.
