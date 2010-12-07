@@ -637,15 +637,15 @@ def export_scene(canvas, width, height, exportFileName, svg = False):
     if svg:
         generator = QSvgGenerator()
         generator.setFileName(exportFileName)
-        generator.setSize(QSize(200, 200))
-        generator.setViewBox(QRect(0, 0, 200, 200))
-        generator.setTitle("sconcho SVG image")
-        #svgGenerator.setDescription(tr("An SVG drawing created by the SVG Generator "
-        #                         "Example provided with Qt.")); 
+        generator.setSize(QSize(width, height))
+        generator.setViewBox(QRect(0, 0, width, height))
+        generator.setTitle("sconcho generated SVG image")
+        generator.setDescription("this svg image was exported from"
+                                 "a sconcho project")
     else:
-        finalImage = QImage(width+2*margin, height+2*margin, 
+        generator = QImage(width+2*margin, height+2*margin, 
                             QImage.Format_ARGB32_Premultiplied )
-        finalImage.fill(1)
+        generator.fill(1)
 
     painter = QPainter(generator)
     painter.setRenderHints(QPainter.SmoothPixmapTransform )
@@ -657,7 +657,7 @@ def export_scene(canvas, width, height, exportFileName, svg = False):
     painter.end()
 
     if not svg:
-        finalImage.save(exportFileName)
+        generator.save(exportFileName)
 
 
 
