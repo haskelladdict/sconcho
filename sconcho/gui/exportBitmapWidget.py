@@ -99,6 +99,9 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
 
         self.formats.remove("*.gif")
 
+        # we support svg format as well
+        self.formats.append("*.svg")
+
 
 
     def width_update(self):
