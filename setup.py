@@ -11,8 +11,8 @@ def check_dependencies():
     """
 
     # python 
-    if sys.version_info < (2, 6, 0) or sys.version_info >= (2, 7, 0):
-        print('Sorry, sconcho needs python version 2.6')
+    if sys.version_info < (2, 6, 0) or sys.version_info >= (2, 8, 0):
+        print('Sorry, sconcho needs python version 2.6 or 2.7')
         print("Python Version detected: %d.%d.%d" % sys.version_info[:3])
         exit(5)
     print("Python Version: %d.%d.%d" % sys.version_info[:3])
