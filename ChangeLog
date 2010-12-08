@@ -1,3 +1,13 @@
+12-07-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
+
+	* Release of 0.1_a5
+	* many bugfixes 
+	* a problem with deleting/inserting rows/columns in previous
+	  versions should be resolved.
+	* added ability to change label and legend fonts
+	* projects can now be exported in svg format
+
+
 11-27-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
 
 	* Release of 0.1_a4
