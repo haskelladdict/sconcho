@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>ssk</svgName>  
     <category>basic:5</category>
-    <patternName>ssk</patternName>
-    <patternDescription>slip, slip, knit</patternDescription>
-    <patternWidth>1</patternWidth>
+    <symbolName>ssk</symbolName>
+    <symbolDescription>slip, slip, knit</symbolDescription>
+    <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

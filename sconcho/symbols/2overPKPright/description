@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>2overPKPright</svgName>  
     <category>5 stitch cables</category>
-    <patternName>2 over PKP right</patternName>
-    <patternDescription>slip 3 sts to cn and hold in back, k2, then p1, k1, p1 from cn</patternDescription>
-    <patternWidth>5</patternWidth>
+    <symbolName>2 over PKP right</symbolName>
+    <symbolDescription>slip 3 sts to cn and hold in back, k2, then p1, k1, p1 from cn</symbolDescription>
+    <symbolWidth>5</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

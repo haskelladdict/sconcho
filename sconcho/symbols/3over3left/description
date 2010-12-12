@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>3over3left</svgName>  
     <category>6 stitch cables</category>
-    <patternName>3 over 3 left</patternName>
-    <patternDescription>slip 3 sts to cn and hold in front, k3 sts from left needle, k3 sts from cn</patternDescription>
-    <patternWidth>6</patternWidth>
+    <symbolName>3 over 3 left</symbolName>
+    <symbolDescription>slip 3 sts to cn and hold in front, k3 sts from left needle, k3 sts from cn</symbolDescription>
+    <symbolWidth>6</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

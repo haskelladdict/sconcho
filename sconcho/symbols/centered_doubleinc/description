@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>centered_doubleinc</svgName>  
     <category>basic:11</category>
-    <patternName>centered double increase</patternName>
-    <patternDescription>knit in back and front of same st, then pick up vertical strand that runs between those 2 sts and knit it through the back</patternDescription>
-    <patternWidth>1</patternWidth>
+    <symbolName>centered double increase</symbolName>
+    <symbolDescription>knit in back and front of same st, then pick up vertical strand that runs between those 2 sts and knit it through the back</symbolDescription>
+    <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

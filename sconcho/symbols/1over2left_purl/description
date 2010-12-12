@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>1over2left_purl</svgName>  
     <category>3 stitch cables</category>
-    <patternName>1 over 2 left-purl</patternName>
-    <patternDescription>slip 1 st to cn and hold in front, p2 sts from left needle, k1 st from cn</patternDescription>
-    <patternWidth>3</patternWidth>
+    <symbolName>1 over 2 left-purl</symbolName>
+    <symbolDescription>slip 1 st to cn and hold in front, p2 sts from left needle, k1 st from cn</symbolDescription>
+    <symbolWidth>3</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

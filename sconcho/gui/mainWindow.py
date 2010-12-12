@@ -41,7 +41,6 @@ import util.messages as msg
 import util.settings as settings
 import util.misc as misc
 import util.io as io
-import util.symbolParser as parser
 from gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
 from gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from gui.patternCanvas import PatternCanvas
@@ -52,7 +51,7 @@ from gui.sconchoManual import SconchoManual
 from util.exceptions import PatternReadError
 
 
-__version__ = "0.1.0_a5"
+__version__ = "0.1.0_a6"
 
 
 #######################################################################
@@ -64,7 +63,8 @@ __version__ = "0.1.0_a5"
 #######################################################################
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    def __init__(self, topLevelPath, fileName = None, parent = None):
+    def __init__(self, topLevelPath, knittingSymbols, 
+                 fileName = None, parent = None):
         """
         Initialize the main window.
         """
@@ -84,7 +84,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__topLevelPath = topLevelPath
         self.__symbolPaths = [os.path.join(topLevelPath, "symbols")]
-        knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
         self.__canvas = PatternCanvas(self.settings, 
                                       knittingSymbols[QString("basic::knit")],
                                       self)

@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>p2tog</svgName>  
     <category>basic:4</category>
-    <patternName>p2tog</patternName>
-    <patternDescription>Purl 2 together</patternDescription>
-    <patternWidth>1</patternWidth>
+    <symbolName>p2tog</symbolName>
+    <symbolDescription>Purl 2 together</symbolDescription>
+    <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

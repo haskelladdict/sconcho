@@ -30,20 +30,34 @@ import os, sys
 currPath = os.path.dirname(__file__)
 sys.path.append(currPath)
 
+from PyQt4.QtCore import QString
 from PyQt4.QtGui import QApplication
 from gui.mainWindow import MainWindow
 import util.symbolParser as parser
+import util.messages as msg
 
 
 def sconcho_gui_launcher(fileName = None):
     """
     Main routine starting up the sconcho framework.
     """
-   
+
+    # We attempt to read all available knitting symbols 
+    # before firing up the MainWindow. At the very least we
+    # require to find a symbol for a "knit" stitch. If not, 
+    # we terminate right away.
+    symbolPath = [os.path.join(currPath, "symbols")]
+    knittingSymbols = parser.parse_all_symbols(symbolPath)
+    try:
+        knittingSymbols[QString("basic::knit")]
+    except KeyError:
+        sys.exit(msg.errorOpeningKnittingSymbols % symbolPath)
+    
+    # fire up the MainWindow
     app = QApplication(sys.argv)
     app.setOrganizationName("Markus Dittrich")
     app.setOrganizationDomain("sconcho.sourceforge.net")
     app.setApplicationName("sconcho")
-    window = MainWindow(currPath, fileName)
+    window = MainWindow(currPath, knittingSymbols, fileName)
     window.show()
     app.exec_()

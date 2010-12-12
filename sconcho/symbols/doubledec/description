@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>doubledec</svgName>  
     <category>basic:9</category>
-    <patternName>double decrease</patternName>
-    <patternDescription>slip 1 st knitwise, k2 sts together from left needle, pass slipped stitch over</patternDescription>
-    <patternWidth>1</patternWidth>
+    <symbolName>double decrease</symbolName>
+    <symbolDescription>slip 1 st knitwise, k2 sts together from left needle, pass slipped stitch over</symbolDescription>
+    <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

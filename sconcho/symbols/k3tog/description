@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>k3tog</svgName>  
     <category>basic:4</category>
-    <patternName>k3tog</patternName>
-    <patternDescription>Knit 3 together</patternDescription>
-    <patternWidth>1</patternWidth>
+    <symbolName>k3tog</symbolName>
+    <symbolDescription>Knit 3 together</symbolDescription>
+    <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

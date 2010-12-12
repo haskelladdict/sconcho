@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>quad_dec</svgName>  
     <category>basic</category>
-    <patternName>Quadruple dec</patternName>
-    <patternDescription>Sl next 3 sts to right hand needle.  *Pass 2nd st on right hand needle over 1st st, sl 1st st to left hand needle.  Then pass 2nd st on left hand needle over same 1st st, and sl 1st st back to right hand needle.*  Rep from * to * once more. Then purl 1st st.</patternDescription>
-    <patternWidth>1</patternWidth>
+    <symbolName>Quadruple dec</symbolName>
+    <symbolDescription>Sl next 3 sts to right hand needle.  *Pass 2nd st on right hand needle over 1st st, sl 1st st to left hand needle.  Then pass 2nd st on left hand needle over same 1st st, and sl 1st st back to right hand needle.*  Rep from * to * once more. Then purl 1st st.</symbolDescription>
+    <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

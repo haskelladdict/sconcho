@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>ltp</svgName>  
     <category>2 stitch cables:4</category>
-    <patternName>LTp</patternName>
-    <patternDescription>slip 1 st to cn and hold in front, p1 from left needle, k1 st from cn</patternDescription>
-    <patternWidth>2</patternWidth>
+    <symbolName>LTp</symbolName>
+    <symbolDescription>slip 1 st to cn and hold in front, p1 from left needle, k1 st from cn</symbolDescription>
+    <symbolWidth>2</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

@@ -124,6 +124,10 @@ errorLoadingLegendText = ("Could not load legend from "
                           "<p>sconcho encountered the following "
                           "error: KeyError: %s.")
 
+errorOpeningKnittingSymbols = ("sconcho: Failed to open knitting symbol "
+                               "database.\n"
+                               "Please check that you have valid symbols at\n"
+                               "%s.\nExiting ....")
 
 ########################################################################
 ##

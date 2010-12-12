@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>2over2right_purl</svgName>  
     <category>4 stitch cables</category>
-    <patternName>2 over 2 right-purl</patternName>
-    <patternDescription>slip 2 sts to cn and hold in back, k2 sts from left needle, p2 sts from cn</patternDescription>
-    <patternWidth>4</patternWidth>
+    <symbolName>2 over 2 right-purl</symbolName>
+    <symbolDescription>slip 2 sts to cn and hold in back, k2 sts from left needle, p2 sts from cn</symbolDescription>
+    <symbolWidth>4</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

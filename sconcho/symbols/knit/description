@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>knit</svgName>  
     <category>basic:1</category>
-    <patternName>knit</patternName>
-    <patternDescription>knit on RS; purl on WS</patternDescription>
-    <patternWidth>1</patternWidth>
+    <symbolName>knit</symbolName>
+    <symbolDescription>knit on RS; purl on WS</symbolDescription>
+    <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>
 

@@ -48,10 +48,14 @@ def parse_all_symbols(symbolTopLevelPaths):
         # with a short warning
         if not symbolDesc:
             print("Warning: Could not read symbol " + path)
+            continue
 
-        # add symbol to symbol database
-        symbolID = symbolDesc["category"] + "::" + symbolDesc["name"]
-        allSymbolDesc[symbolID] = symbolDesc
+        # try to add symbol to symbol database
+        try:
+            symbolID = symbolDesc["category"] + "::" + symbolDesc["name"]
+            allSymbolDesc[symbolID] = symbolDesc
+        except KeyError:
+            continue
 
     return allSymbolDesc
 
@@ -141,13 +145,13 @@ def parse_symbol_description(node):
                 return None
 
 
-        if item.toElement().tagName() == "patternName":
+        if item.toElement().tagName() == "symbolName":
             content["name"] = entry
 
-        if item.toElement().tagName() == "patternDescription":
+        if item.toElement().tagName() == "symbolDescription":
             content["description"] = entry
 
-        if item.toElement().tagName() == "patternWidth":
+        if item.toElement().tagName() == "symbolWidth":
             content["width"] = entry
 
         if item.toElement().tagName() == "backgroundColor":

@@ -3,9 +3,9 @@
   <knittingSymbol>
     <svgName>yo</svgName>  
     <category>basic:3</category>
-    <patternName>yo</patternName>
-    <patternDescription>yarn over</patternDescription>
-    <patternWidth>1</patternWidth>
+    <symbolName>yo</symbolName>
+    <symbolDescription>yarn over</symbolDescription>
+    <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>
 
