@@ -5,6 +5,7 @@ all:
 	pyuic4 -o ui_newPatternDialog.py ui/newPatternDialog.ui
 	pyuic4 -o ui_sconchoManual.py ui/sconchoManual.ui
 	pyuic4 -o ui_preferencesDialog.py ui/preferencesDialog.ui
+	pyuic4 -o ui_manageKnittingSymbolDialog.py ui/manageKnittingSymbolDialog.ui
 	pyrcc4 -o icons_rc.py icons.qrc
 
 

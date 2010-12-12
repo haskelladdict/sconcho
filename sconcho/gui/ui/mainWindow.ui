@@ -80,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>1137</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -95,8 +95,6 @@
     <addaction name="actionExport"/>
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
-    <addaction name="separator"/>
-    <addaction name="actionPrefs"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -114,6 +112,7 @@
     </widget>
     <addaction name="separator"/>
     <addaction name="menu_Zoom"/>
+    <addaction name="action_Insert_delete_rows_and_columns"/>
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>
     <addaction name="actionShow_grid_labels"/>
@@ -130,9 +129,10 @@
    </widget>
    <widget class="QMenu" name="menuGrid">
     <property name="title">
-     <string>&amp;Grid</string>
+     <string>&amp;Edit</string>
     </property>
-    <addaction name="actionInsert_delete_rows_and_columns"/>
+    <addaction name="actionPrefs"/>
+    <addaction name="action_Manage_Knitting_Symbols"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuGrid"/>
@@ -391,7 +391,7 @@
     <string>toggle visbility of grid labels</string>
    </property>
   </action>
-  <action name="actionInsert_delete_rows_and_columns">
+  <action name="action_Insert_delete_rows_and_columns">
    <property name="text">
     <string>&amp;Insert/Delete Rows and Columns</string>
    </property>
@@ -442,6 +442,16 @@
    </property>
    <property name="text">
     <string>P&amp;references</string>
+   </property>
+  </action>
+  <action name="action_Insert_delete_rows_and_columns">
+   <property name="text">
+    <string>&amp;Insert/Delete rows and columns</string>
+   </property>
+  </action>
+  <action name="action_Manage_Knitting_Symbols">
+   <property name="text">
+    <string>&amp;Manage Knitting Symbols</string>
    </property>
   </action>
  </widget>

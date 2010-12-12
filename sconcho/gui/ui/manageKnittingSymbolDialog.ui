@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImportKnittingSymbolDialog</class>
- <widget class="QDialog" name="ImportKnittingSymbolDialog">
+ <class>ManageKnittingSymbolDialog</class>
+ <widget class="QDialog" name="ManageKnittingSymbolDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>835</width>
-    <height>586</height>
+    <width>702</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QLabel" name="label_7">
@@ -33,7 +33,7 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <widget class="QListView" name="listView"/>
+        <widget class="QListView" name="availableSymbolsListView"/>
        </item>
       </layout>
      </widget>
@@ -58,7 +58,7 @@ p, li { white-space: pre-wrap; }
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QFrame" name="frame">
+            <widget class="QFrame" name="symbolPreviewFrame">
              <property name="minimumSize">
               <size>
                <width>100</width>
@@ -74,10 +74,10 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit"/>
+            <widget class="QLineEdit" name="symbolPathEdit"/>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="browseSymbolButton">
              <property name="text">
               <string>Browse</string>
              </property>
@@ -112,7 +112,7 @@ p, li { white-space: pre-wrap; }
          <item>
           <layout class="QGridLayout" name="gridLayout">
            <item row="0" column="1">
-            <widget class="QLineEdit" name="lineEdit_2"/>
+            <widget class="QLineEdit" name="symbolNameEntry"/>
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_4">
@@ -122,7 +122,7 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="lineEdit_3"/>
+            <widget class="QLineEdit" name="symbolCategoryEntry"/>
            </item>
            <item row="2" column="0">
             <widget class="QLabel" name="label_5">
@@ -132,7 +132,7 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QSpinBox" name="spinBox"/>
+            <widget class="QSpinBox" name="symbolWidthSpinner"/>
            </item>
            <item row="3" column="0">
             <widget class="QLabel" name="label_6">
@@ -142,7 +142,7 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QTextEdit" name="textEdit"/>
+            <widget class="QTextEdit" name="symbolDescriptionEntry"/>
            </item>
            <item row="0" column="0">
             <widget class="QLabel" name="label_3">
@@ -169,7 +169,7 @@ p, li { white-space: pre-wrap; }
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="updateSymbolButton">
              <property name="text">
               <string>Update</string>
              </property>
@@ -233,7 +233,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>pushButton_3</sender>
    <signal>clicked()</signal>
-   <receiver>ImportKnittingSymbolDialog</receiver>
+   <receiver>ManageKnittingSymbolDialog</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

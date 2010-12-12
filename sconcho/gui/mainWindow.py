@@ -48,6 +48,7 @@ from gui.exportBitmapDialog import ExportBitmapDialog
 from gui.newPatternDialog import NewPatternDialog
 from gui.preferencesDialog import PreferencesDialog
 from gui.sconchoManual import SconchoManual
+from gui.manageKnittingSymbolDialog import ManageKnittingSymbolDialog
 from util.exceptions import PatternReadError
 
 
@@ -111,7 +112,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # read project if we received a filename
         if fileName:
             self.__read_project(fileName)
-        
+
 
 
     def __restore_settings(self):
@@ -143,9 +144,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                           
     def __set_up_connections(self):
-        """
-        Set up all connections required by MainWindow.
-        """
+        """ Set up all connections for MainWindow. """
         
         self.connect(self.actionQuit, SIGNAL("triggered()"),
                      self.close)
@@ -180,6 +179,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPrint, SIGNAL("triggered()"),
                      self.open_print_dialog)
 
+        self.connect(self.action_Manage_Knitting_Symbols, SIGNAL("triggered()"),
+                     self.open_manage_knitting_symbols_dialog)
+
         self.connect(self.actionShow_grid_labels, SIGNAL("toggled(bool)"),
                      self.__canvas.toggle_label_visibility)
         
@@ -192,7 +194,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.__canvas, SIGNAL("scene_changed"),
                      self.set_project_dirty)
 
-        self.connect(self.actionInsert_delete_rows_and_columns, 
+        self.connect(self.action_Insert_delete_rows_and_columns, 
                      SIGNAL("triggered()"),
                      partial(self.__canvas.insert_delete_rows_columns, 1, 1))
 
@@ -571,6 +573,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
        
         self.__preferencesDialog.raise_()
         self.__preferencesDialog.show()
+
+
+
+
+    def open_manage_knitting_symbols_dialog(self):
+        """ Open dialog allowing users to manage their own
+        symbols (as opposed to the ones which come with sconcho).
+        """
+
+        manager = ManageKnittingSymbolDialog(self)
+        manager.exec_()
+
 
 
 
