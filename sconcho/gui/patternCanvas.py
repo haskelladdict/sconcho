@@ -39,7 +39,7 @@ from util.settings import (get_grid_dimensions, get_label_font,
                            get_legend_font, get_label_interval)
 from util.canvas import (is_click_in_grid, is_click_on_labels, 
                             convert_pos_to_row_col)
-from gui.insertDeleteRowColumnWidget import InsertDeleteRowColumnWidget
+from gui.insertDeleteRowColumnDialog import InsertDeleteRowColumnDialog
 from util.misc import wait_cursor
 import util.messages as msg
 
@@ -458,7 +458,7 @@ class PatternCanvas(QGraphicsScene):
 
         if not self.insertDeleteRowColDialog:
             self.insertDeleteRowColDialog = \
-                InsertDeleteRowColumnWidget(self.__numRows,
+                InsertDeleteRowColumnDialog(self.__numRows,
                                             self.__numColumns,
                                             row, col, self.parent())
             self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_row"), 

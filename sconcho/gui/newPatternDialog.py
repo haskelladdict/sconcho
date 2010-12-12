@@ -26,7 +26,7 @@ from __future__ import absolute_import
 
 from PyQt4.QtGui import QDialog 
 
-from gui.ui_newPatternWidget import Ui_NewPatternWidget
+from gui.ui_newPatternDialog import Ui_NewPatternDialog
 
 
 
@@ -36,7 +36,7 @@ from gui.ui_newPatternWidget import Ui_NewPatternWidget
 # grid. Users can adjust the grid dimensions of the new pattern grid.
 #
 ##########################################################################
-class NewPatternWidget(QDialog, Ui_NewPatternWidget):
+class NewPatternDialog(QDialog, Ui_NewPatternDialog):
 
 
     def __init__(self, parent = None):
@@ -44,7 +44,7 @@ class NewPatternWidget(QDialog, Ui_NewPatternWidget):
         Initialize the dialog.
         """
 
-        super(NewPatternWidget, self).__init__(parent)
+        super(NewPatternDialog, self).__init__(parent)
         self.setupUi(self)
 
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NewPatternWidget</class>
- <widget class="QDialog" name="NewPatternWidget">
+ <class>NewPatternDialog</class>
+ <widget class="QDialog" name="NewPatternDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -97,7 +97,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>NewPatternWidget</receiver>
+   <receiver>NewPatternDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -113,7 +113,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>NewPatternWidget</receiver>
+   <receiver>NewPatternDialog</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

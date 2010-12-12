@@ -30,7 +30,7 @@ from PyQt4.QtCore import (Qt, SIGNAL, QString, QDir, QFileInfo)
 from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
                          QImageReader, QDialogButtonBox)
 
-from gui.ui_exportBitmapWidget import Ui_ExportBitmapWidget
+from gui.ui_exportBitmapDialog import Ui_ExportBitmapDialog
 
 import util.messages as msg
 
@@ -41,7 +41,7 @@ import util.messages as msg
 # canvas to a bitmap
 #
 ##########################################################################
-class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
+class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
     def __init__(self, size, parent = None):
@@ -49,7 +49,7 @@ class ExportBitmapWidget(QDialog, Ui_ExportBitmapWidget):
         Initialize the dialog.
         """
 
-        super(ExportBitmapWidget, self).__init__(parent)
+        super(ExportBitmapDialog, self).__init__(parent)
         self.setupUi(self)
         self.determine_image_formats()
 

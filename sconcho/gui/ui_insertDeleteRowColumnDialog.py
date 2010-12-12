@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/insertDeleteRowColumnWidget.ui'
+# Form implementation generated from reading ui file 'ui/insertDeleteRowColumnDialog.ui'
 #
-# Created: Sat Dec  4 17:39:36 2010
+# Created: Sun Dec 12 10:56:25 2010
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,16 +14,16 @@ try:
 except AttributeError:
     _fromUtf8 = lambda s: s
 
-class Ui_InsertDeleteRowColumnWidget(object):
-    def setupUi(self, InsertDeleteRowColumnWidget):
-        InsertDeleteRowColumnWidget.setObjectName(_fromUtf8("InsertDeleteRowColumnWidget"))
-        InsertDeleteRowColumnWidget.resize(667, 157)
-        InsertDeleteRowColumnWidget.setSizeGripEnabled(True)
-        self.verticalLayout_2 = QtGui.QVBoxLayout(InsertDeleteRowColumnWidget)
+class Ui_InsertDeleteRowColumnDialog(object):
+    def setupUi(self, InsertDeleteRowColumnDialog):
+        InsertDeleteRowColumnDialog.setObjectName(_fromUtf8("InsertDeleteRowColumnDialog"))
+        InsertDeleteRowColumnDialog.resize(667, 157)
+        InsertDeleteRowColumnDialog.setSizeGripEnabled(True)
+        self.verticalLayout_2 = QtGui.QVBoxLayout(InsertDeleteRowColumnDialog)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.tabWidget = QtGui.QTabWidget(InsertDeleteRowColumnWidget)
+        self.tabWidget = QtGui.QTabWidget(InsertDeleteRowColumnDialog)
         self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
         self.tab = QtGui.QWidget()
         self.tab.setObjectName(_fromUtf8("tab"))
@@ -148,7 +148,7 @@ class Ui_InsertDeleteRowColumnWidget(object):
         self.horizontalLayout_9.setObjectName(_fromUtf8("horizontalLayout_9"))
         spacerItem5 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_9.addItem(spacerItem5)
-        self.closeButton = QtGui.QPushButton(InsertDeleteRowColumnWidget)
+        self.closeButton = QtGui.QPushButton(InsertDeleteRowColumnDialog)
         self.closeButton.setObjectName(_fromUtf8("closeButton"))
         self.horizontalLayout_9.addWidget(self.closeButton)
         spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -164,44 +164,44 @@ class Ui_InsertDeleteRowColumnWidget(object):
         self.label_6.setBuddy(self.insertColumnPivot)
         self.label_8.setBuddy(self.deleteColumnID)
 
-        self.retranslateUi(InsertDeleteRowColumnWidget)
+        self.retranslateUi(InsertDeleteRowColumnDialog)
         self.tabWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(InsertDeleteRowColumnWidget)
-        InsertDeleteRowColumnWidget.setTabOrder(self.tabWidget, self.numInsertRows)
-        InsertDeleteRowColumnWidget.setTabOrder(self.numInsertRows, self.insertRowMode)
-        InsertDeleteRowColumnWidget.setTabOrder(self.insertRowMode, self.insertRowPivot)
-        InsertDeleteRowColumnWidget.setTabOrder(self.insertRowPivot, self.insertRowButton)
-        InsertDeleteRowColumnWidget.setTabOrder(self.insertRowButton, self.deleteRowID)
-        InsertDeleteRowColumnWidget.setTabOrder(self.deleteRowID, self.deleteRowButton)
-        InsertDeleteRowColumnWidget.setTabOrder(self.deleteRowButton, self.numInsertColumns)
-        InsertDeleteRowColumnWidget.setTabOrder(self.numInsertColumns, self.insertColumnMode)
-        InsertDeleteRowColumnWidget.setTabOrder(self.insertColumnMode, self.insertColumnPivot)
-        InsertDeleteRowColumnWidget.setTabOrder(self.insertColumnPivot, self.insertColumnButton)
-        InsertDeleteRowColumnWidget.setTabOrder(self.insertColumnButton, self.deleteColumnID)
-        InsertDeleteRowColumnWidget.setTabOrder(self.deleteColumnID, self.deleteColumnButton)
-        InsertDeleteRowColumnWidget.setTabOrder(self.deleteColumnButton, self.closeButton)
+        QtCore.QMetaObject.connectSlotsByName(InsertDeleteRowColumnDialog)
+        InsertDeleteRowColumnDialog.setTabOrder(self.tabWidget, self.numInsertRows)
+        InsertDeleteRowColumnDialog.setTabOrder(self.numInsertRows, self.insertRowMode)
+        InsertDeleteRowColumnDialog.setTabOrder(self.insertRowMode, self.insertRowPivot)
+        InsertDeleteRowColumnDialog.setTabOrder(self.insertRowPivot, self.insertRowButton)
+        InsertDeleteRowColumnDialog.setTabOrder(self.insertRowButton, self.deleteRowID)
+        InsertDeleteRowColumnDialog.setTabOrder(self.deleteRowID, self.deleteRowButton)
+        InsertDeleteRowColumnDialog.setTabOrder(self.deleteRowButton, self.numInsertColumns)
+        InsertDeleteRowColumnDialog.setTabOrder(self.numInsertColumns, self.insertColumnMode)
+        InsertDeleteRowColumnDialog.setTabOrder(self.insertColumnMode, self.insertColumnPivot)
+        InsertDeleteRowColumnDialog.setTabOrder(self.insertColumnPivot, self.insertColumnButton)
+        InsertDeleteRowColumnDialog.setTabOrder(self.insertColumnButton, self.deleteColumnID)
+        InsertDeleteRowColumnDialog.setTabOrder(self.deleteColumnID, self.deleteColumnButton)
+        InsertDeleteRowColumnDialog.setTabOrder(self.deleteColumnButton, self.closeButton)
 
-    def retranslateUi(self, InsertDeleteRowColumnWidget):
-        InsertDeleteRowColumnWidget.setWindowTitle(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "sconcho: Insert/Delete Rows and Columns", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "&insert", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "row&s", None, QtGui.QApplication.UnicodeUTF8))
-        self.insertRowMode.setItemText(0, QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "below", None, QtGui.QApplication.UnicodeUTF8))
-        self.insertRowMode.setItemText(1, QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "above", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "&row", None, QtGui.QApplication.UnicodeUTF8))
-        self.insertRowButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "Insert Row", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "insert row", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_7.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "&delete row", None, QtGui.QApplication.UnicodeUTF8))
-        self.deleteRowButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "Delete Row", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "delete row", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "&insert", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "column&s", None, QtGui.QApplication.UnicodeUTF8))
-        self.insertColumnMode.setItemText(0, QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "left of", None, QtGui.QApplication.UnicodeUTF8))
-        self.insertColumnMode.setItemText(1, QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "right of", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "&column", None, QtGui.QApplication.UnicodeUTF8))
-        self.insertColumnButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "Insert Column", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "insert column", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "&delete column", None, QtGui.QApplication.UnicodeUTF8))
-        self.deleteColumnButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "Delete Column", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "delete column", None, QtGui.QApplication.UnicodeUTF8))
-        self.closeButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnWidget", "Close", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, InsertDeleteRowColumnDialog):
+        InsertDeleteRowColumnDialog.setWindowTitle(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "sconcho: Insert/Delete Rows and Columns", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "&insert", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "row&s", None, QtGui.QApplication.UnicodeUTF8))
+        self.insertRowMode.setItemText(0, QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "below", None, QtGui.QApplication.UnicodeUTF8))
+        self.insertRowMode.setItemText(1, QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "above", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "&row", None, QtGui.QApplication.UnicodeUTF8))
+        self.insertRowButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "Insert Row", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "insert row", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_7.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "&delete row", None, QtGui.QApplication.UnicodeUTF8))
+        self.deleteRowButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "Delete Row", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "delete row", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "&insert", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "column&s", None, QtGui.QApplication.UnicodeUTF8))
+        self.insertColumnMode.setItemText(0, QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "left of", None, QtGui.QApplication.UnicodeUTF8))
+        self.insertColumnMode.setItemText(1, QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "right of", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_6.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "&column", None, QtGui.QApplication.UnicodeUTF8))
+        self.insertColumnButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "Insert Column", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "insert column", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_8.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "&delete column", None, QtGui.QApplication.UnicodeUTF8))
+        self.deleteColumnButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "Delete Column", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "delete column", None, QtGui.QApplication.UnicodeUTF8))
+        self.closeButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
 

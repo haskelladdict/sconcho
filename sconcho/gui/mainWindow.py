@@ -45,8 +45,8 @@ import util.symbolParser as parser
 from gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
 from gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from gui.patternCanvas import PatternCanvas
-from gui.exportBitmapWidget import ExportBitmapWidget
-from gui.newPatternWidget import NewPatternWidget
+from gui.exportBitmapDialog import ExportBitmapDialog
+from gui.newPatternDialog import NewPatternDialog
 from gui.preferencesDialog import PreferencesDialog
 from gui.sconchoManual import SconchoManual
 from util.exceptions import PatternReadError
@@ -379,7 +379,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
 
-        newPattern = NewPatternWidget(self)
+        newPattern = NewPatternDialog(self)
         if newPattern.exec_():
             
             # start new canvas
@@ -516,7 +516,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         canvasSize = self.__canvas.itemsBoundingRect()
-        exportDialog = ExportBitmapWidget(canvasSize, self)
+        exportDialog = ExportBitmapDialog(canvasSize, self)
         if exportDialog.exec_():
             width = exportDialog.width
             height = exportDialog.height
