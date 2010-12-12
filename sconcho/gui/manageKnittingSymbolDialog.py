@@ -24,10 +24,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtGui import QDialog 
+from PyQt4.QtCore import (QStringList)
+from PyQt4.QtGui import (QDialog, QTreeWidgetItem)
 
 from gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
 import util.symbolParser as parser
+import gui.symbolWidget as symbolWidget
 
 
 ##########################################################################
@@ -48,6 +50,19 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         # grab all symbols allready present
         self._symbols = parser.parse_all_symbols([symbolPath])
 
-        
+        self._add_symbols_to_widget()
 
-        
+
+
+    def _add_symbols_to_widget(self):
+        """ This function add all private knitting symbols to the list
+        widget. 
+        """
+
+        sortedSymbols = symbolWidget.sort_symbols_by_category(self._symbols)
+
+        for entry in sortedSymbols:
+
+            category = QTreeWidgetItem(self.availableSymbolsWidget, [entry[0]])
+            for symbol in entry[1]:
+                QTreeWidgetItem(category, [symbol["name"]])

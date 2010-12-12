@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/manageKnittingSymbolDialog.ui'
 #
-# Created: Sun Dec 12 15:34:35 2010
+# Created: Sun Dec 12 18:23:53 2010
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -25,9 +25,10 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.label_7 = QtGui.QLabel(self.layoutWidget)
         self.label_7.setObjectName("label_7")
         self.verticalLayout_2.addWidget(self.label_7)
-        self.availableSymbolsListView = QtGui.QListView(self.layoutWidget)
-        self.availableSymbolsListView.setObjectName("availableSymbolsListView")
-        self.verticalLayout_2.addWidget(self.availableSymbolsListView)
+        self.availableSymbolsWidget = QtGui.QTreeWidget(self.layoutWidget)
+        self.availableSymbolsWidget.setColumnCount(1)
+        self.availableSymbolsWidget.setObjectName("availableSymbolsWidget")
+        self.verticalLayout_2.addWidget(self.availableSymbolsWidget)
         self.groupBox = QtGui.QGroupBox(self.splitter)
         self.groupBox.setObjectName("groupBox")
         self.horizontalLayout_3 = QtGui.QHBoxLayout(self.groupBox)
@@ -118,6 +119,7 @@ class Ui_ManageKnittingSymbolDialog(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Available Symbols</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.availableSymbolsWidget.headerItem().setText(0, QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Category/Symbol", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Selected Symbol", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

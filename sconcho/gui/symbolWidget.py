@@ -131,11 +131,10 @@ def add_symbols_to_widget(symbols, widget, synchronizer):
 
 
 
-def sort_symbols_by_category(symbols):
-    """
-    Given a dictionary of knitting symbols returns a list with
-    tuples of category names and list of corresponding symbols.
-    The category names are sorted with basic coming first.
+def symbols_by_category(symbols):
+    """ Given a dictionary of knitting symbols returns another
+    dictionary with the category as key and value a list of
+    all symbols with that category.
     """
 
     # assemble the categories
@@ -147,6 +146,19 @@ def sort_symbols_by_category(symbols):
             rawSortedSymbols[symbolKey].append(symbol)
         else:
             rawSortedSymbols[symbolKey] = [symbol]
+
+    return rawSortedSymbols
+
+
+
+def sort_symbols_by_category(symbols):
+    """
+    Given a dictionary of knitting symbols returns a list with
+    tuples of category names and list of corresponding symbols.
+    The category names are sorted with basic coming first.
+    """
+
+    rawSortedSymbols = symbols_by_category(symbols)
 
     # sort them
     sortedSymbols = []

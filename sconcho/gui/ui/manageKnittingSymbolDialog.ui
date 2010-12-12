@@ -33,7 +33,16 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <widget class="QListView" name="availableSymbolsListView"/>
+        <widget class="QTreeWidget" name="availableSymbolsWidget">
+         <property name="columnCount">
+          <number>1</number>
+         </property>
+         <column>
+          <property name="text">
+           <string>Category/Symbol</string>
+          </property>
+         </column>
+        </widget>
        </item>
       </layout>
      </widget>
