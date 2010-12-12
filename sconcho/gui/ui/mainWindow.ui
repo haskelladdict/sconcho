@@ -131,8 +131,9 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
-    <addaction name="actionPrefs"/>
     <addaction name="action_Manage_Knitting_Symbols"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrefs"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuGrid"/>

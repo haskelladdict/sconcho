@@ -582,7 +582,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         symbols (as opposed to the ones which come with sconcho).
         """
 
-        manager = ManageKnittingSymbolDialog(self)
+        personalSymbolPath = settings.get_personal_symbol_path(self.settings)
+        manager = ManageKnittingSymbolDialog(personalSymbolPath, self)
         manager.exec_()
 
 

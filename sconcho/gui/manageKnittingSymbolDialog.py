@@ -27,7 +27,7 @@ from __future__ import absolute_import
 from PyQt4.QtGui import QDialog 
 
 from gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
-
+import util.symbolParser as parser
 
 
 ##########################################################################
@@ -39,11 +39,15 @@ from gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
 class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
-    def __init__(self, parent = None):
+    def __init__(self, symbolPath, parent = None):
         """ Initialize the dialog. """
 
         super(ManageKnittingSymbolDialog, self).__init__(parent)
         self.setupUi(self)
 
+        # grab all symbols allready present
+        self.__symbols = parser.parse_all_symbols([symbolPath])
 
+        
 
+        

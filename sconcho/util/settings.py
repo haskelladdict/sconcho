@@ -24,7 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QSettings, QString, QSize)
+from PyQt4.QtCore import (QSettings, QString, QSize, QDir)
 from PyQt4.QtGui import (QFont, QFontDatabase)
 
 
@@ -68,6 +68,13 @@ def initialize(settings):
         settings.setValue("global/cellHeight", defaultHeight)
 
 
+    personalSymbolsPath = settings.value("global/personalSymbolPath").toString()
+    if personalSymbolsPath.isEmpty():
+        homePath = QDir.homePath()
+        defaultDir = QDir.convertSeparators(homePath + "/.sconcho")
+        settings.setValue("global/personalSymbolPath", defaultDir)
+
+
 
 def get_grid_dimensions(settings):
     """ Helper function returning a tuple with width and height
@@ -83,6 +90,19 @@ def get_grid_dimensions(settings):
         print("Error: Failed to retrieve grid dimensions from settings.")
 
     return QSize(cellWidth, cellHeight)
+
+
+
+def get_personal_symbol_path(settings):
+    """ Return the path where the user stores her/his personal symbols """
+
+    path = settings.value("global/personalSymbolPath").toString()
+    
+    if not path:
+        print("Error: Failed to retrieve personal symbol path.")
+        return ""
+
+    return path
 
 
 

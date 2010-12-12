@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/manageKnittingSymbolDialog.ui'
 #
-# Created: Sun Dec 12 14:29:31 2010
+# Created: Sun Dec 12 15:34:35 2010
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -72,6 +72,7 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.label_5.setObjectName("label_5")
         self.gridLayout.addWidget(self.label_5, 2, 0, 1, 1)
         self.symbolWidthSpinner = QtGui.QSpinBox(self.groupBox)
+        self.symbolWidthSpinner.setMinimum(1)
         self.symbolWidthSpinner.setObjectName("symbolWidthSpinner")
         self.gridLayout.addWidget(self.symbolWidthSpinner, 2, 1, 1, 1)
         self.label_6 = QtGui.QLabel(self.groupBox)

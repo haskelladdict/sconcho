@@ -27,9 +27,11 @@ from __future__ import absolute_import
 from PyQt4.QtCore import (QDir, QFile, QString, QStringList)
 from PyQt4.QtXml import QDomDocument
 
+
 # need this for sorting symbol entries
 # at the end of the category list
 __LARGE_INT__ = 100000
+
 
 
 def parse_all_symbols(symbolTopLevelPaths):
