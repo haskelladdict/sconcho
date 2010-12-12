@@ -64,7 +64,7 @@ __version__ = "0.1.0_a6"
 #######################################################################
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    def __init__(self, topLevelPath, knittingSymbols, 
+    def __init__(self, _topLevelPath, knittingSymbols, 
                  fileName = None, parent = None):
         """
         Initialize the main window.
@@ -73,9 +73,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-        self.settings = self.__restore_settings()
-        self.__colorWidget  = None
-        self.__preferencesDialog = None
+        self.settings = self._restore_settings()
+        self.colorWidget = None
+        self.preferencesDialog = None
 
         self.clear_project_save_file()
 
@@ -83,9 +83,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.activeSymbolWidget = ActiveSymbolWidget()
         self.statusBar().addPermanentWidget(self.activeSymbolWidget)
 
-        self.__topLevelPath = topLevelPath
-        self.__symbolPaths = [os.path.join(topLevelPath, "symbols")]
-        self.__canvas = PatternCanvas(self.settings, 
+        self._topLevelPath = _topLevelPath
+        self._symbolPaths = [os.path.join(_topLevelPath, "symbols")]
+        self.canvas = PatternCanvas(self.settings, 
                                       knittingSymbols[QString("basic::knit")],
                                       self)
         self.initialize_symbol_widget(knittingSymbols)
@@ -93,29 +93,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # we set a manual scene rectangle for our view. we
         # should be a little smarter about this in the future
-        self.graphicsView.setScene(self.__canvas)
-        self.connect(self.__canvas, SIGNAL("adjust_view"),
+        self.graphicsView.setScene(self.canvas)
+        self.connect(self.canvas, SIGNAL("adjust_view"),
                      self.graphicsView.adjust_scene)
-        self.connect(self.__canvas, SIGNAL("active_color_changed"),
-                     self.__colorWidget.set_active_color)
+        self.connect(self.canvas, SIGNAL("active_color_changed"),
+                     self.colorWidget.set_active_color)
         self.graphicsView.adjust_scene()
 
         # set up all the connections
-        self.__set_up_connections()
+        self._set_up_connections()
 
         # set up timers
-        self.__set_up_timers()
+        self._set_up_timers()
 
         # nothing happened so far
-        self.__projectIsDirty = False
+        self._projectIsDirty = False
 
         # read project if we received a filename
         if fileName:
-            self.__read_project(fileName)
+            self._read_project(fileName)
 
 
 
-    def __restore_settings(self):
+    def _restore_settings(self):
         """ Restore the previously saved settings """
         
         newSettings = QSettings()
@@ -134,7 +134,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def __save_settings(self):
+    def _save_settings(self):
         """ Save all settings. """
         
         self.settings.setValue("MainWindow/Size", QVariant(self.size()))
@@ -143,7 +143,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
                           
-    def __set_up_connections(self):
+    def _set_up_connections(self):
         """ Set up all connections for MainWindow. """
         
         self.connect(self.actionQuit, SIGNAL("triggered()"),
@@ -183,20 +183,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.open_manage_knitting_symbols_dialog)
 
         self.connect(self.actionShow_grid_labels, SIGNAL("toggled(bool)"),
-                     self.__canvas.toggle_label_visibility)
+                     self.canvas.toggle_label_visibility)
         
         self.connect(self.actionShow_legend, SIGNAL("toggled(bool)"),
-                     self.__canvas.toggle_legend_visibility)
+                     self.canvas.toggle_legend_visibility)
 
         self.connect(self.actionShow_pattern_grid, SIGNAL("toggled(bool)"),
-                     self.__canvas.toggle_pattern_grid_visibility)
+                     self.canvas.toggle_pattern_grid_visibility)
         
-        self.connect(self.__canvas, SIGNAL("scene_changed"),
+        self.connect(self.canvas, SIGNAL("scene_changed"),
                      self.set_project_dirty)
 
         self.connect(self.action_Insert_delete_rows_and_columns, 
                      SIGNAL("triggered()"),
-                     partial(self.__canvas.insert_delete_rows_columns, 1, 1))
+                     partial(self.canvas.insert_delete_rows_columns, 1, 1))
 
         self.connect(self.actionZoom_In, SIGNAL("triggered()"),
                      self.graphicsView.zoom_in)
@@ -209,13 +209,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def __set_up_timers(self):
+    def _set_up_timers(self):
         """
         Set up timers.
         """
 
         saveTimer = QTimer(self)
-        self.connect(saveTimer, SIGNAL("timeout()"), self.__save_pattern)
+        self.connect(saveTimer, SIGNAL("timeout()"), self._save_pattern)
         saveTimer.start(10000)
 
 
@@ -226,7 +226,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         to be saved.
         """
 
-        self.__projectIsDirty = True
+        self._projectIsDirty = True
         self.setWindowModified(True)
 
 
@@ -237,7 +237,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         to be saved.
         """
 
-        self.__projectIsDirty = False
+        self._projectIsDirty = False
         self.setWindowModified(False)
 
 
@@ -248,11 +248,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         user if she wants to save it.
         """
 
-        if not self.__ok_to_continue_without_saving():
+        if not self._ok_to_continue_without_saving():
             return
 
         # before we exit save our settings
-        self.__save_settings()
+        self._save_settings()
         
 
 
@@ -271,7 +271,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         symbolTracker = SymbolSynchronizer()
         self.connect(symbolTracker, 
                      SIGNAL("synchronized_object_changed"),
-                     self.__canvas.set_active_symbol)
+                     self.canvas.set_active_symbol)
 
         self.connect(symbolTracker, 
                      SIGNAL("synchronized_object_changed"),
@@ -324,7 +324,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         colorTracker = ColorSynchronizer()
         self.connect(colorTracker, 
                      SIGNAL("synchronized_object_changed"),
-                     self.__canvas.set_active_color)
+                     self.canvas.set_active_color)
 
         self.connect(colorTracker, 
                      SIGNAL("synchronized_object_changed"),
@@ -337,15 +337,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         colorList = [QColor(name) for name in [Qt.white, Qt.red, Qt.blue, \
                         Qt.black, Qt.darkGray, Qt.cyan, Qt.yellow, Qt.green, 
                         Qt.magenta]]
-        self.__colorWidget = ColorWidget(colorTracker, colorList)
-        self.colorWidgetContainer.layout().addWidget(self.__colorWidget)
+        self.colorWidget = ColorWidget(colorTracker, colorList)
+        self.colorWidgetContainer.layout().addWidget(self.colorWidget)
         
 
 
     def show_sconcho_manual(self):
         """ Show the sconcho manual. """
 
-        manualPath = os.path.join(self.__topLevelPath, "doc/manual.html")
+        manualPath = os.path.join(self._topLevelPath, "doc/manual.html")
         manual = SconchoManual(manualPath, self)
         manual.exec_()
 
@@ -376,7 +376,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         their previous pattern or cancel.
         """
 
-        if not self.__ok_to_continue_without_saving():
+        if not self._ok_to_continue_without_saving():
             return
 
 
@@ -386,7 +386,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # start new canvas
             self.clear_project_save_file()
             self.set_project_dirty()
-            self.__canvas.create_new_canvas(newPattern.num_rows,
+            self.canvas.create_new_canvas(newPattern.num_rows,
                                             newPattern.num_columns)
 
 
@@ -400,8 +400,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         otherwise.
         """
 
-        if (mode == "save as") or (not self.__saveFilePath): 
-            location = self.__saveFilePath if self.__saveFilePath \
+        if (mode == "save as") or (not self._saveFilePath): 
+            location = self._saveFilePath if self._saveFilePath \
                        else QDir.homePath() + "/.spf"
             saveFilePath = QFileDialog.getSaveFileName(self,
                                                 msg.saveSconchoProjectTitle,
@@ -431,26 +431,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.set_project_save_file(saveFilePath)
 
         # ready to save
-        return self.__save_pattern()
+        return self._save_pattern()
     
 
 
-    def __save_pattern(self):
+    def _save_pattern(self):
         """ Main save routine.
 
         If there is no filepath we return (e.g. when called by the saveTimer).
         """
         
-        if not self.__saveFilePath or not self.__projectIsDirty:
+        if not self._saveFilePath or not self._projectIsDirty:
             return False
 
-        saveFileName = QFileInfo(self.__saveFilePath).fileName()
+        saveFileName = QFileInfo(self._saveFilePath).fileName()
         self.statusBar().showMessage("saving " + saveFileName)
 
-        (status, errMsg) = io.save_project(self.__canvas, 
-                                           self.__colorWidget.get_all_colors(),
+        (status, errMsg) = io.save_project(self.canvas, 
+                                           self.colorWidget.get_all_colors(),
                                            self.activeSymbolWidget.get_symbol(),
-                                           self.settings, self.__saveFilePath)
+                                           self.settings, self._saveFilePath)
 
         if not status:
             QMessageBox.critical(self, msg.errorSavingProjectTitle,
@@ -466,7 +466,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def read_project_dialog(self):
         """ This function opens a read pattern dialog. """
 
-        if not self.__ok_to_continue_without_saving():
+        if not self._ok_to_continue_without_saving():
             return
 
         readFilePath = \
@@ -478,11 +478,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not readFilePath:
             return
 
-        self.__read_project(readFilePath)
+        self._read_project(readFilePath)
 
         
 
-    def __read_project(self, readFilePath):
+    def _read_project(self, readFilePath):
         """ This function does the hard work for opening a 
         sconcho project file.
         """
@@ -496,13 +496,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         # add newly loaded project
-        knittingSymbols = parser.parse_all_symbols(self.__symbolPaths)
-        if not self.__canvas.load_previous_pattern(knittingSymbols, 
+        knittingSymbols = parser.parse_all_symbols(self._symbolPaths)
+        if not self.canvas.load_previous_pattern(knittingSymbols, 
                                                    patternGridItems,
                                                    legendItems):
             return
 
-        set_up_colors(self.__colorWidget, colors)
+        set_up_colors(self.colorWidget, colors)
         self.activate_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
         readFileName = QFileInfo(readFilePath).fileName()
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
@@ -516,14 +516,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         This function opens and export pattern dialog.
         """
 
-        canvasSize = self.__canvas.itemsBoundingRect()
+        canvasSize = self.canvas.itemsBoundingRect()
         exportDialog = ExportBitmapDialog(canvasSize, self)
         if exportDialog.exec_():
             width = exportDialog.width
             height = exportDialog.height
             exportFilePath = exportDialog.filePath
             
-            io.export_scene(self.__canvas, width, height, exportFilePath)
+            io.export_scene(self.canvas, width, height, exportFilePath)
             exportFileName = QFileInfo(exportFilePath).fileName()
             self.statusBar().showMessage("successfully exported " + 
                                          exportFileName, 3000)
@@ -535,7 +535,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         This member function calls print routine.
         """
 
-        io.print_scene(self.__canvas)
+        io.print_scene(self.canvas)
         
 
 
@@ -543,36 +543,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """ Open the preferences dialog. """
 
         
-        if not self.__preferencesDialog:
-            self.__preferencesDialog = PreferencesDialog(self.settings, self)
+        if not self.preferencesDialog:
+            self.preferencesDialog = PreferencesDialog(self.settings, self)
             
-            self.connect(self.__preferencesDialog, 
+            self.connect(self.preferencesDialog, 
                          SIGNAL("label_font_changed"),
-                         self.__canvas.label_font_changed)
+                         self.canvas.label_font_changed)
 
-            self.connect(self.__preferencesDialog, 
+            self.connect(self.preferencesDialog, 
                          SIGNAL("label_font_changed"),
                          self.set_project_dirty)
 
-            self.connect(self.__preferencesDialog, 
+            self.connect(self.preferencesDialog, 
                          SIGNAL("legend_font_changed"),
-                         self.__canvas.legend_font_changed)
+                         self.canvas.legend_font_changed)
 
-            self.connect(self.__preferencesDialog, 
+            self.connect(self.preferencesDialog, 
                          SIGNAL("legend_font_changed"),
                          self.set_project_dirty)
 
-            self.connect(self.__preferencesDialog, 
+            self.connect(self.preferencesDialog, 
                          SIGNAL("label_interval_changed"),
-                         self.__canvas.set_up_labels)
+                         self.canvas.set_up_labels)
 
-            self.connect(self.__preferencesDialog, 
+            self.connect(self.preferencesDialog, 
                          SIGNAL("label_interval_changed"),
                          self.set_project_dirty)
 
        
-        self.__preferencesDialog.raise_()
-        self.__preferencesDialog.show()
+        self.preferencesDialog.raise_()
+        self.preferencesDialog.show()
 
 
 
@@ -592,7 +592,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def set_project_save_file(self, fileName):
         """ Stores the name of the currently operated on file. """
 
-        self.__saveFilePath = fileName
+        self._saveFilePath = fileName
         self.setWindowTitle(QApplication.applicationName() + ": " \
                             + QFileInfo(fileName).fileName() + "[*]")
 
@@ -602,13 +602,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """ Resets the save file name and window title. """
 
 
-        self.__saveFilePath = None
+        self._saveFilePath = None
         self.setWindowTitle(QApplication.applicationName() + ": "\
                             + misc.get_random_knitting_quote() + "[*]")
 
 
 
-    def __ok_to_continue_without_saving(self):
+    def _ok_to_continue_without_saving(self):
         """ This function checks if the user would like to
         save the current pattern. Returns True if the pattern
         was save or the user discarded changes, and False if
@@ -616,7 +616,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         status = True
-        if self.__projectIsDirty:
+        if self._projectIsDirty:
             answer = QMessageBox.question(self, msg.wantToSavePatternTitle,
                                           msg.wantToSavePatternText,
                                           QMessageBox.Save |
@@ -754,13 +754,13 @@ class SymbolDisplayItem(QFrame):
     def __init__(self, symbol, color, parent = None):
 
         QFrame.__init__(self, parent)
-        self.__symbol = symbol
+        self._symbol = symbol
         self.backColor = color
 
         # define and set stylesheets
         self.setup_stylesheets()
         self.setMinimumSize(20,20)
-        self.setStyleSheet(self.__theStyleSheet)
+        self.setStyleSheet(self._theStyleSheet)
 
         # layout
         layout    = QHBoxLayout()
@@ -780,7 +780,7 @@ class SymbolDisplayItem(QFrame):
     def get_symbol(self):
         """ Return our symbol. """
 
-        return self.__symbol
+        return self._symbol
 
     
 
@@ -792,7 +792,7 @@ class SymbolDisplayItem(QFrame):
 
         self.backColor = color
         self.setup_stylesheets()
-        self.setStyleSheet(self.__theStyleSheet)
+        self.setStyleSheet(self._theStyleSheet)
         
 
 
@@ -801,7 +801,7 @@ class SymbolDisplayItem(QFrame):
         Defines the stylesheets used for display.
         """
 
-        self.__theStyleSheet = "border-width: 1px;" \
+        self._theStyleSheet = "border-width: 1px;" \
                                "border-style: solid;" \
                                "border-color: black;" \
                                "background-color: " + self.backColor.name() + ";"

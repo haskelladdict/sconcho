@@ -170,12 +170,12 @@ class SymbolSelectorItem(QFrame):
     def __init__(self, symbol, synchronizer, parent = None):
 
         super(SymbolSelectorItem, self).__init__(parent)
-        self.__synchronizer = synchronizer
-        self.__symbol = symbol
+        self._synchronizer = synchronizer
+        self._symbol = symbol
 
         # define and set stylesheets
         self.define_stylesheets() 
-        self.setStyleSheet(self.__unselectedStyleSheet)
+        self.setStyleSheet(self._unselectedStyleSheet)
         self.setToolTip(symbol["description"])
         
         # add the symbol's svg
@@ -198,7 +198,7 @@ class SymbolSelectorItem(QFrame):
         Returns the symbol controled by this widget.
         """
 
-        return self.__symbol
+        return self._symbol
 
 
 
@@ -208,17 +208,17 @@ class SymbolSelectorItem(QFrame):
         of this widget.
         """
 
-        self.__selectedStyleSheet = "border-width: 1px;" \
+        self._selectedStyleSheet = "border-width: 1px;" \
                                     "border-style: solid;" \
                                     "border-color: red;" \
                                     "background-color: lightblue;"
 
-        if "backgroundColor" in self.__symbol:
-            backColor = self.__symbol["backgroundColor"]
+        if "backgroundColor" in self._symbol:
+            backColor = self._symbol["backgroundColor"]
         else:
             backColor = "white"
 
-        self.__unselectedStyleSheet = "border-width: 1px;" \
+        self._unselectedStyleSheet = "border-width: 1px;" \
                                       "border-style: solid;" \
                                       "border-color: black;" \
                                       "background-color: " + backColor + ";"
@@ -230,7 +230,7 @@ class SymbolSelectorItem(QFrame):
         Encapsulates all events when somebody clicks on us.
         """
         
-        self.__synchronizer.select(self)
+        self._synchronizer.select(self)
         
     
 
@@ -249,7 +249,7 @@ class SymbolSelectorItem(QFrame):
         This slot activates the item.
         """
 
-        self.setStyleSheet(self.__selectedStyleSheet)
+        self.setStyleSheet(self._selectedStyleSheet)
 
 
 
@@ -258,7 +258,7 @@ class SymbolSelectorItem(QFrame):
         This slot inactivates the item.
         """
 
-        self.setStyleSheet(self.__unselectedStyleSheet)
+        self.setStyleSheet(self._unselectedStyleSheet)
 
 
 
@@ -302,7 +302,7 @@ class SymbolSynchronizer(QObject):
     def __init__(self, parent = None):
 
         QObject.__init__(self, parent)
-        self.__activeWidget = None
+        self._activeWidget = None
 
     
     def select(self, target):
@@ -312,27 +312,27 @@ class SymbolSynchronizer(QObject):
         the previous one.
         """
 
-        if self.__activeWidget == target:
+        if self._activeWidget == target:
             self.unselect()
         else:
-            if self.__activeWidget:
-                self.__activeWidget.set_inactive_look()
+            if self._activeWidget:
+                self._activeWidget.set_inactive_look()
 
-            self.__activeWidget = target
-            self.__activeWidget.set_active_look()
+            self._activeWidget = target
+            self._activeWidget.set_active_look()
             self.emit(SIGNAL("synchronized_object_changed"),
-                      self.__activeWidget.get_content())
+                      self._activeWidget.get_content())
 
 
 
     def unselect(self):
         """ Unselect the currently active widget. """
 
-        if not self.__activeWidget:
+        if not self._activeWidget:
             return
 
-        self.__activeWidget.set_inactive_look()
-        self.__activeWidget = None
+        self._activeWidget.set_inactive_look()
+        self._activeWidget = None
         self.emit(SIGNAL("synchronized_object_changed"), None)
 
 
@@ -340,5 +340,5 @@ class SymbolSynchronizer(QObject):
     def get_active_widget(self):
         """ Return the active widget to anybody who cares to know. """
 
-        return self.__activeWidget
+        return self._activeWidget
 

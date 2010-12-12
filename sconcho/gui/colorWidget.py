@@ -41,7 +41,7 @@ class ColorWidget(QWidget):
 
         super(ColorWidget, self).__init__(parent)
 
-        self.__synchronizer = synchronizer
+        self._synchronizer = synchronizer
 
         # set up layout
         layout = QHBoxLayout()
@@ -81,7 +81,7 @@ class ColorWidget(QWidget):
     def set_active_color(self, color):
         """ Set the color of the currently active color widget """
 
-        activeColorWidget = self.__synchronizer.get_active_widget()
+        activeColorWidget = self._synchronizer.get_active_widget()
         activeColorWidget.set_content(color)
         activeColorWidget.activate()
 
@@ -94,7 +94,7 @@ class ColorWidget(QWidget):
         The state it 1 if the item is active and 0 for the inactive rest.
         """
 
-        activeWidget = self.__synchronizer.get_active_widget()
+        activeWidget = self._synchronizer.get_active_widget()
         allColors = []
         for item in self.colorWidgets:
             state = 1 if item == activeWidget else 0
@@ -116,13 +116,13 @@ class ColorSelectorItem(QFrame):
 
         super(ColorSelectorItem, self).__init__(parent)
 
-        self.__synchronizer = synchronizer
+        self._synchronizer = synchronizer
         self.color = QColor(color)
 
         # define and set stylesheets
         self.define_stylesheets() 
-        self.setStyleSheet(self.__unselectedStyleSheet)
-        self.__currentStyleSheet = self.__unselectedStyleSheet
+        self.setStyleSheet(self._unselectedStyleSheet)
+        self._currentStyleSheet = self._unselectedStyleSheet
 
         self.setMinimumHeight(40)
         self.setMaximumHeight(40)
@@ -149,7 +149,7 @@ class ColorSelectorItem(QFrame):
     def activate(self):
         """ Activate ourselves. """
 
-        self.__synchronizer.select(self)
+        self._synchronizer.select(self)
 
 
 
@@ -160,7 +160,7 @@ class ColorSelectorItem(QFrame):
         """
 
         buttonColor = QColor(self.color).name()
-        self.__selectedStyleSheet = "border-width: 2px;" \
+        self._selectedStyleSheet = "border-width: 2px;" \
                                     "margin: 0px;" \
                                     "padding: 6px;" \
                                     "border-style: solid;" \
@@ -168,7 +168,7 @@ class ColorSelectorItem(QFrame):
                                     "background-color: " + \
                                     buttonColor + ";" 
 
-        self.__unselectedStyleSheet = "border-width: 1px;" \
+        self._unselectedStyleSheet = "border-width: 1px;" \
                                       "margin: 7px;" \
                                       "border-style: solid;" \
                                       "border-color: black;" \
@@ -183,7 +183,7 @@ class ColorSelectorItem(QFrame):
         for selecting.
         """
 
-        self.__synchronizer.select(self)
+        self._synchronizer.select(self)
 
 
 
@@ -192,8 +192,8 @@ class ColorSelectorItem(QFrame):
         This slot activates the item.
         """
 
-        self.setStyleSheet(self.__selectedStyleSheet)
-        self.__currentStyleSheet = self.__selectedStyleSheet
+        self.setStyleSheet(self._selectedStyleSheet)
+        self._currentStyleSheet = self._selectedStyleSheet
 
 
 
@@ -202,8 +202,8 @@ class ColorSelectorItem(QFrame):
         This slot inactivates the item.
         """
 
-        self.setStyleSheet(self.__unselectedStyleSheet)
-        self.__currentStyleSheet = self.__unselectedStyleSheet
+        self.setStyleSheet(self._unselectedStyleSheet)
+        self._currentStyleSheet = self._unselectedStyleSheet
 
 
 
@@ -223,7 +223,7 @@ class ColorSynchronizer(QObject):
     def __init__(self, parent = None):
 
         QObject.__init__(self, parent)
-        self.__activeWidget = None
+        self._activeWidget = None
 
     
     
@@ -234,18 +234,18 @@ class ColorSynchronizer(QObject):
         the previous one.
         """
 
-        if self.__activeWidget == target:
-            self.__activeWidget.activate_me()
+        if self._activeWidget == target:
+            self._activeWidget.activate_me()
             self.emit(SIGNAL("synchronized_object_changed"),
-                      self.__activeWidget.get_content())
+                      self._activeWidget.get_content())
         else:
-            if self.__activeWidget:
-                self.__activeWidget.inactivate_me()
+            if self._activeWidget:
+                self._activeWidget.inactivate_me()
                 
-            self.__activeWidget = target
-            self.__activeWidget.activate_me()
+            self._activeWidget = target
+            self._activeWidget.activate_me()
             self.emit(SIGNAL("synchronized_object_changed"),
-                      self.__activeWidget.get_content())
+                      self._activeWidget.get_content())
 
 
 
@@ -255,4 +255,4 @@ class ColorSynchronizer(QObject):
         to anybody who cares to know.
         """
 
-        return self.__activeWidget
+        return self._activeWidget

@@ -46,7 +46,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self.setupUi(self)
 
         # grab all symbols allready present
-        self.__symbols = parser.parse_all_symbols([symbolPath])
+        self._symbols = parser.parse_all_symbols([symbolPath])
 
         
 

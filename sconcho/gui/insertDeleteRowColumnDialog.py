@@ -94,7 +94,7 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
         We make sure that there is at least one row left.
         """
 
-        if self.__numRows <= 1:
+        if self._numRows <= 1:
             QMessageBox.warning(self, msg.numRowTooSmallTitle,
                                 msg.numRowTooSmallText,
                                 QMessageBox.Close)
@@ -137,7 +137,7 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
         widgets.
         """
 
-        if self.__numCols <= 1:
+        if self._numColumns <= 1:
             QMessageBox.warning(self, msg.numColTooSmallTitle,
                                 msg.numColTooSmallText,
                                 QMessageBox.Close)
@@ -158,8 +158,8 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
         self.insertRowPivot.setMaximum(numRows)
         self.deleteRowID.setMinimum(1)
         self.deleteRowID.setMaximum(numRows)
-        self.__numRows = numRows
-        print("row ", self.__numRows)
+        self._numRows = numRows
+        print("row ", self._numRows)
         
 
 
@@ -173,8 +173,8 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
         self.insertColumnPivot.setMaximum(numCols)
         self.deleteColumnID.setMinimum(1)
         self.deleteColumnID.setMaximum(numCols)
-        self.__numCols = numCols
-        print("column ", self.__numCols)
+        self._numColumns = numCols
+        print("column ", self._numColumns)
 
 
 
@@ -183,5 +183,5 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
         be changed.
         """
 
-        self.insertRowPivot.setValue(self.__numRows - row + 1)
-        self.insertColumnPivot.setValue(self.__numCols - col + 1)
+        self.insertRowPivot.setValue(self._numRows - row + 1)
+        self.insertColumnPivot.setValue(self._numColumns - col + 1)

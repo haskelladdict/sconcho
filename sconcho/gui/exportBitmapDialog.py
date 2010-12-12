@@ -55,11 +55,11 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
         self.width = math.floor(size.width())
         self.height = math.floor(size.height())
-        self.__originalWidth = self.width
+        self._originalWidth = self.width
         self.scaling = 100.0
         self.fileName = None 
         self.fileNameEdit.setText(QDir.homePath() + "/")
-        self.__aspectRatio = size.width()/size.height()
+        self._aspectRatio = size.width()/size.height()
         
         self.widthSpinner.setValue(self.width)
         self.heightSpinner.setValue(self.height)
@@ -113,8 +113,8 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         newWidth = self.widthSpinner.value()
 
         self.width = newWidth
-        self.height = self.width/self.__aspectRatio
-        self.scaling = self.width/self.__originalWidth * 100.0
+        self.height = self.width/self._aspectRatio
+        self.scaling = self.width/self._originalWidth * 100.0
 
         self.heightSpinner.setValue(self.height)
         self.scalingSpinner.setValue(self.scaling)
@@ -129,9 +129,9 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
         newHeight = self.heightSpinner.value()
         
-        self.width = newHeight * self.__aspectRatio
+        self.width = newHeight * self._aspectRatio
         self.height = newHeight
-        self.scaling = self.width/self.__originalWidth * 100.0
+        self.scaling = self.width/self._originalWidth * 100.0
 
         self.widthSpinner.setValue(self.width)
         self.scalingSpinner.setValue(self.scaling)
@@ -147,8 +147,8 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         newScale = self.scalingSpinner.value()
 
         self.scaling = newScale
-        self.width = self.__originalWidth * self.scaling / 100.0
-        self.height = self.width/self.__aspectRatio
+        self.width = self._originalWidth * self.scaling / 100.0
+        self.height = self.width/self._aspectRatio
 
         self.widthSpinner.setValue(self.width)
         self.heightSpinner.setValue(self.height)
