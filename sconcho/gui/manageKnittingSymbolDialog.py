@@ -24,7 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QStringList)
+from PyQt4.QtCore import (QStringList, SIGNAL, Qt)
 from PyQt4.QtGui import (QDialog, QTreeWidgetItem)
 
 from gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
@@ -48,21 +48,87 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self.setupUi(self)
 
         # grab all symbols allready present
-        self._symbols = parser.parse_all_symbols([symbolPath])
-
+        self._symbolDict = parser.parse_all_symbols([symbolPath])
         self._add_symbols_to_widget()
+
+        # add connections
+        self.connect(self.availableSymbolsWidget, 
+                     SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
+                     self.update_selected_symbol_display)
 
 
 
     def _add_symbols_to_widget(self):
         """ This function add all private knitting symbols to the list
-        widget. 
+        widget. Store the symbol id ("category::name") as UserDate so
+        we can later more easily retrieve it from the database.
         """
 
-        sortedSymbols = symbolWidget.sort_symbols_by_category(self._symbols)
-
+        sortedSymbols = symbolWidget.sort_symbols_by_category(self._symbolDict)
         for entry in sortedSymbols:
 
-            category = QTreeWidgetItem(self.availableSymbolsWidget, [entry[0]])
+            category = entry[0]
+            categoryItem = QTreeWidgetItem(self.availableSymbolsWidget, 
+                                           [category])
             for symbol in entry[1]:
-                QTreeWidgetItem(category, [symbol["name"]])
+                name = symbol["name"]
+                symbolItem = QTreeWidgetItem([name])
+                symbolItem.setData(0, Qt.UserRole, category + "::" + name) 
+                categoryItem.addChild(symbolItem)        
+
+        self.availableSymbolsWidget.resizeColumnToContents(0)
+       
+
+    
+    def update_selected_symbol_display(self, widgetItem, col):
+        """ Display the content of the currently selected symbol
+        if one was selected (the user may have clicked on the category
+        only). 
+        """
+
+        symbolId = widgetItem.data(col, Qt.UserRole).toString()
+        if symbolId in self._symbolDict:
+
+            symbol = self._symbolDict[symbolId]
+
+            self.symbolNameLabel.setDisabled(False)
+            self.symbolNameEntry.setReadOnly(False)
+            self.symbolNameEntry.setText(symbol["name"])
+
+            self.symbolCategoryLabel.setDisabled(False)
+            self.symbolCategoryEntry.setReadOnly(False)
+            self.symbolCategoryEntry.setText(symbol["category"])
+
+            self.symbolWidthLabel.setDisabled(False)
+            self.symbolWidthSpinner.setReadOnly(False)
+            width, status = symbol["width"].toInt()
+            self.symbolWidthSpinner.setValue(width)
+
+            self.symbolDescriptionLabel.setDisabled(False)
+            self.symbolDescriptionEntry.setReadOnly(False)
+            self.symbolDescriptionEntry.setText(symbol["description"])
+
+            self.updateSymbolButton.setDisabled(False)
+            self.browseSymbolButton.setDisabled(False)
+
+        else:
+
+            self.symbolNameLabel.setDisabled(True)
+            self.symbolNameEntry.clear()
+            self.symbolNameEntry.setReadOnly(True)
+
+            self.symbolWidthLabel.setDisabled(True)
+            self.symbolCategoryEntry.clear()
+            self.symbolCategoryEntry.setReadOnly(True)
+            self.symbolCategoryLabel.setDisabled(True)
+
+            self.symbolWidthLabel.setDisabled(True)
+            self.symbolWidthSpinner.setValue(1)
+            self.symbolWidthSpinner.setReadOnly(True)
+
+            self.symbolDescriptionLabel.setDisabled(True)
+            self.symbolDescriptionEntry.clear()
+            self.symbolDescriptionEntry.setReadOnly(True)
+
+            self.updateSymbolButton.setDisabled(True)
+            self.browseSymbolButton.setDisabled(True)

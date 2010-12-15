@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>702</width>
-    <height>427</height>
+    <height>456</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,13 +80,21 @@ p, li { white-space: pre-wrap; }
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
+             <zorder>symbolPathEdit</zorder>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="symbolPathEdit"/>
+            <widget class="QLineEdit" name="symbolPathEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="browseSymbolButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Browse</string>
              </property>
@@ -121,20 +129,34 @@ p, li { white-space: pre-wrap; }
          <item>
           <layout class="QGridLayout" name="gridLayout">
            <item row="0" column="1">
-            <widget class="QLineEdit" name="symbolNameEntry"/>
+            <widget class="QLineEdit" name="symbolNameEntry">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="symbolCategoryLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>symbol category</string>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="symbolCategoryEntry"/>
+            <widget class="QLineEdit" name="symbolCategoryEntry">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" name="label_5">
+            <widget class="QLabel" name="symbolWidthLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>symbol width</string>
              </property>
@@ -142,23 +164,36 @@ p, li { white-space: pre-wrap; }
            </item>
            <item row="2" column="1">
             <widget class="QSpinBox" name="symbolWidthSpinner">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
              <property name="minimum">
               <number>1</number>
              </property>
             </widget>
            </item>
            <item row="3" column="0">
-            <widget class="QLabel" name="label_6">
+            <widget class="QLabel" name="symbolDescriptionLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>symbol description</string>
              </property>
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QTextEdit" name="symbolDescriptionEntry"/>
+            <widget class="QTextEdit" name="symbolDescriptionEntry">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QLabel" name="label_3">
+            <widget class="QLabel" name="symbolNameLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>symbol name</string>
              </property>
@@ -183,6 +218,9 @@ p, li { white-space: pre-wrap; }
            </item>
            <item>
             <widget class="QPushButton" name="updateSymbolButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Update</string>
              </property>
