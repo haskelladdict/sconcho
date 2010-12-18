@@ -48,7 +48,7 @@ p, li { white-space: pre-wrap; }
      </widget>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="updateTab">
        <attribute name="title">
@@ -443,14 +443,14 @@ p, li { white-space: pre-wrap; }
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="clearEntryButton">
+           <widget class="QPushButton" name="clearEntriesButton">
             <property name="text">
              <string>Clear Entries</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="addSymbolsButton">
+           <widget class="QPushButton" name="addSymbolButton">
             <property name="enabled">
              <bool>true</bool>
             </property>

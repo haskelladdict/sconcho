@@ -129,6 +129,48 @@ errorOpeningKnittingSymbols = ("sconcho: Failed to open knitting symbol "
                                "Please check that you have valid symbols at\n"
                                "%s.\nExiting ....")
 
+
+
+########################################################################
+#
+# messages for manageKnittingSymbolDialog
+#
+########################################################################
+noSvgFileErrorTitle  = "sconcho: Add Symbol Error"
+noSvgFileErrorText   = "Error: Please add an svg image for your symbol."
+
+noCategoryErrorTitle = "sconcho: Add Symbol Error"
+noCategoryErrorText  = "Error: Please enter a category for your symbol."
+
+symbolExistsTitle    = "sconcho: Add Symbol Error"
+symbolExistsText     = ("Error: The category/name combination %s/%s you "
+                        "entered already exists.")
+
+failedToCopySvgTitle = "sconcho: Add Symbol Error"
+failedtoCopyText     = ("Error: Failed to copy SVG image %s into sconcho "
+                        "database." )
+
+failedToCreateDescriptionFileTitle = "sconcho: Add Symbol Error"
+failedToCreateDescriptionFileText  = ("Error: Failed to create the description "
+        "file to the symbol with category %s and name %s.")
+
+
+noNameErrorTitle     = "sconcho: Add Symbol Error"
+noNameErrorText      = "Error: Please enter a name for your symbol."
+
+
+
+########################################################################
+#
+# general messages
+#
+########################################################################
+failedToCreateDirectoryTitle = "sconcho: Failed to create directory"
+failedToCreateDirectoryText = "Error: Failed to create directory %s."
+
+
+
+
 ########################################################################
 ##
 ## list of possible main window titles

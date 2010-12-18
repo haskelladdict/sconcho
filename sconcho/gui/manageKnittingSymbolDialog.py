@@ -24,12 +24,15 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QStringList, SIGNAL, Qt, QDir, QByteArray)
-from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog)
+from PyQt4.QtCore import (QStringList, SIGNAL, Qt, QDir, QByteArray,
+                          QString)
+from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog, 
+                         QMessageBox)
 from PyQt4.QtSvg import (QSvgWidget)
 
 from gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
-import util.symbolParser as parser
+from util.symbolParser import (parse_all_symbols, create_new_symbol)
+import util.messages as msg
 import gui.symbolWidget as symbolWidget
 
 
@@ -41,6 +44,8 @@ import gui.symbolWidget as symbolWidget
 ##########################################################################
 class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
+    SYMBOL_SIZE = 30
+
 
     def __init__(self, symbolPath, parent = None):
         """ Initialize the dialog. """
@@ -49,7 +54,8 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self.setupUi(self)
 
         # grab all symbols allready present
-        self._symbolDict = parser.parse_all_symbols([symbolPath])
+        self._symbolPath = symbolPath
+        self._symbolDict = parse_all_symbols([symbolPath])
         self._add_symbols_to_widget()
         self._set_up_update_symbol_tab()
         self._set_up_add_symbol_tab()
@@ -63,11 +69,17 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                      SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                      self.update_selected_symbol_display)
 
-        self.connect(self.clearEntryButton, SIGNAL("clicked()"),
+        self.connect(self.clearEntriesButton, SIGNAL("clicked()"),
                      self.clear_add_symbol_tab)
+
+        self.connect(self.addSymbolButton, SIGNAL("clicked()"),
+                     self.add_symbol)
 
         self.connect(self.browseSymbolButton_A, SIGNAL("clicked()"),
                      self.load_svg_in_add_tab)
+
+        self.connect(self.symbolWidthSpinner_A, SIGNAL("valueChanged(int)"),
+                     self.rescale_svg_item_A)
 
 
 
@@ -88,7 +100,8 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             for symbol in entry[1]:
                 name = symbol["name"]
                 symbolItem = QTreeWidgetItem([name])
-                symbolItem.setData(0, Qt.UserRole, category + "::" + name) 
+                symbolItem.setData(0, Qt.UserRole, 
+                                   create_symbol_id(category, name))
                 categoryItem.addChild(symbolItem)        
                 symbolItem.setFlags(Qt.ItemIsSelectable | 
                                     Qt.ItemIsUserCheckable | 
@@ -124,7 +137,6 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         symbolId = widgetItem.data(col, Qt.UserRole).toString()
         if symbolId in self._symbolDict:
-
             symbol = self._symbolDict[symbolId]
 
             self.symbolNameLabel_U.setDisabled(False)
@@ -184,6 +196,56 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self.svgPathEdit_A.setText(QDir.homePath())
         self._svgFilePath_A = None
 
+
+    
+    def add_symbol(self):
+        """ This slot checks that the interface contains a valid
+        symbol (all fields have some data and an svg image has been
+        selected.
+        """
+
+        if not self._svgFilePath_A:
+            QMessageBox.critical(None, msg.noSvgFileErrorTitle,
+                                 msg.noSvgFileErrorText,
+                                 QMessageBox.Close)
+            return
+
+
+        name = self.symbolNameEntry_A.text()
+        if not name:
+            QMessageBox.critical(None, msg.noNameErrorTitle,
+                                 msg.noNameErrorText,
+                                 QMessageBox.Close)
+            return
+
+        # we name the svg with the symbol name
+        svgName = name
+        
+        category = self.symbolCategoryEntry_A.text()
+        if not category:
+            QMessageBox.critical(None, msg.noCategoryErrorTitle,
+                                 msg.noCategoryErrorText,
+                                 QMessageBox.Close)
+            return
+
+        # check that symbol is unique and new
+        if create_symbol_id(category, name) in self._symbolDict:
+            QMessageBox.critical(None, msg.symbolExistsTitle,
+                                 msg.symbolExistsText % (name, category),
+                                 QMessageBox.Close)
+            #return
+
+        description = self.symbolDescriptionEntry_A.toPlainText()
+        width       = self.symbolWidthSpinner_A.value()
+
+        status = create_new_symbol(self._symbolPath, self._svgFilePath_A, 
+                                   svgName, category, name, description, 
+                                   width)
+        
+        # clear the tab if we saved successfully
+        if status:
+            self.clear_add_symbol_tab()
+
         
 
     def load_svg_in_add_tab(self):
@@ -199,10 +261,37 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if not filePath:
             return
 
-        self._svgFilePath_A = filePath
+
+        # add svg image and scale as requested by width spinbox
+        # we have to check if loading of the svg succeeded
         self.svgWidget_A.load(filePath)
-        self.svgPathEdit_A.setText(filePath)
+        if self.svgWidget_A.renderer().isValid():
+            self._svgFilePath_A = filePath
+            self.svgPathEdit_A.setText(filePath)
+            width = self.symbolWidthSpinner_A.value()
+            self.rescale_svg_item_A(width)
 
         
 
+    def rescale_svg_item_A(self, width):
+        """ Rescales the svg image if a user changes the symbol width. """
 
+        self.svgWidget_A.setFixedSize(ManageKnittingSymbolDialog.SYMBOL_SIZE * width,
+                                      ManageKnittingSymbolDialog.SYMBOL_SIZE)
+
+       
+
+
+
+###########################################################################
+#
+# some helper functions
+#
+###########################################################################
+
+def create_symbol_id(category, name):
+    """ Creates the ID corresponding to a symbol name and category
+    for look up in the symbol dictionary.
+    """
+
+    return QString(category + "::" + name) 

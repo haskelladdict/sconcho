@@ -24,8 +24,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QDir, QFile, QString, QStringList)
+from PyQt4.QtCore import (QDir, QFile, QString, QStringList, QIODevice,
+                          QTextStream)
+from PyQt4.QtGui import QMessageBox
 from PyQt4.QtXml import QDomDocument
+
+import util.messages as msg
 
 
 # need this for sorting symbol entries
@@ -162,3 +166,85 @@ def parse_symbol_description(node):
         item = item.nextSibling();
 
     return content
+
+
+
+def create_new_symbol(symbolPath, svgPath, svgName, category, name, 
+                      description, width):
+    """ This function creates a new knitting symbol as specified by
+    the user. 
+    """
+
+    # make sure the user's symbol directory exists. If not we
+    # create it
+    symbolTopDir = QDir(symbolPath)
+    if not symbolTopDir.exists():
+        if not symbolTopDir.mkdir(symbolPath):
+            QMessageBox.critical(None, msg.failedToCreateDirectoryTitle,
+                                 msg.failedToCreateDirectoryText % symbolPath,
+                                 QMessageBox.Close)
+            return False
+
+    # this should never happen since the manageKnittingSymbolDialog is
+    # supposed to check. We'll check anyways.
+    symbolDirPath = symbolPath + "/" + svgName
+    symbolDir = QDir(symbolDirPath)
+    if symbolDir.exists():
+        QMessageBox.critical(None, msg.symbolExistsTitle,
+                             msg.symbolExistsText % (category, name),
+                             QMessageBox.Close)
+        return False
+
+    symbolDir.mkdir(symbolDirPath)
+
+    # copy the svg file
+    symbolTargetFilePath = symbolDirPath + "/" + svgName + ".svg"
+    if not QFile(svgPath).copy(symbolTargetFilePath):
+        QMessageBox.critical(None, msg.failedToCopySvgTitle,
+                             msg.failedToCopySvgText % svgPath,
+                             QMessageBox.Close)
+        
+        # remove symbolDir again, otherwise we have an orphan
+        symbolDir.rmdir(symbolDirPath)
+        return False
+
+    # write the description file
+    descriptionFileHandle = QFile(symbolDirPath + "/" + "description")
+    if not descriptionFileHandle.open(QIODevice.WriteOnly):
+        QMessageBox.critical(None, msg.failedToCreateDescriptionFIleTitle,
+                             msg.failedToCreateDescriptionFileText % (category,
+                             name), QMessageBox.Close)
+
+        # remove the copied svg file and directory
+        symbolDir.remove(descriptionFileHandle)
+        symbolDir.remove(symbolTargetFilePath)
+        symbolDir.remove(symbolDirPath)
+
+    # finally write the content of the file
+    write_description_content(descriptionFileHandle, svgName, category, 
+                              name, description, width)
+
+    return True
+
+
+
+def write_description_content(handle, svgName, category, name, description,
+                              width):
+    """ This function generates the xml content of the description 
+    file.
+    """
+    
+    stream = QTextStream(handle)
+    stream << ("<?xml version='1.0' encoding='UTF-8'?>\n"
+               "<sconcho>\n"
+               "  <knittingSymbol>\n"
+               "    <svgName>%s</svgName>\n"
+               "    <category>%s</category>\n"
+               "    <symbolName>%s</symbolName>\n"
+               "    <symbolDescription>%s</symbolDescription>\n"
+               "    <symbolWidth>%d</symbolWidth>\n"
+               "  </knittingSymbol>\n"
+               "</sconcho>\n"
+               % (svgName, category, name, description, width))
+
+

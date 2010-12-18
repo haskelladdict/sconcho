@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/manageKnittingSymbolDialog.ui'
 #
-# Created: Sat Dec 18 12:54:14 2010
+# Created: Sat Dec 18 16:01:20 2010
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -194,13 +194,13 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
         spacerItem5 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem5)
-        self.clearEntryButton = QtGui.QPushButton(self.newTab)
-        self.clearEntryButton.setObjectName(_fromUtf8("clearEntryButton"))
-        self.horizontalLayout_4.addWidget(self.clearEntryButton)
-        self.addSymbolsButton = QtGui.QPushButton(self.newTab)
-        self.addSymbolsButton.setEnabled(True)
-        self.addSymbolsButton.setObjectName(_fromUtf8("addSymbolsButton"))
-        self.horizontalLayout_4.addWidget(self.addSymbolsButton)
+        self.clearEntriesButton = QtGui.QPushButton(self.newTab)
+        self.clearEntriesButton.setObjectName(_fromUtf8("clearEntriesButton"))
+        self.horizontalLayout_4.addWidget(self.clearEntriesButton)
+        self.addSymbolButton = QtGui.QPushButton(self.newTab)
+        self.addSymbolButton.setEnabled(True)
+        self.addSymbolButton.setObjectName(_fromUtf8("addSymbolButton"))
+        self.horizontalLayout_4.addWidget(self.addSymbolButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)
         self.tabWidget.addTab(self.newTab, _fromUtf8(""))
         self.verticalLayout_4.addWidget(self.splitter)
@@ -216,7 +216,7 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.verticalLayout_4.addLayout(self.horizontalLayout_6)
 
         self.retranslateUi(ManageKnittingSymbolDialog)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QObject.connect(self.pushButton_4, QtCore.SIGNAL(_fromUtf8("clicked()")), ManageKnittingSymbolDialog.close)
         QtCore.QMetaObject.connectSlotsByName(ManageKnittingSymbolDialog)
 
@@ -261,8 +261,8 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.symbolCategoryLabel_A.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol category", None, QtGui.QApplication.UnicodeUTF8))
         self.symbolWidthLabel_A.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol width", None, QtGui.QApplication.UnicodeUTF8))
         self.symbolDescriptionLabel_A.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol description", None, QtGui.QApplication.UnicodeUTF8))
-        self.clearEntryButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Clear Entries", None, QtGui.QApplication.UnicodeUTF8))
-        self.addSymbolsButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Add Symbol", None, QtGui.QApplication.UnicodeUTF8))
+        self.clearEntriesButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Clear Entries", None, QtGui.QApplication.UnicodeUTF8))
+        self.addSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Add Symbol", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.newTab), QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Add New Symbol", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_4.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
 
