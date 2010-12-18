@@ -24,8 +24,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QStringList, SIGNAL, Qt)
-from PyQt4.QtGui import (QDialog, QTreeWidgetItem)
+from PyQt4.QtCore import (QStringList, SIGNAL, Qt, QDir, QByteArray)
+from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog)
+from PyQt4.QtSvg import (QSvgWidget)
 
 from gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
 import util.symbolParser as parser
@@ -50,11 +51,23 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         # grab all symbols allready present
         self._symbolDict = parser.parse_all_symbols([symbolPath])
         self._add_symbols_to_widget()
+        self._set_up_update_symbol_tab()
+        self._set_up_add_symbol_tab()
+
+        # do some initialisation
+        self._svgFilePath_A = None
+
 
         # add connections
         self.connect(self.availableSymbolsWidget, 
                      SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                      self.update_selected_symbol_display)
+
+        self.connect(self.clearEntryButton, SIGNAL("clicked()"),
+                     self.clear_add_symbol_tab)
+
+        self.connect(self.browseSymbolButton_A, SIGNAL("clicked()"),
+                     self.load_svg_in_add_tab)
 
 
 
@@ -70,16 +83,39 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             category = entry[0]
             categoryItem = QTreeWidgetItem(self.availableSymbolsWidget, 
                                            [category])
+            categoryItem.setFlags(Qt.ItemIsEnabled)
+
             for symbol in entry[1]:
                 name = symbol["name"]
                 symbolItem = QTreeWidgetItem([name])
                 symbolItem.setData(0, Qt.UserRole, category + "::" + name) 
                 categoryItem.addChild(symbolItem)        
+                symbolItem.setFlags(Qt.ItemIsSelectable | 
+                                    Qt.ItemIsUserCheckable | 
+                                    Qt.ItemIsEnabled)
 
         self.availableSymbolsWidget.resizeColumnToContents(0)
-       
+      
 
-    
+
+    def _set_up_update_symbol_tab(self):
+        """ Do whatever additional initialization we need in the
+        update symbol widget.
+        """
+
+        self.svgPathEdit_U.setText(QDir.homePath())
+
+
+
+    def _set_up_add_symbol_tab(self):
+        """ Do whatever additional initialization we need in the
+        update symbol widget.
+        """
+
+        self.svgPathEdit_A.setText(QDir.homePath())
+
+
+   
     def update_selected_symbol_display(self, widgetItem, col):
         """ Display the content of the currently selected symbol
         if one was selected (the user may have clicked on the category
@@ -91,44 +127,82 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
             symbol = self._symbolDict[symbolId]
 
-            self.symbolNameLabel.setDisabled(False)
-            self.symbolNameEntry.setReadOnly(False)
-            self.symbolNameEntry.setText(symbol["name"])
+            self.symbolNameLabel_U.setDisabled(False)
+            self.symbolNameEntry_U.setReadOnly(False)
+            self.symbolNameEntry_U.setText(symbol["name"])
 
-            self.symbolCategoryLabel.setDisabled(False)
-            self.symbolCategoryEntry.setReadOnly(False)
-            self.symbolCategoryEntry.setText(symbol["category"])
+            self.symbolCategoryLabel_U.setDisabled(False)
+            self.symbolCategoryEntry_U.setReadOnly(False)
+            self.symbolCategoryEntry_U.setText(symbol["category"])
 
-            self.symbolWidthLabel.setDisabled(False)
-            self.symbolWidthSpinner.setReadOnly(False)
+            self.symbolWidthLabel_U.setDisabled(False)
+            self.symbolWidthSpinner_U.setReadOnly(False)
             width, status = symbol["width"].toInt()
-            self.symbolWidthSpinner.setValue(width)
+            self.symbolWidthSpinner_U.setDisabled(False)
+            self.symbolWidthSpinner_U.setValue(width)
 
-            self.symbolDescriptionLabel.setDisabled(False)
-            self.symbolDescriptionEntry.setReadOnly(False)
-            self.symbolDescriptionEntry.setText(symbol["description"])
+            self.symbolDescriptionLabel_U.setDisabled(False)
+            self.symbolDescriptionEntry_U.setReadOnly(False)
+            self.symbolDescriptionEntry_U.setText(symbol["description"])
 
-            self.updateSymbolButton.setDisabled(False)
-            self.browseSymbolButton.setDisabled(False)
+            self.updateSymbolButton_U.setDisabled(False)
+            self.browseSymbolButton_U.setDisabled(False)
 
         else:
 
-            self.symbolNameLabel.setDisabled(True)
-            self.symbolNameEntry.clear()
-            self.symbolNameEntry.setReadOnly(True)
+            self.symbolNameLabel_U.setDisabled(True)
+            self.symbolNameEntry_U.clear()
+            self.symbolNameEntry_U.setReadOnly(True)
 
-            self.symbolWidthLabel.setDisabled(True)
-            self.symbolCategoryEntry.clear()
-            self.symbolCategoryEntry.setReadOnly(True)
-            self.symbolCategoryLabel.setDisabled(True)
+            self.symbolWidthLabel_U.setDisabled(True)
+            self.symbolCategoryEntry_U.clear()
+            self.symbolCategoryEntry_U.setReadOnly(True)
+            self.symbolCategoryLabel_U.setDisabled(True)
 
-            self.symbolWidthLabel.setDisabled(True)
-            self.symbolWidthSpinner.setValue(1)
-            self.symbolWidthSpinner.setReadOnly(True)
+            self.symbolWidthLabel_U.setDisabled(True)
+            self.symbolWidthSpinner_U.clear()
+            self.symbolWidthSpinner_U.setDisabled(True)
+            self.symbolWidthSpinner_U.setReadOnly(True)
 
-            self.symbolDescriptionLabel.setDisabled(True)
-            self.symbolDescriptionEntry.clear()
-            self.symbolDescriptionEntry.setReadOnly(True)
+            self.symbolDescriptionLabel_U.setDisabled(True)
+            self.symbolDescriptionEntry_U.clear()
+            self.symbolDescriptionEntry_U.setReadOnly(True)
 
-            self.updateSymbolButton.setDisabled(True)
-            self.browseSymbolButton.setDisabled(True)
+            self.updateSymbolButton_U.setDisabled(True)
+            self.browseSymbolButton_U.setDisabled(True)
+
+
+
+    def clear_add_symbol_tab(self):
+        """ This slot clears all entries in the addSymbolTab """
+
+        self.symbolNameEntry_A.clear()
+        self.symbolCategoryEntry_A.clear()
+        self.symbolWidthSpinner_A.setValue(1)
+        self.symbolDescriptionEntry_A.clear()
+        self.svgWidget_A.load(QByteArray())
+        self.svgPathEdit_A.setText(QDir.homePath())
+        self._svgFilePath_A = None
+
+        
+
+    def load_svg_in_add_tab(self):
+        """ This methods loads an svg image from disk and 
+        displays it inside the widget. 
+        """
+
+        filePath = QFileDialog.getOpenFileName(self, 
+                                               "sconcho: Load svg image", 
+                                               QDir.homePath(),
+                                               "svg images (*.svg)") 
+
+        if not filePath:
+            return
+
+        self._svgFilePath_A = filePath
+        self.svgWidget_A.load(filePath)
+        self.svgPathEdit_A.setText(filePath)
+
+        
+
+
