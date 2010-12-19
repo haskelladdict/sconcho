@@ -69,8 +69,13 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
         # add connections
+        #self.connect(self.availableSymbolsWidget, 
+        #             SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
+        #             self.update_selected_symbol_display)
+
         self.connect(self.availableSymbolsWidget, 
-                     SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
+                     SIGNAL("currentItemChanged(QTreeWidgetItem*, \
+                                                QTreeWidgetItem*)"),
                      self.update_selected_symbol_display)
 
         self.connect(self.clearEntriesButton, SIGNAL("clicked()"),
@@ -86,7 +91,10 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                      self.update_symbol)
 
         self.connect(self.browseSymbolButton_A, SIGNAL("clicked()"),
-                     self.load_svg_in_add_tab)
+                     self.load_svg_A)
+
+        self.connect(self.browseSymbolButton_U, SIGNAL("clicked()"),
+                     self.load_svg_U)
 
         self.connect(self.symbolWidthSpinner_A, SIGNAL("valueChanged(int)"),
                      partial(self.rescale_svg_item, self.svgWidget_A))
@@ -142,13 +150,13 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
    
-    def update_selected_symbol_display(self, widgetItem, col):
+    def update_selected_symbol_display(self, newWidgetItem, oldWidgetItem):
         """ Display the content of the currently selected symbol
         if one was selected (the user may have clicked on the category
         only). 
         """
 
-        symbolId = widgetItem.data(col, Qt.UserRole).toString()
+        symbolId = newWidgetItem.data(0, Qt.UserRole).toString()
         if symbolId in self._symbolDict:
             symbol = self._symbolDict[symbolId]
             self._selectedSymbol = symbol
@@ -255,9 +263,52 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         svgName = self._selectedSymbol["svgName"]
         status = remove_symbol(self._symbolPath, svgName)
 
+        # if we succeeded to remove the symbol from disk 
+        # lets remove it from the interface and cached database as well
         if status:
-            print("all went well")
+            self._delete_symbol_from_database(self._selectedSymbol)
+            self._delete_symbol_from_tree_widget(self._selectedSymbol)
 
+
+
+    def _delete_symbol_from_database(self, symbol):
+        """ Deletes the given symbol from the database. """
+
+        category = self._selectedSymbol["category"]
+        name     = self._selectedSymbol["name"]
+        symbolID = create_symbol_id(category, name)
+        del self._symbolDict[symbolID]
+
+
+
+    def _delete_symbol_from_tree_widget(self, symbol):
+        """ Delete the given symbol from the tree widget. If this
+        was the last entry in a given category delete the whole
+        category.
+        """
+
+        # find category
+        category = symbol["category"]
+        categoryItems = self.availableSymbolsWidget.findItems(category, 
+                                                Qt.MatchExactly, 0)
+        if len(categoryItems) != 1:
+            print("Error: There are duplicate categories.")
+        
+        for categoryItem in categoryItems:
+
+            # prune symbol itself
+            name = symbol["name"]
+            
+            numChildren = categoryItem.childCount()
+            for count in range(0, numChildren):
+                child = categoryItem.child(count)
+                if child.text(0) == name:
+                    categoryItem.removeChild(child)
+                    break
+            
+            if numChildren == 1:
+                self.availableSymbolsWidget.removeItemWidget(categoryItem, 0)
+                
 
 
     def update_symbol(self):
@@ -268,7 +319,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         if not self._selectedSymbol:
             return
-        oldName = self._selectedSymbol["name"]
+        oldName = self._selectedSymbol["svgName"]
 
         svgImagePath = self.svgPathEdit_U.text()
         data = self._get_data_from_interface(svgImagePath,
@@ -285,7 +336,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                                          data["name"], 
                                          data["description"], 
                                          data["width"])
-        
+       
             # if creation of the new symbol succeeded we remove the old
             # data, otherwise we move it back in place
             if createOk:
@@ -298,8 +349,11 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                             self._update_tab(data)
                             return
 
-        print("there was a problem updating")
-            
+                # if we reach this point something went wrong, we try to 
+                # at least remove the temp dir
+                remove_directory(self._symbolPath + "/tmp/")
+
+
 
 
     def _update_dict(self, data):
@@ -322,6 +376,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         item.setText(0, name)
         item.parent().setText(0, category)
         item.setData(0, Qt.UserRole, create_symbol_id(category, name))
+
 
 
     def _update_tab(self, data):
@@ -358,6 +413,9 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         data = self._get_data_from_interface(svgPathName, nameWidget, 
                                              categoryWidget, descriptionWidget, 
                                              widthWidget)
+
+        if not data:
+            return
 
         # check that symbol is unique and new
         if create_symbol_id(data["category"], data["name"]) in self._symbolDict:
@@ -405,7 +463,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             data["name"] = name
             
             # since we use this as a file path get rid of whitespace
-            data["svgName"] = name.replace(QRegExp("\s"),"_")
+            data["svgName"] = sanitize_name(QString(name))
        
 
         category = categoryWidget.text()
@@ -426,9 +484,33 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         
 
-    def load_svg_in_add_tab(self):
+    def load_svg_A(self):
         """ This methods loads an svg image from disk and 
-        displays it inside the widget. 
+        displays it in the add symbol tab.
+        """
+
+        filePath = QFileDialog.getOpenFileName(self, 
+                                               "sconcho: Load svg image", 
+                                               QDir.homePath(),
+                                               "svg images (*.svg)") 
+
+        if not filePath:
+            return
+
+        # add svg image and scale as requested by width spinbox
+        # we have to check if loading of the svg succeeded
+        self.svgWidget_A.load(filePath)
+        if self.svgWidget_A.renderer().isValid():
+            self._svgFilePath_A = filePath
+            self.svgPathEdit_A.setText(filePath)
+            width = self.symbolWidthSpinner_A.value()
+            self.rescale_svg_item(self.svgWidget_A, width)
+
+
+
+    def load_svg_U(self):
+        """ This methods loads an svg image from disk and 
+        displays it in the update symbol tab.
         """
 
         filePath = QFileDialog.getOpenFileName(self, 
@@ -442,14 +524,13 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         # add svg image and scale as requested by width spinbox
         # we have to check if loading of the svg succeeded
-        self.svgWidget_A.load(filePath)
-        if self.svgWidget_A.renderer().isValid():
-            self._svgFilePath_A = filePath
-            self.svgPathEdit_A.setText(filePath)
-            width = self.symbolWidthSpinner_A.value()
-            self.rescale_svg_item(self.svgWidget_A, width)
+        self.svgWidget_U.load(filePath)
+        if self.svgWidget_U.renderer().isValid():
+            self.svgPathEdit_U.setText(filePath)
+            width = self.symbolWidthSpinner_U.value()
+            self.rescale_svg_item(self.svgWidget_U, width)
 
-        
+
 
     def rescale_svg_item(self, item, width):
         """ Rescales the svg image if a user changes the symbol width. """
@@ -483,3 +564,19 @@ def generate_svg_path(symbolTopDir, symbol):
     path = symbolTopDir + "/" + svgName + "/" + svgName + ".svg"
 
     return path
+
+
+
+def sanitize_name(name):
+    """ This function sanitizes the knitting symbol name. The returned
+    string will be used as the directory name where the symbol is located
+    and will also be used for the filename of the svg image itself.
+    """
+
+    # replace all non word characters with underscores
+    name.replace(QRegExp(r"\W"),"_")
+
+    # replace consecutive stretches of underscores with a single one
+    name.replace(QRegExp(r"[_]+"),"_")
+
+    return name

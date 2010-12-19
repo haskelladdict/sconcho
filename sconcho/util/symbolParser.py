@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PyQt4.QtCore import (QDir, QFile, QString, QStringList, QIODevice,
-                          QTextStream, QTemporaryFile)
+                          QTextStream, QTemporaryFile, Qt)
 from PyQt4.QtGui import QMessageBox
 from PyQt4.QtXml import QDomDocument
 
@@ -132,7 +132,8 @@ def parse_symbol_description(node):
     item = node.firstChild()
     while not item.isNull():
 
-        entry = item.firstChild().toText().data()
+        #entry = item.firstChild().toText().data()
+        entry = item.firstChild().toCharacterData().data()
 
         if item.toElement().tagName() == "svgName":
             content["svgName"] = entry
@@ -197,32 +198,46 @@ def create_new_symbol(symbolPath, svgPath, svgName, category, name,
 
     symbolDir.mkdir(symbolDirPath)
 
-    # copy the svg file
-    symbolTargetFilePath = symbolDirPath + "/" + svgName + ".svg"
-    if not QFile(svgPath).copy(symbolTargetFilePath):
-        QMessageBox.critical(None, msg.failedToCopySvgTitle,
-                             msg.failedToCopySvgText % symbolTargetFilePath,
-                             QMessageBox.Close)
+    # the following try/except suite attempts to return things back
+    # to normal if writing fails for some reason
+    descriptionFileHandle = None
+    symbolTargetFilePath  = None
+
+    try:
         
-        # remove symbolDir again, otherwise we have an orphan
-        symbolDir.rmdir(symbolDirPath)
-        return False
+        # copy the svg file
+        symbolTargetFilePath = symbolDirPath + "/" + svgName + ".svg"
+        if not QFile(svgPath).copy(symbolTargetFilePath):
+            QMessageBox.critical(None, msg.failedToCopySvgTitle,
+                                msg.failedToCopySvgText % symbolTargetFilePath,
+                                QMessageBox.Close)
+           
+            raise IOError
 
-    # write the description file
-    descriptionFileHandle = QFile(symbolDirPath + "/" + "description")
-    if not descriptionFileHandle.open(QIODevice.WriteOnly):
-        QMessageBox.critical(None, msg.failedToCreateDescriptionFIleTitle,
-                             msg.failedToCreateDescriptionFileText % (category,
-                             name), QMessageBox.Close)
+        # write the description file
+        descriptionFileHandle = QFile(symbolDirPath + "/" + "description")
+        if not descriptionFileHandle.open(QIODevice.WriteOnly):
+            QMessageBox.critical(None, msg.failedToCreateDescriptionFIleTitle,
+                                msg.failedToCreateDescriptionFileText % (category,
+                                name), QMessageBox.Close)
+            raise IOError
 
-        # remove the copied svg file and directory
-        symbolDir.remove(descriptionFileHandle)
-        symbolDir.remove(symbolTargetFilePath)
+        # finally try to write the content of the file
+        try:
+            write_description_content(descriptionFileHandle, svgName, category, 
+                                      name, description, width)
+        except:
+            raise IOError
+
+    except IOError:
+        if descriptionFileHandle:
+            symbolDir.remove(descriptionFileHandle)
+
+        if symbolTargetFilePath:
+            symbolDir.remove(symbolTargetFilePath)
+
         symbolDir.remove(symbolDirPath)
-
-    # finally write the content of the file
-    write_description_content(descriptionFileHandle, svgName, category, 
-                              name, description, width)
+        return False
 
     return True
 
@@ -235,6 +250,7 @@ def write_description_content(handle, svgName, category, name, description,
     """
     
     stream = QTextStream(handle)
+    stream.setCodec("UTF-8")
     stream << ("<?xml version='1.0' encoding='UTF-8'?>\n"
                "<sconcho>\n"
                "  <knittingSymbol>\n"
@@ -245,7 +261,8 @@ def write_description_content(handle, svgName, category, name, description,
                "    <symbolWidth>%d</symbolWidth>\n"
                "  </knittingSymbol>\n"
                "</sconcho>\n"
-               % (svgName, category, name, description, width))
+               % (Qt.escape(svgName), Qt.escape(category), Qt.escape(name), 
+                  Qt.escape(description), width))
 
 
 
