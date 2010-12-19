@@ -69,10 +69,6 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
         # add connections
-        #self.connect(self.availableSymbolsWidget, 
-        #             SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
-        #             self.update_selected_symbol_display)
-
         self.connect(self.availableSymbolsWidget, 
                      SIGNAL("currentItemChanged(QTreeWidgetItem*, \
                                                 QTreeWidgetItem*)"),
@@ -112,24 +108,9 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         sortedSymbols = symbolWidget.sort_symbols_by_category(self._symbolDict)
         for entry in sortedSymbols:
-
-            category = entry[0]
-            categoryItem = QTreeWidgetItem(self.availableSymbolsWidget, 
-                                           [category])
-            categoryItem.setFlags(Qt.ItemIsEnabled)
-
             for symbol in entry[1]:
-                name = symbol["name"]
-                symbolItem = QTreeWidgetItem([name])
-                symbolItem.setData(0, Qt.UserRole, 
-                                   create_symbol_id(category, name))
-                categoryItem.addChild(symbolItem)        
-                symbolItem.setFlags(Qt.ItemIsSelectable | 
-                                    Qt.ItemIsUserCheckable | 
-                                    Qt.ItemIsEnabled)
+                self._add_symbol_to_tree_widget(symbol)
 
-        self.availableSymbolsWidget.resizeColumnToContents(0)
-      
 
 
     def _set_up_update_symbol_tab(self):
@@ -298,10 +279,11 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
             # prune symbol itself
             name = symbol["name"]
-            
+        
             numChildren = categoryItem.childCount()
             for count in range(0, numChildren):
                 child = categoryItem.child(count)
+
                 if child.text(0) == name:
                     categoryItem.removeChild(child)
                     break
@@ -319,6 +301,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         if not self._selectedSymbol:
             return
+        oldSymbol = self._selectedSymbol
         oldName = self._selectedSymbol["svgName"]
 
         svgImagePath = self.svgPathEdit_U.text()
@@ -345,7 +328,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                             data["svgName"]):
                         if remove_directory(self._symbolPath + "/tmp/"):
                             self._update_dict(data)
-                            self._update_symbols_widget(data)
+                            self._update_tree_widget(oldSymbol, data)
                             self._update_tab(data)
                             return
 
@@ -366,16 +349,11 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
 
-    def _update_symbols_widget(self, data):
-        """ Synce the available symbols widget with the just updated data. """
+    def _update_tree_widget(self, oldSymbol, newSymbol):
+        """ Sync the available symbols widget with the just updated data. """
 
-        category = data["category"]
-        name     = data["name"]
-
-        item = self.availableSymbolsWidget.currentItem()
-        item.setText(0, name)
-        item.parent().setText(0, category)
-        item.setData(0, Qt.UserRole, create_symbol_id(category, name))
+        self._add_symbol_to_tree_widget(newSymbol)
+        self._delete_symbol_from_tree_widget(oldSymbol)
 
 
 
@@ -434,6 +412,41 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                                           data["width"])
             if createdOk:
                 self.clear_add_symbol_tab()
+                self._update_dict(data)
+                self._add_symbol_to_tree_widget(data)
+
+
+
+    def _add_symbol_to_tree_widget(self, symbol):
+        """ Add the given symbol to the tree widget. If this
+        is a new category create it, otherwise append it
+        to the already existing one.
+        """
+
+        # find category
+        category = symbol["category"]
+        categoryItems = self.availableSymbolsWidget.findItems(category, 
+                                                Qt.MatchExactly, 0)
+
+        name = symbol["name"]
+        symbolItem = QTreeWidgetItem([name])
+        symbolItem.setData(0, Qt.UserRole, 
+                           create_symbol_id(category, name))
+        symbolItem.setFlags(Qt.ItemIsSelectable | 
+                            Qt.ItemIsUserCheckable | 
+                            Qt.ItemIsEnabled)
+
+        if categoryItems:
+            categoryItems[0].addChild(symbolItem)        
+        else:
+            categoryItem = QTreeWidgetItem(self.availableSymbolsWidget, 
+                                           [category])
+            categoryItem.setFlags(Qt.ItemIsEnabled)
+            categoryItem.addChild(symbolItem)
+
+        self.availableSymbolsWidget.resizeColumnToContents(0)
+        self.availableSymbolsWidget.sortItems(0, Qt.AscendingOrder)
+        self.availableSymbolsWidget.setCurrentItem(symbolItem)
 
 
 
