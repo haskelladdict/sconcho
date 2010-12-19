@@ -147,16 +147,18 @@ symbolExistsText     = ("Error: The category/name combination %s/%s you "
                         "entered already exists.")
 
 failedToCopySvgTitle = "sconcho: Add Symbol Error"
-failedtoCopyText     = ("Error: Failed to copy SVG image %s into sconcho "
+failedToCopySvgText  = ("Error: Failed to copy SVG image %s into sconcho "
                         "database." )
 
 failedToCreateDescriptionFileTitle = "sconcho: Add Symbol Error"
 failedToCreateDescriptionFileText  = ("Error: Failed to create the description "
         "file to the symbol with category %s and name %s.")
 
-
 noNameErrorTitle     = "sconcho: Add Symbol Error"
 noNameErrorText      = "Error: Please enter a name for your symbol."
+
+deleteSymbolTitle    = "sconcho: Delete Symbol"
+deleteSymbolText     = "Are you sure you would like to delete symbol %s?"
 
 
 

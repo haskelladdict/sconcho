@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PyQt4.QtCore import (QDir, QFile, QString, QStringList, QIODevice,
-                          QTextStream)
+                          QTextStream, QTemporaryFile)
 from PyQt4.QtGui import QMessageBox
 from PyQt4.QtXml import QDomDocument
 
@@ -201,7 +201,7 @@ def create_new_symbol(symbolPath, svgPath, svgName, category, name,
     symbolTargetFilePath = symbolDirPath + "/" + svgName + ".svg"
     if not QFile(svgPath).copy(symbolTargetFilePath):
         QMessageBox.critical(None, msg.failedToCopySvgTitle,
-                             msg.failedToCopySvgText % svgPath,
+                             msg.failedToCopySvgText % symbolTargetFilePath,
                              QMessageBox.Close)
         
         # remove symbolDir again, otherwise we have an orphan
@@ -248,3 +248,50 @@ def write_description_content(handle, svgName, category, name, description,
                % (svgName, category, name, description, width))
 
 
+
+def remove_symbol(symbolTopPath, name):
+    """ This function removes the symbol named name from the
+    database located at symbolPath.
+    """
+
+    symbolPath = symbolTopPath + "/" + name
+    symbolPathDir = QDir(symbolPath)
+    if not symbolPathDir.exists():
+       return False
+
+    descriptionFile = symbolPath + "/description"
+    svgFile         = symbolPath + "/" + name + ".svg"
+
+    if symbolPathDir.remove(descriptionFile):
+        if symbolPathDir.remove(svgFile):
+            if symbolPathDir.rmdir(symbolPath):
+                return True
+
+    return False
+
+
+
+def move_symbol(symbolTopPath, oldDir, newDir):
+    """ Move the the symbol at oldDir to newDir. If newDir is
+    not given we pick a random one. The function returns True
+    on success and False otherwise.
+    """
+
+    oldPath = symbolTopPath + "/" + oldDir
+    newPath = symbolTopPath + "/" + newDir
+    
+    symOldDir = QDir(oldPath)
+    symNewDir = QDir(newPath)
+    if symOldDir.exists():
+        if not symNewDir.exists():
+            return symNewDir.rename(oldPath, newPath)
+
+    return False
+
+
+
+def remove_directory(path):
+    """ Removes the directory at path. """
+
+    deadDir = QDir(path)
+    return deadDir.rmdir(path)

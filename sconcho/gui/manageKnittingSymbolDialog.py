@@ -24,6 +24,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+from functools import partial
+
 from PyQt4.QtCore import (QStringList, SIGNAL, Qt, QDir, QByteArray,
                           QString)
 from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog, 
@@ -31,7 +33,8 @@ from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog,
 from PyQt4.QtSvg import (QSvgWidget)
 
 from gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
-from util.symbolParser import (parse_all_symbols, create_new_symbol)
+from util.symbolParser import (parse_all_symbols, create_new_symbol,
+                               remove_symbol, move_symbol, remove_directory)
 import util.messages as msg
 import gui.symbolWidget as symbolWidget
 
@@ -62,6 +65,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         # do some initialisation
         self._svgFilePath_A = None
+        self._selectedSymbol = None
 
 
         # add connections
@@ -75,11 +79,20 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self.connect(self.addSymbolButton, SIGNAL("clicked()"),
                      self.add_symbol)
 
+        self.connect(self.deleteSymbolButton, SIGNAL("clicked()"),
+                     self.delete_symbol)
+
+        self.connect(self.updateSymbolButton, SIGNAL("clicked()"),
+                     self.update_symbol)
+
         self.connect(self.browseSymbolButton_A, SIGNAL("clicked()"),
                      self.load_svg_in_add_tab)
 
         self.connect(self.symbolWidthSpinner_A, SIGNAL("valueChanged(int)"),
-                     self.rescale_svg_item_A)
+                     partial(self.rescale_svg_item, self.svgWidget_A))
+
+        self.connect(self.symbolWidthSpinner_U, SIGNAL("valueChanged(int)"),
+                     partial(self.rescale_svg_item, self.svgWidget_U))
 
 
 
@@ -138,50 +151,73 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         symbolId = widgetItem.data(col, Qt.UserRole).toString()
         if symbolId in self._symbolDict:
             symbol = self._symbolDict[symbolId]
+            self._selectedSymbol = symbol
+            self.show_selected_symbol_info(symbol)
+        else:
+            self._selectedSymbol = None
+            self.clear_symbol_info()
 
-            self.symbolNameLabel_U.setDisabled(False)
-            self.symbolNameEntry_U.setReadOnly(False)
-            self.symbolNameEntry_U.setText(symbol["name"])
 
-            self.symbolCategoryLabel_U.setDisabled(False)
-            self.symbolCategoryEntry_U.setReadOnly(False)
-            self.symbolCategoryEntry_U.setText(symbol["category"])
 
-            self.symbolWidthLabel_U.setDisabled(False)
-            self.symbolWidthSpinner_U.setReadOnly(False)
-            width, status = symbol["width"].toInt()
+    def show_selected_symbol_info(self, symbol):
+        """ Show info for symbol on update/delete widget tab."""
+
+        pathToSvgImage = generate_svg_path(self._symbolPath, symbol)
+        self.svgWidget_U.load(pathToSvgImage)
+        self.svgPathEdit_U.setText(pathToSvgImage)
+
+        self.symbolNameLabel_U.setDisabled(False)
+        self.symbolNameEntry_U.setReadOnly(False)
+        self.symbolNameEntry_U.setText(symbol["name"])
+
+        self.symbolCategoryLabel_U.setDisabled(False)
+        self.symbolCategoryEntry_U.setReadOnly(False)
+        self.symbolCategoryEntry_U.setText(symbol["category"])
+
+        self.symbolWidthLabel_U.setDisabled(False)
+        self.symbolWidthSpinner_U.setReadOnly(False)
+        width, status = symbol["width"].toInt()
+        if status:
             self.symbolWidthSpinner_U.setDisabled(False)
             self.symbolWidthSpinner_U.setValue(width)
+            self.rescale_svg_item(self.svgWidget_U, width)
 
-            self.symbolDescriptionLabel_U.setDisabled(False)
-            self.symbolDescriptionEntry_U.setReadOnly(False)
-            self.symbolDescriptionEntry_U.setText(symbol["description"])
+        self.symbolDescriptionLabel_U.setDisabled(False)
+        self.symbolDescriptionEntry_U.setReadOnly(False)
+        self.symbolDescriptionEntry_U.setText(symbol["description"])
 
-            self.updateSymbolButton_U.setDisabled(False)
-            self.browseSymbolButton_U.setDisabled(False)
+        self.updateSymbolButton.setDisabled(False)
+        self.deleteSymbolButton.setDisabled(False)
+        self.browseSymbolButton_U.setDisabled(False)
 
-        else:
 
-            self.symbolNameLabel_U.setDisabled(True)
-            self.symbolNameEntry_U.clear()
-            self.symbolNameEntry_U.setReadOnly(True)
 
-            self.symbolWidthLabel_U.setDisabled(True)
-            self.symbolCategoryEntry_U.clear()
-            self.symbolCategoryEntry_U.setReadOnly(True)
-            self.symbolCategoryLabel_U.setDisabled(True)
+    def clear_symbol_info(self):
+        """ Clear the the update/delete widget tab. """
 
-            self.symbolWidthLabel_U.setDisabled(True)
-            self.symbolWidthSpinner_U.clear()
-            self.symbolWidthSpinner_U.setDisabled(True)
-            self.symbolWidthSpinner_U.setReadOnly(True)
+        self.svgWidget_U.load(QByteArray())
 
-            self.symbolDescriptionLabel_U.setDisabled(True)
-            self.symbolDescriptionEntry_U.clear()
-            self.symbolDescriptionEntry_U.setReadOnly(True)
+        self.symbolNameLabel_U.setDisabled(True)
+        self.symbolNameEntry_U.clear()
+        self.symbolNameEntry_U.setReadOnly(True)
 
-            self.updateSymbolButton_U.setDisabled(True)
-            self.browseSymbolButton_U.setDisabled(True)
+        self.symbolWidthLabel_U.setDisabled(True)
+        self.symbolCategoryEntry_U.clear()
+        self.symbolCategoryEntry_U.setReadOnly(True)
+        self.symbolCategoryLabel_U.setDisabled(True)
+
+        self.symbolWidthLabel_U.setDisabled(True)
+        self.symbolWidthSpinner_U.clear()
+        self.symbolWidthSpinner_U.setDisabled(True)
+        self.symbolWidthSpinner_U.setReadOnly(True)
+
+        self.symbolDescriptionLabel_U.setDisabled(True)
+        self.symbolDescriptionEntry_U.clear()
+        self.symbolDescriptionEntry_U.setReadOnly(True)
+
+        self.updateSymbolButton.setDisabled(True)
+        self.deleteSymbolButton.setDisabled(True)
+        self.browseSymbolButton_U.setDisabled(True)
 
 
 
@@ -197,54 +233,154 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self._svgFilePath_A = None
 
 
-    
-    def add_symbol(self):
-        """ This slot checks that the interface contains a valid
-        symbol (all fields have some data and an svg image has been
-        selected.
+
+    def delete_symbol(self):
+        """ This slot deletes the currently selected symbol.
+        We pop up a confirmation dialog just to make sure ;)
+        """
+      
+        # should never occur, but what the heck
+        if not self._selectedSymbol:
+            return
+
+        name = self._selectedSymbol["name"]
+        answer = QMessageBox.question(self,
+                                      msg.deleteSymbolTitle, 
+                                      msg.deleteSymbolText % name,
+                                      QMessageBox.Ok | QMessageBox.Cancel)
+
+        if answer == QMessageBox.Cancel:
+            return
+
+        svgName = self._selectedSymbol["svgName"]
+        status = remove_symbol(self._symbolPath, svgName)
+
+        if status:
+            print("all went well")
+
+
+
+    def update_symbol(self):
+        """ This slot is implemented via delete and then add.
+        When deleting we first check that we have valid data,
+        then delete, then add.
         """
 
-        if not self._svgFilePath_A:
+        svgImagePath = self.svgPathEdit_U.text()
+        data = self._get_data_from_interface(svgImagePath,
+                                       self.symbolNameEntry_U,
+                                       self.symbolCategoryEntry_U,
+                                       self.symbolDescriptionEntry_U,
+                                       self.symbolWidthSpinner_U)
+
+        if data:
+            createOk = create_new_symbol(self._symbolPath + "/tmp/", 
+                                         data["svgPathName"],
+                                         data["svgName"], 
+                                         data["category"], 
+                                         data["name"], 
+                                         data["description"], 
+                                         data["width"])
+        
+            # if creation of the new symbol succeeded we remove the old
+            # data, otherwise we move it back in place
+            if createOk:
+                if remove_symbol(self._symbolPath, data["svgName"]):
+                    if move_symbol(self._symbolPath, "/tmp/" + data["svgName"],
+                            data["svgName"]):
+                        if remove_directory(self._symbolPath + "/tmp/"):
+                            return
+
+        print("there was a problem updating")
+            
+
+        
+
+    def add_symbol(self):
+        """ This is a simple wrapper calling the worker member function
+        with the proper interface widgets.
+        """
+        
+        self._add_symbol_worker(self._svgFilePath_A,
+                                self.symbolNameEntry_A,
+                                self.symbolCategoryEntry_A,
+                                self.symbolDescriptionEntry_A,
+                                self.symbolWidthSpinner_A)
+
+
+    
+    def _add_symbol_worker(self, svgPathName, nameWidget, categoryWidget,
+                           descriptionWidget, widthWidget):
+        """ This function checks that all widgets have valid entries
+        and if so creates the symbol.
+        """
+
+
+        data = self._get_data_from_interface(svgPathName, nameWidget, 
+                                             categoryWidget, descriptionWidget, 
+                                             widthWidget)
+
+        # check that symbol is unique and new
+        if create_symbol_id(data["category"], data["name"]) in self._symbolDict:
+            QMessageBox.critical(None, msg.symbolExistsTitle,
+                                 msg.symbolExistsText % (name, category),
+                                 QMessageBox.Close)
+            return 
+
+        if data:
+            createdOk = create_new_symbol(self._symbolPath, 
+                                          data["svgPathName"], 
+                                          data["svgName"], 
+                                          data["category"], 
+                                          data["name"], 
+                                          data["description"], 
+                                          data["width"])
+            if createdOk:
+                self.clear_add_symbol_tab()
+
+
+
+    def _get_data_from_interface(self, svgPathName, nameWidget, categoryWidget,
+                                 descriptionWidget, widthWidget):
+        """ This function extracts the data from the interface and checks
+        that all is wel and present.
+        """
+
+        data = {}
+        if not svgPathName:
             QMessageBox.critical(None, msg.noSvgFileErrorTitle,
                                  msg.noSvgFileErrorText,
                                  QMessageBox.Close)
-            return
+            return None
+        else:
+            data["svgPathName"] = svgPathName
 
 
-        name = self.symbolNameEntry_A.text()
+        name = nameWidget.text()
         if not name:
             QMessageBox.critical(None, msg.noNameErrorTitle,
                                  msg.noNameErrorText,
                                  QMessageBox.Close)
-            return
+            return None
+        else:
+            data["name"] = name
+            data["svgName"] = name
 
-        # we name the svg with the symbol name
-        svgName = name
         
-        category = self.symbolCategoryEntry_A.text()
+        category = categoryWidget.text()
         if not category:
             QMessageBox.critical(None, msg.noCategoryErrorTitle,
                                  msg.noCategoryErrorText,
                                  QMessageBox.Close)
-            return
+            return None
+        else:
+            data["category"] = category
 
-        # check that symbol is unique and new
-        if create_symbol_id(category, name) in self._symbolDict:
-            QMessageBox.critical(None, msg.symbolExistsTitle,
-                                 msg.symbolExistsText % (name, category),
-                                 QMessageBox.Close)
-            #return
 
-        description = self.symbolDescriptionEntry_A.toPlainText()
-        width       = self.symbolWidthSpinner_A.value()
+        data["description"] = descriptionWidget.toPlainText()
+        data["width"]       = widthWidget.value()
 
-        status = create_new_symbol(self._symbolPath, self._svgFilePath_A, 
-                                   svgName, category, name, description, 
-                                   width)
-        
-        # clear the tab if we saved successfully
-        if status:
-            self.clear_add_symbol_tab()
+        return data
 
         
 
@@ -269,15 +405,15 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             self._svgFilePath_A = filePath
             self.svgPathEdit_A.setText(filePath)
             width = self.symbolWidthSpinner_A.value()
-            self.rescale_svg_item_A(width)
+            self.rescale_svg_item(self.svgWidget_A, width)
 
         
 
-    def rescale_svg_item_A(self, width):
+    def rescale_svg_item(self, item, width):
         """ Rescales the svg image if a user changes the symbol width. """
 
-        self.svgWidget_A.setFixedSize(ManageKnittingSymbolDialog.SYMBOL_SIZE * width,
-                                      ManageKnittingSymbolDialog.SYMBOL_SIZE)
+        item.setFixedSize(ManageKnittingSymbolDialog.SYMBOL_SIZE * width,
+                          ManageKnittingSymbolDialog.SYMBOL_SIZE)
 
        
 
@@ -295,3 +431,13 @@ def create_symbol_id(category, name):
     """
 
     return QString(category + "::" + name) 
+
+
+
+def generate_svg_path(symbolTopDir, symbol):
+    """ Generates the path to the svg image for the given symbol."""
+
+    svgName = symbol["svgName"]
+    path = symbolTopDir + "/" + svgName + "/" + svgName + ".svg"
+
+    return path
