@@ -27,7 +27,7 @@ from __future__ import absolute_import
 from functools import partial
 
 from PyQt4.QtCore import (QStringList, SIGNAL, Qt, QDir, QByteArray,
-                          QString)
+                          QString, QRegExp)
 from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog, 
                          QMessageBox)
 from PyQt4.QtSvg import (QSvgWidget)
@@ -266,6 +266,10 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         then delete, then add.
         """
 
+        if not self._selectedSymbol:
+            return
+        oldName = self._selectedSymbol["name"]
+
         svgImagePath = self.svgPathEdit_U.text()
         data = self._get_data_from_interface(svgImagePath,
                                        self.symbolNameEntry_U,
@@ -275,7 +279,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         if data:
             createOk = create_new_symbol(self._symbolPath + "/tmp/", 
-                                         data["svgPathName"],
+                                         data["svgPath"],
                                          data["svgName"], 
                                          data["category"], 
                                          data["name"], 
@@ -285,16 +289,51 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             # if creation of the new symbol succeeded we remove the old
             # data, otherwise we move it back in place
             if createOk:
-                if remove_symbol(self._symbolPath, data["svgName"]):
+                if remove_symbol(self._symbolPath, oldName):
                     if move_symbol(self._symbolPath, "/tmp/" + data["svgName"],
                             data["svgName"]):
                         if remove_directory(self._symbolPath + "/tmp/"):
+                            self._update_dict(data)
+                            self._update_symbols_widget(data)
+                            self._update_tab(data)
                             return
 
         print("there was a problem updating")
             
 
-        
+
+    def _update_dict(self, data):
+        """ Syncs the dictionary with the just updated data. """
+
+        # convert width value from int to string
+        data["width"] = QString("%d" % data["width"])
+        symbolId = create_symbol_id(data["category"], data["name"])
+        self._symbolDict[symbolId] = data
+
+
+
+    def _update_symbols_widget(self, data):
+        """ Synce the available symbols widget with the just updated data. """
+
+        category = data["category"]
+        name     = data["name"]
+
+        item = self.availableSymbolsWidget.currentItem()
+        item.setText(0, name)
+        item.parent().setText(0, category)
+        item.setData(0, Qt.UserRole, create_symbol_id(category, name))
+
+
+    def _update_tab(self, data):
+        """ Update the contents of the tab based on a content
+        change. For now this could at most be a change in the svg
+        image path due to a symbol name change.
+        """
+
+        pathToSvgImage = generate_svg_path(self._symbolPath, data)
+        self.svgPathEdit_U.setText(pathToSvgImage)
+       
+
 
     def add_symbol(self):
         """ This is a simple wrapper calling the worker member function
@@ -329,7 +368,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         if data:
             createdOk = create_new_symbol(self._symbolPath, 
-                                          data["svgPathName"], 
+                                          data["svgPath"], 
                                           data["svgName"], 
                                           data["category"], 
                                           data["name"], 
@@ -353,7 +392,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                                  QMessageBox.Close)
             return None
         else:
-            data["svgPathName"] = svgPathName
+            data["svgPath"] = svgPathName
 
 
         name = nameWidget.text()
@@ -364,9 +403,11 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             return None
         else:
             data["name"] = name
-            data["svgName"] = name
+            
+            # since we use this as a file path get rid of whitespace
+            data["svgName"] = name.replace(QRegExp("\s"),"_")
+       
 
-        
         category = categoryWidget.text()
         if not category:
             QMessageBox.critical(None, msg.noCategoryErrorTitle,
@@ -377,8 +418,9 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             data["category"] = category
 
 
-        data["description"] = descriptionWidget.toPlainText()
-        data["width"]       = widthWidget.value()
+        data["description"]  = descriptionWidget.toPlainText()
+        data["width"]        = widthWidget.value()
+        data["category_pos"] = QString("100000")
 
         return data
 
