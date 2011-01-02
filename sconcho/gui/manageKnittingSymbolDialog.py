@@ -59,15 +59,14 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         # grab all symbols allready present
         self._symbolPath = symbolPath
         self._symbolDict = parse_all_symbols([symbolPath])
-        self._add_symbols_to_widget()
         self._set_up_update_symbol_tab()
         self._set_up_add_symbol_tab()
+        self._add_symbols_to_widget()
 
         # do some initialisation
+        #self._selectedSymbol = None
         self._svgFilePath_add = None
-        self._selectedSymbol = None
-
-
+        
         # add connections
         self.connect(self.availableSymbolsWidget, 
                      SIGNAL("currentItemChanged(QTreeWidgetItem*, \

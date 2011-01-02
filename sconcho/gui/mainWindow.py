@@ -41,6 +41,7 @@ import sconcho.util.messages as msg
 import sconcho.util.settings as settings
 import sconcho.util.misc as misc
 import sconcho.util.io as io
+import sconcho.util.symbolParser as parser
 from sconcho.gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
 from sconcho.gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from sconcho.gui.patternCanvas import PatternCanvas
@@ -50,6 +51,7 @@ from sconcho.gui.preferencesDialog import PreferencesDialog
 from sconcho.gui.sconchoManual import SconchoManual
 from sconcho.gui.manageKnittingSymbolDialog import ManageKnittingSymbolDialog
 from sconcho.util.exceptions import PatternReadError
+
 
 
 __version__ = "0.1.0_b1"
@@ -85,10 +87,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar().addPermanentWidget(self.activeSymbolWidget)
 
         self._topLevelPath = topLevelPath
-        self._symbolPaths = [os.path.join(topLevelPath, "symbols")]
+        self._knittingSymbols = knittingSymbols
         self.canvas = PatternCanvas(self.settings, 
-                                      knittingSymbols[QString("basic::knit")],
-                                      self)
+                                    knittingSymbols[QString("basic::knit")],
+                                    self)
         self.initialize_symbol_widget(knittingSymbols)
         self.initialize_color_widget()
 
@@ -493,10 +495,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         # add newly loaded project
-        knittingSymbols = parser.parse_all_symbols(self._symbolPaths)
-        if not self.canvas.load_previous_pattern(knittingSymbols, 
-                                                   patternGridItems,
-                                                   legendItems):
+        if not self.canvas.load_previous_pattern(self._knittingSymbols, 
+                                                 patternGridItems,
+                                                 legendItems):
             return
 
         set_up_colors(self.colorWidget, colors)
