@@ -125,6 +125,7 @@ class PatternCanvas(QGraphicsScene):
             yPos = self._unitHeight * row
             item.setPos(xPos, yPos)
             item.setFont(labelFont)
+            item.setToolTip("Control-Click to select whole row")
             self.addItem(item)
             self._textLabels.append(item)
 
@@ -138,6 +139,7 @@ class PatternCanvas(QGraphicsScene):
             xPos = self._unitWidth * col + (self._unitWidth * 0.6 -textWidth)
             item.setPos(xPos, yPos)
             item.setFont(labelFont)
+            item.setToolTip("Control-Click to select whole column")
 
             self.addItem(item)
             self._textLabels.append(item)
@@ -373,7 +375,7 @@ class PatternCanvas(QGraphicsScene):
         (row, col) = convert_pos_to_row_col(event.scenePos(),
                                             self._unitWidth,
                                             self._unitHeight)
-        
+       
         if event.button() == Qt.RightButton:
 
             if is_click_in_grid(col, row, self._numColumns, self._numRows):
@@ -382,11 +384,11 @@ class PatternCanvas(QGraphicsScene):
                 # don't propagate this event
                 return
 
-        elif event.button() == Qt.LeftButton:
+        elif (event.button() == Qt.LeftButton) and \
+             (event.modifiers() & Qt.ControlModifier):
 
             if is_click_on_labels(col, row, self._numColumns, self._numRows):
                  self.handle_right_click_on_labels(col, row)
-
 
         # tell our main window that something changed
         self.emit(SIGNAL("scene_changed"))
@@ -409,7 +411,10 @@ class PatternCanvas(QGraphicsScene):
 
 
     def handle_right_click_on_labels(self, col, row):
-        """ Deal with user clicks on the grid labels. """
+        """ Deal with user clicks on the grid labels. 
+        These select whole rows or columns depending on
+        if a column or row label was clicked on.
+        """
 
         assert (row == self._numRows) or (col == self._numColumns)
 
@@ -1129,7 +1134,7 @@ class PatternLabelItem(QGraphicsTextItem):
     def __init__(self, text, parent = None):
 
         super(PatternLabelItem, self).__init__(text, parent)
-        
+
 
 
 

@@ -33,10 +33,10 @@ The presently active symbol (including its background color) is indicated
 in the *Active Symbol Tool* in the lower right hand corner. If no symbol is 
 selected the *Active Symbol Tool* displays **No Active Symbol**.
 
-Grid cells can be selected in 3 ways:
+Grid cells can be selected in three ways:
 
   1) individual grid cells can be selected by using the right mouse button to click on them
-  2) complete rows or columns can be selected by clicking on the row or column labels
+  2) complete rows or columns can be selected by holding down the **Control** key and clicking on the row or column labels. If the label spacing is larger than one, Control-clicking in empty row/column label positions will also select whole rows/columns.
   3) a rectangular area can be selected with the *Rubberband Tool* by holding down the **Shift** key and the right mouse button and then dragging the mouse.
 
 Without an active symbol (the *Active Symbol Tool*
