@@ -27,11 +27,11 @@ from __future__ import absolute_import
 from PyQt4.QtCore import (SIGNAL, QString)
 from PyQt4.QtGui import (QDialog, QFontDatabase)
 
-import util.misc as misc
-from util.settings import (get_label_font, get_legend_font, 
-                           set_legend_font, set_label_font,
-                           get_label_interval, set_label_interval)
-from gui.ui_preferencesDialog import Ui_PreferencesDialog
+import sconcho.util.misc as misc
+from sconcho.util.settings import (get_label_font, get_legend_font, 
+                                   set_legend_font, set_label_font,
+                                   get_label_interval, set_label_interval)
+from sconcho.gui.ui_preferencesDialog import Ui_PreferencesDialog
 
 
 

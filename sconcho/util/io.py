@@ -32,14 +32,14 @@ from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from PyQt4.QtSvg import QSvgGenerator
 
-from gui.patternCanvas import (PatternGridItem, PatternLegendItem,
-                               legendItem_symbol, legendItem_text)
-from util.misc import wait_cursor
-from util.exceptions import PatternReadError
-import util.messages as msg
-from util.settings import (get_label_font, get_legend_font,
-                           set_legend_font, set_label_font,
-                           get_label_interval, set_label_interval)
+from sconcho.gui.patternCanvas import (PatternGridItem, PatternLegendItem,
+                                       legendItem_symbol, legendItem_text)
+from sconcho.util.misc import wait_cursor
+from sconcho.util.exceptions import PatternReadError
+import sconcho.util.messages as msg
+from sconcho.util.settings import (get_label_font, get_legend_font,
+                                   set_legend_font, set_label_font,
+                                   get_label_interval, set_label_interval)
 
 
 # magick number to specify binary API

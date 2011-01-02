@@ -29,7 +29,7 @@ from PyQt4.QtCore import (QDir, QFile, QString, QStringList, QIODevice,
 from PyQt4.QtGui import QMessageBox
 from PyQt4.QtXml import QDomDocument
 
-import util.messages as msg
+import sconcho.util.messages as msg
 
 
 # need this for sorting symbol entries

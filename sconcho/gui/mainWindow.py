@@ -36,20 +36,20 @@ from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QFrame, QColor, QApplication)
 from PyQt4.QtSvg import QSvgWidget
 
-from gui.ui_mainWindow import Ui_MainWindow
-import util.messages as msg
-import util.settings as settings
-import util.misc as misc
-import util.io as io
-from gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
-from gui.colorWidget import (ColorWidget, ColorSynchronizer)
-from gui.patternCanvas import PatternCanvas
-from gui.exportBitmapDialog import ExportBitmapDialog
-from gui.newPatternDialog import NewPatternDialog
-from gui.preferencesDialog import PreferencesDialog
-from gui.sconchoManual import SconchoManual
-from gui.manageKnittingSymbolDialog import ManageKnittingSymbolDialog
-from util.exceptions import PatternReadError
+from sconcho.gui.ui_mainWindow import Ui_MainWindow
+import sconcho.util.messages as msg
+import sconcho.util.settings as settings
+import sconcho.util.misc as misc
+import sconcho.util.io as io
+from sconcho.gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
+from sconcho.gui.colorWidget import (ColorWidget, ColorSynchronizer)
+from sconcho.gui.patternCanvas import PatternCanvas
+from sconcho.gui.exportBitmapDialog import ExportBitmapDialog
+from sconcho.gui.newPatternDialog import NewPatternDialog
+from sconcho.gui.preferencesDialog import PreferencesDialog
+from sconcho.gui.sconchoManual import SconchoManual
+from sconcho.gui.manageKnittingSymbolDialog import ManageKnittingSymbolDialog
+from sconcho.util.exceptions import PatternReadError
 
 
 __version__ = "0.1.0_a6"

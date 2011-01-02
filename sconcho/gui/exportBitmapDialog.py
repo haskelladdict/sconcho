@@ -30,9 +30,8 @@ from PyQt4.QtCore import (Qt, SIGNAL, QString, QDir, QFileInfo)
 from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
                          QImageReader, QDialogButtonBox)
 
-from gui.ui_exportBitmapDialog import Ui_ExportBitmapDialog
-
-import util.messages as msg
+from sconcho.gui.ui_exportBitmapDialog import Ui_ExportBitmapDialog
+import sconcho.util.messages as msg
 
 
 ##########################################################################

@@ -26,8 +26,9 @@ from __future__ import absolute_import
 
 from PyQt4.QtCore import (Qt, SIGNAL, QString)
 from PyQt4.QtGui import (QDialog, QMessageBox)
-from gui.ui_insertDeleteRowColumnDialog import Ui_InsertDeleteRowColumnDialog
-import util.messages as msg
+from sconcho.gui.ui_insertDeleteRowColumnDialog \
+        import Ui_InsertDeleteRowColumnDialog
+import sconcho.util.messages as msg
 
 
 ##########################################################################

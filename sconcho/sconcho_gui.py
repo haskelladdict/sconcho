@@ -26,15 +26,11 @@ from __future__ import absolute_import
 
 import os, sys
 
-# set up path to symbols and docs
-currPath = os.path.dirname(__file__)
-sys.path.append(currPath)
-
 from PyQt4.QtCore import QString
 from PyQt4.QtGui import QApplication
-from gui.mainWindow import MainWindow
-import util.symbolParser as parser
-import util.messages as msg
+from sconcho.gui.mainWindow import MainWindow
+import sconcho.util.symbolParser as parser
+import sconcho.util.messages as msg
 
 
 def sconcho_gui_launcher(fileName = None):
@@ -46,6 +42,7 @@ def sconcho_gui_launcher(fileName = None):
     # before firing up the MainWindow. At the very least we
     # require to find a symbol for a "knit" stitch. If not, 
     # we terminate right away.
+    currPath = os.path.dirname(__file__)
     symbolPath = [os.path.join(currPath, "symbols")]
     knittingSymbols = parser.parse_all_symbols(symbolPath)
     try:

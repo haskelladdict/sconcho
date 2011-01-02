@@ -32,11 +32,11 @@ from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog,
                          QMessageBox)
 from PyQt4.QtSvg import (QSvgWidget)
 
-from gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
-from util.symbolParser import (parse_all_symbols, create_new_symbol,
-                               remove_symbol, move_symbol, remove_directory)
-import util.messages as msg
-import gui.symbolWidget as symbolWidget
+from sconcho.gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
+from sconcho.util.symbolParser import (parse_all_symbols, create_new_symbol,
+                                       remove_symbol, move_symbol, remove_directory)
+import sconcho.util.messages as msg
+import sconcho.gui.symbolWidget as symbolWidget
 
 
 ##########################################################################
