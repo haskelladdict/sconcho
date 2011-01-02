@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sat Dec 18 22:41:39 2010
-#      by: PyQt4 UI code generator 4.8.1
+# Created: Sun Jan  2 13:01:28 2011
+#      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -47,7 +47,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setMinimumSize(QtCore.QSize(0, 80))
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
-        self.colorWidgetContainer = QtGui.QWidget(self.scrollArea)
+        self.colorWidgetContainer = QtGui.QWidget()
         self.colorWidgetContainer.setGeometry(QtCore.QRect(0, 0, 757, 76))
         self.colorWidgetContainer.setObjectName(_fromUtf8("colorWidgetContainer"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.colorWidgetContainer)

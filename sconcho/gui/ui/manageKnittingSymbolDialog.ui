@@ -19,7 +19,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QLabel" name="label_7">
@@ -69,7 +69,7 @@ p, li { white-space: pre-wrap; }
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
-           <widget class="QFrame" name="symbolPreviewFrame_U">
+           <widget class="QFrame" name="symbolPreviewFrame_update">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -84,25 +84,25 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="QSvgWidget" name="svgWidget_U" native="true"/>
+              <widget class="QSvgWidget" name="svgWidget_update" native="true"/>
              </item>
             </layout>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="svgPathEdit_U">
+           <widget class="QLineEdit" name="svgPathEdit_update">
             <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="browseSymbolButton_U">
+           <widget class="QPushButton" name="browseSymbolButton_update">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>Browse</string>
+             <string>&amp;Browse</string>
             </property>
            </widget>
           </item>
@@ -135,51 +135,60 @@ p, li { white-space: pre-wrap; }
         <item>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
-           <widget class="QLabel" name="symbolNameLabel_U">
+           <widget class="QLabel" name="symbolNameLabel_update">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>symbol name</string>
+             <string>symbol &amp;name</string>
+            </property>
+            <property name="buddy">
+             <cstring>symbolNameEntry_update</cstring>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="symbolNameEntry_U">
+           <widget class="QLineEdit" name="symbolNameEntry_update">
             <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="symbolCategoryLabel_U">
+           <widget class="QLabel" name="symbolCategoryLabel_update">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>symbol category</string>
+             <string>symbol &amp;category</string>
+            </property>
+            <property name="buddy">
+             <cstring>symbolCategoryEntry_update</cstring>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLineEdit" name="symbolCategoryEntry_U">
+           <widget class="QLineEdit" name="symbolCategoryEntry_update">
             <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="symbolWidthLabel_U">
+           <widget class="QLabel" name="symbolWidthLabel_update">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>symbol width</string>
+             <string>symbol &amp;width</string>
+            </property>
+            <property name="buddy">
+             <cstring>symbolWidthSpinner_update</cstring>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSpinBox" name="symbolWidthSpinner_U">
+           <widget class="QSpinBox" name="symbolWidthSpinner_update">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -192,17 +201,20 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="QLabel" name="symbolDescriptionLabel_U">
+           <widget class="QLabel" name="symbolDescriptionLabel_update">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>symbol description</string>
+             <string>symbol &amp;description</string>
+            </property>
+            <property name="buddy">
+             <cstring>symbolDescriptionEntry_update</cstring>
             </property>
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QTextEdit" name="symbolDescriptionEntry_U">
+           <widget class="QTextEdit" name="symbolDescriptionEntry_update">
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -244,14 +256,14 @@ p, li { white-space: pre-wrap; }
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>Update Symbol</string>
+             <string>&amp;Update Symbol</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="deleteSymbolButton">
             <property name="text">
-             <string>Delete Symbol</string>
+             <string>&amp;Delete Symbol</string>
             </property>
            </widget>
           </item>
@@ -278,7 +290,7 @@ p, li { white-space: pre-wrap; }
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_7">
           <item>
-           <widget class="QFrame" name="symbolPreviewFrame_A">
+           <widget class="QFrame" name="symbolPreviewFrame_add">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -293,25 +305,25 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
-              <widget class="QSvgWidget" name="svgWidget_A" native="true"/>
+              <widget class="QSvgWidget" name="svgWidget_add" native="true"/>
              </item>
             </layout>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="svgPathEdit_A">
+           <widget class="QLineEdit" name="svgPathEdit_add">
             <property name="readOnly">
              <bool>false</bool>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="browseSymbolButton_A">
+           <widget class="QPushButton" name="browseSymbolButton_add">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>Browse</string>
+             <string>&amp;Browse</string>
             </property>
            </widget>
           </item>
@@ -344,51 +356,60 @@ p, li { white-space: pre-wrap; }
         <item>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
-           <widget class="QLabel" name="symbolNameLabel_A">
+           <widget class="QLabel" name="symbolNameLabel_add">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>symbol name</string>
+             <string>symbol &amp;name</string>
+            </property>
+            <property name="buddy">
+             <cstring>symbolNameEntry_add</cstring>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="symbolNameEntry_A">
+           <widget class="QLineEdit" name="symbolNameEntry_add">
             <property name="readOnly">
              <bool>false</bool>
             </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="symbolCategoryLabel_A">
+           <widget class="QLabel" name="symbolCategoryLabel_add">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>symbol category</string>
+             <string>symbol &amp;category</string>
+            </property>
+            <property name="buddy">
+             <cstring>symbolCategoryEntry_add</cstring>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLineEdit" name="symbolCategoryEntry_A">
+           <widget class="QLineEdit" name="symbolCategoryEntry_add">
             <property name="readOnly">
              <bool>false</bool>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="symbolWidthLabel_A">
+           <widget class="QLabel" name="symbolWidthLabel_add">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>symbol width</string>
+             <string>symbol &amp;width</string>
+            </property>
+            <property name="buddy">
+             <cstring>symbolWidthSpinner_add</cstring>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSpinBox" name="symbolWidthSpinner_A">
+           <widget class="QSpinBox" name="symbolWidthSpinner_add">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -406,12 +427,15 @@ p, li { white-space: pre-wrap; }
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>symbol description</string>
+             <string>symbol &amp;description</string>
+            </property>
+            <property name="buddy">
+             <cstring>symbolDescriptionEntry_add</cstring>
             </property>
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QTextEdit" name="symbolDescriptionEntry_A">
+           <widget class="QTextEdit" name="symbolDescriptionEntry_add">
             <property name="readOnly">
              <bool>false</bool>
             </property>
@@ -450,7 +474,7 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QPushButton" name="clearEntriesButton">
             <property name="text">
-             <string>Clear Entries</string>
+             <string>&amp;Clear Entries</string>
             </property>
            </widget>
           </item>
@@ -460,7 +484,7 @@ p, li { white-space: pre-wrap; }
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>Add Symbol</string>
+             <string>&amp;Add Symbol</string>
             </property>
            </widget>
           </item>
@@ -527,8 +551,8 @@ p, li { white-space: pre-wrap; }
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>394</x>
-     <y>554</y>
+     <x>444</x>
+     <y>590</y>
     </hint>
     <hint type="destinationlabel">
      <x>520</x>
