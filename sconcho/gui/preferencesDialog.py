@@ -24,13 +24,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (SIGNAL, QString)
-from PyQt4.QtGui import (QDialog, QFontDatabase)
+from PyQt4.QtCore import (SIGNAL, QString, QDir)
+from PyQt4.QtGui import (QDialog, QFontDatabase, QFileDialog)
 
 import sconcho.util.misc as misc
+import sconcho.util.messages as msg
 from sconcho.util.settings import (get_label_font, get_legend_font, 
                                    set_legend_font, set_label_font,
-                                   get_label_interval, set_label_interval)
+                                   get_label_interval, set_label_interval,
+                                   get_personal_symbol_path,
+                                   set_personal_symbol_path)
 from sconcho.gui.ui_preferencesDialog import Ui_PreferencesDialog
 
 
@@ -53,6 +56,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings = settings
         self.set_up_font_selectors()
         self.set_up_label_interval_selector()
+        self.set_up_personal_symbol_path()
 
 
 
@@ -252,3 +256,45 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         set_label_interval(self.settings, interval)
         self.emit(SIGNAL("label_interval_changed"))
+
+
+
+
+    def set_up_personal_symbol_path(self):
+        """ Sets up the widget for changing the path where the
+        user has stored her/his personal symbol paths.
+        """
+
+        symbolLocation = get_personal_symbol_path(self.settings)
+        self.customSymbolPathEdit.setText(symbolLocation)
+
+        self.connect(self.customSymbolPathEdit,
+                     SIGNAL("textChanged(QString)"),
+                     self.update_personal_symbol_path)
+
+        self.connect(self.customSymbolPathButton,
+                     SIGNAL("clicked()"),
+                     self.show_symbol_path_fileSelector)
+
+
+
+    def update_personal_symbol_path(self, newPath):
+        """ Update the path to a user's custom symbol location. """
+
+        set_personal_symbol_path(self.settings, newPath)
+
+
+
+    def show_symbol_path_fileSelector(self):
+        """ Open up a file selector dialog allowing a user to change
+        the path to where the custom knitting symbols are.
+        """
+
+        customSymbolFilePath = QFileDialog.getExistingDirectory(self,
+                                            msg.customSymbolPathDirectoryTitle,
+                                            QDir.homePath())
+
+        if customSymbolFilePath:
+            set_personal_symbol_path(self.settings, customSymbolFilePath)
+            self.customSymbolPathEdit.setText(customSymbolFilePath)
+

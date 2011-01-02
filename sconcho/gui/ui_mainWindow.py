@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sun Jan  2 13:01:28 2011
+# Created: Sun Jan  2 13:55:45 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -57,7 +57,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addLayout(self.verticalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1137, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1137, 30))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -281,7 +281,7 @@ class Ui_MainWindow(object):
         self.actionSconcho_Manual.setText(QtGui.QApplication.translate("MainWindow", "Sconcho Manual", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrefs.setText(QtGui.QApplication.translate("MainWindow", "P&references", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Insert_delete_rows_and_columns1.setText(QtGui.QApplication.translate("MainWindow", "&Insert/Delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
-        self.action_Manage_Knitting_Symbols.setText(QtGui.QApplication.translate("MainWindow", "&Manage Knitting Symbols", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Manage_Knitting_Symbols.setText(QtGui.QApplication.translate("MainWindow", "&Manage Custom Knitting Symbols", None, QtGui.QApplication.UnicodeUTF8))
 
 from patternView import PatternView
 import icons_rc

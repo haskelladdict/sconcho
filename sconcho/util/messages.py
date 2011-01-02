@@ -130,6 +130,9 @@ errorOpeningKnittingSymbols = ("sconcho: Failed to open knitting symbol "
                                "%s.\nExiting ....")
 
 
+customSymbolPathDirectoryTitle = ("sconcho: Enter Location of Custom Symbol "
+                                  "database.")
+
 
 ########################################################################
 #

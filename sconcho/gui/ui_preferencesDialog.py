@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferencesDialog.ui'
 #
-# Created: Sun Jan  2 13:01:28 2011
+# Created: Sun Jan  2 13:55:46 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -114,13 +114,33 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout_4.addLayout(self.horizontalLayout_3)
         self.verticalLayout.addWidget(self.groupBox_3)
         self.tabWidget.addTab(self.labelTab, _fromUtf8(""))
+        self.tab = QtGui.QWidget()
+        self.tab.setObjectName(_fromUtf8("tab"))
+        self.verticalLayout_6 = QtGui.QVBoxLayout(self.tab)
+        self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
+        self.label_4 = QtGui.QLabel(self.tab)
+        self.label_4.setObjectName(_fromUtf8("label_4"))
+        self.verticalLayout_6.addWidget(self.label_4)
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.customSymbolPathEdit = QtGui.QLineEdit(self.tab)
+        self.customSymbolPathEdit.setObjectName(_fromUtf8("customSymbolPathEdit"))
+        self.horizontalLayout_2.addWidget(self.customSymbolPathEdit)
+        self.customSymbolPathButton = QtGui.QPushButton(self.tab)
+        self.customSymbolPathButton.setAutoDefault(False)
+        self.customSymbolPathButton.setObjectName(_fromUtf8("customSymbolPathButton"))
+        self.horizontalLayout_2.addWidget(self.customSymbolPathButton)
+        self.verticalLayout_6.addLayout(self.horizontalLayout_2)
+        spacerItem1 = QtGui.QSpacerItem(20, 185, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_6.addItem(spacerItem1)
+        self.tabWidget.addTab(self.tab, _fromUtf8(""))
         self.verticalLayout_3.addWidget(self.tabWidget)
-        spacerItem1 = QtGui.QSpacerItem(20, 236, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout_3.addItem(spacerItem1)
+        spacerItem2 = QtGui.QSpacerItem(20, 236, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_3.addItem(spacerItem2)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem2)
+        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem3)
         self.pushButton = QtGui.QPushButton(PreferencesDialog)
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.horizontalLayout.addWidget(self.pushButton)
@@ -145,5 +165,12 @@ class Ui_PreferencesDialog(object):
         self.groupBox_3.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Label Properties", None, QtGui.QApplication.UnicodeUTF8))
         self.label_13.setText(QtGui.QApplication.translate("PreferencesDialog", "Interval", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.labelTab), QtGui.QApplication.translate("PreferencesDialog", "Labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("PreferencesDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Location of Custom Knitting Symbols</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.customSymbolPathButton.setText(QtGui.QApplication.translate("PreferencesDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("PreferencesDialog", "Symbol Location", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
 

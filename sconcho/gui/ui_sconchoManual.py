@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/sconchoManual.ui'
 #
-# Created: Sun Jan  2 13:01:28 2011
+# Created: Sun Jan  2 13:55:46 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_SconchoManual(object):
     def setupUi(self, SconchoManual):
         SconchoManual.setObjectName(_fromUtf8("SconchoManual"))
-        SconchoManual.resize(554, 545)
+        SconchoManual.resize(925, 550)
         self.verticalLayout = QtGui.QVBoxLayout(SconchoManual)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.helpBrowser = QtGui.QTextBrowser(SconchoManual)

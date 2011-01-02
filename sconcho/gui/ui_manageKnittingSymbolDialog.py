@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/manageKnittingSymbolDialog.ui'
 #
-# Created: Sun Jan  2 13:01:28 2011
+# Created: Sun Jan  2 13:55:46 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -63,6 +63,7 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.horizontalLayout_8.addWidget(self.svgPathEdit_update)
         self.browseSymbolButton_update = QtGui.QPushButton(self.updateTab)
         self.browseSymbolButton_update.setEnabled(True)
+        self.browseSymbolButton_update.setAutoDefault(False)
         self.browseSymbolButton_update.setObjectName(_fromUtf8("browseSymbolButton_update"))
         self.horizontalLayout_8.addWidget(self.browseSymbolButton_update)
         self.verticalLayout.addLayout(self.horizontalLayout_8)
@@ -116,9 +117,11 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.horizontalLayout_9.addItem(spacerItem2)
         self.updateSymbolButton = QtGui.QPushButton(self.updateTab)
         self.updateSymbolButton.setEnabled(True)
+        self.updateSymbolButton.setAutoDefault(False)
         self.updateSymbolButton.setObjectName(_fromUtf8("updateSymbolButton"))
         self.horizontalLayout_9.addWidget(self.updateSymbolButton)
         self.deleteSymbolButton = QtGui.QPushButton(self.updateTab)
+        self.deleteSymbolButton.setAutoDefault(False)
         self.deleteSymbolButton.setObjectName(_fromUtf8("deleteSymbolButton"))
         self.horizontalLayout_9.addWidget(self.deleteSymbolButton)
         self.verticalLayout.addLayout(self.horizontalLayout_9)
@@ -149,6 +152,7 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.horizontalLayout_7.addWidget(self.svgPathEdit_add)
         self.browseSymbolButton_add = QtGui.QPushButton(self.newTab)
         self.browseSymbolButton_add.setEnabled(True)
+        self.browseSymbolButton_add.setAutoDefault(False)
         self.browseSymbolButton_add.setObjectName(_fromUtf8("browseSymbolButton_add"))
         self.horizontalLayout_7.addWidget(self.browseSymbolButton_add)
         self.verticalLayout_2.addLayout(self.horizontalLayout_7)
@@ -201,10 +205,12 @@ class Ui_ManageKnittingSymbolDialog(object):
         spacerItem5 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem5)
         self.clearEntriesButton = QtGui.QPushButton(self.newTab)
+        self.clearEntriesButton.setAutoDefault(False)
         self.clearEntriesButton.setObjectName(_fromUtf8("clearEntriesButton"))
         self.horizontalLayout_4.addWidget(self.clearEntriesButton)
         self.addSymbolButton = QtGui.QPushButton(self.newTab)
         self.addSymbolButton.setEnabled(True)
+        self.addSymbolButton.setAutoDefault(False)
         self.addSymbolButton.setObjectName(_fromUtf8("addSymbolButton"))
         self.horizontalLayout_4.addWidget(self.addSymbolButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)

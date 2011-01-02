@@ -67,11 +67,10 @@ def initialize(settings):
         defaultHeight = QString(GRID_CELL_HEIGHT)
         settings.setValue("global/cellHeight", defaultHeight)
 
-
     personalSymbolsPath = settings.value("global/personalSymbolPath").toString()
     if personalSymbolsPath.isEmpty():
         homePath = QDir.homePath()
-        defaultDir = QDir.convertSeparators(homePath + "/.sconcho")
+        defaultDir = QDir.convertSeparators(homePath + "/sconcho_symbols")
         settings.setValue("global/personalSymbolPath", defaultDir)
 
 
@@ -103,6 +102,13 @@ def get_personal_symbol_path(settings):
         return ""
 
     return path
+
+
+
+def set_personal_symbol_path(settings, newPath):
+    """ Helper function for setting the path for custom symbols. """
+
+    settings.setValue("global/personalSymbolPath", newPath)
 
 
 
@@ -163,9 +169,7 @@ def get_legend_font(settings):
 
 
 def set_legend_font(settings, newLegendFont):
-    """ Helper function for extracting the currently legend font
-    from settings.
-    """
+    """ Helper function for setting the currently legend font. """
 
     if fontDatabase_has_font(newLegendFont):
         fontString = newLegendFont.toString()
@@ -174,7 +178,7 @@ def set_legend_font(settings, newLegendFont):
 
 
 def get_label_interval(settings):
-    """ Helper function for extracting the currentl interval
+    """ Helper function for extracting the current interval
     with which the labels are spaced.
     """
 
@@ -189,7 +193,7 @@ def get_label_interval(settings):
 
 
 def set_label_interval(settings, interval):
-    """ Helper function for extracting the currentl interval
+    """ Helper function for setting the current interval
     with which the labels are spaced.
     """
 
