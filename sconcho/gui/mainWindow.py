@@ -64,7 +64,7 @@ __version__ = "0.1.0_b1"
 #######################################################################
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    def __init__(self, _topLevelPath, knittingSymbols, 
+    def __init__(self, topLevelPath, settings, knittingSymbols, 
                  fileName = None, parent = None):
         """
         Initialize the main window.
@@ -73,7 +73,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-        self.settings = self._restore_settings()
+        self.settings = settings
+        self._restore_window_settings()
         self.colorWidget = None
         self.preferencesDialog = None
 
@@ -83,8 +84,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.activeSymbolWidget = ActiveSymbolWidget()
         self.statusBar().addPermanentWidget(self.activeSymbolWidget)
 
-        self._topLevelPath = _topLevelPath
-        self._symbolPaths = [os.path.join(_topLevelPath, "symbols")]
+        self._topLevelPath = topLevelPath
+        self._symbolPaths = [os.path.join(topLevelPath, "symbols")]
         self.canvas = PatternCanvas(self.settings, 
                                       knittingSymbols[QString("basic::knit")],
                                       self)
@@ -115,22 +116,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def _restore_settings(self):
+    def _restore_window_settings(self):
         """ Restore the previously saved settings """
         
-        newSettings = QSettings()
-        newSize = newSettings.value("MainWindow/Size",
-                                    QVariant(QSize(1200, 800))).toSize()
+        newSize = self.settings.value("MainWindow/Size",
+                                       QVariant(QSize(1200, 800))).toSize()
         self.resize(newSize)
 
-        newPosition = newSettings.value("MainWindow/Position",
-                                        QVariant(QPoint(0,0))).toPoint()
+        newPosition = self.settings.value("MainWindow/Position",
+                                          QVariant(QPoint(0,0))).toPoint()
         self.move(newPosition)
         
-        self.restoreState(newSettings.value("MainWindow/State").toByteArray())
-        settings.initialize(newSettings)
-
-        return newSettings
+        self.restoreState(self.settings.value("MainWindow/State").toByteArray())
 
 
 

@@ -26,25 +26,26 @@ from __future__ import absolute_import
 
 import os, sys
 
-from PyQt4.QtCore import QString
+from PyQt4.QtCore import (QString, QSettings)
 from PyQt4.QtGui import QApplication
 from sconcho.gui.mainWindow import MainWindow
 import sconcho.util.symbolParser as parser
 import sconcho.util.messages as msg
+import sconcho.util.settings as settings
 
 
 def sconcho_gui_launcher(fileName = None):
-    """
-    Main routine starting up the sconcho framework.
-    """
+    """ Main routine starting up the sconcho framework. """
+
+    newSettings = load_settings()
+    currPath = os.path.dirname(__file__)
+    symbolPaths = set_up_symbol_paths(currPath, newSettings)
 
     # We attempt to read all available knitting symbols 
     # before firing up the MainWindow. At the very least we
     # require to find a symbol for a "knit" stitch. If not, 
     # we terminate right away.
-    currPath = os.path.dirname(__file__)
-    symbolPath = [os.path.join(currPath, "symbols")]
-    knittingSymbols = parser.parse_all_symbols(symbolPath)
+    knittingSymbols = parser.parse_all_symbols(symbolPaths)
     try:
         knittingSymbols[QString("basic::knit")]
     except KeyError:
@@ -55,6 +56,29 @@ def sconcho_gui_launcher(fileName = None):
     app.setOrganizationName("Markus Dittrich")
     app.setOrganizationDomain("sconcho.sourceforge.net")
     app.setApplicationName("sconcho")
-    window = MainWindow(currPath, knittingSymbols, fileName)
+    window = MainWindow(currPath, newSettings, knittingSymbols, fileName)
     window.show()
     app.exec_()
+
+
+
+def load_settings():
+    """ Create Settings object and initialize it """
+
+    newSettings = QSettings()
+    settings.initialize(newSettings)
+    
+    return newSettings
+
+
+
+def set_up_symbol_paths(path, newSettings):
+    """ Creates the list with paths where symbols should
+    be loaded from. """
+
+    symbolPaths = [os.path.join(path, "symbols")]
+    customSymbolPath = settings.get_personal_symbol_path(newSettings)
+    symbolPaths.append(customSymbolPath)
+
+    return symbolPaths
+
