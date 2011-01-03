@@ -100,7 +100,20 @@ class PatternView(QGraphicsView):
             self.rubberBand.hide()
         
         QGraphicsView.mouseReleaseEvent(self, event)
-        
+
+
+    
+    def wheelEvent(self, event):
+        """ Mouse wheel events cause zooming in and out. """
+
+        if event.modifiers() & Qt.ControlModifier:
+            if event.delta() > 0:
+                self.zoom_in()
+            else:
+                self.zoom_out()
+        else:
+            QGraphicsView.wheelEvent(self, event)
+
 
 
     def adjust_scene(self):
