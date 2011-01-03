@@ -34,6 +34,11 @@ import sconcho.util.messages as msg
 import sconcho.util.settings as settings
 
 
+ORGANIZATION        = "Sconcho"
+ORGANIZATION_DOMAIN = "sconcho.sourceforge.net"
+APPLICATION         = "sconcho"
+
+
 def sconcho_gui_launcher(fileName = None):
     """ Main routine starting up the sconcho framework. """
 
@@ -53,9 +58,9 @@ def sconcho_gui_launcher(fileName = None):
     
     # fire up the MainWindow
     app = QApplication(sys.argv)
-    app.setOrganizationName("Markus Dittrich")
-    app.setOrganizationDomain("sconcho.sourceforge.net")
-    app.setApplicationName("sconcho")
+    app.setOrganizationName(ORGANIZATION)
+    app.setOrganizationDomain(ORGANIZATION_DOMAIN)
+    app.setApplicationName(APPLICATION)
     window = MainWindow(currPath, newSettings, knittingSymbols, fileName)
     window.show()
     app.exec_()
@@ -65,7 +70,7 @@ def sconcho_gui_launcher(fileName = None):
 def load_settings():
     """ Create Settings object and initialize it """
 
-    newSettings = QSettings()
+    newSettings = QSettings(ORGANIZATION, APPLICATION)
     settings.initialize(newSettings)
     
     return newSettings

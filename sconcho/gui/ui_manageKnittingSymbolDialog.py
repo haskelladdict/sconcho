@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/manageKnittingSymbolDialog.ui'
 #
-# Created: Sun Jan  2 13:55:46 2011
+# Created: Mon Jan  3 08:37:06 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -221,6 +221,7 @@ class Ui_ManageKnittingSymbolDialog(object):
         spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_6.addItem(spacerItem6)
         self.pushButton_4 = QtGui.QPushButton(ManageKnittingSymbolDialog)
+        self.pushButton_4.setAutoDefault(False)
         self.pushButton_4.setObjectName(_fromUtf8("pushButton_4"))
         self.horizontalLayout_6.addWidget(self.pushButton_4)
         spacerItem7 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)

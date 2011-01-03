@@ -199,7 +199,7 @@ def create_new_symbol(symbolPath, svgPath, svgName, category, name,
     symbolDir.mkdir(symbolDirPath)
 
     # the following try/except suite attempts to return things back
-    # to normal if writing fails for some reason
+    # to the initial state if writing fails for some reason
     descriptionFileHandle = None
     symbolTargetFilePath  = None
 
@@ -288,15 +288,11 @@ def remove_symbol(symbolTopPath, name):
 
 
 
-def move_symbol(symbolTopPath, oldDir, newDir):
-    """ Move the the symbol at oldDir to newDir. If newDir is
-    not given we pick a random one. The function returns True
-    on success and False otherwise.
+def move_symbol(oldPath, newPath):
+    """ Move the the symbol at oldPath to newPath. 
+    The function returns True on success and False otherwise.
     """
 
-    oldPath = symbolTopPath + "/" + oldDir
-    newPath = symbolTopPath + "/" + newDir
-    
     symOldDir = QDir(oldPath)
     symNewDir = QDir(newPath)
     if symOldDir.exists():

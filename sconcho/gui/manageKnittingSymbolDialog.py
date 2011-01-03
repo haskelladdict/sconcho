@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from functools import partial
+from tempfile import mkdtemp
 
 from PyQt4.QtCore import (QStringList, SIGNAL, Qt, QDir, QByteArray,
                           QString, QRegExp)
@@ -312,29 +313,30 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                                        self.symbolWidthSpinner_update)
 
         if data:
-            createOk = create_new_symbol(self._symbolPath + "/tmp/", 
+            tempDir = mkdtemp(prefix=unicode(self._symbolPath))
+            createOk = create_new_symbol(tempDir, 
                                          data["svgPath"],
                                          data["svgName"], 
                                          data["category"], 
                                          data["name"], 
                                          data["description"], 
                                          data["width"])
-       
+     
             # if creation of the new symbol succeeded we remove the old
             # data, otherwise we move it back in place
             if createOk:
                 if remove_symbol(self._symbolPath, oldName):
-                    if move_symbol(self._symbolPath, "/tmp/" + data["svgName"],
-                            data["svgName"]):
-                        if remove_directory(self._symbolPath + "/tmp/"):
-                            self._update_dict(data)
-                            self._update_tree_widget(oldSymbol, data)
-                            self._update_tab(data)
-                            return
-
-                # if we reach this point something went wrong, we try to 
-                # at least remove the temp dir
-                remove_directory(self._symbolPath + "/tmp/")
+                    if move_symbol(tempDir + "/" + data["svgName"], 
+                                   self._symbolPath + "/" + data["svgName"]):
+                        self._update_dict(data)
+                        self._update_tree_widget(oldSymbol, data)
+                        self._update_tab(data)
+                        remove_directory(tempDir)
+                        return
+            else:
+                # if we reach this point something went wrong during creation and
+                # we try to at least remove the temp dir
+                remove_directory(tempDir)
 
 
 
