@@ -75,6 +75,8 @@ class PatternCanvas(QGraphicsScene):
         self._numRows     = 10
         self._numColumns  = 10
 
+        self._canPaste    = False
+
         self._textLabels  = []
 
         self.insertDeleteRowColDialog = None
@@ -438,14 +440,25 @@ class PatternCanvas(QGraphicsScene):
 
         gridMenu = QMenu()
         rowAction = gridMenu.addAction("Insert/Delete Rows and Columns")
-        gridMenu.addSeparator();
-        colorAction = gridMenu.addAction("Grab Color");
+        gridMenu.addSeparator()
+        colorAction = gridMenu.addAction("&Grab Color")
+        gridMenu.addSeparator()
+
+        copyAction = gridMenu.addAction("&Copy")
+        if not is_active_selection_rectangular(self._selectedCells):
+            copyAction.setEnabled(False)
+
+        pasteAction = gridMenu.addAction("&Paste") 
+        if not self._canPaste:
+            pasteAction.setEnabled(False)
 
         self.connect(rowAction, SIGNAL("triggered()"),
                      partial(self.insert_delete_rows_columns, row, col))
         
         self.connect(colorAction, SIGNAL("triggered()"),
                      partial(self.grab_color_from_cell, event))
+
+        #self.connect(copyAction, SIGNAL("triggered()"),
 
         gridMenu.exec_(event.screenPos())
 
@@ -1026,9 +1039,10 @@ class PatternGridItem(QGraphicsSvgItem):
         brush = QBrush(self._backColor)
         painter.setBrush(brush)
         halfPen = self._penSize * 0.5
-        painter.drawRect(QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
-                                                                 halfPen, halfPen))
-        self.renderer().render(painter, QRectF(self.origin, self.size))
+        scaledRect = QRectF(self.origin, self.size).adjusted(halfPen, halfPen, 
+                                                             halfPen, halfPen)
+        painter.drawRect(scaledRect)
+        self.renderer().render(painter, scaledRect)
 
 
 
@@ -1387,7 +1401,6 @@ def generate_legend_id(symbol, color):
 
 
 
-
 def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos, 
                        labelYPos, description):
     """
@@ -1429,7 +1442,6 @@ def get_column_items(items, column):
     
 
 
-
 def get_row_items(items, row):
     """ Returns list of all PatternGridItems in row.
 
@@ -1449,11 +1461,15 @@ def get_row_items(items, row):
     return rowItems
 
 
-def is_active_selection_rectangular(self, selectedItems):
+
+def is_active_selection_rectangular(selectedItems):
     """ This function checks if the currently active selection 
     is rectangular (i.e., not jagged or disconnected) and
     returns True if yes and False otherwise.
     """
+
+     
+
 
     return False
 
