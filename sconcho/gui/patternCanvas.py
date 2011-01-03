@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import operator
+import copy
 from functools import partial
 
 from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF, 
@@ -67,7 +68,6 @@ class PatternCanvas(QGraphicsScene):
         self._activeColor   = None
         self._defaultColor  = QColor(Qt.white)
         self._selectedCells = set()
-        self._copySelection = set()
 
         self._unitCellDim = QSizeF(get_grid_dimensions(theSettings))
         self._unitWidth   = self._unitCellDim.width()
@@ -75,6 +75,7 @@ class PatternCanvas(QGraphicsScene):
         self._numRows     = 10
         self._numColumns  = 10
 
+        self._copySelection = set()
         self._canPaste    = False
 
         self._textLabels  = []
@@ -458,7 +459,11 @@ class PatternCanvas(QGraphicsScene):
         self.connect(colorAction, SIGNAL("triggered()"),
                      partial(self.grab_color_from_cell, event))
 
-        #self.connect(copyAction, SIGNAL("triggered()"),
+        self.connect(copyAction, SIGNAL("triggered()"),
+                     self.copy_selection)
+
+        self.connect(pasteAction, SIGNAL("triggered()"),
+                     partial(self.paste_selection, row, col))
 
         gridMenu.exec_(event.screenPos())
 
@@ -511,6 +516,26 @@ class PatternCanvas(QGraphicsScene):
         color = allItems[0].color
         self.emit(SIGNAL("active_color_changed"), color)
         
+
+
+    def copy_selection(self):
+        """ This slot copies the current selection. """
+
+        self._copySelection = copy.copy(self._selectedCells)
+        self._canPaste      = True
+
+
+
+    def paste_selection(self, row, column):
+        """ This slot pastes the copied selection into the
+        canvas.
+        """
+
+        if not self._canPaste:
+            return
+
+        print(self._copySelection)
+
 
 
     def insert_grid_row(self, num, mode, rowPivot):
@@ -1462,14 +1487,32 @@ def get_row_items(items, row):
 
 
 
-def is_active_selection_rectangular(selectedItems):
+def is_active_selection_rectangular(selectedCells):
     """ This function checks if the currently active selection 
     is rectangular (i.e., not jagged or disconnected) and
     returns True if yes and False otherwise.
     """
 
-     
+    if not selectedCells:
+        return False
 
+    cellsByRow = {}
+    for cell in selectedCells:
+        if not cell.row in cellsByRow:
+            cellsByRow[cell.row] = [cell]
+        else:
+            cellsByRow[cell.row].append(cell)
 
-    return False
+    # check that each row has the same number of unit cells
+    values = set(num_unitcells(row) for row in cellsByRow.values())
+    if len(values) > 1:
+        return False
+
+    # look for "holes"
+    for row in cellsByRow.values():
+        row.sort(lambda x, y: cmp(x.column, y.column))
+        if not are_consecutive([row]):
+            return False
+    
+    return True
 
