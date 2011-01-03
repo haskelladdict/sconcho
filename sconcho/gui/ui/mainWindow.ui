@@ -113,6 +113,7 @@
     <addaction name="separator"/>
     <addaction name="menu_Zoom"/>
     <addaction name="action_Insert_delete_rows_and_columns"/>
+    <addaction name="actionClear_Selection"/>
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>
     <addaction name="actionShow_grid_labels"/>
@@ -201,6 +202,8 @@
    <addaction name="actionZoom_In"/>
    <addaction name="actionZoom_Out"/>
    <addaction name="actionFit"/>
+   <addaction name="separator"/>
+   <addaction name="actionClear_Selection"/>
   </widget>
   <action name="actionAbout_sconcho">
    <property name="icon">
@@ -453,6 +456,15 @@
   <action name="action_Manage_Knitting_Symbols">
    <property name="text">
     <string>&amp;Manage Custom Knitting Symbols</string>
+   </property>
+  </action>
+  <action name="actionClear_Selection">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/select_all.png</normaloff>:/icons/select_all.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Clear Selection</string>
    </property>
   </action>
  </widget>

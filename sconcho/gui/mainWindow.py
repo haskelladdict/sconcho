@@ -206,6 +206,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionFit, SIGNAL("triggered()"),
                      self.graphicsView.fit_scene)
 
+        self.connect(self.actionClear_Selection, SIGNAL("triggered()"),
+                     self.canvas.clear_all_selected_cells)
+
 
 
     def _set_up_timers(self):

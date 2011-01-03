@@ -1449,6 +1449,11 @@ def get_row_items(items, row):
     return rowItems
 
 
+def is_active_selection_rectangular(self, selectedItems):
+    """ This function checks if the currently active selection 
+    is rectangular (i.e., not jagged or disconnected) and
+    returns True if yes and False otherwise.
+    """
 
-
+    return False
 

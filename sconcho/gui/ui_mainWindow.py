@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Mon Jan  3 11:39:15 2011
+# Created: Mon Jan  3 14:51:09 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -182,6 +182,11 @@ class Ui_MainWindow(object):
         self.action_Insert_delete_rows_and_columns1.setObjectName(_fromUtf8("action_Insert_delete_rows_and_columns1"))
         self.action_Manage_Knitting_Symbols = QtGui.QAction(MainWindow)
         self.action_Manage_Knitting_Symbols.setObjectName(_fromUtf8("action_Manage_Knitting_Symbols"))
+        self.actionClear_Selection = QtGui.QAction(MainWindow)
+        icon11 = QtGui.QIcon()
+        icon11.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/select_all.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionClear_Selection.setIcon(icon11)
+        self.actionClear_Selection.setObjectName(_fromUtf8("actionClear_Selection"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -198,6 +203,7 @@ class Ui_MainWindow(object):
         self.menuView.addSeparator()
         self.menuView.addAction(self.menu_Zoom.menuAction())
         self.menuView.addAction(self.action_Insert_delete_rows_and_columns)
+        self.menuView.addAction(self.actionClear_Selection)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionShow_pattern_grid)
         self.menuView.addAction(self.actionShow_grid_labels)
@@ -223,6 +229,8 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionZoom_In)
         self.toolBar.addAction(self.actionZoom_Out)
         self.toolBar.addAction(self.actionFit)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.actionClear_Selection)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -282,6 +290,7 @@ class Ui_MainWindow(object):
         self.actionPrefs.setText(QtGui.QApplication.translate("MainWindow", "P&references", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Insert_delete_rows_and_columns1.setText(QtGui.QApplication.translate("MainWindow", "&Insert/Delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Manage_Knitting_Symbols.setText(QtGui.QApplication.translate("MainWindow", "&Manage Custom Knitting Symbols", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClear_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Clear Selection", None, QtGui.QApplication.UnicodeUTF8))
 
 from patternView import PatternView
 import icons_rc

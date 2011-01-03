@@ -80,7 +80,7 @@ currently active color selector by grabbing the color via
 
 
 Changing the Legend Layout
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For each new symbol and color used, sconcho places a legend entry
 consisting of a symbol and its description on the canvas. Both the symbol 
@@ -163,8 +163,9 @@ custom symbols. Updates take effect immediately.
 
 **Please Note:**:
 
-If you delete a symbol any saved sconcho projects that have this symbol will
-not load properly any more. So please think twice before removing a symbol.
+If you delete a symbol any previously saved sconcho projects which include
+this symbol will seize to load properly. Thus, please think twice before 
+removing a symbol.
 
 
 
