@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
-<title>Sconcho Manual</title>
+<title></title>
 <style type="text/css">
 
 /*
@@ -310,16 +310,30 @@ ul.auto-toc {
 </style>
 </head>
 <body>
-<div class="document" id="sconcho-manual">
-<h1 class="title">Sconcho Manual</h1>
+<div class="document">
 
+
+<div class="section" id="sconcho-manual">
+<h1>Sconcho Manual</h1>
 <p>Sconcho is a tool for creating knitting charts. Charts can be created by placing
 a variety of knitting symbols into a rectangular grids. Projects can be saved in
 a platform independent format as sconcho project files (spf) and can be edited
 at a later time. Charts can be exported in a variety of image formats and also
 printed to a printer of saved in PDF or PostScript format.</p>
-<hr class="docutils" />
-<p><strong>Starting a new Project</strong></p>
+<p><strong>Contents of this manual</strong>:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="#starting-a-new-project">Starting a new Project</a></li>
+<li><a class="reference internal" href="#adding-symbols-to-pattern-grid">Adding Symbols to Pattern Grid</a></li>
+<li><a class="reference internal" href="#changing-a-symbol-s-background-color">Changing a Symbol's Background Color</a></li>
+<li><a class="reference internal" href="#changing-the-legend-layout">Changing the Legend Layout</a></li>
+<li><a class="reference internal" href="#inserting-and-deleting-columns-and-rows-in-the-chart">Inserting and Deleting Columns and Rows in the Chart</a></li>
+<li><a class="reference internal" href="#saving-and-opening-sconcho-projects">Saving and Opening Sconcho Projects</a></li>
+<li><a class="reference internal" href="#exporting-and-printing-charts">Exporting and Printing Charts</a></li>
+<li><a class="reference internal" href="#changing-the-label-and-legend-properties">Changing the Label and Legend Properties</a></li>
+<li><a class="reference internal" href="#creating-your-own-custom-symbols">Creating your own Custom Symbols</a></li>
+</ol>
+<div class="section" id="starting-a-new-project">
+<h2>Starting a new Project</h2>
 <p>After startup, sconcho by default presents a pattern grid with 10 rows and
 10 columns. This initial grid size can be changed by either</p>
 <blockquote>
@@ -328,8 +342,9 @@ printed to a printer of saved in PDF or PostScript format.</p>
 <li>adding the proper number of rows with the <em>Insert/Delete Rows and Columns</em> dialog (<strong>Grid -&gt; Insert/Delete Rows and Columns</strong>).</li>
 </ul>
 </blockquote>
-<hr class="docutils" />
-<p><strong>Adding Symbols to Pattern Grid</strong></p>
+</div>
+<div class="section" id="adding-symbols-to-pattern-grid">
+<h2>Adding Symbols to Pattern Grid</h2>
 <p>Symbols are added to the pattern grid via selecting grid cells. These
 cells will then be filled with the currently active knitting symbol from
 the list of available knitting symbols.</p>
@@ -347,7 +362,7 @@ selected the <em>Active Symbol Tool</em> displays <strong>No Active Symbol</stro
 <p>Without an active symbol (the <em>Active Symbol Tool</em>
 shows <strong>No Active Symbol</strong>) selecting grid cells will highlight
 them in a light grey color. As soon as a symbol is activated it
-will be inserted into the the highlighted grid cells. If a
+will be inserted into the highlighted grid cells. If a
 symbol is already active while selecting grid cells, the symbol will be
 inserted into the highlighted cells immediately.</p>
 <p><strong>Note:</strong> If a symbol is active which spans more than a single
@@ -355,8 +370,9 @@ cell - a 3 stitch cable for example -- it will only
 be inserted if the selected grid cells can fit the symbols
 exactly (there could be more than one if the <em>Rubberband Tool</em> is
 used).</p>
-<hr class="docutils" />
-<p><strong>Changing a Symbol's Background Color</strong></p>
+</div>
+<div class="section" id="changing-a-symbol-s-background-color">
+<h2>Changing a Symbol's Background Color</h2>
 <p>With the exception of the <strong>no-stitch</strong> symbol, the default background of
 all symbols is <em>white</em>. The color of the active symbol can be changed
 by choosing one of the predefined colors in the <em>Color Selector Tool</em>.
@@ -366,16 +382,18 @@ clicking on the <em>Customize Color</em> button and changing the color.
 In addition, one can also load a color from any grid cell into the
 currently active color selector by grabbing the color via
 <strong>Left Mouse Click -&gt; Grab Color</strong>.</p>
-<hr class="docutils" />
-<p><strong>Changing the Legend Layout</strong></p>
+</div>
+</div>
+<div class="section" id="changing-the-legend-layout">
+<h1>Changing the Legend Layout</h1>
 <p>For each new symbol and color used, sconcho places a legend entry
 consisting of a symbol and its description on the canvas. Both the symbol
 and the text can be moved separately anywhere on the canvas and the
 default description for a symbol can be changed.</p>
 <p>If no legend is desired at all it can be turned off via un-checking
 <strong>View -&gt; Show Legend</strong>.</p>
-<hr class="docutils" />
-<p><strong>Inserting and Deleting Columns and Rows in the Chart</strong></p>
+<div class="section" id="inserting-and-deleting-columns-and-rows-in-the-chart">
+<h2>Inserting and Deleting Columns and Rows in the Chart</h2>
 <p>Additional rows and columns can be inserted into and deleted from an
 already existing chart using the <em>Insert/Delete Rows and Columns</em> dialog
 (<strong>Grid -&gt; Insert/Delete Rows and Columns</strong>). Here, it is important to keep
@@ -383,26 +401,54 @@ in mind that while it is always possible to add and remove rows, columns can
 be added only if the new row does not appear within an already existing
 multi-cell symbol. Similarly, a column can be removed only if it is not
 part of a multi-cell symbol.</p>
-<hr class="docutils" />
-<p><strong>Saving and Opening Sconcho Projects</strong></p>
+</div>
+<div class="section" id="saving-and-opening-sconcho-projects">
+<h2>Saving and Opening Sconcho Projects</h2>
 <p>Sconcho projects can be saved in a platform independent binary
 format called <em>sconcho project format (SPF)</em>. SPF files typically end
 with the extension .spf. SPF files can then be re-opened in sconcho.</p>
-<hr class="docutils" />
-<p><strong>Exporting and Printing Charts</strong></p>
+</div>
+<div class="section" id="exporting-and-printing-charts">
+<h2>Exporting and Printing Charts</h2>
 <p>You can either print your sconcho project on a printer (or print
 to a PDF file on some platforms) or export it as a bitmapped image
 file such as jped, tif, or png. The available image
 file formats depends on the operating system. Soncho project can
 also be saved in svg format.</p>
-<hr class="docutils" />
-<p><strong>Changing the Label and Legend Properties</strong></p>
+</div>
+<div class="section" id="changing-the-label-and-legend-properties">
+<h2>Changing the Label and Legend Properties</h2>
 <p>The font and size of the labels or the legend can be changed independently in
 the preferences dialog (<strong>File -&gt; Preferences</strong>). Furthermore the preferences
 dialog allows one to select the <em>interval i</em> with which the labels are displayed.
-By default, i is set to 1. Both the label and legend font, size as well as label
+By default, <em>i</em> is set to 1. Both the label and legend font, size as well as label
 interval are saved in sconcho project files and will be restored upon loading a
 previously saved project.</p>
+</div>
+<div class="section" id="creating-your-own-custom-symbols">
+<h2>Creating your own Custom Symbols</h2>
+<p>Using the <em>Manage Custom Knitting Symbols</em> dialog (<strong>Edit -&gt; Manage Custom
+Knitting Symbols</strong>) you can add your own knitting symbols and make them
+available within sconcho.</p>
+<p>To <em>add</em> a new symbol click on the <em>Add New Symbol</em> tab. Then provide
+an SVG image file of your symbol, a symbol name, category, default
+width and finally a symbol description. Then click on <em>Add Symbol</em>.</p>
+<p><strong>Please Note:</strong>:</p>
+<ol class="arabic simple">
+<li>You need to restart sconcho to make newly added symbols appear in the list of available symbols.</li>
+<li>If you choose a symbol name and category identical to one provided by default with sconcho, your custom symbol will take precedence.</li>
+<li>Sconcho does not provide a facility for creating the SVG images needed for a new symbol. You can use the excellent program Inkscape &lt;<a class="reference external" href="http://inkscape.org/">http://inkscape.org/</a>&gt; for this purpose. Inkscape was also used to create the symbols that come with sconcho.</li>
+</ol>
+<p>By default, the new symbols are stored within your home directory
+(<em>C:/Documents and Settings/Username</em> on Windows). You can change the location
+in the <em>Symbol Location</em> tab of the <em>Preferences</em> Dialog.</p>
+<p>Using the <em>Update/Delete Existing Symbols</em> tab you can update and delete existing
+custom symbols. Updates take effect immediately.</p>
+<p><strong>Please Note:</strong>:</p>
+<p>If you delete a symbol any saved sconcho projects that have this symbol will
+not load properly any more. So please think twice before removing a symbol.</p>
+</div>
+</div>
 </div>
 </body>
 </html>

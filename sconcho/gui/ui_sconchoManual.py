@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/sconchoManual.ui'
 #
-# Created: Mon Jan  3 08:37:06 2011
+# Created: Mon Jan  3 11:39:15 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -38,5 +38,5 @@ class Ui_SconchoManual(object):
 
     def retranslateUi(self, SconchoManual):
         SconchoManual.setWindowTitle(QtGui.QApplication.translate("SconchoManual", "Sconcho Manual", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("SconchoManual", "Ok", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton.setText(QtGui.QApplication.translate("SconchoManual", "&Close", None, QtGui.QApplication.UnicodeUTF8))
 

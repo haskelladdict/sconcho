@@ -137,6 +137,9 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if one was selected (the user may have clicked on the category
         only). 
         """
+        
+        if not newWidgetItem:
+            return
 
         symbolId = newWidgetItem.data(0, Qt.UserRole).toString()
         if symbolId in self._symbolDict:
