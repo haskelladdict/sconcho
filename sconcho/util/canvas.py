@@ -29,9 +29,8 @@ from PyQt4.QtCore import (QPoint, QPointF)
 import math
 
 
-def convert_pos_to_row_col(mousePos, cellWidth, cellHeight):
-    """
-    Converts a mouse position on the canvas into a tuple
+def convert_pos_to_col_row(mousePos, cellWidth, cellHeight):
+    """ Converts a mouse position on the canvas into a tuple
     of (column, row).
     Note: This may be outside the actual pattern grid.
     """
@@ -39,7 +38,17 @@ def convert_pos_to_row_col(mousePos, cellWidth, cellHeight):
     column = int( math.floor( mousePos.x()/cellWidth ) )
     row    = int( math.floor( mousePos.y()/cellHeight ) )
 
-    return (row, column)
+    return (column, row)
+
+
+
+def convert_col_row_to_pos(column, row, cellWidth, cellHeight):
+    """ Converts a (row, column) tuple to a position on
+    the canvas in the center of the corresponding grid element.
+    """
+
+    return QPointF((column + 0.5) * cellWidth, 
+                   (row + 0.5) * cellHeight)
 
 
 

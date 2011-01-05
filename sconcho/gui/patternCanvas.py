@@ -38,7 +38,7 @@ from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 from sconcho.util.settings import (get_grid_dimensions, get_label_font,
                                    get_legend_font, get_label_interval)
 from sconcho.util.canvas import (is_click_in_grid, is_click_on_labels, 
-                                 convert_pos_to_row_col)
+                                 convert_pos_to_col_row, convert_col_row_to_pos)
 from sconcho.gui.insertDeleteRowColumnDialog import InsertDeleteRowColumnDialog
 from sconcho.util.misc import wait_cursor
 import sconcho.util.messages as msg
@@ -375,7 +375,7 @@ class PatternCanvas(QGraphicsScene):
         Handle mouse press events directly on the canvas.
         """
 
-        (row, col) = convert_pos_to_row_col(event.scenePos(),
+        (col, row) = convert_pos_to_col_row(event.scenePos(),
                                             self._unitWidth,
                                             self._unitHeight)
        
@@ -452,11 +452,11 @@ class PatternCanvas(QGraphicsScene):
             copyAction.setEnabled(False)
 
         pasteAction = gridMenu.addAction("&Paste") 
-        if not self._canPaste:
+        if not self._can_paste_here(col, row):
             pasteAction.setEnabled(False)
 
         self.connect(rowAction, SIGNAL("triggered()"),
-                     partial(self.insert_delete_rows_columns, row, col))
+                     partial(self.insert_delete_rows_columns, col, row))
         
         self.connect(colorAction, SIGNAL("triggered()"),
                      partial(self.grab_color_from_cell, event))
@@ -464,14 +464,14 @@ class PatternCanvas(QGraphicsScene):
         self.connect(copyAction, SIGNAL("triggered()"),
                      partial(self.copy_selection, colDim, rowDim))
 
-        self.connect(pasteAction, SIGNAL("triggered()"),
-                     partial(self.paste_selection, row, col))
+        #self.connect(pasteAction, SIGNAL("triggered()"),
+        #             partial(self.paste_selection, row, col))
 
         gridMenu.exec_(event.screenPos())
 
 
 
-    def insert_delete_rows_columns(self, row, col):
+    def insert_delete_rows_columns(self, col, row):
         """
         This method manages the addition and deletion of rows and columns
         via a widget.
@@ -529,15 +529,58 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def paste_selection(self, row, column):
-        """ This slot pastes the copied selection into the
-        canvas.
+    def paste_selection(self, column, row):
+        """ This slot pastes the current copy selection at column
+        and row.
+        """
+
+        return
+
+
+
+    def _can_paste_here(self, column, row):
+        """ This function checks if the current copy selection
+        can be pasted at row/column and returns True if yes and
+        False otherwise.
         """
 
         if not self._canPaste:
-            return
+            return False
 
-        #
+        # now we have to check that the rectangle at (column, row)
+        # of size self._copySelectionDim (to the lower right) is
+        # self contained, i.e., there are no cells of width >= 2
+        # not fully contained within
+        colDim = self._copySelectionDim[0]
+        rowDim = self._copySelectionDim[1]
+        for rowCount in range(row, row + rowDim):
+
+            # check item at left and past (!) right edge of rectangle
+            leftItem = self._item_at_row_col(column, rowCount)
+            rightItem = self._item_at_row_col(column + colDim, rowCount)
+
+            if (leftItem.width > 1) and (leftItem.column < column):
+                return False
+
+            if (rightItem.width > 1) and (rightItem.column < column + colDim):
+                return False
+
+        return True
+
+
+
+    def _item_at_row_col(self, column, row):
+        """ Returns the PatternGridItem at the given column and row
+        or None if there isn't one. """
+
+        pos = convert_col_row_to_pos(column, row, self._unitWidth,
+                                     self._unitHeight)
+
+        item = self.itemAt(pos)
+        if isinstance(item, PatternGridItem):
+            return item
+        else:
+            return None
 
 
 
