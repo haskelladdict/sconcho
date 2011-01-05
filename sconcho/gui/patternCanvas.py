@@ -74,7 +74,7 @@ class PatternCanvas(QGraphicsScene):
         self._numRows     = 10
         self._numColumns  = 10
 
-        self._copySelection    = set()
+        self._copySelection    = []
         self._copySelectionDim = None
         self._canPaste         = False
 
@@ -289,8 +289,8 @@ class PatternCanvas(QGraphicsScene):
 
 
     def create_pattern_grid_item(self, origin, unitDim, col, row,
-                                    width, height, knittingSymbol,
-                                    color):
+                                 width, height, knittingSymbol,
+                                 color):
         """
         Creates a new PatternGridItem of the specified dimension
         at the given location.
@@ -371,8 +371,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def mousePressEvent(self, event):
-        """
-        Handle mouse press events directly on the canvas.
+        """ Handle mouse press events directly on the canvas.
         """
 
         (col, row) = convert_pos_to_col_row(event.scenePos(),
@@ -464,8 +463,8 @@ class PatternCanvas(QGraphicsScene):
         self.connect(copyAction, SIGNAL("triggered()"),
                      partial(self.copy_selection, colDim, rowDim))
 
-        #self.connect(pasteAction, SIGNAL("triggered()"),
-        #             partial(self.paste_selection, row, col))
+        self.connect(pasteAction, SIGNAL("triggered()"),
+                     partial(self.paste_selection, col, row))
 
         gridMenu.exec_(event.screenPos())
 
@@ -523,9 +522,14 @@ class PatternCanvas(QGraphicsScene):
     def copy_selection(self, colDim, rowDim):
         """ This slot copies the current selection. """
 
+        #print(self._selectedCells)
         self._copySelection    = self._selectedCells.copy()
+        #for item in self._selectedCells:
+        #    entry = {}
+        #    entry[
         self._copySelectionDim = (colDim, rowDim)
         self._canPaste         = True
+        self.clear_all_selected_cells()
 
 
 
@@ -534,6 +538,51 @@ class PatternCanvas(QGraphicsScene):
         and row.
         """
 
+        # remove each row completely first, then insert the 
+        # selection
+        selection = set()
+        colDim = self._copySelectionDim[0]
+        rowDim = self._copySelectionDim[1]
+        for rowCount in range(row, row + rowDim):
+            for colCount in range(column, column + colDim):
+                item = self._item_at_row_col(colCount, rowCount)
+                selection.add(item)
+
+        deadCellsByRow = order_selection_by_rows(selection)
+        newCellsByRow  = order_selection_by_rows(self._copySelection)
+        
+        assert(len(newCellsByRow) == rowDim)
+ 
+        """
+        # remove old items
+        for items in deadCellsByRow.values():
+            for item in items:
+                self.removeItem(item)
+
+        # add new items 
+        sortedKeys = newCellsByRow.keys() 
+        sortedKeys.sort()
+        startRow = row
+        for rowCount in range(row, row + rowDim):
+
+            
+        """
+
+        """
+            for item in chunk:
+                        totalWidth += item.width
+                        self.removeItem(item)
+
+                    # insert as many new items as we can fit
+                    numNewItems = int(totalWidth/width)
+                    for i in range(0,numNewItems):
+                        item = self.create_pattern_grid_item(origin,
+                                    self._unitCellDim, column, row, width, 1,
+                                    self._activeSymbol, self._activeColor)
+                        self.addItem(item)
+                        origin = QPointF(origin.x() + (width * self._unitWidth),
+                                         origin.y())
+        """ 
         return
 
 
@@ -547,12 +596,20 @@ class PatternCanvas(QGraphicsScene):
         if not self._canPaste:
             return False
 
+        #print(self._copySelection)
+        #print(self._copySelectionDim)
+
         # now we have to check that the rectangle at (column, row)
         # of size self._copySelectionDim (to the lower right) is
         # self contained, i.e., there are no cells of width >= 2
         # not fully contained within
         colDim = self._copySelectionDim[0]
         rowDim = self._copySelectionDim[1]
+
+        if (row + rowDim >= self._numRows) or \
+           (column + colDim >= self._numColumns):
+            return
+
         for rowCount in range(row, row + rowDim):
 
             # check item at left and past (!) right edge of rectangle
@@ -577,6 +634,7 @@ class PatternCanvas(QGraphicsScene):
                                      self._unitHeight)
 
         item = self.itemAt(pos)
+        #print(pos, column, row, type(item))
         if isinstance(item, PatternGridItem):
             return item
         else:
@@ -1242,12 +1300,7 @@ def chunkify_cell_arrangement(width, allCells):
     if num_unitcells(allCells) % width != 0:
         return []
 
-    cellsByRow = {}
-    for cell in allCells:
-        if not cell.row in cellsByRow:
-            cellsByRow[cell.row] = [cell]
-        else:
-            cellsByRow[cell.row].append(cell)
+    cellsByRow = order_selection_by_rows(allCells)
 
     # check 2: each row has to be a multiple of width
     for row in cellsByRow.values():
@@ -1544,12 +1597,7 @@ def is_active_selection_rectangular(selectedCells):
     if not selectedCells:
         return (False, (0,0))
 
-    cellsByRow = {}
-    for cell in selectedCells:
-        if not cell.row in cellsByRow:
-            cellsByRow[cell.row] = [cell]
-        else:
-            cellsByRow[cell.row].append(cell)
+    cellsByRow = order_selection_by_rows(selectedCells)
 
     # check that each row has the same number of unit cells
     values = set(num_unitcells(row) for row in cellsByRow.values())
@@ -1565,4 +1613,21 @@ def is_active_selection_rectangular(selectedCells):
     numCols = values.pop()
     numRows = len(cellsByRow)
     return (True, (numCols, numRows))
+
+
+
+def order_selection_by_rows(selection):
+    """ Given a list of selected grid cells order them
+    by row.
+    """
+
+    cellsByRow = {}
+    if selection:
+        for cell in selection:
+            if not cell.row in cellsByRow:
+                cellsByRow[cell.row] = [cell]
+            else:
+                cellsByRow[cell.row].append(cell)
+
+    return cellsByRow
 
