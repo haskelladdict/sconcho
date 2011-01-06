@@ -74,7 +74,7 @@ class PatternCanvas(QGraphicsScene):
         self._numRows     = 10
         self._numColumns  = 10
 
-        self._copySelection    = []
+        self._copySelection    = {}
         self._copySelectionDim = None
         self._canPaste         = False
 
@@ -523,8 +523,17 @@ class PatternCanvas(QGraphicsScene):
         """ This slot copies the current selection. """
 
         #print(self._selectedCells)
-        self._copySelection    = self._selectedCells.copy()
-        #for item in self._selectedCells:
+        #self._copySelection    = self._selectedCells.copy()
+        for item in self._selectedCells:
+
+            entry = [item.column, item.row, item.width, item.height,
+                     item.symbol, item.color]
+                     
+            if not item.row in self._copySelection:
+                self._copySelection[item.row] = [entry]
+            else:
+                self._copySelection[item.row].append(entry)
+
         #    entry = {}
         #    entry[
         self._copySelectionDim = (colDim, rowDim)
@@ -549,40 +558,32 @@ class PatternCanvas(QGraphicsScene):
                 selection.add(item)
 
         deadCellsByRow = order_selection_by_rows(selection)
-        newCellsByRow  = order_selection_by_rows(self._copySelection)
-        
-        assert(len(newCellsByRow) == rowDim)
- 
-        """
+
         # remove old items
         for items in deadCellsByRow.values():
             for item in items:
                 self.removeItem(item)
 
         # add new items 
-        sortedKeys = newCellsByRow.keys() 
+        sortedKeys = self._copySelection.keys() 
         sortedKeys.sort()
-        startRow = row
-        for rowCount in range(row, row + rowDim):
+        currentRow = row
+        for copyRowID in sortedKeys:
+            currentCol = column
+            for entry in self._copySelection[copyRowID]:
+               
+                # move to correct position
+                location = QPointF(currentCol * self._unitWidth,
+                                   currentRow * self._unitHeight)
+                item = self.create_pattern_grid_item(location, self._unitCellDim, 
+                                                     entry[0], entry[1], entry[2],
+                                                     entry[3], entry[4], entry[5])
+                self.addItem(item)
 
+                currentCol += item.width
+
+            currentRow += 1
             
-        """
-
-        """
-            for item in chunk:
-                        totalWidth += item.width
-                        self.removeItem(item)
-
-                    # insert as many new items as we can fit
-                    numNewItems = int(totalWidth/width)
-                    for i in range(0,numNewItems):
-                        item = self.create_pattern_grid_item(origin,
-                                    self._unitCellDim, column, row, width, 1,
-                                    self._activeSymbol, self._activeColor)
-                        self.addItem(item)
-                        origin = QPointF(origin.x() + (width * self._unitWidth),
-                                         origin.y())
-        """ 
         return
 
 
