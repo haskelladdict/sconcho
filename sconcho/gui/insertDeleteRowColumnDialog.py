@@ -160,7 +160,6 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
         self.deleteRowID.setMinimum(1)
         self.deleteRowID.setMaximum(numRows)
         self._numRows = numRows
-        print("row ", self._numRows)
         
 
 
@@ -175,7 +174,6 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
         self.deleteColumnID.setMinimum(1)
         self.deleteColumnID.setMaximum(numCols)
         self._numColumns = numCols
-        print("column ", self._numColumns)
 
 
 

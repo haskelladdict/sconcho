@@ -526,16 +526,16 @@ class PatternCanvas(QGraphicsScene):
         #self._copySelection    = self._selectedCells.copy()
         for item in self._selectedCells:
 
-            entry = [item.column, item.row, item.width, item.height,
-                     item.symbol, item.color]
+            entry = {"width": item.width, 
+                     "height": item.height, 
+                     "symbol": item.symbol, 
+                     "color": item.color}
                      
             if not item.row in self._copySelection:
                 self._copySelection[item.row] = [entry]
             else:
                 self._copySelection[item.row].append(entry)
 
-        #    entry = {}
-        #    entry[
         self._copySelectionDim = (colDim, rowDim)
         self._canPaste         = True
         self.clear_all_selected_cells()
@@ -576,10 +576,12 @@ class PatternCanvas(QGraphicsScene):
                 location = QPointF(currentCol * self._unitWidth,
                                    currentRow * self._unitHeight)
                 item = self.create_pattern_grid_item(location, self._unitCellDim, 
-                                                     entry[0], entry[1], entry[2],
-                                                     entry[3], entry[4], entry[5])
+                                                     currentCol, currentRow, 
+                                                     entry["width"], 
+                                                     entry["height"], 
+                                                     entry["symbol"], 
+                                                     entry["color"])
                 self.addItem(item)
-
                 currentCol += item.width
 
             currentRow += 1
@@ -597,9 +599,6 @@ class PatternCanvas(QGraphicsScene):
         if not self._canPaste:
             return False
 
-        #print(self._copySelection)
-        #print(self._copySelectionDim)
-
         # now we have to check that the rectangle at (column, row)
         # of size self._copySelectionDim (to the lower right) is
         # self contained, i.e., there are no cells of width >= 2
@@ -607,21 +606,24 @@ class PatternCanvas(QGraphicsScene):
         colDim = self._copySelectionDim[0]
         rowDim = self._copySelectionDim[1]
 
-        if (row + rowDim >= self._numRows) or \
-           (column + colDim >= self._numColumns):
+        if (row + rowDim > self._numRows) or \
+           (column + colDim > self._numColumns):
             return
 
         for rowCount in range(row, row + rowDim):
 
             # check item at left and past (!) right edge of rectangle
             leftItem = self._item_at_row_col(column, rowCount)
-            rightItem = self._item_at_row_col(column + colDim, rowCount)
 
             if (leftItem.width > 1) and (leftItem.column < column):
                 return False
 
-            if (rightItem.width > 1) and (rightItem.column < column + colDim):
-                return False
+            # make sure we don't fall off at the right
+            if (column + colDim < self._numColumns):
+                rightItem = self._item_at_row_col(column + colDim, rowCount)
+                if (rightItem.width > 1) and \
+                   (rightItem.column < column + colDim):
+                    return False
 
         return True
 
@@ -633,9 +635,7 @@ class PatternCanvas(QGraphicsScene):
 
         pos = convert_col_row_to_pos(column, row, self._unitWidth,
                                      self._unitHeight)
-
         item = self.itemAt(pos)
-        #print(pos, column, row, type(item))
         if isinstance(item, PatternGridItem):
             return item
         else:
@@ -693,7 +693,7 @@ class PatternCanvas(QGraphicsScene):
                     shift_items_row_wise(graphicsItem, -1, self._unitHeight)
 
         self._numRows -= 1
-        self._activeItems = []
+        #self._activeItems = []
         self.set_up_labels()
         self.emit(SIGNAL("adjust_view"))
         self.emit(SIGNAL("scene_changed"))
@@ -788,7 +788,7 @@ class PatternCanvas(QGraphicsScene):
                     shift_items_column_wise(graphicsItem, -1, self._unitWidth)
 
         self._numColumns -= 1
-        self._activeItems = []
+        #self._activeItems = []
         self.set_up_labels()
         self.emit(SIGNAL("adjust_view"))
         self.emit(SIGNAL("scene_changed"))
