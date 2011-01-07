@@ -132,6 +132,7 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
+    <addaction name="separator"/>
     <addaction name="action_Manage_Knitting_Symbols"/>
     <addaction name="separator"/>
     <addaction name="actionPrefs"/>
@@ -465,6 +466,16 @@
    </property>
    <property name="text">
     <string>&amp;Clear Selection</string>
+   </property>
+  </action>
+  <action name="action_Copy">
+   <property name="text">
+    <string>&amp;Copy</string>
+   </property>
+  </action>
+  <action name="action_Paste">
+   <property name="text">
+    <string>&amp;Paste</string>
    </property>
   </action>
  </widget>

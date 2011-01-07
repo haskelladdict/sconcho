@@ -649,7 +649,7 @@ def export_scene(canvas, width, height, exportFileName):
                                  "a sconcho project")
     else:
         generator = QImage(width+2*margin, height+2*margin, 
-                            QImage.Format_ARGB32_Premultiplied )
+                           QImage.Format_ARGB32_Premultiplied)
         generator.fill(1)
 
     painter = QPainter(generator)

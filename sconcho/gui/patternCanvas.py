@@ -444,13 +444,13 @@ class PatternCanvas(QGraphicsScene):
         colorAction = gridMenu.addAction("&Grab Color")
         gridMenu.addSeparator()
 
-        copyAction = gridMenu.addAction("&Copy")
+        copyAction = gridMenu.addAction("&Copy Selection")
         (status, (colDim, rowDim)) = \
                 is_active_selection_rectangular(self._selectedCells)
         if not status:
             copyAction.setEnabled(False)
 
-        pasteAction = gridMenu.addAction("&Paste") 
+        pasteAction = gridMenu.addAction("&Paste Selection") 
         if not self._can_paste_here(col, row):
             pasteAction.setEnabled(False)
 
@@ -495,7 +495,6 @@ class PatternCanvas(QGraphicsScene):
                          self.delete_grid_column)
         else:
             self.insertDeleteRowColDialog.set_row_col(row,col)
-
 
         self.insertDeleteRowColDialog.raise_()
         self.insertDeleteRowColDialog.show()
@@ -585,8 +584,8 @@ class PatternCanvas(QGraphicsScene):
                 currentCol += item.width
 
             currentRow += 1
-            
-        return
+       
+        self.emit(SIGNAL("scene_changed"))
 
 
 

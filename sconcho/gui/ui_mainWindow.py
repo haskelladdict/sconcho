@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Mon Jan  3 14:51:09 2011
+# Created: Thu Jan  6 21:28:22 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -187,6 +187,10 @@ class Ui_MainWindow(object):
         icon11.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/select_all.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionClear_Selection.setIcon(icon11)
         self.actionClear_Selection.setObjectName(_fromUtf8("actionClear_Selection"))
+        self.action_Copy = QtGui.QAction(MainWindow)
+        self.action_Copy.setObjectName(_fromUtf8("action_Copy"))
+        self.action_Paste = QtGui.QAction(MainWindow)
+        self.action_Paste.setObjectName(_fromUtf8("action_Paste"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -212,6 +216,7 @@ class Ui_MainWindow(object):
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAbout_sconcho)
         self.menuHelp.addAction(self.actionAbout_Qt4)
+        self.menuGrid.addSeparator()
         self.menuGrid.addAction(self.action_Manage_Knitting_Symbols)
         self.menuGrid.addSeparator()
         self.menuGrid.addAction(self.actionPrefs)
@@ -291,6 +296,8 @@ class Ui_MainWindow(object):
         self.action_Insert_delete_rows_and_columns1.setText(QtGui.QApplication.translate("MainWindow", "&Insert/Delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Manage_Knitting_Symbols.setText(QtGui.QApplication.translate("MainWindow", "&Manage Custom Knitting Symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.actionClear_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Clear Selection", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Copy.setText(QtGui.QApplication.translate("MainWindow", "&Copy", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Paste.setText(QtGui.QApplication.translate("MainWindow", "&Paste", None, QtGui.QApplication.UnicodeUTF8))
 
 from patternView import PatternView
 import icons_rc
