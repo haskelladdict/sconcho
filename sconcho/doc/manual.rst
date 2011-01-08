@@ -12,13 +12,14 @@ printed to a printer of saved in PDF or PostScript format.
 
 1. `Starting a new Project`_
 2. `Adding Symbols to Pattern Grid`_
-3. `Changing a Symbol's Background Color`_ 
-4. `Changing the Legend Layout`_
-5. `Inserting and Deleting Columns and Rows in the Chart`_
-6. `Saving and Opening Sconcho Projects`_
-7. `Exporting and Printing Charts`_
-8. `Changing the Label and Legend Properties`_
-9. `Creating your own Custom Symbols`_
+3. `Copy and Pasting a Selection`_
+4. `Changing a Symbol's Background Color`_ 
+5. `Changing the Legend Layout`_
+6. `Inserting and Deleting Columns and Rows in the Chart`_
+7. `Saving and Opening Sconcho Projects`_
+8. `Exporting and Printing Charts`_
+9. `Changing the Label and Legend Properties`_
+10. `Creating your own Custom Symbols`_
 
 
 Starting a new Project
@@ -64,6 +65,27 @@ exactly (there could be more than one if the *Rubberband Tool* is
 used).
 
 
+Copy and Pasting a Selection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The currently selected cells can be copied via
+**Right Mouse Click -> Copy Selection**. The cells copied in this fashion
+can then then be pasted via **Right Mouse Click -> Paste Selection** as 
+often as needed.
+Pasting will insert the most recently copied rectangular selection such 
+that the grid cell under the mouse pointer ends up at the upper left 
+hand corner. When pasting, the target area has to fit the copied selection 
+exactly, i.e., pasting can not leave cells half filled. If pasting is not
+possible at the requested location, the *Paste Selection* option is grayed out.
+This can only happen when attempting to paste into areas with symbols wider 
+than a single cell (e.g. 2, 3, 4, 5, or 6 stitch cables).
+
+**Note:** Presently, only rectangular selections can be copied and pasted. 
+If the current selection is not rectangular or consists of multiple disconnected
+pieces it can not be copied and the *Copy Selection* option is grayed out.
+
+
+
 Changing a Symbol's Background Color
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -75,7 +97,7 @@ The color in each of the predefined color selectors can be customized by
 clicking on the *Customize Color* button and changing the color.
 In addition, one can also load a color from any grid cell into the 
 currently active color selector by grabbing the color via 
-**Left Mouse Click -> Grab Color**.
+**Right Mouse Click -> Grab Color**.
 
 
 

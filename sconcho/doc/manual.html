@@ -322,6 +322,7 @@ printed to a printer of saved in PDF or PostScript format.</p>
 <ol class="arabic simple">
 <li><a class="reference internal" href="#starting-a-new-project">Starting a new Project</a></li>
 <li><a class="reference internal" href="#adding-symbols-to-pattern-grid">Adding Symbols to Pattern Grid</a></li>
+<li><a class="reference internal" href="#copy-and-pasting-a-selection">Copy and Pasting a Selection</a></li>
 <li><a class="reference internal" href="#changing-a-symbol-s-background-color">Changing a Symbol's Background Color</a></li>
 <li><a class="reference internal" href="#changing-the-legend-layout">Changing the Legend Layout</a></li>
 <li><a class="reference internal" href="#inserting-and-deleting-columns-and-rows-in-the-chart">Inserting and Deleting Columns and Rows in the Chart</a></li>
@@ -369,6 +370,23 @@ be inserted if the selected grid cells can fit the symbols
 exactly (there could be more than one if the <em>Rubberband Tool</em> is
 used).</p>
 </div>
+<div class="section" id="copy-and-pasting-a-selection">
+<h1>Copy and Pasting a Selection</h1>
+<p>The currently selected cells can be copied via
+<strong>Right Mouse Click -&gt; Copy Selection</strong>. The cells copied in this fashion
+can then then be pasted via <strong>Right Mouse Click -&gt; Paste Selection</strong> as
+often as needed.
+Pasting will insert the most recently copied rectangular selection such
+that the grid cell under the mouse pointer ends up at the upper left
+hand corner. When pasting, the target area has to fit the copied selection
+exactly, i.e., pasting can not leave cells half filled. If pasting is not
+possible at the requested location, the <em>Paste Selection</em> option is grayed out.
+This can only happen when attempting to paste into areas with symbols wider
+than a single cell (e.g. 2, 3, 4, 5, or 6 stitch cables).</p>
+<p><strong>Note:</strong> Presently, only rectangular selections can be copied and pasted.
+If the current selection is not rectangular or consists of multiple disconnected
+pieces it can not be copied and the <em>Copy Selection</em> option is grayed out.</p>
+</div>
 <div class="section" id="changing-a-symbol-s-background-color">
 <h1>Changing a Symbol's Background Color</h1>
 <p>With the exception of the <strong>no-stitch</strong> symbol, the default background of
@@ -379,7 +397,7 @@ The color in each of the predefined color selectors can be customized by
 clicking on the <em>Customize Color</em> button and changing the color.
 In addition, one can also load a color from any grid cell into the
 currently active color selector by grabbing the color via
-<strong>Left Mouse Click -&gt; Grab Color</strong>.</p>
+<strong>Right Mouse Click -&gt; Grab Color</strong>.</p>
 </div>
 <div class="section" id="changing-the-legend-layout">
 <h1>Changing the Legend Layout</h1>
