@@ -210,3 +210,21 @@ def fontDatabase_has_font(font):
     families = fontDatabase.families()
     
     return families.contains(font.family())
+
+
+
+def set_grid_cell_width(settings, width):
+    """ Helper function storing the setting for the width 
+    for grid cells.
+    """
+
+    settings.setValue("global/cellWidth", QString(unicode(width)))
+
+
+
+def set_grid_cell_height(settings, height):
+    """ Helper function storing the setting for the width 
+    for grid cells.
+    """
+
+    settings.setValue("global/cellHeight", QString(unicode(height)))

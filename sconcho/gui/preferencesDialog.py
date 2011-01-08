@@ -32,6 +32,8 @@ import sconcho.util.messages as msg
 from sconcho.util.settings import (get_label_font, get_legend_font, 
                                    set_legend_font, set_label_font,
                                    get_label_interval, set_label_interval,
+                                   get_grid_dimensions, set_grid_cell_width,
+                                   set_grid_cell_height,
                                    get_personal_symbol_path,
                                    set_personal_symbol_path)
 from sconcho.gui.ui_preferencesDialog import Ui_PreferencesDialog
@@ -56,6 +58,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings = settings
         self.set_up_font_selectors()
         self.set_up_label_interval_selector()
+        self.set_up_grid_dimension_selector()
         self.set_up_personal_symbol_path()
 
 
@@ -298,3 +301,39 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
             set_personal_symbol_path(self.settings, customSymbolFilePath)
             self.customSymbolPathEdit.setText(customSymbolFilePath)
 
+
+    def set_up_grid_dimension_selector(self):
+        """ Initialize the selectors for grid cell height and width
+        with the current value and connect the selectors to the
+        proper slots.
+        """
+
+        cellDim = get_grid_dimensions(self.settings)
+
+        self.gridCellWidthSpinner.setValue(cellDim.width())
+        self.gridCellHeightSpinner.setValue(cellDim.height())
+
+
+        self.connect(self.gridCellWidthSpinner,
+                     SIGNAL("valueChanged(int)"),
+                     self._grid_cell_width_changed)
+
+        self.connect(self.gridCellHeightSpinner,
+                     SIGNAL("valueChanged(int)"),
+                     self._grid_cell_height_changed)
+
+   
+
+    def _grid_cell_width_changed(self, newWidth):
+        """ Slot taking care of changes to the width of grid cells. """
+
+        set_grid_cell_width(self.settings, newWidth)
+        self.emit(SIGNAL("grid_cell_width_changed"), newWidth)  
+
+
+
+    def _grid_cell_height_changed(self, newHeight):
+        """ Slot taking care of changes to the width of grid cells. """
+
+        set_grid_cell_height(self.settings, newHeight)
+        self.emit(SIGNAL("grid_cell_height_changed"), newHeight)  

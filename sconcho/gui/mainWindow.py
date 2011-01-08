@@ -54,7 +54,7 @@ from sconcho.util.exceptions import PatternReadError
 
 
 
-__version__ = "0.1.0_b1"
+__version__ = "0.1.0_a6"
 
 
 #######################################################################
@@ -571,7 +571,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          SIGNAL("label_interval_changed"),
                          self.set_project_dirty)
 
-       
+            self.connect(self.preferencesDialog,
+                         SIGNAL("grid_cell_width_changed"),
+                         self.canvas.change_grid_cell_width)
+
+            self.connect(self.preferencesDialog,
+                         SIGNAL("grid_cell_height_changed"),
+                         self.canvas.change_grid_cell_height)
+
         self.preferencesDialog.raise_()
         self.preferencesDialog.show()
 
