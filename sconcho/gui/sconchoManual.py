@@ -50,3 +50,5 @@ class SconchoManual(QDialog, Ui_SconchoManual):
         url = QUrl.fromLocalFile(manualPath)
         self.helpBrowser.setSource(url)
 
+        print(self.isModal())
+

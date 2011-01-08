@@ -79,6 +79,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._restore_window_settings()
         self.colorWidget = None
         self.preferencesDialog = None
+        self.manualDialog = None
 
         self.clear_project_save_file()
 
@@ -347,9 +348,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_sconcho_manual(self):
         """ Show the sconcho manual. """
 
-        manualPath = os.path.join(self._topLevelPath, "doc/manual.html")
-        manual = SconchoManual(manualPath, self)
-        manual.exec_()
+        if not self.manualDialog:
+            manualPath = os.path.join(self._topLevelPath, "doc/manual.html")
+            self.manualDialog = SconchoManual(manualPath)
+
+        self.manualDialog.open()
 
 
 
