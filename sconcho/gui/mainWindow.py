@@ -217,9 +217,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Set up timers.
         """
 
+        pass 
+        """
         saveTimer = QTimer(self)
         self.connect(saveTimer, SIGNAL("timeout()"), self._save_pattern)
         saveTimer.start(10000)
+        """
 
 
 
