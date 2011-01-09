@@ -415,6 +415,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                 location,
                                                 "sconcho pattern files (*.spf)")
 
+            # with "save as" we always want to save so
+            self._projectIsDirty = True
+
+
             if not saveFilePath:
                 return False
 
