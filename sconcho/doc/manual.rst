@@ -186,7 +186,7 @@ custom symbols. Updates take effect immediately.
 **Please Note:**:
 
 If you delete a symbol any previously saved sconcho projects which include
-this symbol will seize to load properly. Thus, please think twice before 
+this symbol will cease to load properly. Thus, please think twice before 
 removing a symbol.
 
 
