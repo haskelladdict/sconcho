@@ -28,9 +28,9 @@ from functools import partial
 from tempfile import mkdtemp
 
 from PyQt4.QtCore import (QStringList, SIGNAL, Qt, QDir, QByteArray,
-                          QString, QRegExp)
+                          QString, QRegExp, QVariant)
 from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog, 
-                         QMessageBox)
+                         QMessageBox, QInputDialog, QLineEdit)
 from PyQt4.QtSvg import (QSvgWidget)
 
 from sconcho.gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
@@ -48,10 +48,12 @@ import sconcho.gui.symbolWidget as symbolWidget
 ##########################################################################
 class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
-    SYMBOL_SIZE = 30
+    SYMBOL_SIZE   = 30
+    ADD_ACTION    = 1
+    UPDATE_ACTION = 2
 
 
-    def __init__(self, symbolPath, parent = None):
+    def __init__(self, symbolPath, symbolCategories, parent = None):
         """ Initialize the dialog. """
 
         super(ManageKnittingSymbolDialog, self).__init__(parent)
@@ -59,55 +61,97 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         self.symbolEntryFrame.setVisible(False)
 
-        # grab all symbols allready present
+        # do some initialisation
+        self._svgFilePath      = None
+        self._activeAction     = None
+        self._selectedSymbol   = None
+        self._symbolCategories = symbolCategories
+        self._symbolCategories.sort()
+
+        # main setup
+        self._add_connections()
         self._symbolPath = symbolPath
         self._symbolDict = parse_all_symbols([symbolPath])
-        #self._set_up_update_symbol_tab()
-        #self._set_up_add_symbol_tab()
-        #self._add_symbols_to_widget()
-
-        # do some initialisation
-        self._svgFilePath_add = None
+        self._set_up_symbols_frame()
+        self._add_symbols_to_widget()
+        self._populate_category_chooser()
         
-        # add connections
+
+
+    def add_new_symbol(self):
+        """ This slot make the symbolEntryFrame visible and marks it
+        as an "add-symbol-frame".
         """
+
+        self.symbolEntryFrame.setVisible(True)
+        self.actionButton.setText("Add Symbol")
+        self._activeAction = ManageKnittingSymbolDialog.ADD_ACTION
+        self.disable_selection_buttons()
+
+
+
+    def done_with_input(self):
+        """ This slot cancels the current input action. """
+
+        self.symbolEntryFrame.setVisible(False)
+        self.clear_symbol_info()
+        self.enable_selection_buttons()
+
+
+
+    def disable_selection_buttons(self):
+        """ Disables all selection buttons. """
+
+        self.addSymbolButton.setEnabled(False)
+        self.updateSymbolButton.setEnabled(False)
+        self.deleteSymbolButton.setEnabled(False)
+
+
+
+    def enable_selection_buttons(self):
+        """ Enables all selection buttons that should be enabled. 
+        Definitely the "Add New Symbol" button and the update/delete
+        button depending if a symbol is currently selected. 
+        """
+
+        self.addSymbolButton.setEnabled(True)
+        if self._selectedSymbol:
+            self.updateSymbolButton.setEnabled(True)
+            self.deleteSymbolButton.setEnabled(True)
+
+
+
+    def _add_connections(self):
+        """ Add all main gui connections. """
+
         self.connect(self.availableSymbolsWidget, 
                      SIGNAL("currentItemChanged(QTreeWidgetItem*, \
                                                 QTreeWidgetItem*)"),
-                     self.update_selected_symbol_display)
+                     self.selected_symbol_changed)
 
-        self.connect(self.clearEntriesButton, SIGNAL("clicked()"),
-                     self.clear_add_symbol_tab)
+        self.connect(self.symbolWidthSpinner, SIGNAL("valueChanged(int)"),
+                     partial(self.rescale_svg_item, self.svgWidget))
 
-        self.connect(self.addSymbolButton, SIGNAL("clicked()"),
-                     self.add_symbol)
-
-        self.connect(self.deleteSymbolButton, SIGNAL("clicked()"),
-                     self.delete_symbol)
-
-        self.connect(self.updateSymbolButton, SIGNAL("clicked()"),
-                     self.update_symbol)
-
-        self.connect(self.browseSymbolButton_add, SIGNAL("clicked()"),
-                     self.load_svg_add)
-
-        self.connect(self.browseSymbolButton_update, SIGNAL("clicked()"),
-                     self.load_svg_update)
-
-        self.connect(self.symbolWidthSpinner_add, SIGNAL("valueChanged(int)"),
-                     partial(self.rescale_svg_item, self.svgWidget_add))
-
-        self.connect(self.symbolWidthSpinner_update, SIGNAL("valueChanged(int)"),
-                     partial(self.rescale_svg_item, self.svgWidget_update))
-        """
+        self.connect(self.cancelButton, SIGNAL("clicked()"),
+                     self.done_with_input)
 
         self.connect(self.addSymbolButton, SIGNAL("clicked()"),
                      self.add_new_symbol)
 
+        self.connect(self.actionButton, SIGNAL("clicked()"),
+                     self.take_action)
 
-    def add_new_symbol(self):
+        self.connect(self.browseSymbolButton, SIGNAL("clicked()"),
+                     self.load_svg)
 
-        self.symbolEntryFrame.setVisible(True)
+        self.connect(self.updateSymbolButton, SIGNAL("clicked()"),
+                     self.show_selected_symbol_info)
+
+        self.connect(self.deleteSymbolButton, SIGNAL("clicked()"),
+                     self.delete_symbol)
+
+        self.connect(self.categoryChooser, SIGNAL("currentIndexChanged(int)"),
+                     self.category_changed)
 
 
 
@@ -124,26 +168,63 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
 
-    def _set_up_update_symbol_tab(self):
+    def _populate_category_chooser(self):
+        """ Adds all categories we know of to the combo box. """
+
+        self.categoryChooser.clear()
+        for name in self._symbolCategories:
+            self.categoryChooser.addItem(name)
+
+        self.categoryChooser.addItem("other...", QVariant(1))
+
+
+    
+    def category_changed(self, index):
+        """ This slot deals with changes to the selected category """
+
+        itemText = self.categoryChooser.itemText(index)
+        (itemData, status) = self.categoryChooser.itemData(index).toInt()
+
+        if itemText == QString("other...") and itemData == 1:
+              
+            (newCategory, status) = \
+                    QInputDialog.getText(self, 
+                                "sconcho: New category",
+                                "Please enter the name of the new category")
+
+            if status and newCategory:
+                self._symbolCategories.append(newCategory)
+                self._symbolCategories.sort()
+                self._populate_category_chooser()
+                newCategoryIndex = self.categoryChooser.findText(newCategory)
+                self.categoryChooser.setCurrentIndex(newCategoryIndex)
+    
+
+
+
+    def take_action(self):
+        """ Dispatches the proper function depending if the
+        user is adding or updating a symbol.
+        """
+
+        if self._activeAction == ManageKnittingSymbolDialog.ADD_ACTION:
+            self.add_symbol()
+        elif self._activeAction == ManageKnittingSymbolDialog.UPDATE_ACTION:
+            self.update_symbol()
+
+
+
+    def _set_up_symbols_frame(self):
         """ Do whatever additional initialization we need in the
         update symbol widget.
         """
 
-        self.svgPathEdit_update.setText(QDir.homePath())
-
-
-
-    def _set_up_add_symbol_tab(self):
-        """ Do whatever additional initialization we need in the
-        update symbol widget.
-        """
-
-        self.svgPathEdit_add.setText(QDir.homePath())
+        self.svgPathEdit.setText(QDir.homePath())
 
 
    
-    def update_selected_symbol_display(self, newWidgetItem, 
-                                       oldWidgetItem = None):
+    def selected_symbol_changed(self, newWidgetItem, 
+                                oldWidgetItem = None):
         """ Display the content of the currently selected symbol
         if one was selected (the user may have clicked on the category
         only). 
@@ -156,85 +237,55 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if symbolId in self._symbolDict:
             symbol = self._symbolDict[symbolId]
             self._selectedSymbol = symbol
-            self.show_selected_symbol_info(symbol)
+            self.updateSymbolButton.setEnabled(True)
+            self.deleteSymbolButton.setEnabled(True)
         else:
             self._selectedSymbol = None
-            self.clear_symbol_info()
+            self.updateSymbolButton.setEnabled(False)
+            self.deleteSymbolButton.setEnabled(False)
 
 
 
-    def show_selected_symbol_info(self, symbol):
-        """ Show info for symbol on update/delete widget tab."""
+    def show_selected_symbol_info(self):
+        """ Show info for symbol so user can update it."""
+
+        if not self._selectedSymbol:
+            return
+
+        self.disable_selection_buttons()
+        symbol = self._selectedSymbol
 
         pathToSvgImage = generate_svg_path(self._symbolPath, symbol)
-        self.svgWidget_update.load(pathToSvgImage)
-        self.svgPathEdit_update.setText(pathToSvgImage)
+        self.svgWidget.load(pathToSvgImage)
+        self.svgPathEdit.setText(pathToSvgImage)
 
-        self.symbolNameLabel_update.setDisabled(False)
-        self.symbolNameEntry_update.setReadOnly(False)
-        self.symbolNameEntry_update.setText(symbol["name"])
+        self.symbolNameEntry.setText(symbol["name"])
 
-        self.symbolCategoryLabel_update.setDisabled(False)
-        self.symbolCategoryEntry_update.setReadOnly(False)
-        self.symbolCategoryEntry_update.setText(symbol["category"])
-
-        self.symbolWidthLabel_update.setDisabled(False)
-        self.symbolWidthSpinner_update.setReadOnly(False)
+        categoryIndex = self.categoryChooser.findText(symbol["category"])
+        self.categoryChooser.setCurrentIndex(categoryIndex)
+        
         width, status = symbol["width"].toInt()
         if status:
-            self.symbolWidthSpinner_update.setDisabled(False)
-            self.symbolWidthSpinner_update.setValue(width)
-            self.rescale_svg_item(self.svgWidget_update, width)
+            self.symbolWidthSpinner.setValue(width)
+            self.rescale_svg_item(self.svgWidget, width)
 
-        self.symbolDescriptionLabel_update.setDisabled(False)
-        self.symbolDescriptionEntry_update.setReadOnly(False)
-        self.symbolDescriptionEntry_update.setText(symbol["description"])
+        self.symbolDescriptionEntry.setText(symbol["description"])
 
-        self.updateSymbolButton.setDisabled(False)
-        self.deleteSymbolButton.setDisabled(False)
-        self.browseSymbolButton_update.setDisabled(False)
+        self.symbolEntryFrame.setVisible(True)
+        self.actionButton.setText("Update Symbol")
+        self._activeAction = ManageKnittingSymbolDialog.UPDATE_ACTION
 
 
 
     def clear_symbol_info(self):
-        """ Clear the the update/delete widget tab. """
-
-        self.svgWidget_update.load(QByteArray())
-
-        self.symbolNameLabel_update.setDisabled(True)
-        self.symbolNameEntry_update.clear()
-        self.symbolNameEntry_update.setReadOnly(True)
-
-        self.symbolWidthLabel_update.setDisabled(True)
-        self.symbolCategoryEntry_update.clear()
-        self.symbolCategoryEntry_update.setReadOnly(True)
-        self.symbolCategoryLabel_update.setDisabled(True)
-
-        self.symbolWidthLabel_update.setDisabled(True)
-        self.symbolWidthSpinner_update.clear()
-        self.symbolWidthSpinner_update.setDisabled(True)
-        self.symbolWidthSpinner_update.setReadOnly(True)
-
-        self.symbolDescriptionLabel_update.setDisabled(True)
-        self.symbolDescriptionEntry_update.clear()
-        self.symbolDescriptionEntry_update.setReadOnly(True)
-
-        self.updateSymbolButton.setDisabled(True)
-        self.deleteSymbolButton.setDisabled(True)
-        self.browseSymbolButton_update.setDisabled(True)
-
-
-
-    def clear_add_symbol_tab(self):
         """ This slot clears all entries in the addSymbolTab """
 
-        self.symbolNameEntry_add.clear()
-        self.symbolCategoryEntry_add.clear()
-        self.symbolWidthSpinner_add.setValue(1)
-        self.symbolDescriptionEntry_add.clear()
-        self.svgWidget_add.load(QByteArray())
-        self.svgPathEdit_add.setText(QDir.homePath())
-        self._svgFilePath_add = None
+        self.symbolNameEntry.clear()
+        self.symbolWidthSpinner.setValue(1)
+        self.symbolDescriptionEntry.clear()
+        self.svgWidget.load(QByteArray())
+        self.svgPathEdit.setText(QDir.homePath())
+        self._svgFilePath = None
 
 
 
@@ -319,12 +370,12 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         oldSymbol = self._selectedSymbol
         oldName = self._selectedSymbol["svgName"]
 
-        svgImagePath = self.svgPathEdit_update.text()
+        svgImagePath = self.svgPathEdit.text()
         data = self._get_data_from_interface(svgImagePath,
-                                       self.symbolNameEntry_update,
-                                       self.symbolCategoryEntry_update,
-                                       self.symbolDescriptionEntry_update,
-                                       self.symbolWidthSpinner_update)
+                                       self.symbolNameEntry,
+                                       self.categoryChooser,
+                                       self.symbolDescriptionEntry,
+                                       self.symbolWidthSpinner)
 
         if data:
             tempDir = mkdtemp(prefix=unicode(self._symbolPath))
@@ -344,14 +395,14 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                                    self._symbolPath + "/" + data["svgName"]):
                         self._update_dict(data)
                         self._update_tree_widget(oldSymbol, data)
-                        self._update_tab(data)
+                        self._update_frame_data(data)
+                        self.done_with_input()
                         remove_directory(tempDir)
                         return
             else:
                 # if we reach this point something went wrong during creation and
                 # we try to at least remove the temp dir
                 remove_directory(tempDir)
-
 
 
 
@@ -373,14 +424,14 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
 
-    def _update_tab(self, data):
+    def _update_frame_data(self, data):
         """ Update the contents of the tab based on a content
         change. For now this could at most be a change in the svg
         image path due to a symbol name change.
         """
 
         pathToSvgImage = generate_svg_path(self._symbolPath, data)
-        self.svgPathEdit_update.setText(pathToSvgImage)
+        self.svgPathEdit.setText(pathToSvgImage)
        
 
 
@@ -389,11 +440,11 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         with the proper interface widgets.
         """
         
-        self._add_symbol_worker(self._svgFilePath_add,
-                                self.symbolNameEntry_add,
-                                self.symbolCategoryEntry_add,
-                                self.symbolDescriptionEntry_add,
-                                self.symbolWidthSpinner_add)
+        self._add_symbol_worker(self._svgFilePath,
+                                self.symbolNameEntry,
+                                self.categoryChooser,
+                                self.symbolDescriptionEntry,
+                                self.symbolWidthSpinner)
 
 
     
@@ -427,7 +478,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                                           data["description"], 
                                           data["width"])
             if createdOk:
-                self.clear_add_symbol_tab()
+                self.done_with_input()
                 self._update_dict(data)
                 self._add_symbol_to_tree_widget(data)
 
@@ -463,7 +514,6 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self.availableSymbolsWidget.resizeColumnToContents(0)
         self.availableSymbolsWidget.sortItems(0, Qt.AscendingOrder)
         self.availableSymbolsWidget.setCurrentItem(symbolItem)
-        self.update_selected_symbol_display(symbolItem)
 
 
 
@@ -496,7 +546,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             data["svgName"] = sanitize_name(QString(name))
        
 
-        category = categoryWidget.text()
+        category = categoryWidget.currentText()
         if not category:
             QMessageBox.critical(None, msg.noCategoryErrorTitle,
                                  msg.noCategoryErrorText,
@@ -514,7 +564,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         
 
-    def load_svg_add(self):
+    def load_svg(self):
         """ This methods loads an svg image from disk and 
         displays it in the add symbol tab.
         """
@@ -529,36 +579,12 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         # add svg image and scale as requested by width spinbox
         # we have to check if loading of the svg succeeded
-        self.svgWidget_add.load(filePath)
-        if self.svgWidget_add.renderer().isValid():
-            self._svgFilePath_add = filePath
-            self.svgPathEdit_add.setText(filePath)
-            width = self.symbolWidthSpinner_add.value()
-            self.rescale_svg_item(self.svgWidget_add, width)
-
-
-
-    def load_svg_update(self):
-        """ This methods loads an svg image from disk and 
-        displays it in the update symbol tab.
-        """
-
-        filePath = QFileDialog.getOpenFileName(self, 
-                                               "sconcho: Load svg image", 
-                                               QDir.homePath(),
-                                               "svg images (*.svg)") 
-
-        if not filePath:
-            return
-
-
-        # add svg image and scale as requested by width spinbox
-        # we have to check if loading of the svg succeeded
-        self.svgWidget_update.load(filePath)
-        if self.svgWidget_update.renderer().isValid():
-            self.svgPathEdit_update.setText(filePath)
-            width = self.symbolWidthSpinner_update.value()
-            self.rescale_svg_item(self.svgWidget_update, width)
+        self.svgWidget.load(filePath)
+        if self.svgWidget.renderer().isValid():
+            self._svgFilePath = filePath
+            self.svgPathEdit.setText(filePath)
+            width = self.symbolWidthSpinner.value()
+            self.rescale_svg_item(self.svgWidget, width)
 
 
 

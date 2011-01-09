@@ -42,7 +42,8 @@ import sconcho.util.settings as settings
 import sconcho.util.misc as misc
 import sconcho.util.io as io
 import sconcho.util.symbolParser as parser
-from sconcho.gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer)
+from sconcho.gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer,
+                                      symbols_by_category)
 from sconcho.gui.colorWidget import (ColorWidget, ColorSynchronizer)
 from sconcho.gui.patternCanvas import PatternCanvas
 from sconcho.gui.exportBitmapDialog import ExportBitmapDialog
@@ -255,10 +256,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         if not self._ok_to_continue_without_saving():
-            return
-
-        # before we exit save our settings
-        self._save_settings()
+            event.ignore()
+        else:
+            # before we exit save our settings
+            self._save_settings()
+            event.accept()
         
 
 
@@ -599,8 +601,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         symbols (as opposed to the ones which come with sconcho).
         """
 
+        sortedSymbols = symbols_by_category(self._knittingSymbols)
+        symbolCategories = sortedSymbols.keys()
         personalSymbolPath = settings.get_personal_symbol_path(self.settings)
-        manager = ManageKnittingSymbolDialog(personalSymbolPath, self)
+        manager = ManageKnittingSymbolDialog(personalSymbolPath, 
+                                             symbolCategories, self)
         manager.exec_()
 
 
@@ -648,7 +653,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 status = False
 
         return status
-        
+ 
 
 
     def activate_symbolSelectorItem(self, symbolWidgets, activeItem):
