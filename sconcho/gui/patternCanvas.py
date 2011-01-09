@@ -567,19 +567,28 @@ class PatternCanvas(QGraphicsScene):
     def copy_selection(self, colDim, rowDim):
         """ This slot copies the current selection. """
 
-        #print(self._selectedCells)
-        #self._copySelection    = self._selectedCells.copy()
+        if not self._selectedCells:
+            return
+
+        self._copySelection.clear()
+
         for item in self._selectedCells:
 
             entry = {"width": item.width, 
                      "height": item.height, 
                      "symbol": item.symbol, 
+                     "column": item.column,
                      "color": item.color}
                      
             if not item.row in self._copySelection:
                 self._copySelection[item.row] = [entry]
             else:
                 self._copySelection[item.row].append(entry)
+
+        # we need to sort each row by column
+        for row in self._copySelection.keys():
+            self._copySelection[row].sort(lambda x, y: \
+                    cmp(x["column"], y["column"]))
 
         self._copySelectionDim = (colDim, rowDim)
         self._canPaste         = True
@@ -616,7 +625,7 @@ class PatternCanvas(QGraphicsScene):
         for copyRowID in sortedKeys:
             currentCol = column
             for entry in self._copySelection[copyRowID]:
-               
+        
                 # move to correct position
                 location = QPointF(currentCol * self._unitCellDim.width(),
                                    currentRow * self._unitCellDim.height())
@@ -1701,4 +1710,3 @@ def order_selection_by_rows(selection):
                 cellsByRow[cell.row].append(cell)
 
     return cellsByRow
-

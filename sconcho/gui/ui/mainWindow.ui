@@ -80,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>1137</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -113,7 +113,7 @@
     <addaction name="separator"/>
     <addaction name="menu_Zoom"/>
     <addaction name="action_Insert_delete_rows_and_columns"/>
-    <addaction name="actionClear_Selection"/>
+    <addaction name="actionUnselect_All"/>
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>
     <addaction name="actionShow_grid_labels"/>
@@ -204,7 +204,7 @@
    <addaction name="actionZoom_Out"/>
    <addaction name="actionFit"/>
    <addaction name="separator"/>
-   <addaction name="actionClear_Selection"/>
+   <addaction name="actionUnselect_All"/>
   </widget>
   <action name="actionAbout_sconcho">
    <property name="icon">
@@ -459,13 +459,13 @@
     <string>&amp;Manage Custom Knitting Symbols</string>
    </property>
   </action>
-  <action name="actionClear_Selection">
+  <action name="actionUnselect_All">
    <property name="icon">
     <iconset resource="../icons.qrc">
      <normaloff>:/icons/select_all.png</normaloff>:/icons/select_all.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Clear Selection</string>
+    <string>&amp;Unselect All</string>
    </property>
   </action>
   <action name="action_Copy">

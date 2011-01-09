@@ -207,7 +207,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionFit, SIGNAL("triggered()"),
                      self.graphicsView.fit_scene)
 
-        self.connect(self.actionClear_Selection, SIGNAL("triggered()"),
+        self.connect(self.actionUnselect_All, SIGNAL("triggered()"),
                      self.canvas.clear_all_selected_cells)
 
 
