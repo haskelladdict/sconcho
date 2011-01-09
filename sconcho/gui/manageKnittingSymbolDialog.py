@@ -57,18 +57,20 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         super(ManageKnittingSymbolDialog, self).__init__(parent)
         self.setupUi(self)
 
+        self.symbolEntryFrame.setVisible(False)
+
         # grab all symbols allready present
         self._symbolPath = symbolPath
         self._symbolDict = parse_all_symbols([symbolPath])
-        self._set_up_update_symbol_tab()
-        self._set_up_add_symbol_tab()
-        self._add_symbols_to_widget()
+        #self._set_up_update_symbol_tab()
+        #self._set_up_add_symbol_tab()
+        #self._add_symbols_to_widget()
 
         # do some initialisation
-        #self._selectedSymbol = None
         self._svgFilePath_add = None
         
         # add connections
+        """
         self.connect(self.availableSymbolsWidget, 
                      SIGNAL("currentItemChanged(QTreeWidgetItem*, \
                                                 QTreeWidgetItem*)"),
@@ -97,6 +99,15 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         self.connect(self.symbolWidthSpinner_update, SIGNAL("valueChanged(int)"),
                      partial(self.rescale_svg_item, self.svgWidget_update))
+        """
+
+        self.connect(self.addSymbolButton, SIGNAL("clicked()"),
+                     self.add_new_symbol)
+
+
+    def add_new_symbol(self):
+
+        self.symbolEntryFrame.setVisible(True)
 
 
 

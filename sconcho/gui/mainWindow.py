@@ -108,7 +108,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._set_up_connections()
 
         # set up timers
-        self._set_up_timers()
+        #self._set_up_timers()
 
         # nothing happened so far
         self._projectIsDirty = False
