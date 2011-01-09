@@ -348,10 +348,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_sconcho_manual(self):
         """ Show the sconcho manual. """
 
-        if not self.manualDialog:
-            manualPath = os.path.join(self._topLevelPath, "doc/manual.html")
-            self.manualDialog = SconchoManual(manualPath)
-
+        manualPath = os.path.join(self._topLevelPath, "doc/manual.html")
+        self.manualDialog = SconchoManual(manualPath)
+        self.manualDialog.setAttribute(Qt.WA_DeleteOnClose)
         self.manualDialog.open()
 
 
