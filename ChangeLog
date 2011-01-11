@@ -1,3 +1,12 @@
+01-10-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>
+
+	* Release of 0.1.0_a6
+	* many bugfixes
+	* added ability to add custom knitting symbols
+	* added copy & past function
+	* dimensions of grid cells can now be changed
+
+
 12-07-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
 
 	* Release of 0.1_a5
