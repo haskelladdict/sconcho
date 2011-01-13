@@ -55,7 +55,6 @@ if __name__ == "__main__":
         url='http://sconcho.sourceforge.net/',
         license='GNU GPLv3',
         packages=['sconcho', 'sconcho.util', 'sconcho.gui'], 
-        package_data = {'sconcho': symbolFiles, 
-                        'sconcho': ['doc/manual.html']},
+        package_data = {'sconcho': symbolFiles}, 
         scripts=['sconcho.pyw']
         )
