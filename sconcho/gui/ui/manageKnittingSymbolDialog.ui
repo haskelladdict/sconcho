@@ -218,6 +218,9 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>symbol &amp;category</string>
               </property>
+              <property name="buddy">
+               <cstring>categoryChooser</cstring>
+              </property>
              </widget>
             </item>
             <item row="3" column="0">
@@ -338,7 +341,7 @@ p, li { white-space: pre-wrap; }
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0,0">
      <property name="spacing">
-      <number>-1</number>
+      <number>6</number>
      </property>
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
