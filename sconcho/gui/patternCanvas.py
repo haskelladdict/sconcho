@@ -113,6 +113,7 @@ class PatternCanvas(QGraphicsScene):
 
         for label in self._textLabels:
             self.removeItem(label)
+            del label
         self._textLabels = []
            
         fm = QFontMetrics(labelFont)
@@ -285,9 +286,13 @@ class PatternCanvas(QGraphicsScene):
 
         entry = self.gridLegend[legendID]
         if legendItem_count(entry) == 1:
-            self.removeItem(legendItem_symbol(entry))
-            self.removeItem(legendItem_text(entry))
+            symbol = legendItem_symbol(entry)
+            text   = legendItem_text(entry)
+            self.removeItem(symbol)
+            self.removeItem(text)
             del self.gridLegend[legendID]
+            del symbol
+            del text
         else:
             new_entry = change_count(entry, -1)
             self.gridLegend[legendID] = new_entry
@@ -399,6 +404,7 @@ class PatternCanvas(QGraphicsScene):
                     for item in chunk:
                         totalWidth += item.width
                         self.removeItem(item)
+                        del item
 
                     # insert as many new items as we can fit
                     numNewItems = int(totalWidth/width)
@@ -596,6 +602,33 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def _get_pattern_grid_items_in_rectangle(self, column, row, numCols, numRows):
+        """ Given a (col, row) origin and the number of columns
+        and rows returns all PatternGridItems under the selection.
+
+        """
+
+        upperLeftCorner  = convert_col_row_to_pos(column, 
+                                    row, 
+                                    self._unitCellDim.width(),
+                                    self._unitCellDim.height())
+
+        lowerRightCorner = convert_col_row_to_pos(column + numCols - 1, 
+                                    row + numRows - 1, 
+                                    self._unitCellDim.width(),
+                                    self._unitCellDim.height())
+
+        
+        allItems = self.items(QRectF(upperLeftCorner, lowerRightCorner))
+        patternGridItems = []
+        for item in allItems:
+            if isinstance(item, PatternGridItem):
+                patternGridItems.append(item)
+
+        return patternGridItems
+
+
+
     def paste_selection(self, column, row):
         """ This slot pastes the current copy selection at column
         and row.
@@ -603,20 +636,13 @@ class PatternCanvas(QGraphicsScene):
 
         # remove each row completely first, then insert the 
         # selection
-        selection = set()
-        colDim = self._copySelectionDim[0]
-        rowDim = self._copySelectionDim[1]
-        for rowCount in range(row, row + rowDim):
-            for colCount in range(column, column + colDim):
-                item = self._item_at_row_col(colCount, rowCount)
-                selection.add(item)
+        deadItems = self._get_pattern_grid_items_in_rectangle(column, row,
+                                                self._copySelectionDim[0],
+                                                self._copySelectionDim[1])
 
-        deadCellsByRow = order_selection_by_rows(selection)
-
-        # remove old items
-        for items in deadCellsByRow.values():
-            for item in items:
-                self.removeItem(item)
+        for item in deadItems:
+            self.removeItem(item)
+            del item
 
         # add new items 
         sortedKeys = self._copySelection.keys() 
@@ -744,6 +770,7 @@ class PatternCanvas(QGraphicsScene):
             if isinstance(graphicsItem, PatternGridItem):
                 if graphicsItem.row == row:
                     self.removeItem(graphicsItem)
+                    del graphicsItem
                 elif graphicsItem.row > row:
                     shift_items_row_wise(graphicsItem, -1, 
                             self._unitCellDim.height())
@@ -840,6 +867,7 @@ class PatternCanvas(QGraphicsScene):
             if isinstance(graphicsItem, PatternGridItem):
                 if graphicsItem.column == column:
                     self.removeItem(graphicsItem)
+                    del graphicsItem
                 elif graphicsItem.column > column:
                     shift_items_column_wise(graphicsItem, -1, 
                             self._unitCellDim.width())
@@ -962,7 +990,7 @@ class PatternCanvas(QGraphicsScene):
         maxCol = 0
         maxRow = 0
         allPatternGridItems = []
-
+        
         try:
             for newItem in patternGridItemInfo:
                 colID    = newItem["column"]
@@ -976,6 +1004,7 @@ class PatternCanvas(QGraphicsScene):
                 location = QPointF(colID * self._unitCellDim.width(),
                                     rowID * self._unitCellDim.height())
                 symbol   = knittingSymbols[symbolID]
+
                 allPatternGridItems.append((location, self._unitCellDim, 
                                             colID, rowID, width, 
                                             height, symbol, color))
@@ -983,6 +1012,7 @@ class PatternCanvas(QGraphicsScene):
                 # update trackers
                 maxCol = max(maxCol, colID)
                 maxRow = max(maxRow, rowID)
+
         except KeyError as e:
             QMessageBox.critical(None, msg.errorLoadingGridTitle,
                                  msg.errorLoadingGridText % e,
@@ -1672,12 +1702,19 @@ def is_active_selection_rectangular(selectedCells):
     The function returns (True, (col, row)) if yes and (False, (0,0)) 
     otherwise. Here, col and row and the number of columns and rows
     of the selected rectangle.
+
     """
 
     if not selectedCells:
         return (False, (0,0))
 
     cellsByRow = order_selection_by_rows(selectedCells)
+    
+    # make sure the rows are consecutive
+    rowIDs = cellsByRow.keys()
+    for item in range(1, len(rowIDs)):
+        if (rowIDs[item] - rowIDs[item-1]) != 1:
+            return(False, (0,0))
 
     # check that each row has the same number of unit cells
     values = set(num_unitcells(row) for row in cellsByRow.values())
@@ -1689,7 +1726,7 @@ def is_active_selection_rectangular(selectedCells):
         row.sort(lambda x, y: cmp(x.column, y.column))
         if not are_consecutive([row]):
             return (False, (0,0))
-   
+    
     numCols = values.pop()
     numRows = len(cellsByRow)
     return (True, (numCols, numRows))
@@ -1699,6 +1736,7 @@ def is_active_selection_rectangular(selectedCells):
 def order_selection_by_rows(selection):
     """ Given a list of selected grid cells order them
     by row.
+
     """
 
     cellsByRow = {}
