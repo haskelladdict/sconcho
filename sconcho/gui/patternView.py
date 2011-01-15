@@ -137,5 +137,12 @@ class PatternView(QGraphicsView):
 
 
     def fit_scene(self):
+        """ Fit scene into canvas. """
 
         self.fitInView(self.scene().sceneRect(), Qt.KeepAspectRatio)
+
+
+    def normal_view(self):
+        """ Resets scene to normal (initial) view. """
+
+        self.resetMatrix()

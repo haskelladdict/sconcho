@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sat Jan 15 14:52:46 2011
+# Created: Sat Jan 15 16:41:47 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -193,6 +193,11 @@ class Ui_MainWindow(object):
         self.action_Paste.setObjectName(_fromUtf8("action_Paste"))
         self.actionCheck_Pattern_Grid = QtGui.QAction(MainWindow)
         self.actionCheck_Pattern_Grid.setObjectName(_fromUtf8("actionCheck_Pattern_Grid"))
+        self.action_Normal = QtGui.QAction(MainWindow)
+        icon12 = QtGui.QIcon()
+        icon12.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-original.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.action_Normal.setIcon(icon12)
+        self.action_Normal.setObjectName(_fromUtf8("action_Normal"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -206,6 +211,7 @@ class Ui_MainWindow(object):
         self.menu_Zoom.addAction(self.actionZoom_In)
         self.menu_Zoom.addAction(self.actionZoom_Out)
         self.menu_Zoom.addAction(self.actionFit)
+        self.menu_Zoom.addAction(self.action_Normal)
         self.menuView.addSeparator()
         self.menuView.addAction(self.menu_Zoom.menuAction())
         self.menuView.addAction(self.action_Insert_delete_rows_and_columns)
@@ -236,6 +242,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionZoom_In)
         self.toolBar.addAction(self.actionZoom_Out)
         self.toolBar.addAction(self.actionFit)
+        self.toolBar.addAction(self.action_Normal)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionUnselect_All)
 
@@ -302,6 +309,7 @@ class Ui_MainWindow(object):
         self.action_Paste.setText(QtGui.QApplication.translate("MainWindow", "&Paste", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCheck_Pattern_Grid.setText(QtGui.QApplication.translate("MainWindow", "Check Pattern Grid", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCheck_Pattern_Grid.setToolTip(QtGui.QApplication.translate("MainWindow", "Chech Pattern Grid", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Normal.setText(QtGui.QApplication.translate("MainWindow", "&Normal", None, QtGui.QApplication.UnicodeUTF8))
 
 from patternView import PatternView
 import icons_rc

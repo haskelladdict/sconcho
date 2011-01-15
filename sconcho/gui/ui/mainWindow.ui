@@ -109,6 +109,7 @@
      <addaction name="actionZoom_In"/>
      <addaction name="actionZoom_Out"/>
      <addaction name="actionFit"/>
+     <addaction name="action_Normal"/>
     </widget>
     <addaction name="separator"/>
     <addaction name="menu_Zoom"/>
@@ -203,6 +204,7 @@
    <addaction name="actionZoom_In"/>
    <addaction name="actionZoom_Out"/>
    <addaction name="actionFit"/>
+   <addaction name="action_Normal"/>
    <addaction name="separator"/>
    <addaction name="actionUnselect_All"/>
   </widget>
@@ -484,6 +486,15 @@
    </property>
    <property name="toolTip">
     <string>Chech Pattern Grid</string>
+   </property>
+  </action>
+  <action name="action_Normal">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/zoom-original.svg</normaloff>:/icons/zoom-original.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Normal</string>
    </property>
   </action>
  </widget>

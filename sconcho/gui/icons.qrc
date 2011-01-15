@@ -24,5 +24,6 @@
   <file>icons/zoom-out.svg</file>
   <file>icons/zoom-original.svg</file>
   <file>icons/zoom-best-fit.svg</file>
+  <file>icons/zoom-100.svg</file>
 </qresource>
 </RCC>
