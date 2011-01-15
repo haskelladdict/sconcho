@@ -67,6 +67,7 @@ class PatternCanvas(QGraphicsScene):
         self._activeColor   = None
         self._defaultColor  = QColor(Qt.white)
         self._selectedCells = set()
+        self._paintActive   = True
 
         self._unitCellDim = QSizeF(get_grid_dimensions(theSettings))
         self._numRows     = 10
@@ -387,6 +388,9 @@ class PatternCanvas(QGraphicsScene):
         Has to make sure the geometry is appropriate.
         """
 
+        if not self._paintActive:
+            return
+
         if self._activeSymbol:
             width = int(self._activeSymbol["width"])
             chunks = chunkify_cell_arrangement(width, self._selectedCells)
@@ -451,6 +455,21 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def _dont_paint_canvas(self):
+        """ Turns painting of canvas off. """
+
+        self._paintActive = False
+
+
+
+    def _do_paint_canvas(self):
+        """ Turns painting of canvas on. """
+
+        self._paintActive = True
+        self.paint_cells()
+
+
+
     def select_region(self, region):
         """ This function selects items based on a whole region.
 
@@ -458,9 +477,15 @@ class PatternCanvas(QGraphicsScene):
         view via a rubberBand selection.
         """
 
+        # inhibit painting until we're done with selecting all cells
+        # otherwise we'll paint non-matching selection partially
+        self._dont_paint_canvas()
+
         for item in self.items(region):
             if isinstance(item, PatternGridItem):
                 item.press_item()
+
+        self._do_paint_canvas()
 
 
 
