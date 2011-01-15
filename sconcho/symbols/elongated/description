@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>elongated</svgName>
+    <category>basic</category>
+    <symbolName>elongated</symbolName>
+    <symbolDescription>Knit 1 stitch wrapping yarn twice, then on next row drop extra wrap from needle</symbolDescription>
+    <symbolWidth>1</symbolWidth>
+  </knittingSymbol>
+</sconcho>

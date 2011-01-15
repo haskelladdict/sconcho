@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <sconcho>
   <knittingSymbol>
-    <svgName>k2tog</svgName>
+    <svgName>p2tog_tbl</svgName>
     <category>basic</category>
-    <symbolName>k2tog</symbolName>
-    <symbolDescription>Knit 2 together</symbolDescription>
+    <symbolName>p2tog tbl</symbolName>
+    <symbolDescription>Purl 2 together through the back loop</symbolDescription>
     <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>

@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <sconcho>
   <knittingSymbol>
-    <svgName>ssk</svgName>  
-    <category>basic:5</category>
+    <svgName>ssk</svgName>
+    <category>basic</category>
     <symbolName>ssk</symbolName>
-    <symbolDescription>slip, slip, knit</symbolDescription>
+    <symbolDescription>Slip, slip, knit</symbolDescription>
     <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>
-

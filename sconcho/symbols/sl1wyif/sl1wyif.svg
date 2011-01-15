@@ -15,7 +15,7 @@
    sodipodi:version="0.32"
    inkscape:version="0.47 r22583"
    version="1.0"
-   sodipodi:docname="ssk.svg"
+   sodipodi:docname="sl1wyib.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
      id="defs3295">
@@ -32,7 +32,7 @@
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1.0"
-     gridtolerance="10000"
+     gridtolerance="10"
      guidetolerance="10"
      objecttolerance="10"
      inkscape:pageopacity="0.0"
@@ -53,7 +53,9 @@
        type="xygrid"
        id="grid3303"
        visible="false"
-       enabled="true" />
+       enabled="true"
+       empspacing="5"
+       snapvisiblegridlinesonly="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata3298">
@@ -72,8 +74,8 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       d="M 75,75 L 15,15"
+       style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="M 77,44.95697 L 13,45.04303"
        id="path3305" />
   </g>
 </svg>

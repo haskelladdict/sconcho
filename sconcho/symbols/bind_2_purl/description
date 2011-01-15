@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>bind_2_purl</svgName>
+    <category>basic</category>
+    <symbolName>bind 2 purl</symbolName>
+    <symbolDescription>yo, p2, pass yo over 2 purl stitches</symbolDescription>
+    <symbolWidth>2</symbolWidth>
+  </knittingSymbol>
+</sconcho>

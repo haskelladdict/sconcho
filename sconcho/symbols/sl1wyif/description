@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <sconcho>
   <knittingSymbol>
-    <svgName>k2tog</svgName>
+    <svgName>sl1wyif</svgName>
     <category>basic</category>
-    <symbolName>k2tog</symbolName>
-    <symbolDescription>Knit 2 together</symbolDescription>
+    <symbolName>sl1wyif</symbolName>
+    <symbolDescription>Slip 1 stitch purlwise with yarn in front</symbolDescription>
     <symbolWidth>1</symbolWidth>
   </knittingSymbol>
 </sconcho>
