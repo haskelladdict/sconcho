@@ -166,9 +166,11 @@ Using the *Manage Custom Knitting Symbols* dialog (**Edit -> Manage Custom
 Knitting Symbols**) you can add your own knitting symbols and make them
 available within sconcho. 
 
-To *add* a new symbol click on the *Add New Symbol* tab. Then provide
+To *add* a new symbol click on the *Add New Symbol* button. Then enter the
+required information in the respective fields of the dialog. You need to provide
 an SVG image file of your symbol, a symbol name, category, default
 width and finally a symbol description. Then click on *Add Symbol*.
+You can cancel adding the symbol by pressing *Cancel* at any time.
 
 **Please Note:**: 
 
@@ -176,12 +178,16 @@ width and finally a symbol description. Then click on *Add Symbol*.
 2. If you choose a symbol name and category identical to one provided by default with sconcho, your custom symbol will take precedence.
 3. Sconcho does not provide a facility for creating the SVG images needed for a new symbol. You can use the excellent program Inkscape <http://inkscape.org/> for this purpose. Inkscape was also used to create the symbols that come with sconcho.
 
-By default, the new symbols are stored within your home directory 
+By default, your new symbols are stored within your home directory 
 (*C:/Documents and Settings/Username* on Windows). You can change the location 
 in the *Symbol Location* tab of the *Preferences* Dialog.
 
-Using the *Update/Delete Existing Symbols* tab you can update and delete existing
-custom symbols. Updates take effect immediately.
+By pressing the *Update Selected Symbol* button you can update the information
+for the currently highlighted symbol in the list of *Available Symbols*.
+Updates take effect immediately.
+
+Finally, pressing *Delete Selected Symbol* will delete the currently highlighted
+symbol. 
 
 **Please Note:**:
 
