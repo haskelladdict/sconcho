@@ -213,6 +213,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
+    def keyPressEvent(self, event):
+        """ Catch some key press events. """
+
+        if event.key() == Qt.Key_G:
+            if (event.modifiers() & Qt.ControlModifier) and \
+               (event.modifiers() & Qt.ShiftModifier):
+                   self.check_pattern_grid()
+        else:
+            QMainWindow.keyPressEvent(self, event)
+
+
+
+    def check_pattern_grid(self):
+        """ NOTE: this is a temporary function which will be removed
+        in the production version. It is mainly indended for the 
+        maintiner and this hidden. It can be invoked
+        by pressing CONTROL + SHIFT + G. It allows to query the pattern grid
+        to make sure there are no overlapping PatternGridItems as has
+        happened in the past after copy and past actions.
+        If such items are detected they are removed (but one).
+
+        """
+
+        result = self.canvas.check_pattern_grid()
+
+        if result:
+            print("\n***************************************")
+            print("The following items were removed from the canvas:")
+            for item in result:
+                print(item)
+
+
+
     def _set_up_timers(self):
         """
         Set up timers.

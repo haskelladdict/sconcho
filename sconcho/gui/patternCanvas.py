@@ -708,6 +708,59 @@ class PatternCanvas(QGraphicsScene):
         return True
 
 
+    
+    def check_pattern_grid(self):
+        """ NOTE: this is a temporary function which will be removed
+        in the production version. It allows to query the pattern grid
+        to make sure there are no overlapping PatternGridItems as has
+        happened in the past after copy and past actions.
+        If such items are detected they are removed (but one).
+
+        """
+
+        allItems = self.items()
+        patternGridItems = []
+        for item in allItems:
+            if isinstance(item, PatternGridItem):
+                patternGridItems.append(item)
+
+
+        tracker = {}
+        for item in patternGridItems:
+            for i in range(0,item.width):
+                itemID = str(item.row) + ":" + str(item.column+i)
+               
+                # check for trouble
+                if itemID in tracker:
+                    tracker[itemID].append(item)
+                    break
+                else:
+                    tracker[itemID] = [item]
+
+        removedItems = []
+        for items in tracker.values():
+            # check for duplicate values
+            if len(items) > 1:
+                # we remove the item with the smallest width
+                # to avoid leaving holes
+                items.sort(lambda x,y: cmp(x.width, y.width))
+
+                # remove all but the last one
+                for index in range(0, len(items)-1):
+                    item = items[index]
+                    canvasRow = \
+                         self.convert_canvas_row_to_internal(item.row)
+                    canvasColumn = \
+                         self.convert_canvas_column_to_internal(item.column)
+                    removedItems.append((item.symbol["name"], canvasColumn,
+                                         canvasRow))
+                    item = items[index]
+                    self.removeItem(item)
+                    del item
+
+        return removedItems 
+
+
 
     def _item_at_row_col(self, column, row):
         """ Returns the PatternGridItem at the given column and row
@@ -882,10 +935,13 @@ class PatternCanvas(QGraphicsScene):
 
 
     def convert_canvas_row_to_internal(self, row):
-        """
+        """ This function does the conversion from canvas
+        to internal rows.
+
         Internally rows are numbered 0 through numRows-1
         from the top to bottom whereas they appear as numRows to 1
-        on the canvas. This function does the conversion.
+        on the canvas. 
+
         """
 
         return self._numRows - row
@@ -893,10 +949,13 @@ class PatternCanvas(QGraphicsScene):
 
 
     def convert_canvas_column_to_internal(self, column):
-        """
+        """ This function does the conversion from canvas
+        to internal columns.
+
         Internally columns are numbered 0 through numColumns-1
         from the left to right whereas they appear as numColumns to 1
-        on the canvas. This function does the conversion.
+        on the canvas. 
+
         """
 
         return self._numColumns - column
@@ -1160,9 +1219,9 @@ class PatternGridItem(QGraphicsSvgItem):
         self._pen.setJoinStyle(Qt.MiterJoin)
         self._pen.setColor(Qt.black)
 
-        self._selected  = False
-        self.color       = defaultColor
-        self._backColor = self.color
+        self._selected         = False
+        self.color             = defaultColor
+        self._backColor        = self.color
         self._highlightedColor = QColor(Qt.gray)
 
         self.symbol = None

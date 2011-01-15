@@ -33,6 +33,7 @@ def convert_pos_to_col_row(mousePos, cellWidth, cellHeight):
     """ Converts a mouse position on the canvas into a tuple
     of (column, row).
     Note: This may be outside the actual pattern grid.
+
     """
 
     column = int( math.floor( mousePos.x()/cellWidth ) )
@@ -45,6 +46,7 @@ def convert_pos_to_col_row(mousePos, cellWidth, cellHeight):
 def convert_col_row_to_pos(column, row, cellWidth, cellHeight):
     """ Converts a (row, column) tuple to a position on
     the canvas in the center of the corresponding grid element.
+
     """
 
     return QPointF((column + 0.5) * cellWidth, 
@@ -53,9 +55,9 @@ def convert_col_row_to_pos(column, row, cellWidth, cellHeight):
 
 
 def is_click_in_grid(col, row, numCols, numRows):
-    """
-    Returns true if col and row is within the limits
+    """ Returns true if col and row is within the limits
     set by numCol and numRow.
+
     """
 
     if ( col >= 0 and col < numCols ) and ( row >= 0 and row < numRows ):

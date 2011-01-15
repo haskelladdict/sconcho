@@ -80,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>1137</width>
-     <height>26</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -476,6 +476,14 @@
   <action name="action_Paste">
    <property name="text">
     <string>&amp;Paste</string>
+   </property>
+  </action>
+  <action name="actionCheck_Pattern_Grid">
+   <property name="text">
+    <string>Check Pattern Grid</string>
+   </property>
+   <property name="toolTip">
+    <string>Chech Pattern Grid</string>
    </property>
   </action>
  </widget>
