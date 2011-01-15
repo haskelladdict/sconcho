@@ -55,7 +55,7 @@ from sconcho.util.exceptions import PatternReadError
 
 
 
-__version__ = "0.1.0_a6"
+__version__ = "0.1.0_a7"
 
 
 #######################################################################

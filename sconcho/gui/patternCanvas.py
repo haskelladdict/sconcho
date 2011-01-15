@@ -67,6 +67,7 @@ class PatternCanvas(QGraphicsScene):
         self._activeColor   = None
         self._defaultColor  = QColor(Qt.white)
         self._selectedCells = set()
+        self._newSelectedCells = []
         self._paintActive   = True
 
         self._unitCellDim = QSizeF(get_grid_dimensions(theSettings))
@@ -303,6 +304,9 @@ class PatternCanvas(QGraphicsScene):
     def clear_all_selected_cells(self):
         """ Unselects all currently selected cells. """
 
+        # need to replace
+        self._newSelectedCells = []
+
         while self._selectedCells:
             item = self._selectedCells.pop()
             item.press_item()
@@ -323,6 +327,8 @@ class PatternCanvas(QGraphicsScene):
         """
         
         self._selectedCells.add(item)
+        self._newSelectedCells.append((item.column, item.row, item.width,
+                                       item.color, item.symbol))
         self.paint_cells()
 
 
@@ -335,6 +341,8 @@ class PatternCanvas(QGraphicsScene):
 
         if item in self._selectedCells:
             self._selectedCells.remove(item)
+            self._newSelectedCells.remove((item.column, item.row, item.width,
+                                          item.color, item.symbol))
         self.paint_cells()
 
 
@@ -423,6 +431,8 @@ class PatternCanvas(QGraphicsScene):
                         column = column + width
 
                 self._selectedCells.clear()
+                #print(self._newSelectedCells)
+                self._newSelectedCells = []
 
 
 
