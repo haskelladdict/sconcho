@@ -242,10 +242,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         result = self.canvas.check_pattern_grid()
 
         if result:
-            print("\n***************************************")
-            print("The following items were removed from the canvas:")
+            message = ("The canvas had duplicate symbols. \n"
+                      "The following items were removed from the canvas:\n")
             for item in result:
-                print(item)
+                message += str(item)
+                message += "\n"
+        else:
+            message = "Canvas is clean - no changes neccessary!"
+
+        QMessageBox.information(self, "sconcho: Check Pattern", message)
 
 
 
