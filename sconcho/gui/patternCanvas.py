@@ -1328,6 +1328,8 @@ class PatternGridItem(QGraphicsSvgItem):
                  parent = None):
 
         super(PatternGridItem, self).__init__(parent)
+        
+        self.setCacheMode(QGraphicsItem.NoCache)
 
         self.origin  = QPointF(0.0, 0.0)
         self.unitDim = unitDim
@@ -1475,7 +1477,8 @@ class PatternLegendItem(QGraphicsSvgItem):
                  zValue = 1, parent = None):
 
         super(PatternLegendItem, self).__init__(parent)
-        
+
+        self.setCacheMode(QGraphicsItem.NoCache)
         self.setZValue(zValue)
 
         self.origin  = QPointF(0.0, 0.0)
@@ -2106,6 +2109,7 @@ class PaintCells(QUndoCommand):
 
 
 
+
 class PasteCells(QUndoCommand):
 
     def __init__(self, canvas, copySelection, deadSelection, 
@@ -2118,7 +2122,28 @@ class PasteCells(QUndoCommand):
         self.column        = column
         self.row           = row
 
+
+    def _get_upper_left(self, selection):
+        """ Determines the column and row of the upper left
+        corner of the selection.
+
+        """
+
+        rows = []
+        cols = []
+        for entry in selection:
+            cols.append(entry["column"])
+            rows.append(entry["row"])
+
+        return (min(cols), min(cols))
+
+
     def redo(self):
+
+        (upperLeftCol, upperLeftRow) = \
+                self._get_upper_left(self.copySelection.values())
+
+        print(upperLeftCol, upperLeftRow)
         pass
         """
         for item in deadItems:
