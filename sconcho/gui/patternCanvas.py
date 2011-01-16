@@ -762,36 +762,10 @@ class PatternCanvas(QGraphicsScene):
       
         if self._copySelection and deadSelection:
             pasteCommand = PasteCells(self, self._copySelection,
-                                     deadSelection, column, row)
+                                     deadSelection, column, row,
+                                     self._copySelectionDim[0],
+                                     self._copySelectionDim[1])
             self._undoStack.push(pasteCommand)
-        """
-        for item in deadItems:
-            self.removeItem(item)
-            del item
-
-        # add new items 
-        sortedKeys = self._copySelection.keys() 
-        sortedKeys.sort()
-        currentRow = row
-        for copyRowID in sortedKeys:
-            currentCol = column
-            for entry in self._copySelection[copyRowID]:
-        
-                # move to correct position
-                location = QPointF(currentCol * self._unitCellDim.width(),
-                                   currentRow * self._unitCellDim.height())
-                item = self.create_pattern_grid_item(location, self._unitCellDim, 
-                                                     currentCol, currentRow, 
-                                                     entry["width"], 1,
-                                                     entry["symbol"], 
-                                                     entry["color"])
-                self.addItem(item)
-                currentCol += item.width
-
-            currentRow += 1
-       
-        self.emit(SIGNAL("scene_changed"))
-    """
 
 
 
@@ -1328,7 +1302,9 @@ class PatternGridItem(QGraphicsSvgItem):
                  parent = None):
 
         super(PatternGridItem, self).__init__(parent)
-        
+      
+        # NOTE: need this for >= Qt 4.7 otherwise
+        # rendering of our scene is broken
         self.setCacheMode(QGraphicsItem.NoCache)
 
         self.origin  = QPointF(0.0, 0.0)
@@ -1478,7 +1454,10 @@ class PatternLegendItem(QGraphicsSvgItem):
 
         super(PatternLegendItem, self).__init__(parent)
 
+        # NOTE: need this for >= Qt 4.7 otherwise
+        # rendering of our scene is broken
         self.setCacheMode(QGraphicsItem.NoCache)
+        
         self.setZValue(zValue)
 
         self.origin  = QPointF(0.0, 0.0)
@@ -1502,9 +1481,7 @@ class PatternLegendItem(QGraphicsSvgItem):
 
 
     def change_geometry(self, newDim):
-        """ This slot changes the unit dimensions of the
-        item.
-        """
+        """ This slot changes the unit dimensions of the item. """
 
         self.unitDim = newDim
         self.size    = QSizeF(self.unitDim.width() * self.width,
@@ -1513,10 +1490,7 @@ class PatternLegendItem(QGraphicsSvgItem):
 
 
     def _set_symbol(self, newSymbol):
-        """
-        Adds a new svg image of a knitting symbol to the
-        scene.
-        """
+        """ Adds a new svg image of a knitting symbol to the scene. """
 
         self.symbol = newSymbol
         svgPath = newSymbol["svgPath"]
@@ -1531,21 +1505,16 @@ class PatternLegendItem(QGraphicsSvgItem):
 
 
     def boundingRect(self):
-        """
-        Return the bounding rectangle of the item.
-        """
+        """ Return the bounding rectangle of the item. """
 
         halfPen = self._penSize * 0.5
         return QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
                                                        halfPen, halfPen)
-        
 
 
 
     def paint(self, painter, option, widget):
-        """
-        Paint ourselves.
-        """
+        """ Paint ourselves. """
 
         painter.setPen(self._pen)
         brush = QBrush(self.color)
@@ -1585,11 +1554,11 @@ class PatternLabelItem(QGraphicsTextItem):
 ############################################################################
 
 def chunkify_cell_arrangement(width, allCells):
-    """
-    Given a collection of selected cells verifies that we
+    """ Given a collection of selected cells verifies that we
     can place a symbol of given width. If so, return a
     list of consecutive chunks of cells all of a multiple of width
     that can be filled with the new symbol.
+
     """
 
     # check 1: number of active cells has to be a multiple
@@ -1612,10 +1581,10 @@ def chunkify_cell_arrangement(width, allCells):
 
 
 def chunk_all_rows(width, cellsByRow):
-    """
-    Separate each row into chunks at least as long as
+    """ Separate each row into chunks at least as long as
     the items we want to place. Then we check if each
     chunk is consecutive.
+
     """
     
     chunkList = []
@@ -1643,9 +1612,9 @@ def chunk_all_rows(width, cellsByRow):
 
 
 def are_consecutive(chunks):
-    """
-    Checks if each chunk in a list of chunks consists
+    """ Checks if each chunk in a list of chunks consists
     of consecutive items. 
+
     """
 
     if not chunks:
@@ -1667,9 +1636,9 @@ def are_consecutive(chunks):
 
 
 def num_unitcells(cells):
-    """
-    Compute the total number of unit cells in the
+    """ Compute the total number of unit cells in the
     selection.
+
     """
 
     totalWidth = 0
@@ -1681,9 +1650,7 @@ def num_unitcells(cells):
 
 
 def shift_items_row_wise(item, num, unitCellHeight):
-    """
-    Shifts the given item by num rows given unitCellHeight.
-    """
+    """ Shifts the given item by num rows given unitCellHeight. """
     
     yShift = num * unitCellHeight
     item.prepareGeometryChange()
@@ -1693,9 +1660,7 @@ def shift_items_row_wise(item, num, unitCellHeight):
 
 
 def shift_items_column_wise(item, num, unitCellWidth):
-    """
-    Shifts the given item by num columns given unitCellWidth.
-    """
+    """ Shifts the given item by num columns given unitCellWidth. """
     
     xShift = num * unitCellWidth
     item.prepareGeometryChange()
@@ -1707,7 +1672,9 @@ def shift_items_column_wise(item, num, unitCellWidth):
 def shift_legend_down(legendList, numAdditionalRows, unitCellHeight,
                       numColumns, unitWidth):
     """ Shift all legend items below the grid down by
-    numAdditionalRows """
+    numAdditionalRows 
+    
+    """
 
     yShift = numAdditionalRows * unitCellHeight
 
@@ -1731,7 +1698,9 @@ def shift_legend_down(legendList, numAdditionalRows, unitCellHeight,
 def shift_legend_right(legendList, numAdditionalColumns, unitCellWidth,
                       numRows, unitHeight):
     """ Shift all legend items to the right of the grid right by
-    numAdditionalColumns """
+    numAdditionalColumns 
+    
+    """
 
     xShift = numAdditionalColumns * unitCellWidth
 
@@ -1754,9 +1723,9 @@ def shift_legend_right(legendList, numAdditionalColumns, unitCellWidth,
 
 
 def compute_max_legend_y_coordinate(gridLegend):
-    """
-    Given the current list of existing legend items
+    """ Given the current list of existing legend items
     figure out the largest y coordinate among them all.
+
     """
 
     yList = [0]
@@ -1769,9 +1738,9 @@ def compute_max_legend_y_coordinate(gridLegend):
 
 
 def change_count(item, count):
-    """
-    Convenience wrapper changing the count for a particular
+    """ Convenience wrapper changing the count for a particular
     legend entry.
+
     """
 
     item[0] += count
@@ -1780,9 +1749,9 @@ def change_count(item, count):
 
 
 def legendItem_count(item):
-    """
-    Convenience wrapper returning the reference count for the
+    """ Convenience wrapper returning the reference count for the
     particular legend item.
+
     """
 
     return item[0]
@@ -1790,9 +1759,9 @@ def legendItem_count(item):
 
 
 def legendItem_symbol(item):
-    """
-    Convenience wrapper returning the current symbol for a
+    """ Convenience wrapper returning the current symbol for a
     particular legend item.
+
     """
 
     return item[1]
@@ -1800,9 +1769,9 @@ def legendItem_symbol(item):
 
 
 def legendItem_text(item):
-    """
-    Convenience wrapper returning the current description text
+    """ Convenience wrapper returning the current description text
     for a particular legend item.
+
     """
 
     return item[2]
@@ -1810,9 +1779,9 @@ def legendItem_text(item):
 
 
 def generate_legend_id(symbol, color):
-    """
-    Based on a symbol/legend info, generate an id tag. Currently
+    """ Based on a symbol/legend info, generate an id tag. Currently
     this is just based on name and category.
+
     """
 
     name = symbol["name"]
@@ -2113,7 +2082,7 @@ class PaintCells(QUndoCommand):
 class PasteCells(QUndoCommand):
 
     def __init__(self, canvas, copySelection, deadSelection, 
-                 column, row, parent = None):
+                 column, row, numCols, numRows, parent = None):
 
         super(PasteCells, self).__init__(parent)
         self.canvas = canvas
@@ -2121,6 +2090,8 @@ class PasteCells(QUndoCommand):
         self.deadSelection = deadSelection.copy()
         self.column        = column
         self.row           = row
+        self.numColumns    = numCols
+        self.numRows       = numRows
 
 
     def _get_upper_left(self, selection):
@@ -2135,7 +2106,7 @@ class PasteCells(QUndoCommand):
             cols.append(entry["column"])
             rows.append(entry["row"])
 
-        return (min(cols), min(cols))
+        return (min(cols), min(rows))
 
 
     def redo(self):
@@ -2143,35 +2114,56 @@ class PasteCells(QUndoCommand):
         (upperLeftCol, upperLeftRow) = \
                 self._get_upper_left(self.copySelection.values())
 
-        print(upperLeftCol, upperLeftRow)
-        pass
-        """
-        for item in deadItems:
-            self.removeItem(item)
-            del item
+        # delete previous items
+        for entry in self.deadSelection.values():
+            item = self.canvas._item_at_row_col(entry["column"], entry["row"])
+            if item:
+                self.canvas.removeItem(item)
+                del item
 
-        # add new items 
-        sortedKeys = self._copySelection.keys() 
-        sortedKeys.sort()
-        currentRow = row
-        for copyRowID in sortedKeys:
-            currentCol = column
-            for entry in self._copySelection[copyRowID]:
-        
-                # move to correct position
-                location = QPointF(currentCol * self._unitCellDim.width(),
-                                   currentRow * self._unitCellDim.height())
-                item = self.create_pattern_grid_item(location, self._unitCellDim, 
-                                                     currentCol, currentRow, 
+        # add new items; shift them to the proper column and row
+        for entry in self.copySelection.values():
+            column = entry["column"] - upperLeftCol + self.column
+            row    = entry["row"] - upperLeftRow + self.row
+
+            location = QPointF(column * self.canvas._unitCellDim.width(),
+                               row * self.canvas._unitCellDim.height())
+            item = self.canvas.create_pattern_grid_item(location, 
+                                                     self.canvas._unitCellDim, 
+                                                     column, row,
                                                      entry["width"], 1,
                                                      entry["symbol"], 
                                                      entry["color"])
-                self.addItem(item)
-                currentCol += item.width
+            self.canvas.addItem(item)
 
-            currentRow += 1
-        """
+
 
     def undo(self):
-        pass 
+       
+        # remove previously pasted cells
+        for colId in range(self.column, self.column + self.numColumns):
+            for rowId in range(self.row, self.row + self.numRows):
+
+                item = self.canvas._item_at_row_col(colId, rowId)
+                if item:
+                    self.canvas.removeItem(item)
+                    del item
+
+
+        # re-add previously deleted cells
+        for entry in self.deadSelection.values():
+            column = entry["column"]
+            row    = entry["row"]
+
+            location = QPointF(column * self.canvas._unitCellDim.width(),
+                               row * self.canvas._unitCellDim.height())
+            item = self.canvas.create_pattern_grid_item(location, 
+                                                     self.canvas._unitCellDim, 
+                                                     column, row,
+                                                     entry["width"], 1,
+                                                     entry["symbol"], 
+                                                     entry["color"])
+            self.canvas.addItem(item)
+
+
  
