@@ -503,19 +503,53 @@ class PatternCanvas(QGraphicsScene):
         """ Deal with user clicks on the grid labels. 
         These select whole rows or columns depending on
         if a column or row label was clicked on.
+
         """
 
         assert (row == self._numRows) or (col == self._numColumns)
 
         if row == self._numRows:
-            selectedItems = get_column_items(self.items(), col)
-            
+            selectedItems = self.get_column_items(col)
         else:
-            selectedItems = get_row_items(self.items(), row)
+            selectedItems = self.get_row_items(row)
 
+        self._dont_paint_canvas() 
         for item in selectedItems:
             item.press_item()
+        self._do_paint_canvas()
 
+
+
+    def get_column_items(self, column):
+        """ Returns list of all PatternGridItems in column. """
+
+        colItems = []
+        for row in range(0, self._numRows):
+            item = self._item_at_row_col(column, row)
+            if item:
+                colItems.append(item)
+
+        return colItems
+        
+
+
+    def get_row_items(self, row):
+        """ Returns list of all PatternGridItems in row.
+
+        NOTE: Since we want to select the whole row, we
+        have to make sure to deliver the items left to
+        right and *not* out of order.
+        """
+
+        rowItems = []
+        for column in range(0, self._numColumns):
+            item = self._item_at_row_col(column, row)
+            if item:
+                rowItems.append(item)
+           
+        rowItems.sort(lambda x, y: cmp(x.column, y.column))
+        
+        return rowItems
 
 
 
@@ -523,6 +557,7 @@ class PatternCanvas(QGraphicsScene):
         """
         Handles a right click on the pattern grid by
         displaying a QMenu with options.
+
         """
 
         gridMenu = QMenu()
@@ -1731,10 +1766,10 @@ def generate_legend_id(symbol, color):
 
 def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos, 
                        labelYPos, description):
-    """
-    Position all label items (pairs of PatternGridItem
+    """ Position all label items (pairs of PatternGridItem
     and PatternLegendItem) as requested in dict legendItems
     which comes from a parsed spf file.
+
     """
    
     if legendID in legendItems:
@@ -1752,41 +1787,6 @@ def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos,
                              QMessageBox.Close)
 
 
-
-def get_column_items(items, column):
-    """ Returns list of all PatternGridItems in column
-
-    NOTE: There is an issue if we encounter an item
-    which spans multiple columns. For now we ignore these.
-    """
-
-    colItems = []
-    for item in items:
-        if isinstance(item, PatternGridItem):
-            if (item.column == column) and (item.width == 1):
-                colItems.append(item)
-
-    return colItems
-    
-
-
-def get_row_items(items, row):
-    """ Returns list of all PatternGridItems in row.
-
-    NOTE: Since we want to select the whole row, we
-    have to make sure to deliver the items left to
-    right and *not* out of order.
-    """
-
-    rowItems = []
-    for item in items:
-        if isinstance(item, PatternGridItem):
-            if item.row == row:
-                rowItems.append(item)
-                
-    rowItems.sort(lambda x, y: cmp(x.column, y.column))
-    
-    return rowItems
 
 
 
