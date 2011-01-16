@@ -67,7 +67,6 @@ class PatternCanvas(QGraphicsScene):
         self._defaultSymbol = defaultSymbol
         self._activeColor   = None
         self._defaultColor  = QColor(Qt.white)
-        #self._selectedCells = set()
         self._newSelectedCells = {}
         self._paintActive   = True
 
@@ -323,11 +322,6 @@ class PatternCanvas(QGraphicsScene):
     def clear_all_selected_cells(self):
         """ Unselects all currently selected cells. """
 
-        # need to replace
-        #self._newSelectedCells.clear()
-
-        #while self._selectedCells:
-        #    item = self._selectedCells.pop()
         for entry in self._newSelectedCells.values():
 
             item = self._item_at_row_col(entry["column"], entry["row"]) 
@@ -350,8 +344,6 @@ class PatternCanvas(QGraphicsScene):
         them.
         """
         
-        #self._selectedCells.add(item)
-
         trackData = { "column": item.column, 
                       "row"   : item.row,
                       "width" : item.width,
@@ -373,8 +365,6 @@ class PatternCanvas(QGraphicsScene):
 
         itemId = get_item_id(item.column, item.row)
 
-        #if item in self._selectedCells:
-        #    self._selectedCells.remove(item)
         if itemId in self._newSelectedCells:
             del self._newSelectedCells[itemId]
 
@@ -444,42 +434,6 @@ class PatternCanvas(QGraphicsScene):
                 self._undoStack.push(paintCommand)
 
         
-        """
-        if self._activeSymbol:
-            width = int(self._activeSymbol["width"])
-            chunks = chunkify_cell_arrangement(width, self._selectedCells)
-
-            if chunks:
-                for chunk in chunks:
-                    totalWidth = 0
-
-                    # location of leftmost item in chunk
-                    origin = chunk[0].pos()
-                    row    = chunk[0].row
-                    column = chunk[0].column
-
-                    # compute total width and remove old items
-                    for item in chunk:
-                        totalWidth += item.width
-                        self.removeItem(item)
-                        del item
-
-                    # insert as many new items as we can fit
-                    numNewItems = int(totalWidth/width)
-                    for i in range(0,numNewItems):
-                        item = self.create_pattern_grid_item(origin,
-                                    self._unitCellDim, column, row, width, 1,
-                                    self._activeSymbol, self._activeColor)
-                        self.addItem(item)
-                        origin = QPointF(origin.x() + \
-                                         (width * self._unitCellDim.width()),
-                                         origin.y())
-                        column = column + width
-
-                self._selectedCells.clear()
-        """
-
-
 
     def mousePressEvent(self, event):
         """ Handle mouse press events directly on the canvas.
@@ -1552,102 +1506,6 @@ class PatternLabelItem(QGraphicsTextItem):
 ## Helper functions
 ##
 ############################################################################
-
-def chunkify_cell_arrangement(width, allCells):
-    """ Given a collection of selected cells verifies that we
-    can place a symbol of given width. If so, return a
-    list of consecutive chunks of cells all of a multiple of width
-    that can be filled with the new symbol.
-
-    """
-
-    # check 1: number of active cells has to be a multiple
-    # of width
-    if num_unitcells(allCells) % width != 0:
-        return []
-
-    cellsByRow = order_selection_by_rows(allCells)
-
-    # check 2: each row has to be a multiple of width
-    for row in cellsByRow.values():
-        if num_unitcells(row) % width != 0:
-            return []
-
-
-    chunkList = chunk_all_rows(width, cellsByRow)
-
-    return chunkList
-
-
-
-def chunk_all_rows(width, cellsByRow):
-    """ Separate each row into chunks at least as long as
-    the items we want to place. Then we check if each
-    chunk is consecutive.
-
-    """
-    
-    chunkList = []
-    for row in cellsByRow.values():
-        row.sort(lambda x, y: cmp(x.column, y.column))
-
-        chunks = []
-        chunk = []
-        length = 0
-        for item in row:
-            chunk.append(item)
-            length += item.width
-            if length % width == 0:
-               chunks.append(chunk)
-               chunk = []
-               length = 0
-
-        if not are_consecutive(chunks):
-            return []
-
-        chunkList.extend(chunks)
-
-    return chunkList
-
-
-
-def are_consecutive(chunks):
-    """ Checks if each chunk in a list of chunks consists
-    of consecutive items. 
-
-    """
-
-    if not chunks:
-        return True
-
-    for chunk in chunks:
-        if not chunk:
-            return False
-
-        consecutiveCol = chunk[0].column + chunk[0].width
-        for cell in chunk[1:]:
-            if cell.column != consecutiveCol:
-                return False
-            
-            consecutiveCol = cell.column + cell.width
-            
-    return True
-        
-
-
-def num_unitcells(cells):
-    """ Compute the total number of unit cells in the
-    selection.
-
-    """
-
-    totalWidth = 0
-    for item in cells:
-        totalWidth += item.width
-
-    return totalWidth
-
-
 
 def shift_items_row_wise(item, num, unitCellHeight):
     """ Shifts the given item by num rows given unitCellHeight. """
