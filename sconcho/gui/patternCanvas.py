@@ -32,7 +32,8 @@ from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF,
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
                          QAction, QGraphicsItem, QMessageBox, 
-                         QGraphicsItemGroup)
+                         QGraphicsItemGroup, 
+                         QUndoStack, QUndoCommand)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 
 from sconcho.util.settings import (get_grid_dimensions, get_label_font,
@@ -66,9 +67,11 @@ class PatternCanvas(QGraphicsScene):
         self._defaultSymbol = defaultSymbol
         self._activeColor   = None
         self._defaultColor  = QColor(Qt.white)
-        self._selectedCells = set()
-        self._newSelectedCells = []
+        #self._selectedCells = set()
+        self._newSelectedCells = {}
         self._paintActive   = True
+
+        self._undoStack     = QUndoStack(self)
 
         self._unitCellDim = QSizeF(get_grid_dimensions(theSettings))
         self._numRows     = 10
@@ -189,6 +192,22 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def undo(self):
+        """ Simple helper slot to undo last action. """
+
+        if self._undoStack.canUndo():
+            self._undoStack.undo()
+
+
+
+    def redo(self):
+        """ Simple helper slot to redo last action. """
+
+        if self._undoStack.canRedo():
+            self._undoStack.redo()
+
+
+
     def change_grid_cell_width(self, newWidth):
         """ This slot handles changes of the unit grid cell width.
         First we change the unitCellDim and then redraw the canvas.
@@ -305,10 +324,13 @@ class PatternCanvas(QGraphicsScene):
         """ Unselects all currently selected cells. """
 
         # need to replace
-        self._newSelectedCells = []
+        #self._newSelectedCells.clear()
 
-        while self._selectedCells:
-            item = self._selectedCells.pop()
+        #while self._selectedCells:
+        #    item = self._selectedCells.pop()
+        for entry in self._newSelectedCells.values():
+
+            item = self._item_at_row_col(entry["column"], entry["row"]) 
             item.press_item()
             
             # FIXME: This is a hack to force qt to
@@ -316,6 +338,8 @@ class PatternCanvas(QGraphicsScene):
             # to be a better way
             item.hide()
             item.show()
+
+        self._newSelectedCells.clear()
 
         
 
@@ -326,9 +350,17 @@ class PatternCanvas(QGraphicsScene):
         them.
         """
         
-        self._selectedCells.add(item)
-        self._newSelectedCells.append((item.column, item.row, item.width,
-                                       item.color, item.symbol))
+        #self._selectedCells.add(item)
+
+        trackData = { "column": item.column, 
+                      "row"   : item.row,
+                      "width" : item.width,
+                      "color" : item.color,
+                      "symbol": item.symbol }
+
+        itemId = get_item_id(item.column, item.row) 
+        self._newSelectedCells[itemId] = trackData
+
         self.paint_cells()
 
 
@@ -339,10 +371,13 @@ class PatternCanvas(QGraphicsScene):
         it from the collection of selected cells if present.
         """
 
-        if item in self._selectedCells:
-            self._selectedCells.remove(item)
-            self._newSelectedCells.remove((item.column, item.row, item.width,
-                                          item.color, item.symbol))
+        itemId = get_item_id(item.column, item.row)
+
+        #if item in self._selectedCells:
+        #    self._selectedCells.remove(item)
+        if itemId in self._newSelectedCells:
+            del self._newSelectedCells[itemId]
+
         self.paint_cells()
 
 
@@ -399,6 +434,17 @@ class PatternCanvas(QGraphicsScene):
         if not self._paintActive:
             return
 
+
+        if self._activeSymbol:
+            width = int(self._activeSymbol["width"])
+            chunks = new_chunkify_cell_arrangement(width, self._newSelectedCells)
+
+            if chunks: 
+                paintCommand = PaintCells(self, chunks)
+                self._undoStack.push(paintCommand)
+
+        
+        """
         if self._activeSymbol:
             width = int(self._activeSymbol["width"])
             chunks = chunkify_cell_arrangement(width, self._selectedCells)
@@ -431,8 +477,7 @@ class PatternCanvas(QGraphicsScene):
                         column = column + width
 
                 self._selectedCells.clear()
-                #print(self._newSelectedCells)
-                self._newSelectedCells = []
+        """
 
 
 
@@ -566,7 +611,7 @@ class PatternCanvas(QGraphicsScene):
 
         copyAction = gridMenu.addAction("&Copy Selection")
         (status, (colDim, rowDim)) = \
-                is_active_selection_rectangular(self._selectedCells)
+                is_active_selection_rectangular(self._newSelectedCells)
         if not status:
             copyAction.setEnabled(False)
 
@@ -641,29 +686,24 @@ class PatternCanvas(QGraphicsScene):
     def copy_selection(self, colDim, rowDim):
         """ This slot copies the current selection. """
 
-        if not self._selectedCells:
+        if not self._newSelectedCells:
             return
 
         self._copySelection.clear()
 
-        for item in self._selectedCells:
-
-            entry = {"width": item.width, 
-                     "height": item.height, 
-                     "symbol": item.symbol, 
-                     "column": item.column,
-                     "color": item.color}
-                     
-            if not item.row in self._copySelection:
-                self._copySelection[item.row] = [entry]
-            else:
-                self._copySelection[item.row].append(entry)
+        #for entry in self._newSelectedCells.values():
+        #    row = entry["row"]
+        #    if not row in self._copySelection:
+        #        self._copySelection[row] = [entry]
+        #    else:
+        #    self._copySelection[row].append(entry)
 
         # we need to sort each row by column
-        for row in self._copySelection.keys():
-            self._copySelection[row].sort(lambda x, y: \
-                    cmp(x["column"], y["column"]))
+        #for row in self._copySelection.keys():
+        #    self._copySelection[row].sort(lambda x, y: \
+        #            cmp(x["column"], y["column"]))
 
+        self._copySelection    = self._newSelectedCells.copy()
         self._copySelectionDim = (colDim, rowDim)
         self._canPaste         = True
         self.clear_all_selected_cells()
@@ -708,6 +748,23 @@ class PatternCanvas(QGraphicsScene):
                                                 self._copySelectionDim[0],
                                                 self._copySelectionDim[1])
 
+        deadSelection = {}
+        for item in deadItems:
+            trackData = { "column": item.column, 
+                          "row"   : item.row,
+                          "width" : item.width,
+                          "color" : item.color,
+                          "symbol": item.symbol }
+
+            itemId = get_item_id(item.column, item.row) 
+            deadSelection[itemId] = trackData
+
+      
+        if self._copySelection and deadSelection:
+            pasteCommand = PasteCells(self, self._copySelection,
+                                     deadSelection, column, row)
+            self._undoStack.push(pasteCommand)
+        """
         for item in deadItems:
             self.removeItem(item)
             del item
@@ -725,8 +782,7 @@ class PatternCanvas(QGraphicsScene):
                                    currentRow * self._unitCellDim.height())
                 item = self.create_pattern_grid_item(location, self._unitCellDim, 
                                                      currentCol, currentRow, 
-                                                     entry["width"], 
-                                                     entry["height"], 
+                                                     entry["width"], 1,
                                                      entry["symbol"], 
                                                      entry["color"])
                 self.addItem(item)
@@ -735,6 +791,7 @@ class PatternCanvas(QGraphicsScene):
             currentRow += 1
        
         self.emit(SIGNAL("scene_changed"))
+    """
 
 
 
@@ -796,7 +853,7 @@ class PatternCanvas(QGraphicsScene):
         tracker = {}
         for item in patternGridItems:
             for i in range(0,item.width):
-                itemID = str(item.row) + ":" + str(item.column+i)
+                itemID = get_item_id(item.column+i, item.row)
                
                 # check for trouble
                 if itemID in tracker:
@@ -1786,8 +1843,6 @@ def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos,
 
 
 
-
-
 def is_active_selection_rectangular(selectedCells):
     """ This function checks if the currently active selection 
     is rectangular (i.e., not jagged or disconnected).
@@ -1800,7 +1855,7 @@ def is_active_selection_rectangular(selectedCells):
     if not selectedCells:
         return (False, (0,0))
 
-    cellsByRow = order_selection_by_rows(selectedCells)
+    cellsByRow = new_order_selection_by_rows(selectedCells.values())
     
     # make sure the rows are consecutive
     rowIDs = cellsByRow.keys()
@@ -1809,14 +1864,14 @@ def is_active_selection_rectangular(selectedCells):
             return(False, (0,0))
 
     # check that each row has the same number of unit cells
-    values = set(num_unitcells(row) for row in cellsByRow.values())
+    values = set(new_num_unitcells(row) for row in cellsByRow.values())
     if len(values) != 1:
         return (False, (0,0))
 
     # look for "holes"
     for row in cellsByRow.values():
-        row.sort(lambda x, y: cmp(x.column, y.column))
-        if not are_consecutive([row]):
+        row.sort(lambda x, y: cmp(x["column"], y["column"]))
+        if not new_are_consecutive([row]):
             return (False, (0,0))
     
     numCols = values.pop()
@@ -1840,3 +1895,258 @@ def order_selection_by_rows(selection):
                 cellsByRow[cell.row].append(cell)
 
     return cellsByRow
+
+
+
+def new_chunkify_cell_arrangement(width, allCellsDict):
+    """
+    Given a collection of selected cells verifies that we
+    can place a symbol of given width. If so, return a
+    list of consecutive chunks of cells all of a multiple of width
+    that can be filled with the new symbol.
+    """
+
+    allCells = allCellsDict.values()
+
+    # check 1: number of active cells has to be a multiple
+    # of width
+    if new_num_unitcells(allCells) % width != 0:
+        return []
+
+    cellsByRow = new_order_selection_by_rows(allCells)
+
+    # check 2: each row has to be a multiple of width
+    for row in cellsByRow.values():
+        if new_num_unitcells(row) % width != 0:
+            return []
+
+    chunkList = new_chunk_all_rows(width, cellsByRow)
+
+    return chunkList
+
+
+def new_order_selection_by_rows(selection):
+    """ Given a list of selected grid cells order them
+    by row.
+
+    """
+
+    cellsByRow = {}
+    if selection:
+        for entry in selection:
+            row = entry["row"]
+            if not row in cellsByRow:
+                cellsByRow[row] = [entry]
+            else:
+                cellsByRow[row].append(entry)
+
+    return cellsByRow
+
+
+
+def new_chunk_all_rows(width, cellsByRow):
+    """
+    Separate each row into chunks at least as long as
+    the items we want to place. Then we check if each
+    chunk is consecutive.
+    """
+    
+    chunkList = []
+    for row in cellsByRow.values():
+        row.sort(lambda x, y: cmp(x["column"], y["column"]))
+
+        chunks = []
+        chunk = []
+        length = 0
+        for entry in row:
+            chunk.append(entry)
+            length += entry["width"]
+            if length % width == 0:
+               chunks.append(chunk)
+               chunk = []
+               length = 0
+
+        if not new_are_consecutive(chunks):
+            return []
+
+        chunkList.extend(chunks)
+
+    return chunkList
+
+
+
+def new_are_consecutive(chunks):
+    """
+    Checks if each chunk in a list of chunks consists
+    of consecutive items. 
+    """
+
+    if not chunks:
+        return True
+
+    for chunk in chunks:
+        if not chunk:
+            return False
+
+        consecutiveCol = chunk[0]["column"] + chunk[0]["width"]
+        for cell in chunk[1:]:
+            if cell["column"] != consecutiveCol:
+                return False
+            
+            consecutiveCol = cell["column"] + cell["width"]
+            
+    return True
+        
+
+
+def new_num_unitcells(cells):
+    """
+    Compute the total number of unit cells in the
+    selection.
+    """
+
+    totalWidth = 0
+    for item in cells:
+        totalWidth += item["width"]
+
+    return totalWidth
+
+
+def get_item_id(column, row):
+
+    return str(column) + ":" + str(row)
+        
+
+
+
+class PaintCells(QUndoCommand):
+
+
+    def __init__(self, canvas, chunks, parent = None):
+
+        super(PaintCells, self).__init__(parent)
+        self.canvas = canvas
+        self.oldSelection = canvas._newSelectedCells.copy()
+        self.newSelection = {}
+        self.chunks = chunks
+        self.width  = int(canvas._activeSymbol["width"])
+        self.activeSymbol = canvas._activeSymbol
+        self.activeColor  = canvas._activeColor
+
+
+    def redo(self):
+
+        for chunk in self.chunks:
+            totalWidth = 0
+
+            # location of leftmost item in chunk
+            column = chunk[0]["column"]
+            row    = chunk[0]["row"]
+            item   = self.canvas._item_at_row_col(column, row)
+            origin = item.pos()
+
+            # compute total width and remove old items
+            for entry in chunk:
+                totalWidth += entry["width"]
+                gridItem = self.canvas._item_at_row_col(entry["column"], 
+                                                   entry["row"])
+                self.canvas.removeItem(gridItem)
+                del gridItem
+
+            # insert as many new items as we can fit
+            numNewItems = int(totalWidth/self.width)
+            for i in range(0, numNewItems):
+                item = self.canvas.create_pattern_grid_item(origin,
+                            self.canvas._unitCellDim, column, row, self.width, 1,
+                            self.activeSymbol, self.activeColor)
+                self.canvas.addItem(item)
+                
+                itemId = get_item_id(column, row)
+                trackData = { "column": column, 
+                              "row"   : row,
+                              "width" : self.width,
+                              "color" : self.activeColor,
+                              "symbol": self.activeSymbol }
+
+                self.newSelection[itemId] = trackData
+
+                origin = QPointF(origin.x() + \
+                                    (self.width * self.canvas._unitCellDim.width()),
+                                    origin.y())
+                column = column + self.width
+
+        self.canvas._newSelectedCells.clear()
+
+
+    
+    def undo(self):
+
+        # get rid of previous selection
+        for entry in self.newSelection.values():
+            gridItem = self.canvas._item_at_row_col(entry["column"], 
+                                                    entry["row"])
+            self.canvas.removeItem(gridItem)
+            del gridItem
+
+        # re-insert previous selection
+        for entry in self.oldSelection.values():
+            column = entry["column"]
+            row    = entry["row"]
+            location = QPointF(column * self.canvas._unitCellDim.width(),
+                               row * self.canvas._unitCellDim.height())
+
+            item = self.canvas.create_pattern_grid_item(location, 
+                                                     self.canvas._unitCellDim, 
+                                                     column, row,
+                                                     entry["width"], 1,
+                                                     entry["symbol"], 
+                                                     entry["color"])
+
+            self.canvas.addItem(item)
+
+
+
+class PasteCells(QUndoCommand):
+
+    def __init__(self, canvas, copySelection, deadSelection, 
+                 column, row, parent = None):
+
+        super(PasteCells, self).__init__(parent)
+        self.canvas = canvas
+        self.copySelection = copySelection.copy()
+        self.deadSelection = deadSelection.copy()
+        self.column        = column
+        self.row           = row
+
+    def redo(self):
+        pass
+        """
+        for item in deadItems:
+            self.removeItem(item)
+            del item
+
+        # add new items 
+        sortedKeys = self._copySelection.keys() 
+        sortedKeys.sort()
+        currentRow = row
+        for copyRowID in sortedKeys:
+            currentCol = column
+            for entry in self._copySelection[copyRowID]:
+        
+                # move to correct position
+                location = QPointF(currentCol * self._unitCellDim.width(),
+                                   currentRow * self._unitCellDim.height())
+                item = self.create_pattern_grid_item(location, self._unitCellDim, 
+                                                     currentCol, currentRow, 
+                                                     entry["width"], 1,
+                                                     entry["symbol"], 
+                                                     entry["color"])
+                self.addItem(item)
+                currentCol += item.width
+
+            currentRow += 1
+        """
+
+    def undo(self):
+        pass 
+ 

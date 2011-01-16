@@ -223,6 +223,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if (event.modifiers() & Qt.ControlModifier) and \
                (event.modifiers() & Qt.ShiftModifier):
                    self.check_pattern_grid()
+        elif event.key() == Qt.Key_Z:
+            if event.modifiers() & Qt.ControlModifier:
+                self.canvas.undo()
+        elif event.key() == Qt.Key_R:
+            if event.modifiers() & Qt.ControlModifier:
+                self.canvas.redo()
         else:
             QMainWindow.keyPressEvent(self, event)
 
