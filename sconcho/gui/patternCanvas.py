@@ -523,11 +523,11 @@ class PatternCanvas(QGraphicsScene):
     def get_column_items(self, column):
         """ Returns list of all PatternGridItems in column. """
 
-        colItems = []
+        colItems = set()
         for row in range(0, self._numRows):
             item = self._item_at_row_col(column, row)
             if item:
-                colItems.append(item)
+                colItems.add(item)
 
         return colItems
         
@@ -541,14 +541,12 @@ class PatternCanvas(QGraphicsScene):
         right and *not* out of order.
         """
 
-        rowItems = []
+        rowItems = set()
         for column in range(0, self._numColumns):
             item = self._item_at_row_col(column, row)
             if item:
-                rowItems.append(item)
+                rowItems.add(item)
            
-        rowItems.sort(lambda x, y: cmp(x.column, y.column))
-        
         return rowItems
 
 

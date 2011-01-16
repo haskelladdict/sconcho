@@ -34,9 +34,9 @@ from PyQt4.QtGui import (QApplication, QCursor)
 import sconcho.util.messages as msg
 
 def wait_cursor(func):
-    """
-    Wrapps a function and makes sure the cursor is shown
+    """ Wrapps a function and makes sure the cursor is shown
     as Qt.WaitCursor for the duration.
+
     """
     
     @functools.wraps(func)
@@ -52,9 +52,12 @@ def wait_cursor(func):
     return wrapper
 
 
+
 def get_random_knitting_quote():
     """ This function randomly picks a title from the list
-    of available ones. """
+    of available ones. 
+    
+    """
 
     num = len(msg.knittingQuotes)
     return (msg.knittingQuotes[random.randint(0, num-1)])
