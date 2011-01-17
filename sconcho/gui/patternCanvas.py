@@ -650,6 +650,7 @@ class PatternCanvas(QGraphicsScene):
         """ Given a (col, row) origin and the number of columns
         and rows returns all PatternGridItems under the selection.
 
+
         """
 
         upperLeftCorner  = convert_col_row_to_pos(column, 
@@ -1669,7 +1670,7 @@ def is_active_selection_rectangular(selectedCells):
             return(False, (0,0))
 
     # check that each row has the same number of unit cells
-    values = set(new_num_unitcells(row) for row in cellsByRow.values())
+    values = set(num_unitcells(row) for row in cellsByRow.values())
     if len(values) != 1:
         return (False, (0,0))
 
