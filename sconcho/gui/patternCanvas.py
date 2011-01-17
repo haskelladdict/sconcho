@@ -78,7 +78,6 @@ class PatternCanvas(QGraphicsScene):
 
         self._copySelection    = {}
         self._copySelectionDim = None
-        self._canPaste         = False
 
         self._textLabels  = []
 
@@ -565,8 +564,12 @@ class PatternCanvas(QGraphicsScene):
             copyAction.setEnabled(False)
 
         pasteAction = gridMenu.addAction("&Paste Selection") 
-        if not self._can_paste_here(col, row):
-            pasteAction.setEnabled(False)
+        pasteAction.setEnabled(False)
+        if self._copySelectionDim:
+            colDim = self._copySelectionDim[0]
+            rowDim = self._copySelectionDim[1]
+            if self._rectangle_self_contained(col, row, colDim, rowDim):
+                pasteAction.setEnabled(True)
 
         self.connect(rowAction, SIGNAL("triggered()"),
                      partial(self.insert_delete_rows_columns, col, row))
@@ -641,7 +644,6 @@ class PatternCanvas(QGraphicsScene):
         self._copySelection.clear()
         self._copySelection    = self._selectedCells.copy()
         self._copySelectionDim = (colDim, rowDim)
-        self._canPaste         = True
         self.clear_all_selected_cells()
 
 
@@ -700,25 +702,17 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def _can_paste_here(self, column, row):
-        """ This function checks if the current copy selection
-        can be pasted at row/column and returns True if yes and
-        False otherwise.
+    def _rectangle_self_contained(self, column, row, colDim, rowDim):
+        """ This function checks if the rectangle given by the upper
+        left hand corner at (column, row) and width, height of
+        (colDim, rowDim) is self contained, i.e., there are no cells 
+        of width >= 2 not fully contained within.
+
         """
-
-        if not self._canPaste:
-            return False
-
-        # now we have to check that the rectangle at (column, row)
-        # of size self._copySelectionDim (to the lower right) is
-        # self contained, i.e., there are no cells of width >= 2
-        # not fully contained within
-        colDim = self._copySelectionDim[0]
-        rowDim = self._copySelectionDim[1]
 
         if (row + rowDim > self._numRows) or \
            (column + colDim > self._numColumns):
-            return
+            return False
 
         for rowCount in range(row, row + rowDim):
 
