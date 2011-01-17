@@ -62,8 +62,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>757</width>
-           <height>76</height>
+           <width>759</width>
+           <height>78</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout"/>
@@ -80,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>1137</width>
-     <height>30</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -133,6 +133,9 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
+    <addaction name="separator"/>
+    <addaction name="action_Undo"/>
+    <addaction name="action_Redo"/>
     <addaction name="separator"/>
     <addaction name="action_Manage_Knitting_Symbols"/>
     <addaction name="separator"/>
@@ -495,6 +498,22 @@
    </property>
    <property name="text">
     <string>&amp;Normal</string>
+   </property>
+  </action>
+  <action name="action_Undo">
+   <property name="text">
+    <string>&amp;Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="action_Redo">
+   <property name="text">
+    <string>&amp;Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

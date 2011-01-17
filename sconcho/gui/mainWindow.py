@@ -214,6 +214,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionUnselect_All, SIGNAL("triggered()"),
                      self.canvas.clear_all_selected_cells)
 
+        self.connect(self.action_Undo, SIGNAL("triggered()"),
+                     self.canvas.undo)
+
+        self.connect(self.action_Redo, SIGNAL("triggered()"),
+                     self.canvas.redo)
+
 
 
     def keyPressEvent(self, event):
@@ -223,12 +229,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if (event.modifiers() & Qt.ControlModifier) and \
                (event.modifiers() & Qt.ShiftModifier):
                    self.check_pattern_grid()
-        elif event.key() == Qt.Key_Z:
-            if event.modifiers() & Qt.ControlModifier:
-                self.canvas.undo()
-        elif event.key() == Qt.Key_R:
-            if event.modifiers() & Qt.ControlModifier:
-                self.canvas.redo()
         else:
             QMainWindow.keyPressEvent(self, event)
 
