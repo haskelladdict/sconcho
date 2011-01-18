@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/manageKnittingSymbolDialog.ui'
 #
-# Created: Mon Jan 17 17:37:46 2011
+# Created: Tue Jan 18 16:45:12 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!

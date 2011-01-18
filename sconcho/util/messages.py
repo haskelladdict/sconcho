@@ -100,6 +100,16 @@ noColDeleteLayoutText = ("Cannot delete requested column at the specified "
                          "location due to the current layout.")
 
 
+canNotDeleteRowAboveTitle = "sconcho: Cannot Delete Rows"
+canNotDeleteRowAboveText  = ("Cannot delete requested number of rows above "
+                             "selection")
+
+
+canNotDeleteRowBelowTitle = "sconcho: Cannot Delete Rows"
+canNotDeleteRowBelowText  = ("Cannot delete requested number of rows below "
+                             "selection")
+
+
 errorSavingProjectTitle = "sconcho: Error Saving Project"
 
 errorOpeningProjectTitle = "sconcho: Error Opening Project"

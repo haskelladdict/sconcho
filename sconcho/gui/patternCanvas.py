@@ -805,9 +805,9 @@ class PatternCanvas(QGraphicsScene):
 
 
     def insert_grid_row(self, num, mode, rowPivot):
-        """
-        Deals with requests to insert a row. This operation might
+        """ Deals with requests to insert a row. This operation might
         take some time so we switch to a wait cursor.
+
         """
 
         pivot = self.convert_canvas_row_to_internal(rowPivot)
@@ -817,57 +817,32 @@ class PatternCanvas(QGraphicsScene):
         self._undoStack.push(insertRowCommand)
 
         
-        """
-        if mode == QString("above"):
-            cmpOp = operator.__ge__
-            shift = 0
-        else:
-            cmpOp = operator.__gt__
-            shift = 1
 
-        for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternGridItem):
-                if cmpOp(graphicsItem.row, pivot):
-                    shift_item_row_wise(graphicsItem, num, 
-                            self._unitCellDim.height())
-
-        for row in range(0, num):
-            self._create_row(pivot + shift + row)
-
-        shift_legend_down(self.gridLegend, num, self._unitCellDim.height(),
-                          self._numColumns, self._unitCellDim.width())
-        
-        self._numRows += num
-        self.set_up_labels()
-        self.emit(SIGNAL("adjust_view"))
-        self.emit(SIGNAL("scene_changed"))
-        self.insertDeleteRowColDialog.set_upper_row_limit(self._numRows)
-        """
-
-
-
-    def delete_grid_row(self, canvasRow):
-        """
-        Deals with requests to delete a specific row.
-        """
+    def delete_grid_row(self, num, mode, rowPivot):
+        """ Deals with requests to delete a specific row. """
        
-        row = self.convert_canvas_row_to_internal(canvasRow)
+        pivot = self.convert_canvas_row_to_internal(rowPivot)
+        assert(pivot >= 0 and pivot < self._numRows)
 
-        for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternGridItem):
-                if graphicsItem.row == row:
-                    self.removeItem(graphicsItem)
-                    del graphicsItem
-                elif graphicsItem.row > row:
-                    shift_item_row_wise(graphicsItem, -1, 
-                            self._unitCellDim.height())
+        # make sure we can delete num rows above/below rowPivot
+        if mode == "above":
+            if (pivot - num) < 0:
+                QMessageBox.warning(None, msg.canNotDeleteRowAboveTitle,
+                                    msg.canNotDeleteRowAboveText,
+                                    QMessageBox.Close)
+                return
 
-        self._numRows -= 1
-        self.set_up_labels()
-        self.emit(SIGNAL("adjust_view"))
-        self.emit(SIGNAL("scene_changed"))
-        self.insertDeleteRowColDialog.set_upper_row_limit(self._numRows)
-        
+        elif mode == "below and including":
+            if (pivot + num) > self._numRows:
+                QMessageBox.warning(None, msg.canNotDeleteRowBelowTitle,
+                                    msg.canNotDeleteRowBelowText,
+                                    QMessageBox.Close)
+                return
+
+       
+        deleteRowCommand = DeleteRow(self, num, pivot, mode)
+        self._undoStack.push(deleteRowCommand)
+ 
 
 
     def insert_grid_column(self, num, mode, columnPivot):
@@ -2053,7 +2028,6 @@ class InsertRow(QUndoCommand):
 
         self.canvas     = canvas
         self.rowShift   = rowShift
-        self.mode       = mode
         self.numRows    = canvas._numRows
         self.numColumns = canvas._numColumns
         self.unitHeight = self.canvas._unitCellDim.height()
@@ -2121,6 +2095,120 @@ class InsertRow(QUndoCommand):
                                    rowUpShift)
 
         self.canvas._numRows -= self.rowShift
+        self._finalize()
+       
+
+
+    def _finalize(self):
+        """ Common stuff for redo/undo after the canvas has been adjusted
+        appropriately.
+
+        """
+
+        self.canvas.set_up_labels()
+        self.canvas.emit(SIGNAL("adjust_view"))
+        self.canvas.emit(SIGNAL("scene_changed"))
+        self.canvas.insertDeleteRowColDialog.set_upper_row_limit(self.canvas._numRows)
+
+
+
+
+class DeleteRow(QUndoCommand):
+    """ This class encapsulates the deletion of a row action. """
+
+
+    def __init__(self, canvas, rowShift, pivot, mode, parent = None):
+
+        super(DeleteRow, self).__init__(parent)
+
+        self.canvas     = canvas
+        self.rowShift   = rowShift
+        self.pivot      = pivot
+        self.mode       = mode
+        self.numRows    = canvas._numRows
+        self.numColumns = canvas._numColumns
+        self.unitHeight = self.canvas._unitCellDim.height()
+        self.unitWidth  = self.canvas._unitCellDim.width()
+        self.deletedSelection = []
+
+
+
+    def redo(self):
+        """ The redo action. 
+        
+        Delete items then shift remaining items above or below the pivot
+        
+        """
+
+        # deleting always implies shifting some things up
+        rowUpShift = -1 * self.rowShift
+
+        if self.mode == "above":
+            deleteRange = range(self.pivot - self.rowShift, self.pivot)
+            shiftRange  = range(self.pivot, self.numRows)
+        else:
+            deleteRange = range(self.pivot, self.pivot + self.rowShift)
+            shiftRange  = range(self.pivot + self.rowShift, self.numRows)
+
+        # delete requested items
+        for colId in range(0, self.numColumns):
+            for rowId in deleteRange:
+                item = self.canvas._item_at_row_col(colId, rowId)
+                self.deletedSelection.append(\
+                        PatternCanvasEntry(item.column, item.row, 
+                                           item.width, item.color, item.symbol))
+                self.canvas.removeItem(item)
+                del item
+
+        # shift the rest back into place
+        for colId in range(0, self.numColumns):
+            for rowId in shiftRange:
+                item = self.canvas._item_at_row_col(colId, rowId)
+                shift_item_row_wise(item, rowUpShift, self.unitHeight)
+
+        shift_legend_vertically(self.canvas.gridLegend, rowUpShift, 
+                                self.unitHeight, self.numColumns, self.unitWidth)
+        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
+                                   rowUpShift)
+
+        self.canvas._numRows -= self.rowShift
+        self._finalize()
+       
+
+
+    def undo(self):
+        """ The undo action. """
+
+        # first, we shift all items down
+        shiftItems = []
+        for colId in range(0, self.numColumns):
+            for rowId in range(self.pivot, self.numRows - self.rowShift):
+                shiftItems.append(self.canvas._item_at_row_col(colId, rowId))
+
+        for item in shiftItems:
+            shift_item_row_wise(item, self.rowShift, self.unitHeight)
+
+        # now, re-insert all previously deleted items
+        for entry in self.deletedSelection:
+            location = QPointF(entry.column * self.unitWidth,
+                               entry.row * self.unitHeight)
+            item = self.canvas.create_pattern_grid_item(location, 
+                                                    self.canvas._unitCellDim,
+                                                    entry.column, 
+                                                    entry.row, 
+                                                    entry.width, 
+                                                    1,
+                                                    entry.symbol,
+                                                    entry.color)
+            self.canvas.addItem(item)
+
+        
+        shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
+                                self.unitHeight, self.numColumns, self.unitWidth)
+        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
+                                   self.rowShift)
+
+        self.canvas._numRows += self.rowShift
         self._finalize()
        
 

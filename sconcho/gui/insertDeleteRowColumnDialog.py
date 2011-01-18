@@ -75,35 +75,28 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
         we can directly update the widget limits.
         """
 
-        addRows    = self.numInsertRows.value()
+        rowAdd     = self.numInsertRows.value()
         pivot      = self.insertRowPivot.value()
         insertMode = self.insertRowMode.currentText()
 
         if pivot <= 0:
             return
 
-        self.emit(SIGNAL("insert_row"), addRows, insertMode, pivot)
+        self.emit(SIGNAL("insert_row"), rowAdd, insertMode, pivot)
         
         
         
     def delete_row_button_pressed(self):
-        """ This method forwards clicks on the deleteRowButton.
+        """ This method forwards clicks on the deleteRowButton. """
 
-        NOTE: Row deletion always succeeds (short of a bug) and
-        we can directly update the widget limits.
+        rowDelete  = self.numDeleteRows.value()
+        pivot      = self.deleteRowPivot.value()
+        deleteMode = self.deleteRowMode.currentText()
 
-        We make sure that there is at least one row left.
-        """
-
-        if self._numRows <= 1:
-            QMessageBox.warning(self, msg.numRowTooSmallTitle,
-                                msg.numRowTooSmallText,
-                                QMessageBox.Close)
+        if pivot <= 0:
             return
 
-
-        deadRowID = self.deleteRowID.value()
-        self.emit(SIGNAL("delete_row"), deadRowID)
+        self.emit(SIGNAL("delete_row"), rowDelete, deleteMode, pivot)
 
 
 
@@ -157,8 +150,9 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
 
         self.insertRowPivot.setMinimum(1)
         self.insertRowPivot.setMaximum(numRows)
-        self.deleteRowID.setMinimum(1)
-        self.deleteRowID.setMaximum(numRows)
+
+        self.deleteRowPivot.setMinimum(1)
+        self.deleteRowPivot.setMaximum(numRows)
         self._numRows = numRows
         
 
@@ -183,4 +177,5 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
         """
 
         self.insertRowPivot.setValue(self._numRows - row + 1)
+        self.deleteRowPivot.setValue(self._numRows - row + 1)
         self.insertColumnPivot.setValue(self._numColumns - col + 1)
