@@ -652,7 +652,6 @@ class PatternCanvas(QGraphicsScene):
         """ Given a (col, row) origin and the number of columns
         and rows returns all PatternGridItems under the selection.
 
-
         """
 
         upperLeftCorner  = convert_col_row_to_pos(column, 
@@ -792,11 +791,16 @@ class PatternCanvas(QGraphicsScene):
 
         pos = convert_col_row_to_pos(column, row, self._unitCellDim.width(),
                                      self._unitCellDim.height())
-        item = self.itemAt(pos)
-        if isinstance(item, PatternGridItem):
-            return item
-        else:
-            return None
+
+        # we really only expect one PatternCanvasItem to be present;
+        # however there may in principle be others (legend items etc)
+        # so we have to pick it out
+        items = self.items(pos)
+        for item in items:
+            if isinstance(item, PatternGridItem):
+                return item
+
+        return None
 
 
 
@@ -809,6 +813,11 @@ class PatternCanvas(QGraphicsScene):
         pivot = self.convert_canvas_row_to_internal(rowPivot)
         assert(pivot >= 0 and pivot < self._numRows)
 
+        insertRowCommand = InsertRow(self, num, pivot, mode)
+        self._undoStack.push(insertRowCommand)
+
+        
+        """
         if mode == QString("above"):
             cmpOp = operator.__ge__
             shift = 0
@@ -833,6 +842,7 @@ class PatternCanvas(QGraphicsScene):
         self.emit(SIGNAL("adjust_view"))
         self.emit(SIGNAL("scene_changed"))
         self.insertDeleteRowColDialog.set_upper_row_limit(self._numRows)
+        """
 
 
 
@@ -1656,9 +1666,10 @@ def is_active_selection_rectangular(selectedCells):
         return (False, (0,0))
 
     cellsByRow = order_selection_by_rows(selectedCells.values())
-    
+   
     # make sure the rows are consecutive
     rowIDs = cellsByRow.keys()
+    rowIDs.sort()
     for item in range(1, len(rowIDs)):
         if (rowIDs[item] - rowIDs[item-1]) != 1:
             return(False, (0,0))
@@ -2022,3 +2033,61 @@ class PasteCells(QUndoCommand):
 
 
 
+class InsertRow(QUndoCommand):
+    """ This class encapsulates the insertion of a row action. """
+
+
+    def __init__(self, canvas, rowShift, pivot, mode, parent = None):
+
+        super(InsertRow, self).__init__(parent)
+
+        self.canvas     = canvas
+        self.rowShift   = rowShift
+        self.mode       = mode
+        self.numRows    = canvas._numRows
+        self.numColumns = canvas._numColumns
+        self.unitHeight = self.canvas._unitCellDim.height()
+        self.unitWidth  = self.canvas._unitCellDim.width()
+
+        if mode == QString("above"):
+            self.pivot = pivot
+        else:
+            self.pivot = pivot + 1
+
+
+
+    def redo(self):
+        """ The redo action. 
+        
+        Shift all existing items above or below the pivot
+        then insert the new rows.
+        
+        """
+    
+        shiftedItems = []
+        for colId in range(0, self.numColumns):
+            for rowId in range(self.pivot, self.numRows):
+                shiftedItems.append(self.canvas._item_at_row_col(colId, rowId))
+
+        for item in shiftedItems:
+            shift_items_row_wise(item, self.rowShift, self.unitHeight)
+
+        for row in range(0, self.rowShift):
+            self.canvas._create_row(self.pivot + row)
+
+        shift_legend_down(self.canvas.gridLegend, self.rowShift,
+                          self.unitHeight, self.numColumns, self.unitWidth)
+        
+        self.canvas._numRows += self.rowShift
+        self.canvas.set_up_labels()
+        self.canvas.emit(SIGNAL("adjust_view"))
+        self.canvas.emit(SIGNAL("scene_changed"))
+        self.canvas.insertDeleteRowColDialog.set_upper_row_limit(\
+                self.canvas._numRows)
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        pass
