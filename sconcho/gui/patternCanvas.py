@@ -342,7 +342,7 @@ class PatternCanvas(QGraphicsScene):
         to the collection of selected cells and try to paint
         them.
         """
-        
+       
         itemId = get_item_id(item.column, item.row) 
         self._selectedCells[itemId] = PatternCanvasEntry(item.column, item.row, 
                                          item.width, item.color, item.symbol) 
@@ -828,7 +828,7 @@ class PatternCanvas(QGraphicsScene):
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem):
                 if cmpOp(graphicsItem.row, pivot):
-                    shift_items_row_wise(graphicsItem, num, 
+                    shift_item_row_wise(graphicsItem, num, 
                             self._unitCellDim.height())
 
         for row in range(0, num):
@@ -859,7 +859,7 @@ class PatternCanvas(QGraphicsScene):
                     self.removeItem(graphicsItem)
                     del graphicsItem
                 elif graphicsItem.row > row:
-                    shift_items_row_wise(graphicsItem, -1, 
+                    shift_item_row_wise(graphicsItem, -1, 
                             self._unitCellDim.height())
 
         self._numRows -= 1
@@ -910,7 +910,7 @@ class PatternCanvas(QGraphicsScene):
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem):
                 if cmpOp(graphicsItem.column, pivot):
-                    shift_items_column_wise(graphicsItem, num, 
+                    shift_item_column_wise(graphicsItem, num, 
                             self._unitCellDim.width())
 
         for column in range(0, num):
@@ -956,7 +956,7 @@ class PatternCanvas(QGraphicsScene):
                     self.removeItem(graphicsItem)
                     del graphicsItem
                 elif graphicsItem.column > column:
-                    shift_items_column_wise(graphicsItem, -1, 
+                    shift_item_column_wise(graphicsItem, -1, 
                             self._unitCellDim.width())
 
         self._numColumns -= 1
@@ -1487,7 +1487,7 @@ class PatternLabelItem(QGraphicsTextItem):
 ##
 ############################################################################
 
-def shift_items_row_wise(item, num, unitCellHeight):
+def shift_item_row_wise(item, num, unitCellHeight):
     """ Shifts the given item by num rows given unitCellHeight. """
     
     yShift = num * unitCellHeight
@@ -1497,7 +1497,7 @@ def shift_items_row_wise(item, num, unitCellHeight):
 
 
 
-def shift_items_column_wise(item, num, unitCellWidth):
+def shift_item_column_wise(item, num, unitCellWidth):
     """ Shifts the given item by num columns given unitCellWidth. """
     
     xShift = num * unitCellWidth
@@ -1507,14 +1507,11 @@ def shift_items_column_wise(item, num, unitCellWidth):
 
 
 
-def shift_legend_down(legendList, numAdditionalRows, unitCellHeight,
-                      numColumns, unitWidth):
-    """ Shift all legend items below the grid down by
-    numAdditionalRows 
-    
-    """
+def shift_legend_vertically(legendList, rowShift, unitCellHeight, numColumns, 
+                            unitWidth):
+    """ Shift all legend items below the grid down by rowShift. """
 
-    yShift = numAdditionalRows * unitCellHeight
+    yShift = rowShift * unitCellHeight
 
     for item in legendList.values():
         symbol = legendItem_symbol(item)
@@ -1529,9 +1526,22 @@ def shift_legend_down(legendList, numAdditionalRows, unitCellHeight,
             symbol.setPos(symbol.pos() + QPointF(0.0, yShift))
             
             text.prepareGeometryChange()
-            text.setPos(text.pos() + QPointF(0.0, yShift))
+            text.setPos(text.pos() + QPointF(0.0, yShift)) 
 
-    
+
+
+def shift_selection_vertically(selection, pivot, rowShift):
+        """ Shifts all items in the current selection that are below the 
+        pivot down. 
+        
+        """
+
+        for (key, entry) in selection.items():
+
+            if entry.row >= pivot:
+                entry.row += rowShift
+
+
 
 def shift_legend_right(legendList, numAdditionalColumns, unitCellWidth,
                       numRows, unitHeight):
@@ -2070,24 +2080,60 @@ class InsertRow(QUndoCommand):
                 shiftedItems.append(self.canvas._item_at_row_col(colId, rowId))
 
         for item in shiftedItems:
-            shift_items_row_wise(item, self.rowShift, self.unitHeight)
+            shift_item_row_wise(item, self.rowShift, self.unitHeight)
 
         for row in range(0, self.rowShift):
             self.canvas._create_row(self.pivot + row)
 
-        shift_legend_down(self.canvas.gridLegend, self.rowShift,
-                          self.unitHeight, self.numColumns, self.unitWidth)
+        shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
+                                self.unitHeight, self.numColumns, self.unitWidth)
+        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
+                                   self.rowShift)
         
         self.canvas._numRows += self.rowShift
-        self.canvas.set_up_labels()
-        self.canvas.emit(SIGNAL("adjust_view"))
-        self.canvas.emit(SIGNAL("scene_changed"))
-        self.canvas.insertDeleteRowColDialog.set_upper_row_limit(\
-                self.canvas._numRows)
+        self._finalize()
 
 
 
     def undo(self):
         """ The undo action. """
 
-        pass
+        # NOTE: Shifting up corresponds to a negative row shift
+        rowUpShift = -1 * self.rowShift
+
+        # remove all previously inserted rows
+        for colId in range(0, self.numColumns):
+            for rowId in range(self.pivot, self.pivot + self.rowShift):
+                item = self.canvas._item_at_row_col(colId, rowId)
+                self.canvas.removeItem(item)
+                del item
+
+        # shift the rest back into place
+        for colId in range(0, self.numColumns):
+            for rowId in range(self.pivot + self.rowShift, self.numRows + self.rowShift):
+                item = self.canvas._item_at_row_col(colId, rowId)
+                shift_item_row_wise(item, rowUpShift, self.unitHeight)
+ 
+        
+        shift_legend_vertically(self.canvas.gridLegend, rowUpShift, 
+                                self.unitHeight, self.numColumns, self.unitWidth)
+        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
+                                   rowUpShift)
+
+        self.canvas._numRows -= self.rowShift
+        self._finalize()
+       
+
+
+    def _finalize(self):
+        """ Common stuff for redo/undo after the canvas has been adjusted
+        appropriately.
+
+        """
+
+        self.canvas.set_up_labels()
+        self.canvas.emit(SIGNAL("adjust_view"))
+        self.canvas.emit(SIGNAL("scene_changed"))
+        self.canvas.insertDeleteRowColDialog.set_upper_row_limit(self.canvas._numRows)
+
+
