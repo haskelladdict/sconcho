@@ -855,12 +855,10 @@ class PatternCanvas(QGraphicsScene):
 
         isExternalColumn = False
         if mode == QString("left of"):
-            cmpOp = operator.__ge__
             shift = 0
             if pivot == 0:
                 isExternalColumn = True
         else:
-            cmpOp = operator.__gt__
             shift = 1
             if pivot == self._numColumns - 1:
                 isExternalColumn = True
@@ -869,6 +867,7 @@ class PatternCanvas(QGraphicsScene):
         # pivot to work each row has to have a cell that starts at
         # this pivot or right of it.
         # Obviously, we can always add columns at the edges.
+        """ 
         rowCounter = 0
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem):
@@ -881,7 +880,23 @@ class PatternCanvas(QGraphicsScene):
                                 msg.noColInsertLayoutText,
                                 QMessageBox.Close)
                 return
+        """
 
+        if not isExternalColumn:
+            for row in range(0, self._numRows):
+                item = self._item_at_row_col(pivot + shift, row)
+                if isinstance(item, PatternGridItem):
+                    if item.column != (pivot + shift):
+                        QMessageBox.warning(None, msg.noColInsertLayoutTitle,
+                                            msg.noColInsertLayoutText,
+                                            QMessageBox.Close)
+                        return
+
+        return
+        deleteRowCommand = DeleteRow(self, num, pivot, mode)
+        self._undoStack.push(deleteRowCommand)
+
+        """
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem):
                 if cmpOp(graphicsItem.column, pivot):
@@ -891,7 +906,6 @@ class PatternCanvas(QGraphicsScene):
         for column in range(0, num):
             self._create_column(pivot + shift + column)
 
-
         shift_legend_right(self.gridLegend, num, self._unitCellDim.width(),
                           self._numRows, self._unitCellDim.height())
         
@@ -900,7 +914,7 @@ class PatternCanvas(QGraphicsScene):
         self.emit(SIGNAL("adjust_view"))
         self.emit(SIGNAL("scene_changed"))
         self.insertDeleteRowColDialog.set_upper_column_limit(self._numColumns)
-
+        """
 
 
     def delete_grid_column(self, deadColumn):
