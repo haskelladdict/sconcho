@@ -833,7 +833,7 @@ class PatternCanvas(QGraphicsScene):
                 return
 
         elif mode == "below and including":
-            if (pivot + num) > self._numRows:
+            if (pivot + num) >= self._numRows:
                 QMessageBox.warning(None, msg.canNotDeleteRowBelowTitle,
                                     msg.canNotDeleteRowBelowText,
                                     QMessageBox.Close)
@@ -1874,9 +1874,11 @@ class PaintCells(QUndoCommand):
                 self.canvas.addItem(item)
                 
                 itemId = get_item_id(column, row)
-                self.newSelection[itemId] = PatternCanvasEntry(column, row, self.width,
-                                                               self.activeColor,
-                                                               self.activeSymbol)
+                self.newSelection[itemId] = \
+                        PatternCanvasEntry(column, row, self.width,
+                                           self.activeColor,
+                                           self.activeSymbol)
+
                 origin = QPointF(origin.x() + \
                                     (self.width * self.canvas._unitCellDim.width()),
                                     origin.y())
@@ -2084,7 +2086,8 @@ class InsertRow(QUndoCommand):
 
         # shift the rest back into place
         for colId in range(0, self.numColumns):
-            for rowId in range(self.pivot + self.rowShift, self.numRows + self.rowShift):
+            for rowId in range(self.pivot + self.rowShift, 
+                               self.numRows + self.rowShift):
                 item = self.canvas._item_at_row_col(colId, rowId)
                 shift_item_row_wise(item, rowUpShift, self.unitHeight)
  
@@ -2108,7 +2111,8 @@ class InsertRow(QUndoCommand):
         self.canvas.set_up_labels()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
-        self.canvas.insertDeleteRowColDialog.set_upper_row_limit(self.canvas._numRows)
+        self.canvas.insertDeleteRowColDialog.set_upper_row_limit( \
+                self.canvas._numRows)
 
 
 
@@ -2129,7 +2133,6 @@ class DeleteRow(QUndoCommand):
         self.numColumns = canvas._numColumns
         self.unitHeight = self.canvas._unitCellDim.height()
         self.unitWidth  = self.canvas._unitCellDim.width()
-        self.deletedSelection = []
 
 
 
@@ -2151,6 +2154,7 @@ class DeleteRow(QUndoCommand):
             shiftRange  = range(self.pivot + self.rowShift, self.numRows)
 
         # delete requested items
+        self.deletedSelection = []
         for colId in range(0, self.numColumns):
             for rowId in deleteRange:
                 item = self.canvas._item_at_row_col(colId, rowId)
@@ -2179,10 +2183,17 @@ class DeleteRow(QUndoCommand):
     def undo(self):
         """ The undo action. """
 
+
+        if self.mode == "above":
+            shiftRange  = range(self.pivot - self.rowShift, 
+                                self.numRows - self.rowShift)
+        else:
+            shiftRange  = range(self.pivot, self.numRows - self.rowShift)
+
         # first, we shift all items down
         shiftItems = []
         for colId in range(0, self.numColumns):
-            for rowId in range(self.pivot, self.numRows - self.rowShift):
+            for rowId in shiftRange:
                 shiftItems.append(self.canvas._item_at_row_col(colId, rowId))
 
         for item in shiftItems:
@@ -2222,6 +2233,7 @@ class DeleteRow(QUndoCommand):
         self.canvas.set_up_labels()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
-        self.canvas.insertDeleteRowColDialog.set_upper_row_limit(self.canvas._numRows)
+        self.canvas.insertDeleteRowColDialog.set_upper_row_limit( \
+                self.canvas._numRows)
 
 
