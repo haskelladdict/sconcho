@@ -418,7 +418,6 @@ class PatternCanvas(QGraphicsScene):
         if not self._paintActive:
             return
 
-
         if self._activeSymbol:
             width = int(self._activeSymbol["width"])
             chunks = chunkify_cell_arrangement(width, self._selectedCells)
@@ -1857,7 +1856,7 @@ class PaintCells(QUndoCommand):
         self.width  = int(canvas._activeSymbol["width"])
         self.activeSymbol = canvas._activeSymbol
         self.activeColor  = canvas._activeColor
-
+       
 
     def redo(self):
         """ This is the redo action. """
@@ -2091,6 +2090,12 @@ class InsertRow(QUndoCommand):
         # NOTE: Shifting up corresponds to a negative row shift
         rowUpShift = -1 * self.rowShift
 
+        # shift first then remove
+        shift_legend_vertically(self.canvas.gridLegend, rowUpShift, 
+                                self.unitHeight, self.numColumns, self.unitWidth)
+        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
+                                   rowUpShift)
+
         # remove all previously inserted rows
         for colId in range(0, self.numColumns):
             for rowId in range(self.pivot, self.pivot + self.rowShift):
@@ -2106,11 +2111,6 @@ class InsertRow(QUndoCommand):
                 shift_item_row_wise(item, rowUpShift, self.unitHeight)
  
         
-        shift_legend_vertically(self.canvas.gridLegend, rowUpShift, 
-                                self.unitHeight, self.numColumns, self.unitWidth)
-        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
-                                   rowUpShift)
-
         self.canvas._numRows -= self.rowShift
         self._finalize()
        
@@ -2168,15 +2168,26 @@ class DeleteRow(QUndoCommand):
             shiftRange  = range(self.pivot + self.rowShift, self.numRows)
 
         # delete requested items
-        self.deletedSelection = []
+        self.deletedCells = []
         for colId in range(0, self.numColumns):
             for rowId in deleteRange:
+                # delete canvas items
                 item = self.canvas._item_at_row_col(colId, rowId)
-                self.deletedSelection.append(\
+                self.deletedCells.append(\
                         PatternCanvasEntry(item.column, item.row, 
                                            item.width, item.color, item.symbol))
                 self.canvas.removeItem(item)
                 del item
+
+        # remove cells from current selection if they intersect
+        self.deadSelectedCells = {}
+        cellsByRow = order_selection_by_rows(self.canvas._selectedCells.values())
+        for rowId in deleteRange:
+            if rowId in cellsByRow:
+                for entry in cellsByRow[rowId]:
+                    entryId = get_item_id(entry.column, entry.row)
+                    self.deadSelectedCells[entryId] = entry
+                    del self.canvas._selectedCells[entryId]
 
         # shift the rest back into place
         for colId in range(0, self.numColumns):
@@ -2197,6 +2208,11 @@ class DeleteRow(QUndoCommand):
     def undo(self):
         """ The undo action. """
 
+        # make sure to shift first before inserting
+        shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
+                                self.unitHeight, self.numColumns, self.unitWidth)
+        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
+                                   self.rowShift)
 
         if self.mode == "above":
             shiftRange  = range(self.pivot - self.rowShift, 
@@ -2213,8 +2229,13 @@ class DeleteRow(QUndoCommand):
         for item in shiftItems:
             shift_item_row_wise(item, self.rowShift, self.unitHeight)
 
-        # now, re-insert all previously deleted items
-        for entry in self.deletedSelection:
+        # reinsert selected cells
+        for (key, entry) in self.deadSelectedCells.items():
+            self.canvas._selectedCells[key] = entry
+
+        # now, re-insert all previously deleted items including previously
+        # selected cells
+        for entry in self.deletedCells:
             location = QPointF(entry.column * self.unitWidth,
                                entry.row * self.unitHeight)
             item = self.canvas.create_pattern_grid_item(location, 
@@ -2227,11 +2248,10 @@ class DeleteRow(QUndoCommand):
                                                     entry.color)
             self.canvas.addItem(item)
 
-        
-        shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
-                                self.unitHeight, self.numColumns, self.unitWidth)
-        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
-                                   self.rowShift)
+            # if item was selected, press it
+            itemId = get_item_id(entry.column, entry.row)
+            if itemId in self.deadSelectedCells:
+                item.press_item()
 
         self.canvas._numRows += self.rowShift
         self._finalize()
