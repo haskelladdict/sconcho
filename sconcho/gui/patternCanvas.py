@@ -480,6 +480,7 @@ class PatternCanvas(QGraphicsScene):
 
         The region is typically a QPolygonF coming from our
         view via a rubberBand selection.
+
         """
 
         # inhibit painting until we're done with selecting all cells
@@ -496,6 +497,7 @@ class PatternCanvas(QGraphicsScene):
 
     def handle_right_click_on_labels(self, col, row):
         """ Deal with user clicks on the grid labels. 
+
         These select whole rows or columns depending on
         if a column or row label was clicked on.
 
@@ -1929,6 +1931,7 @@ class PaintCells(QUndoCommand):
                                                      entry.color)
 
             self.canvas.addItem(item)
+            item.press_item()
 
 
 
