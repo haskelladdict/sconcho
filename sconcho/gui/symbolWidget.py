@@ -244,8 +244,8 @@ class SymbolSelectorItem(QFrame):
         """
         
         self._synchronizer.select(self)
-        
-    
+
+
 
     def mousePressEvent(self, event): 
         """
@@ -317,7 +317,7 @@ class SymbolSynchronizer(QObject):
         QObject.__init__(self, parent)
         self._activeWidget = None
 
-    
+
     def select(self, target):
         """ This method "remembers" the newly activated
         widget and makes sure to deactivate the previous one.
@@ -326,14 +326,22 @@ class SymbolSynchronizer(QObject):
 
         if self._activeWidget == target:
             self.unselect()
+            self.emit(SIGNAL("synchronized_object_changed"), None)
         else:
-            if self._activeWidget:
-                self._activeWidget.set_inactive_look()
-
-            self._activeWidget = target
-            self._activeWidget.set_active_look()
+            self.select_plain(target)
             self.emit(SIGNAL("synchronized_object_changed"),
-                      self._activeWidget) #.get_content())
+                      self._activeWidget) 
+
+
+
+    def select_plain(self, target):
+        """ Select the target symbol selector. """
+
+        if self._activeWidget:
+            self._activeWidget.set_inactive_look()
+
+        self._activeWidget = target
+        self._activeWidget.set_active_look()
 
 
 
@@ -345,7 +353,6 @@ class SymbolSynchronizer(QObject):
 
         self._activeWidget.set_inactive_look()
         self._activeWidget = None
-        self.emit(SIGNAL("synchronized_object_changed"), None)
 
 
 
@@ -353,4 +360,3 @@ class SymbolSynchronizer(QObject):
         """ Return the active widget to anybody who cares to know. """
 
         return self._activeWidget
-

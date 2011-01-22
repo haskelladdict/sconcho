@@ -68,7 +68,6 @@ class PatternCanvas(QGraphicsScene):
         self._activeColor   = None
         self._defaultColor  = QColor(Qt.white)
         self._selectedCells = {}
-        self._paintActive   = True
 
         self._undoStack     = QUndoStack(self)
 
@@ -320,23 +319,14 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+
     def clear_all_selected_cells(self):
         """ Unselects all currently selected cells. """
 
-        for entry in self._selectedCells.values():
+        paintCommand = PaintCells(self, None, [inactivatedItem])
+        self._undoStack.push(paintCommand)
 
-            item = self._item_at_row_col(entry.column, entry.row) 
-            item.press_item()
-            
-            # FIXME: This is a hack to force qt to
-            # redraw the items right away. There has
-            # to be a better way
-            item.hide()
-            item.show()
 
-        self._selectedCells.clear()
-
-        
 
     def grid_cell_activated(self, item):
         """
@@ -345,11 +335,10 @@ class PatternCanvas(QGraphicsScene):
         them.
         """
        
-        itemId = get_item_id(item.column, item.row) 
-        self._selectedCells[itemId] = PatternCanvasEntry(item.column, item.row, 
-                                         item.width, item.color, item.symbol) 
-
-        self.paint_cells()
+        activatedItem = PatternCanvasEntry(item.column, item.row, item.width, 
+                                           item.color, item.symbol) 
+        paintCommand = PaintCells(self, [activatedItem])
+        self._undoStack.push(paintCommand)
 
 
 
@@ -359,12 +348,11 @@ class PatternCanvas(QGraphicsScene):
         it from the collection of selected cells if present.
         """
 
-        itemId = get_item_id(item.column, item.row)
 
-        if itemId in self._selectedCells:
-            del self._selectedCells[itemId]
-
-        self.paint_cells()
+        inactivatedItem = PatternCanvasEntry(item.column, item.row, item.width, 
+                                             item.color, item.symbol) 
+        paintCommand = PaintCells(self, None, [inactivatedItem])
+        self._undoStack.push(paintCommand)
 
 
 
@@ -417,17 +405,8 @@ class PatternCanvas(QGraphicsScene):
         Has to make sure the geometry is appropriate.
         """
 
-        if not self._paintActive:
-            return
-
-        if self._activeSymbol:
-            activeSymbolContent = self._activeSymbol.get_content()
-            width = int(activeSymbolContent["width"])
-            chunks = chunkify_cell_arrangement(width, self._selectedCells)
-
-            if chunks: 
-                paintCommand = PaintCells(self, chunks, activeSymbolContent)
-                self._undoStack.push(paintCommand)
+        paintCommand = PaintCells(self) 
+        self._undoStack.push(paintCommand)
 
         
 
@@ -460,21 +439,6 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def _dont_paint_canvas(self):
-        """ Turns painting of canvas off. """
-
-        self._paintActive = False
-
-
-
-    def _do_paint_canvas(self):
-        """ Turns painting of canvas on. """
-
-        self._paintActive = True
-        self.paint_cells()
-
-
-
     def select_region(self, region):
         """ This function selects items based on a whole region.
 
@@ -483,15 +447,14 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        # inhibit painting until we're done with selecting all cells
-        # otherwise we'll paint non-matching selection partially
-        self._dont_paint_canvas()
-
+        selection = []
         for item in self.items(region):
             if isinstance(item, PatternGridItem):
-                item.press_item()
+                selection.append(PatternCanvasEntry(item.column, item.row, 
+                                    item.width, item.color, item.symbol))
 
-        self._do_paint_canvas()
+        paintCommand = PaintCells(self, selection)
+        self._undoStack.push(paintCommand)
 
 
 
@@ -510,10 +473,13 @@ class PatternCanvas(QGraphicsScene):
         else:
             selectedItems = self.get_row_items(row)
 
-        self._dont_paint_canvas() 
+        selection = []
         for item in selectedItems:
-            item.press_item()
-        self._do_paint_canvas()
+            selection.append(PatternCanvasEntry(item.column, item.row, 
+                                      item.width, item.color, item.symbol))
+
+        paintCommand = PaintCells(self, selection)
+        self._undoStack.push(paintCommand)
 
 
 
@@ -1264,7 +1230,12 @@ class PatternGridItem(QGraphicsSvgItem):
         Handle user press events on the item.
         """
 
-        self.press_item()
+        if not self._selected:
+            #self._select()
+            self.emit(SIGNAL("cell_selected"), self)
+        else:
+            #self._unselect()
+            self.emit(SIGNAL("cell_unselected"), self)
 
 
 
@@ -1279,19 +1250,6 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
 
-    def press_item(self):
-        """
-        This functions dispatches all events triggered
-        by a press event on the item.
-        """
-
-        if not self._selected:
-            self._select()
-        else:
-            self._unselect()
-
-
-
     def _unselect(self):
         """
         Unselects a given selected cell. 
@@ -1300,7 +1258,6 @@ class PatternGridItem(QGraphicsSvgItem):
         self._selected = False
         self._backColor = self.color
         self.update()
-        self.emit(SIGNAL("cell_unselected"), self)
 
 
 
@@ -1312,7 +1269,6 @@ class PatternGridItem(QGraphicsSvgItem):
         self._selected = True
         self._backColor = self._highlightedColor
         self.update()
-        self.emit(SIGNAL("cell_selected"), self)
 
 
             
@@ -1529,10 +1485,16 @@ def shift_selection_vertically(selection, pivot, rowShift):
         
         """
 
+        newSelection = {}
         for (key, entry) in selection.items():
 
             if entry.row >= pivot:
                 entry.row += rowShift
+
+            newId = get_item_id(entry.column, entry.row)
+            newSelection[newId] = entry
+
+        return newSelection
 
 
 
@@ -1841,101 +1803,6 @@ class PatternCanvasEntry(object):
 #
 #############################################################################
 
-class PaintCells(QUndoCommand):
-    """ This class encapsulates the canvas paint action. I.e. all
-    currently selected cells are painted with the currently
-    active symbol.
-
-    NOTE: This action assumes the painting within the provided chunks
-    is possible and thus needs to be checked before calling the class.
-
-    """
-
-    def __init__(self, canvas, chunks, activeSymbolContent, parent = None):
-
-        super(PaintCells, self).__init__(parent)
-        self.canvas = canvas
-        self.oldSelection = canvas._selectedCells.copy()
-        self.newSelection = {}
-        self.chunks = chunks
-        self.width = int(activeSymbolContent["width"])
-        self.activeSymbolContent = activeSymbolContent
-        self.activeColor = canvas._activeColor
-       
-
-    def redo(self):
-        """ This is the redo action. """
-
-        for chunk in self.chunks:
-            totalWidth = 0
-
-            # location of leftmost item in chunk
-            column = chunk[0].column
-            row = chunk[0].row
-            item = self.canvas._item_at_row_col(column, row)
-            origin = item.pos()
-
-            # compute total width and remove old items
-            for entry in chunk:
-                totalWidth += entry.width
-                gridItem = self.canvas._item_at_row_col(entry.column, 
-                                                        entry.row)
-                self.canvas.removeItem(gridItem)
-                del gridItem
-
-            # insert as many new items as we can fit
-            numNewItems = int(totalWidth/self.width)
-            for i in range(0, numNewItems):
-                item = self.canvas.create_pattern_grid_item(origin,
-                            self.canvas._unitCellDim, column, row, self.width, 1,
-                            self.activeSymbolContent, self.activeColor)
-                self.canvas.addItem(item)
-                
-                itemId = get_item_id(column, row)
-                self.newSelection[itemId] = \
-                        PatternCanvasEntry(column, row, self.width,
-                                           self.activeColor,
-                                           self.activeSymbolContent)
-
-                origin = QPointF(origin.x() + \
-                                    (self.width * self.canvas._unitCellDim.width()),
-                                    origin.y())
-                column = column + self.width
-
-        self.canvas._selectedCells.clear()
-
-
-    
-    def undo(self):
-        """ This is the undo action. """
-
-        # get rid of previous selection
-        for entry in self.newSelection.values():
-            gridItem = self.canvas._item_at_row_col(entry.column, 
-                                                    entry.row)
-            self.canvas.removeItem(gridItem)
-            del gridItem
-
-        # re-insert previous selection
-        for entry in self.oldSelection.values():
-            column = entry.column
-            row    = entry.row
-            location = QPointF(column * self.canvas._unitCellDim.width(),
-                               row * self.canvas._unitCellDim.height())
-
-            item = self.canvas.create_pattern_grid_item(location, 
-                                                     self.canvas._unitCellDim, 
-                                                     column, row,
-                                                     entry.width, 1,
-                                                     entry.symbol, 
-                                                     entry.color)
-
-            self.canvas.addItem(item)
-            item.press_item()
-
-
-
-
 class PasteCells(QUndoCommand):
     """ This class encapsulates the paste action. I.e. all
     items in our copySelection are pasted into the dead Selection.
@@ -1951,6 +1818,7 @@ class PasteCells(QUndoCommand):
                  column, row, numCols, numRows, parent = None):
 
         super(PasteCells, self).__init__(parent)
+        self.setText("paste cells")
         self.canvas = canvas
         self.copySelection = copySelection.copy()
         self.deadSelection = deadSelection.copy()
@@ -2046,7 +1914,7 @@ class InsertRow(QUndoCommand):
     def __init__(self, canvas, rowShift, pivot, mode, parent = None):
 
         super(InsertRow, self).__init__(parent)
-
+        self.setText("insert row")
         self.canvas = canvas
         self.rowShift = rowShift
         self.numRows = canvas._numRows
@@ -2082,8 +1950,9 @@ class InsertRow(QUndoCommand):
 
         shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
                                 self.unitHeight, self.numColumns, self.unitWidth)
-        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
-                                   self.rowShift)
+        self.canvas._selectedCells = \
+                shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
+                                           self.rowShift)
         
         self.canvas._numRows += self.rowShift
         self._finalize()
@@ -2099,8 +1968,9 @@ class InsertRow(QUndoCommand):
         # shift first then remove
         shift_legend_vertically(self.canvas.gridLegend, rowUpShift, 
                                 self.unitHeight, self.numColumns, self.unitWidth)
-        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
-                                   rowUpShift)
+        self.canvas._selectedCells = \
+                shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
+                                           rowUpShift)
 
         # remove all previously inserted rows
         for colId in range(0, self.numColumns):
@@ -2144,7 +2014,7 @@ class DeleteRow(QUndoCommand):
     def __init__(self, canvas, rowShift, pivot, mode, parent = None):
 
         super(DeleteRow, self).__init__(parent)
-
+        self.setText("delete row")
         self.canvas = canvas
         self.rowShift = rowShift
         self.pivot = pivot
@@ -2203,8 +2073,9 @@ class DeleteRow(QUndoCommand):
 
         shift_legend_vertically(self.canvas.gridLegend, rowUpShift, 
                                 self.unitHeight, self.numColumns, self.unitWidth)
-        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
-                                   rowUpShift)
+        self.canvas._selectedCells = \
+                shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
+                                           rowUpShift)
 
         self.canvas._numRows -= self.rowShift
         self._finalize()
@@ -2217,8 +2088,9 @@ class DeleteRow(QUndoCommand):
         # make sure to shift first before inserting
         shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
                                 self.unitHeight, self.numColumns, self.unitWidth)
-        shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
-                                   self.rowShift)
+        self.canvas._selectedCells = \
+                shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
+                                           self.rowShift)
 
         if self.mode == "above":
             shiftRange  = range(self.pivot - self.rowShift, 
@@ -2257,7 +2129,7 @@ class DeleteRow(QUndoCommand):
             # if item was selected, press it
             itemId = get_item_id(entry.column, entry.row)
             if itemId in self.deadSelectedCells:
-                item.press_item()
+                item._select()
 
         self.canvas._numRows += self.rowShift
         self._finalize()
@@ -2289,16 +2161,27 @@ class ActivateSymbol(QUndoCommand):
 
 
         super(ActivateSymbol, self).__init__(parent) 
-
+        self.setText("activate symbol")
         self.canvas = canvas
         self.oldSymbol = canvas._activeSymbol
         self.newSymbol = newSymbol
+
+
 
     def redo(self):
         """ The redo action. """
 
         self.canvas._activeSymbol = self.newSymbol
-        self.canvas.paint_cells()
+
+        if self.newSymbol:
+            self.canvas.emit(SIGNAL("activate_symbol"), self.newSymbol)
+        else:
+            self.canvas.emit(SIGNAL("unactivate_symbol"))
+
+        # only paint if we have selected cells
+        if self.canvas._selectedCells:
+            self.canvas.paint_cells()
+
 
 
     def undo(self):
@@ -2309,4 +2192,197 @@ class ActivateSymbol(QUndoCommand):
         if self.oldSymbol:
             self.canvas.emit(SIGNAL("activate_symbol"), self.oldSymbol)
         else:
-            self.canvas.emit(SIGNAL("unselect_active_symbol"))
+            self.canvas.emit(SIGNAL("unactivate_symbol"))
+
+
+
+class PaintCells(QUndoCommand):
+    """ This class encapsulates the canvas paint action. I.e. all
+    currently selected cells are painted with the currently
+    active symbol.
+
+    NOTE: This action assumes the painting within the provided chunks
+    is possible and thus needs to be checked before calling the class.
+
+    """
+
+    
+    def __init__(self, canvas, selectedCells = None, unselectedCells = None,
+                 parent = None):
+
+        super(PaintCells, self).__init__(parent)
+        self.setText("paint cells")
+        self.canvas = canvas
+        self.oldSelection = {}
+        self.newSelection = {}
+
+        self.selectedCells = selectedCells
+        self.unselectedCells = unselectedCells 
+
+        self.activeSymbol = canvas._activeSymbol
+        self.activeColor = canvas._activeColor
+       
+
+
+    def redo(self):
+        """ This is the redo action. """
+
+        self._redo_selectedCells()
+        self._redo_unselectedCells()
+
+        # without an active symbol we are done
+        if self.activeSymbol:
+            self._redo_paintActiveSymbol()
+
+        
+    
+    def undo(self):
+        """ This is the undo action. """
+
+
+        # only do this if we previously painted an active
+        # symbol in redo
+        if self.activeSymbol:
+            self._undo_paintActiveSymbol()
+            
+        self._undo_selectedCells() 
+        self._undo_unselectedCells()
+
+
+
+    def _redo_selectedCells(self):
+        """ Redo action for selected cells """
+
+        if self.selectedCells:
+            for item in self.selectedCells:
+                itemId = get_item_id(item.column, item.row) 
+                self.canvas._selectedCells[itemId] = \
+                        PatternCanvasEntry(item.column, item.row, 
+                                            item.width, item.color, item.symbol) 
+                item = self.canvas._item_at_row_col(item.column, item.row)
+                item._select()
+
+
+
+    def _redo_unselectedCells(self):
+        """ Redo action for unselected cells """
+
+        # if we have inactivated cells, remove them
+        if self.unselectedCells:
+            for item in self.unselectedCells:
+                itemId = get_item_id(item.column, item.row) 
+                del self.canvas._selectedCells[itemId]
+
+                item = self.canvas._item_at_row_col(item.column, item.row)
+                item._unselect()
+
+
+    def _redo_paintActiveSymbol(self):
+        """ Redo action for painting the active symbol into
+        selected cells.
+
+        """
+
+        self.oldSelection = self.canvas._selectedCells.copy()
+        self.activeSymbolContent = self.activeSymbol.get_content()
+        self.width = int(self.activeSymbolContent["width"])
+        self.chunks = chunkify_cell_arrangement(self.width, self.oldSelection)
+
+        for chunk in self.chunks:
+            totalWidth = 0
+
+            # location of leftmost item in chunk
+            column = chunk[0].column
+            row = chunk[0].row
+            item = self.canvas._item_at_row_col(column, row)
+            origin = item.pos()
+
+            # compute total width and remove old items
+            for entry in chunk:
+                totalWidth += entry.width
+                gridItem = self.canvas._item_at_row_col(entry.column, 
+                                                        entry.row)
+                self.canvas.removeItem(gridItem)
+                del gridItem
+
+            # insert as many new items as we can fit
+            numNewItems = int(totalWidth/self.width)
+            for i in range(0, numNewItems):
+                item = self.canvas.create_pattern_grid_item(origin,
+                            self.canvas._unitCellDim, column, row, self.width, 1,
+                            self.activeSymbolContent, self.activeColor)
+                self.canvas.addItem(item)
+                
+                itemId = get_item_id(column, row)
+                self.newSelection[itemId] = \
+                        PatternCanvasEntry(column, row, self.width,
+                                           self.activeColor,
+                                           self.activeSymbolContent)
+
+                origin = QPointF(origin.x() + \
+                                    (self.width * self.canvas._unitCellDim.width()),
+                                    origin.y())
+                column = column + self.width
+
+        self.canvas._selectedCells.clear()
+
+
+
+    def _undo_selectedCells(self):
+        """ Undo action for selected cells """
+
+        # remove previously activated items
+        if self.selectedCells:
+            for item in self.selectedCells:
+                itemId = get_item_id(item.column, item.row) 
+                del self.canvas._selectedCells[itemId]
+
+                item = self.canvas._item_at_row_col(item.column, item.row)
+                item._unselect()
+
+
+
+    def _undo_unselectedCells(self):
+        """ Undo action for unseleced cells """
+
+        if self.unselectedCells:
+            for item in self.unselectedCells:
+                itemId = get_item_id(item.column, item.row) 
+                self.canvas._selectedCells[itemId] = \
+                        PatternCanvasEntry(item.column, item.row, 
+                                            item.width, item.color, item.symbol) 
+                item = self.canvas._item_at_row_col(item.column, item.row)
+                item._select()
+
+
+
+    def _undo_paintActiveSymbol(self):
+        """ Undo action for painting the active symbol. """
+
+        # get rid of previous selection
+        for entry in self.newSelection.values():
+            gridItem = self.canvas._item_at_row_col(entry.column, 
+                                                    entry.row)
+            self.canvas.removeItem(gridItem)
+            del gridItem
+
+        # re-insert previous selection
+        for entry in self.oldSelection.values():
+            column = entry.column
+            row    = entry.row
+            location = QPointF(column * self.canvas._unitCellDim.width(),
+                            row * self.canvas._unitCellDim.height())
+
+            item = self.canvas.create_pattern_grid_item(location, 
+                                                    self.canvas._unitCellDim, 
+                                                    column, row,
+                                                    entry.width, 1,
+                                                    entry.symbol, 
+                                                    entry.color)
+
+            self.canvas.addItem(item)
+            item._select()
+
+        self.canvas._selectedCells = self.oldSelection
+
+

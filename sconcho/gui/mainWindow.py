@@ -345,10 +345,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.canvas,
                      SIGNAL("activate_symbol"),
-                     symbolTracker.select)
+                     symbolTracker.select_plain)
 
         self.connect(self.canvas,
-                     SIGNAL("unselect_active_symbol"),
+                     SIGNAL("unactivate_symbol"),
                      symbolTracker.unselect)
       
 
