@@ -135,6 +135,7 @@ def symbols_by_category(symbols):
     """ Given a dictionary of knitting symbols returns another
     dictionary with the category as key and value a list of
     all symbols with that category.
+
     """
 
     # assemble the categories
@@ -152,10 +153,10 @@ def symbols_by_category(symbols):
 
 
 def sort_symbols_by_category(symbols):
-    """
-    Given a dictionary of knitting symbols returns a list with
+    """ Given a dictionary of knitting symbols returns a list with
     tuples of category names and list of corresponding symbols.
     The category names are sorted with basic coming first.
+
     """
 
     rawSortedSymbols = symbols_by_category(symbols)
@@ -318,10 +319,9 @@ class SymbolSynchronizer(QObject):
 
     
     def select(self, target):
-        """
-        This method "remembers" the newly activated
-        widget and makes sure to deactivate
-        the previous one.
+        """ This method "remembers" the newly activated
+        widget and makes sure to deactivate the previous one.
+
         """
 
         if self._activeWidget == target:
@@ -333,7 +333,7 @@ class SymbolSynchronizer(QObject):
             self._activeWidget = target
             self._activeWidget.set_active_look()
             self.emit(SIGNAL("synchronized_object_changed"),
-                      self._activeWidget.get_content())
+                      self._activeWidget) #.get_content())
 
 
 

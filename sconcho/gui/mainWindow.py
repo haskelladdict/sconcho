@@ -326,10 +326,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         symbolTracker = SymbolSynchronizer()
         self.connect(symbolTracker, 
                      SIGNAL("synchronized_object_changed"),
-                     self.canvas.set_active_symbol)
-
-        self.connect(symbolTracker, 
-                     SIGNAL("synchronized_object_changed"),
                      self.activeSymbolWidget.active_symbol_changed)
         
         self.connect(symbolTracker, 
@@ -339,8 +335,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self,
                      SIGNAL("unselect_active_symbol"),
                      symbolTracker.unselect)
-       
-        
+
+        # the connection between canvas and symbolTracker has
+        # to be bi-directional so the canvas can properly 
+        # undo/redo selections
+        self.connect(symbolTracker, 
+                     SIGNAL("synchronized_object_changed"),
+                     self.canvas.set_active_symbol)
+
+        self.connect(self.canvas,
+                     SIGNAL("activate_symbol"),
+                     symbolTracker.select)
+
+        self.connect(self.canvas,
+                     SIGNAL("unselect_active_symbol"),
+                     symbolTracker.unselect)
+      
+
         (self.selectedSymbol, self.symbolSelector,
          self.symbolSelectorWidgets) = \
                         generate_symbolWidgets(knittingSymbols,
@@ -766,17 +777,19 @@ class ActiveSymbolWidget(QWidget):
         
 
 
-    def active_symbol_changed(self, symbol):
+    def active_symbol_changed(self, symbolObject):
         """
         Update the displayed active Widget after
         the user selected a new one.
         """
 
+
         if self.widget:
             self.layout.removeWidget(self.widget)
             self.widget.setParent(None)
 
-        if symbol:
+        if symbolObject:
+            symbol = symbolObject.get_content()
             self.widget = SymbolDisplayItem(symbol, self.color)
             self.layout.addWidget(self.widget,0,1)
 

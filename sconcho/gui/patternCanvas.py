@@ -152,20 +152,22 @@ class PatternCanvas(QGraphicsScene):
             
 
     def set_active_symbol(self, activeKnittingSymbol):
-        """
-        This function receives the currently active symbol
-        and stores it.
+        """ This function receives the currently active symbol
+        and stores it so we know what to paint selected cells
+        with. In order to have consistent undo/redo bahaviour
+        this has to be full reversible.
+
         """
 
-        self._activeSymbol = activeKnittingSymbol
-        self.paint_cells()
+        selectCommand = ActivateSymbol(self, activeKnittingSymbol)
+        self._undoStack.push(selectCommand)
 
 
 
     def set_active_color(self, color):
-        """
-        This function received the currently active
+        """ This function received the currently active
         background color and stores it.
+
         """
 
         self._activeColor = color
@@ -419,11 +421,12 @@ class PatternCanvas(QGraphicsScene):
             return
 
         if self._activeSymbol:
-            width = int(self._activeSymbol["width"])
+            activeSymbolContent = self._activeSymbol.get_content()
+            width = int(activeSymbolContent["width"])
             chunks = chunkify_cell_arrangement(width, self._selectedCells)
 
             if chunks: 
-                paintCommand = PaintCells(self, chunks)
+                paintCommand = PaintCells(self, chunks, activeSymbolContent)
                 self._undoStack.push(paintCommand)
 
         
@@ -1846,16 +1849,16 @@ class PaintCells(QUndoCommand):
 
     """
 
-    def __init__(self, canvas, chunks, parent = None):
+    def __init__(self, canvas, chunks, activeSymbolContent, parent = None):
 
         super(PaintCells, self).__init__(parent)
         self.canvas = canvas
         self.oldSelection = canvas._selectedCells.copy()
         self.newSelection = {}
         self.chunks = chunks
-        self.width  = int(canvas._activeSymbol["width"])
-        self.activeSymbol = canvas._activeSymbol
-        self.activeColor  = canvas._activeColor
+        self.width = int(activeSymbolContent["width"])
+        self.activeSymbolContent = activeSymbolContent
+        self.activeColor = canvas._activeColor
        
 
     def redo(self):
@@ -1866,8 +1869,8 @@ class PaintCells(QUndoCommand):
 
             # location of leftmost item in chunk
             column = chunk[0].column
-            row    = chunk[0].row
-            item   = self.canvas._item_at_row_col(column, row)
+            row = chunk[0].row
+            item = self.canvas._item_at_row_col(column, row)
             origin = item.pos()
 
             # compute total width and remove old items
@@ -1883,14 +1886,14 @@ class PaintCells(QUndoCommand):
             for i in range(0, numNewItems):
                 item = self.canvas.create_pattern_grid_item(origin,
                             self.canvas._unitCellDim, column, row, self.width, 1,
-                            self.activeSymbol, self.activeColor)
+                            self.activeSymbolContent, self.activeColor)
                 self.canvas.addItem(item)
                 
                 itemId = get_item_id(column, row)
                 self.newSelection[itemId] = \
                         PatternCanvasEntry(column, row, self.width,
                                            self.activeColor,
-                                           self.activeSymbol)
+                                           self.activeSymbolContent)
 
                 origin = QPointF(origin.x() + \
                                     (self.width * self.canvas._unitCellDim.width()),
@@ -1948,10 +1951,10 @@ class PasteCells(QUndoCommand):
         self.canvas = canvas
         self.copySelection = copySelection.copy()
         self.deadSelection = deadSelection.copy()
-        self.column        = column
-        self.row           = row
-        self.numColumns    = numCols
-        self.numRows       = numRows
+        self.column = column
+        self.row = row
+        self.numColumns = numCols
+        self.numRows = numRows
 
 
     def _get_upper_left(self, selection):
@@ -2018,7 +2021,7 @@ class PasteCells(QUndoCommand):
         # re-add previously deleted cells
         for entry in self.deadSelection.values():
             column = entry.column
-            row    = entry.row
+            row = entry.row
 
             location = QPointF(column * self.canvas._unitCellDim.width(),
                                row * self.canvas._unitCellDim.height())
@@ -2041,12 +2044,12 @@ class InsertRow(QUndoCommand):
 
         super(InsertRow, self).__init__(parent)
 
-        self.canvas     = canvas
-        self.rowShift   = rowShift
-        self.numRows    = canvas._numRows
+        self.canvas = canvas
+        self.rowShift = rowShift
+        self.numRows = canvas._numRows
         self.numColumns = canvas._numColumns
         self.unitHeight = self.canvas._unitCellDim.height()
-        self.unitWidth  = self.canvas._unitCellDim.width()
+        self.unitWidth = self.canvas._unitCellDim.width()
 
         if mode == QString("above"):
             self.pivot = pivot
@@ -2139,14 +2142,14 @@ class DeleteRow(QUndoCommand):
 
         super(DeleteRow, self).__init__(parent)
 
-        self.canvas     = canvas
-        self.rowShift   = rowShift
-        self.pivot      = pivot
-        self.mode       = mode
-        self.numRows    = canvas._numRows
+        self.canvas = canvas
+        self.rowShift = rowShift
+        self.pivot = pivot
+        self.mode = mode
+        self.numRows = canvas._numRows
         self.numColumns = canvas._numColumns
         self.unitHeight = self.canvas._unitCellDim.height()
-        self.unitWidth  = self.canvas._unitCellDim.width()
+        self.unitWidth = self.canvas._unitCellDim.width()
 
 
 
@@ -2162,10 +2165,10 @@ class DeleteRow(QUndoCommand):
 
         if self.mode == "above":
             deleteRange = range(self.pivot - self.rowShift, self.pivot)
-            shiftRange  = range(self.pivot, self.numRows)
+            shiftRange = range(self.pivot, self.numRows)
         else:
             deleteRange = range(self.pivot, self.pivot + self.rowShift)
-            shiftRange  = range(self.pivot + self.rowShift, self.numRows)
+            shiftRange = range(self.pivot + self.rowShift, self.numRows)
 
         # delete requested items
         self.deletedCells = []
@@ -2271,3 +2274,36 @@ class DeleteRow(QUndoCommand):
                 self.canvas._numRows)
 
 
+
+class ActivateSymbol(QUndoCommand):
+    """ This class encapsulates the management of the currently
+    active knitting symbol. 
+    
+    """
+
+
+    def __init__(self, canvas, newSymbol, parent = None):
+
+
+        super(ActivateSymbol, self).__init__(parent) 
+
+        self.canvas = canvas
+        self.oldSymbol = canvas._activeSymbol
+        self.newSymbol = newSymbol
+
+    def redo(self):
+        """ The redo action. """
+
+        self.canvas._activeSymbol = self.newSymbol
+        self.canvas.paint_cells()
+
+
+    def undo(self):
+        """ The undo action. """
+
+        self.canvas._activeSymbol = self.oldSymbol
+
+        if self.oldSymbol:
+            self.canvas.emit(SIGNAL("activate_symbol"), self.oldSymbol)
+        else:
+            self.canvas.emit(SIGNAL("unselect_active_symbol"))
