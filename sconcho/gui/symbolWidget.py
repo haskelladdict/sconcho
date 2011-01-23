@@ -337,6 +337,12 @@ class SymbolSynchronizer(QObject):
     def select_plain(self, target):
         """ Select the target symbol selector. """
 
+        # this function is called back by the canvas redo/undo
+        # machinery after we emit synchronized_object_changed
+        # and this test avoids duplication
+        if self._activeWidget == target:
+            return
+
         if self._activeWidget:
             self._activeWidget.set_inactive_look()
 
