@@ -24,6 +24,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+
+__version__ = "0.1.0_a7"
+
+
 import platform, os
 from functools import partial
 
@@ -55,23 +59,16 @@ from sconcho.util.exceptions import PatternReadError
 
 
 
-__version__ = "0.1.0_a7"
-
-
 #######################################################################
 #
-#
 # top level window class
-#
 #
 #######################################################################
 class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __init__(self, topLevelPath, settings, knittingSymbols, 
                  fileName = None, parent = None):
-        """
-        Initialize the main window.
-        """
+        """ Initialize the main window. """
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -121,7 +118,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def _restore_window_settings(self):
-        """ Restore the previously saved settings """
+        """ Restore the previously saved settings. """
         
         newSize = self.settings.value("MainWindow/Size",
                                        QVariant(QSize(1200, 800))).toSize()
@@ -131,7 +128,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                           QVariant(QPoint(0,0))).toPoint()
         self.move(newPosition)
         
-        self.restoreState(self.settings.value("MainWindow/State").toByteArray())
+        self.restoreState(\
+            self.settings.value("MainWindow/State").toByteArray())
 
 
 
@@ -180,7 +178,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPrint, SIGNAL("triggered()"),
                      self.open_print_dialog)
 
-        self.connect(self.action_Manage_Knitting_Symbols, SIGNAL("triggered()"),
+        self.connect(self.action_Manage_Knitting_Symbols,
+                     SIGNAL("triggered()"),
                      self.open_manage_knitting_symbols_dialog)
 
         self.connect(self.actionShow_grid_labels, SIGNAL("toggled(bool)"),
@@ -261,9 +260,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def _set_up_timers(self):
-        """
-        Set up timers.
-        """
+        """ Set up timers. """
 
         pass 
         """
@@ -275,9 +272,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def set_project_dirty(self):
-        """
-        This function marks the canvas as dirty, aka it needs
+        """ This function marks the canvas as dirty, aka it needs
         to be saved.
+        
         """
 
         self._projectIsDirty = True
@@ -286,9 +283,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def set_project_clean(self):
-        """
-        This function marks the project as clean, aka it does not need
+        """ This function marks the project as clean, aka it does not need
         to be saved.
+        
         """
 
         self._projectIsDirty = False
@@ -297,9 +294,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def closeEvent(self, event):
-        """
-        Quit sconcho. If the canvas is currently dirty, we ask the
+        """ Quit sconcho. If the canvas is currently dirty, we ask the
         user if she wants to save it.
+         
         """
 
         if not self._ok_to_continue_without_saving():
@@ -313,14 +310,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def initialize_symbol_widget(self, knittingSymbols):
-        """
-        Proxy for adding all the knitting symbols to the symbolWidget
+        """ Proxy for adding all the knitting symbols to the symbolWidget
         and connecting it to the symbol changed slot.
 
         NOTE: Unfortunately, the order of the connections below matters.
         Connect the symbolCategoryChooser only after it has been fully
         set up. Otherwise we get spurious selector widget switches until
         the chooser has established the correct order.
+        
         """
 
         symbolTracker = SymbolSynchronizer()
@@ -382,9 +379,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
     def initialize_color_widget(self):
-        """
-        Proxy for adding all the color selectors to the color selector
+        """ Proxy for adding all the color selectors to the color selector
         Widget and connecting the slots
+        
         """
 
         colorTracker = ColorSynchronizer()
@@ -438,9 +435,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def new_pattern_dialog(self):
-        """ 
-        Open a dialog giving users an opportunity to save
+        """ Open a dialog giving users an opportunity to save
         their previous pattern or cancel.
+        
         """
 
         if not self._ok_to_continue_without_saving():
@@ -460,11 +457,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def save_pattern_dialog(self, mode):
-        """
-        If necessary, fire up a save pattern dialog and then save.
+        """ If necessary, fire up a save pattern dialog and then save.
 
         Returns True on successful saving of the file and False
         otherwise.
+        
         """
 
         if (mode == "save as") or (not self._saveFilePath): 
@@ -510,6 +507,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """ Main save routine.
 
         If there is no filepath we return (e.g. when called by the saveTimer).
+        
         """
         
         if not self._saveFilePath or not self._projectIsDirty:
@@ -528,7 +526,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                  errMsg, QMessageBox.Close)
             return False
         
-        self.statusBar().showMessage("successfully saved " + saveFileName, 2000)
+        self.statusBar().showMessage("successfully saved " + \
+                                     saveFileName, 2000)
         self.set_project_clean()
         return True
 
@@ -556,6 +555,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _read_project(self, readFilePath):
         """ This function does the hard work for opening a 
         sconcho project file.
+        
         """
 
         (status, errMsg, patternGridItems, legendItems, colors, activeItem) = \
@@ -582,9 +582,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def export_pattern_dialog(self):
-        """
-        This function opens and export pattern dialog.
-        """
+        """ This function opens and export pattern dialog. """
 
         canvasSize = self.canvas.itemsBoundingRect()
         exportDialog = ExportBitmapDialog(canvasSize, self)
@@ -601,9 +599,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def open_print_dialog(self):
-        """
-        This member function calls print routine.
-        """
+        """ This member function calls print routine. """
 
         io.print_scene(self.canvas)
         
@@ -657,6 +653,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def open_manage_knitting_symbols_dialog(self):
         """ Open dialog allowing users to manage their own
         symbols (as opposed to the ones which come with sconcho).
+        
         """
 
         sortedSymbols = symbols_by_category(self._knittingSymbols)
@@ -693,6 +690,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         save the current pattern. Returns True if the pattern
         was save or the user discarded changes, and False if
         the user canceled.
+        
         """
 
         status = True
@@ -721,6 +719,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         is currently selected. Otherwise activate the proper widget.
         The activeItem comes directly from the parser so we have to
         be careful.
+        
         """
 
         try:
@@ -778,11 +777,10 @@ class ActiveSymbolWidget(QWidget):
 
 
     def active_symbol_changed(self, symbolObject):
-        """
-        Update the displayed active Widget after
+        """ Update the displayed active Widget after
         the user selected a new one.
+        
         """
-
 
         if self.widget:
             self.layout.removeWidget(self.widget)
@@ -811,9 +809,9 @@ class ActiveSymbolWidget(QWidget):
 
 
     def active_color_changed(self, color):
-        """
-        Update the background of the displayed active
+        """ Update the background of the displayed active
         widget (if there is one) after a user color change.
+        
         """
 
         self.color = color
@@ -868,9 +866,7 @@ class SymbolDisplayItem(QFrame):
 
 
     def set_backcolor(self, color):
-        """
-        Sets the background color.
-        """
+        """ Sets the background color. """
 
         self.backColor = color
         self.setup_stylesheets()
@@ -879,14 +875,13 @@ class SymbolDisplayItem(QFrame):
 
 
     def setup_stylesheets(self):
-        """
-        Defines the stylesheets used for display.
-        """
+        """ Defines the stylesheets used for display. """
 
         self._theStyleSheet = "border-width: 1px;" \
                                "border-style: solid;" \
                                "border-color: black;" \
-                               "background-color: " + self.backColor.name() + ";"
+                               "background-color: " + \
+                               self.backColor.name() + ";"
 
 
 
@@ -899,10 +894,10 @@ class SymbolDisplayItem(QFrame):
 ################################################################
 
 def set_up_colors(widget, colors):
-    """
-    Sets the colors of ColorSelectorItems in the widget to
+    """ Sets the colors of ColorSelectorItems in the widget to
     the requested colors. Also activates the previously
     active item.
+    
     """
 
     assert (len(widget.colorWidgets) >= len(colors))

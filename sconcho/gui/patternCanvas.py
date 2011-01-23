@@ -63,22 +63,22 @@ class PatternCanvas(QGraphicsScene):
 
         self.settings = theSettings
 
-        self._activeSymbol  = None
+        self._activeSymbol = None
         self._defaultSymbol = defaultSymbol
-        self._activeColor   = None
-        self._defaultColor  = QColor(Qt.white)
+        self._activeColor = None
+        self._defaultColor = QColor(Qt.white)
         self._selectedCells = {}
 
-        self._undoStack     = QUndoStack(self)
+        self._undoStack = QUndoStack(self)
 
         self._unitCellDim = QSizeF(get_grid_dimensions(theSettings))
-        self._numRows     = 10
-        self._numColumns  = 10
+        self._numRows = 10
+        self._numColumns = 10
 
-        self._copySelection    = {}
+        self._copySelection = {}
         self._copySelectionDim = None
 
-        self._textLabels  = []
+        self._textLabels = []
 
         self.insertDeleteRowColDialog = None
 
@@ -90,9 +90,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def set_up_main_grid(self):
-        """
-        This function draws the main grid.
-        """
+        """ This function draws the main grid. """
 
         for row in range(0, self._numRows):
             self._create_row(row)
@@ -100,17 +98,18 @@ class PatternCanvas(QGraphicsScene):
 
 
     def set_up_labels(self):
-        """
-        Add labels to the main grid.
+        """ Add labels to the main grid.
+        
         FIXME: This function currently recreates all labels instead
         of just shifting around existing ones. The latter should
         probably be more efficient.
 
         NOTE: The ranges below are somewhat weird because we count
         backward.
+        
         """
 
-        interval  = get_label_interval(self.settings)
+        interval = get_label_interval(self.settings)
         labelFont = get_label_font(self.settings)
 
         for label in self._textLabels:
@@ -175,9 +174,9 @@ class PatternCanvas(QGraphicsScene):
 
 
     def add_to_legend(self, item):
-        """
-        Adds a newly created PatternGridItem to the legend database
+        """ Adds a newly created PatternGridItem to the legend database
         and updates the legend itself if needed.
+        
         """
 
         legendID = generate_legend_id(item.symbol, item.color)
@@ -240,8 +239,10 @@ class PatternCanvas(QGraphicsScene):
             if isinstance(graphicsItem, PatternGridItem):
                 graphicsItem.prepareGeometryChange()
                 graphicsItem.change_geometry(self._unitCellDim)
-                origin = QPointF(graphicsItem.column * self._unitCellDim.width(),
-                                 graphicsItem.row * self._unitCellDim.height())
+                origin = QPointF(graphicsItem.column * \
+                                 self._unitCellDim.width(),
+                                 graphicsItem.row * \
+                                 self._unitCellDim.height())
                 graphicsItem.setPos(origin)
 
             elif isinstance(graphicsItem, PatternLegendItem):
@@ -255,10 +256,10 @@ class PatternCanvas(QGraphicsScene):
 
 
     def _add_legend_item(self, symbol, color):
-        """
-        This adds a new legend entry including an PatternLegendItem
+        """ This adds a new legend entry including an PatternLegendItem
         and a textual description. This function also attemps to be
         sort of smart about where to put the item.
+        
         """
 
         legendYmax = compute_max_legend_y_coordinate(self.gridLegend)
@@ -289,15 +290,14 @@ class PatternCanvas(QGraphicsScene):
         self.addItem(textItem)
 
         self.emit(SIGNAL("adjust_view"))
-       
         return (item, textItem)
 
 
 
     def remove_from_legend(self, item):
-        """
-        Removes a PatternGridItem from the legend database
+        """ Removes a PatternGridItem from the legend database
         and updates the legend itself if needed.
+        
         """
 
 
@@ -323,16 +323,16 @@ class PatternCanvas(QGraphicsScene):
     def clear_all_selected_cells(self):
         """ Unselects all currently selected cells. """
 
-        paintCommand = PaintCells(self, None, [inactivatedItem])
+        paintCommand = PaintCells(self, None, self._selectedCells.values())
         self._undoStack.push(paintCommand)
 
 
 
     def grid_cell_activated(self, item):
-        """
-        If a grid cell notifies it has been activated add it
+        """ If a grid cell notifies it has been activated add it
         to the collection of selected cells and try to paint
         them.
+        
         """
        
         activatedItem = PatternCanvasEntry(item.column, item.row, item.width, 
@@ -343,9 +343,9 @@ class PatternCanvas(QGraphicsScene):
 
 
     def grid_cell_inactivated(self, item):
-        """
-        If a grid cell notifies it has been in-activated remove
+        """ If a grid cell notifies it has been in-activated remove
         it from the collection of selected cells if present.
+        
         """
 
 
@@ -359,24 +359,25 @@ class PatternCanvas(QGraphicsScene):
     def create_pattern_grid_item(self, origin, unitDim, col, row,
                                  width, height, knittingSymbol,
                                  color):
-        """
-        Creates a new PatternGridItem of the specified dimension
+        """ Creates a new PatternGridItem of the specified dimension
         at the given location.
+        
         """
 
         item = PatternGridItem(unitDim, col, row, width, height,
                                 knittingSymbol, color)
         item.setPos(origin)
         self.connect(item, SIGNAL("cell_selected"), self.grid_cell_activated)
-        self.connect(item, SIGNAL("cell_unselected"), self.grid_cell_inactivated)
+        self.connect(item, SIGNAL("cell_unselected"),
+                     self.grid_cell_inactivated)
         return item
 
 
 
     def addItem(self, item):
-        """
-        This overload of addItem makes sure that we perform QGraphicsItem
-        specific task such as updating the legend for svg items.
+        """ This overload of addItem makes sure that we perform
+        QGraphicsItem specific task such as updating the legend for svg items.
+        
         """
 
         if isinstance(item, PatternGridItem):
@@ -387,9 +388,10 @@ class PatternCanvas(QGraphicsScene):
 
 
     def removeItem(self, item):
-        """
-        This overload of removeItem makes sure that we perform QGraphicsItem
-        specific task such as updating the legend for svg items.
+        """ This overload of removeItem makes sure that we perform
+        QGraphicsItem specific task such as updating the legend for svg
+        items.
+        
         """
 
         if isinstance(item, PatternGridItem):
@@ -400,9 +402,9 @@ class PatternCanvas(QGraphicsScene):
 
 
     def paint_cells(self):
-        """
-        Attempts to paint the cells with the selected symbol.
+        """ Attempts to paint the cells with the selected symbol.
         Has to make sure the geometry is appropriate.
+        
         """
 
         paintCommand = PaintCells(self) 
@@ -411,8 +413,7 @@ class PatternCanvas(QGraphicsScene):
         
 
     def mousePressEvent(self, event):
-        """ Handle mouse press events directly on the canvas.
-        """
+        """ Handle mouse press events directly on the canvas. """
 
         (col, row) = convert_pos_to_col_row(event.scenePos(),
                                             self._unitCellDim.width(),
@@ -515,8 +516,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def handle_right_click_on_grid(self, event, row, col):
-        """
-        Handles a right click on the pattern grid by
+        """ Handles a right click on the pattern grid by
         displaying a QMenu with options.
 
         """
@@ -529,7 +529,7 @@ class PatternCanvas(QGraphicsScene):
 
         copyAction = gridMenu.addAction("&Copy Selection")
         (status, (colDim, rowDim)) = \
-                is_active_selection_rectangular(self._selectedCells)
+                is_active_selection_rectangular(self._selectedCells.values())
         if not status:
             copyAction.setEnabled(False)
 
@@ -558,13 +558,13 @@ class PatternCanvas(QGraphicsScene):
 
 
     def insert_delete_rows_columns(self, col, row):
-        """
-        This method manages the addition and deletion of rows and columns
+        """ This method manages the addition and deletion of rows and columns
         via a widget.
 
         NOTE: Make sure the signals are only connected *once* inside the
         if. Otherwise weird things are bound to happen (like multiple
-        deletes, inserts, etc.)
+        deletes, inserts, etc.).
+        
         """
 
         if not self.insertDeleteRowColDialog:
@@ -572,13 +572,13 @@ class PatternCanvas(QGraphicsScene):
                 InsertDeleteRowColumnDialog(self._numRows,
                                             self._numColumns,
                                             row, col, self.parent())
-            self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_row"), 
+            self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_rows"), 
                          self.insert_grid_row)
-            self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_row"), 
+            self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_rows"), 
                          self.delete_grid_row)
-            self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_column"), 
+            self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_columns"), 
                          self.insert_grid_column)
-            self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_column"), 
+            self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_columns"), 
                          self.delete_grid_column)
         else:
             self.insertDeleteRowColDialog.set_row_col(row,col)
@@ -591,6 +591,7 @@ class PatternCanvas(QGraphicsScene):
     def grab_color_from_cell(self, event):
         """ Extract the color from the selected cell
         and add it to the currently active color selector.
+        
         """
 
         allItems = self.items(event.scenePos())
@@ -618,7 +619,8 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def _get_pattern_grid_items_in_rectangle(self, column, row, numCols, numRows):
+    def _get_pattern_grid_items_in_rectangle(self, column, row, numCols,
+                                             numRows):
         """ Given a (col, row) origin and the number of columns
         and rows returns all PatternGridItems under the selection.
 
@@ -648,6 +650,7 @@ class PatternCanvas(QGraphicsScene):
     def paste_selection(self, column, row):
         """ This slot pastes the current copy selection at column
         and row.
+        
         """
 
         # remove each row completely first, then insert the 
@@ -757,7 +760,9 @@ class PatternCanvas(QGraphicsScene):
 
     def _item_at_row_col(self, column, row):
         """ Returns the PatternGridItem at the given column and row
-        or None if there isn't one. """
+        or None if there isn't one.
+
+        """
 
         pos = convert_col_row_to_pos(column, row, self._unitCellDim.width(),
                                      self._unitCellDim.height())
@@ -802,7 +807,7 @@ class PatternCanvas(QGraphicsScene):
                                     QMessageBox.Close)
                 return
 
-        elif mode == "below and including":
+        else:
             if (pivot + num) >= self._numRows:
                 QMessageBox.warning(None, msg.canNotDeleteRowBelowTitle,
                                     msg.canNotDeleteRowBelowText,
@@ -816,9 +821,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def insert_grid_column(self, num, mode, columnPivot):
-        """
-        Deals with requests to insert a column.
-        """
+        """ Deals with requests to insert a column. """
 
         pivot = self.convert_canvas_column_to_internal(columnPivot)
         assert(pivot >= 0 and pivot < self._numColumns)
@@ -862,48 +865,61 @@ class PatternCanvas(QGraphicsScene):
                                             QMessageBox.Close)
                         return
 
-        # ok we're good to delete then 
+        # ok we're good to insert then 
         insertColumnCommand = InsertColumn(self, num, pivot, mode)
         self._undoStack.push(insertColumnCommand)
 
 
 
-    def delete_grid_column(self, deadColumn):
-        """
-        Deals with requests to delete a specific column.
-        """
+    def delete_grid_column(self, num, mode, columnPivot):
+        """ Deals with requests to delete a specific number of columns. """
 
-        column = self.convert_canvas_column_to_internal(deadColumn)
+        pivot = self.convert_canvas_column_to_internal(columnPivot)
+        assert(pivot >= 0 and pivot < self._numRows)
 
-        # in order for deleting of a column at deadColumn to succeed
-        # there has to be a unit element at that column
-        rowCounter = 0
-        for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternGridItem):
-                if (graphicsItem.column == column) and \
-                    (graphicsItem.width == 1):
-                    rowCounter += 1
+        # make sure we can delete num columns left of/right of columnPivot
+        if mode == "left of":
+            if (pivot - num) < 0:
+                QMessageBox.warning(None, msg.canNotDeleteColumnLeftOfTitle,
+                                    msg.canNotDeleteColumnLeftOfText,
+                                    QMessageBox.Close)
+                return
 
-        if rowCounter != self._numRows:
+        else:
+            if (pivot + num) >= self._numColumns:
+                QMessageBox.warning(None, msg.canNotDeleteColumnRightOfTitle,
+                                    msg.canNotDeleteColumnRightOfText,
+                                    QMessageBox.Close)
+                return
+
+        # in order for us to be able to delete the requested number
+        # of columns the selection has to be rectangular (this is
+        # similar to the check we do when before allowing to copy
+        # a selection
+        if mode == QString("left of"):
+            colRange = range(pivot - num, pivot)
+        else:
+            colRange = range(pivot, pivot + num)
+            
+        selection = []
+        for rowID in range(0, self._numRows):
+            for colID in colRange:
+                item = self._item_at_row_col(colID, rowID)
+                selection.append(PatternCanvasEntry(item.column, item.row, 
+                                                    item.width, item.color,
+                                                    item.symbol))
+        (status, (colDim, rowDim)) = is_active_selection_rectangular(selection)
+        
+        if not status:
             QMessageBox.warning(None, msg.noColDeleteLayoutTitle,
                                 msg.noColDeleteLayoutText,
                                 QMessageBox.Close)
             return
 
-        for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternGridItem):
-                if graphicsItem.column == column:
-                    self.removeItem(graphicsItem)
-                    del graphicsItem
-                elif graphicsItem.column > column:
-                    shift_item_column_wise(graphicsItem, -1, 
-                            self._unitCellDim.width())
 
-        self._numColumns -= 1
-        self.set_up_labels()
-        self.emit(SIGNAL("adjust_view"))
-        self.emit(SIGNAL("scene_changed"))
-        self.insertDeleteRowColDialog.set_upper_column_limit(self._numColumns)
+        # ok we're good to delete then 
+        deleteColumnCommand = DeleteColumn(self, num, pivot, mode)
+        self._undoStack.push(deleteColumnCommand)
 
 
 
@@ -936,11 +952,11 @@ class PatternCanvas(QGraphicsScene):
 
 
     def _create_row(self, rowID):
-        """
-        Creates a new row at rowID, nothing else. In particular
+        """ Creates a new row at rowID, nothing else. In particular
         this function does not attempt to make space for the row or
         anything else along these lines. This is a private and 
         very stupid function.
+        
         """
 
         for column in range(0, self._numColumns):
@@ -955,11 +971,11 @@ class PatternCanvas(QGraphicsScene):
 
 
     def _create_column(self, columnID):
-        """
-        Creates a new column at columnID, nothing else. In particular
+        """ Creates a new column at columnID, nothing else. In particular
         this function does not attempt to make space for the column or
         anything else along these lines. This is a private and very
         stupid function.
+        
         """
 
         for row in range(0, self._numRows):
@@ -974,9 +990,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def _clear_canvas(self):
-        """
-        Clear the complete canvas. 
-        """
+        """ Clear the complete canvas. """
 
         # clear GraphicsScene
         self.clear()
@@ -988,9 +1002,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def create_new_canvas(self, numRows = 10, numColumns = 10):
-        """
-        Create a complete new and blank canvas.
-        """
+        """ Create a complete new and blank canvas. """
 
         # reset the number of columns/rows to 10
         # we probably should add a dialog here
@@ -1010,12 +1022,13 @@ class PatternCanvas(QGraphicsScene):
     @wait_cursor
     def load_previous_pattern(self, knittingSymbols, patternGridItemInfo,
                           legendItemInfo):
-        """
-        Clear curent canvas and establishes a new canvas
+        """ Clear curent canvas and establishes a new canvas
         based on the passed canvas items. Returns True on success
         and False otherwise.
+        
         NOTE: We have to be able to deal with bogus data (from a
         corrupted file perhaps).
+        
         """
         
         # need this to determine the number of columns and rows
@@ -1089,9 +1102,9 @@ class PatternCanvas(QGraphicsScene):
 
 
     def toggle_label_visibility(self, status):
-        """
-        Per request from main window toggle
+        """ Per request from main window toggle
         the visibility of the labels.
+        
         """
 
         for item in self.items():
@@ -1106,6 +1119,7 @@ class PatternCanvas(QGraphicsScene):
     def label_font_changed(self):
         """ This slot is called when the label font has
         been changed.
+        
         """
         
         labelFont = get_label_font(self.settings)
@@ -1116,9 +1130,9 @@ class PatternCanvas(QGraphicsScene):
 
 
     def toggle_legend_visibility(self, status):
-        """
-        Per request from main window toggle the legend
+        """ Per request from main window toggle the legend
         visibility on or off.
+        
         """
 
         if status:
@@ -1136,6 +1150,7 @@ class PatternCanvas(QGraphicsScene):
     def legend_font_changed(self):
         """ This slot is called when the label font has
         been changed.
+        
         """
         
         legendFont = get_legend_font(self.settings)
@@ -1145,9 +1160,9 @@ class PatternCanvas(QGraphicsScene):
 
 
     def toggle_pattern_grid_visibility(self, status):
-        """
-        Per request from main window toggle the pattern grid
+        """ Per request from main window toggle the pattern grid
         visibility on or off.
+        
         """
 
         for item in self.items():
@@ -1181,13 +1196,13 @@ class PatternGridItem(QGraphicsSvgItem):
         # rendering of our scene is broken
         self.setCacheMode(QGraphicsItem.NoCache)
 
-        self.origin  = QPointF(0.0, 0.0)
+        self.origin = QPointF(0.0, 0.0)
         self.unitDim = unitDim
-        self.row     = row
-        self.column  = col
-        self.width   = width
-        self.height  = height
-        self.size    = QSizeF(self.unitDim.width() * width,
+        self.row = row
+        self.column = col
+        self.width = width
+        self.height = height
+        self.size = QSizeF(self.unitDim.width() * width,
                               self.unitDim.height() * height)
 
         self._penSize = 1.0
@@ -1196,9 +1211,9 @@ class PatternGridItem(QGraphicsSvgItem):
         self._pen.setJoinStyle(Qt.MiterJoin)
         self._pen.setColor(Qt.black)
 
-        self._selected         = False
-        self.color             = defaultColor
-        self._backColor        = self.color
+        self._selected = False
+        self.color = defaultColor
+        self._backColor = self.color
         self._highlightedColor = QColor(Qt.gray)
 
         self.symbol = None
@@ -1207,9 +1222,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
     def mousePressEvent(self, event):
-        """
-        Handle user press events on the item.
-        """
+        """ Handle user press events on the item. """
 
         if not self._selected:
             #self._select()
@@ -1221,9 +1234,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
     def change_geometry(self, newDim):
-        """ This slot changes the unit dimensions of the
-        item.
-        """
+        """ This slot changes the unit dimensions of the item. """
 
         self.unitDim = newDim
         self.size    = QSizeF(self.unitDim.width() * self.width,
@@ -1232,9 +1243,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
     def _unselect(self):
-        """
-        Unselects a given selected cell. 
-        """
+        """ Unselects a given selected cell. """
 
         self._selected = False
         self._backColor = self.color
@@ -1243,9 +1252,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
     def _select(self):
-        """
-        Selects a given unselected cell. 
-        """
+        """ Selects a given unselected cell. """
 
         self._selected = True
         self._backColor = self._highlightedColor
@@ -1254,10 +1261,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
             
     def _set_symbol(self, newSymbol):
-        """
-        Adds a new svg image of a knitting symbol to the
-        scene.
-        """
+        """ Adds a new svg image of a knitting symbol to the scene. """
 
         self.symbol = newSymbol
         svgPath = newSymbol["svgPath"]
@@ -1274,9 +1278,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
     def boundingRect(self):
-        """
-        Return the bounding rectangle of the item.
-        """
+        """ Return the bounding rectangle of the item. """
 
         halfPen = self._penSize * 0.5
         return QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
@@ -1285,9 +1287,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
     def paint(self, painter, option, widget):
-        """
-        Paint ourselves.
-        """
+        """ Paint ourselves. """
 
         painter.setPen(self._pen)
         brush = QBrush(self._backColor)
@@ -1324,14 +1324,14 @@ class PatternLegendItem(QGraphicsSvgItem):
         
         self.setZValue(zValue)
 
-        self.origin  = QPointF(0.0, 0.0)
+        self.origin = QPointF(0.0, 0.0)
         self.unitDim = unitDim
-        self.width   = width
-        self.height  = height
-        self.size    = QSizeF(self.unitDim.width() * width,
+        self.width = width
+        self.height = height
+        self.size = QSizeF(self.unitDim.width() * width,
                               self.unitDim.height() * height)
 
-        self.color  = defaultColor
+        self.color = defaultColor
 
         self.symbol = None
         self._set_symbol(defaultSymbol)
@@ -1447,8 +1447,7 @@ def shift_legend_vertically(legendList, rowShift, unitCellHeight, numColumns,
         symbol = legendItem_symbol(item)
         text   = legendItem_text(item)
 
-        # we ignore all items above or right of the
-        # pattern grid
+        # we ignore all items above or right of the pattern grid
         if (symbol.scenePos().y() >= 0) and \
            (symbol.scenePos().x() <= numColumns * unitWidth):
 
@@ -1630,7 +1629,7 @@ def is_active_selection_rectangular(selectedCells):
     if not selectedCells:
         return (False, (0,0))
 
-    cellsByRow = order_selection_by_rows(selectedCells.values())
+    cellsByRow = order_selection_by_rows(selectedCells)
    
     # make sure the rows are consecutive
     rowIDs = cellsByRow.keys()
@@ -1657,10 +1656,7 @@ def is_active_selection_rectangular(selectedCells):
 
 
 def order_selection_by_rows(selection):
-    """ Given a list of selected grid cells order them
-    by row.
-
-    """
+    """ Given a list of selected grid cells order them by row. """
 
     cellsByRow = {}
     if selection:
@@ -1674,12 +1670,27 @@ def order_selection_by_rows(selection):
 
 
 
+def order_selection_by_columns(selection):
+    """ Given a list of selected grid cells order them by column. """
+
+    cellsByColumn = {}
+    if selection:
+        for cell in selection:
+            if not cell.column in cellsByColumn:
+                cellsByColumn[cell.column] = [cell]
+            else:
+                cellsByColumn[cell.column].append(cell)
+
+    return cellsByColumn
+
+
+
 def chunkify_cell_arrangement(width, allCellsDict):
-    """
-    Given a collection of selected cells verifies that we
+    """ Given a collection of selected cells verifies that we
     can place a symbol of given width. If so, return a
     list of consecutive chunks of cells all of a multiple of width
     that can be filled with the new symbol.
+    
     """
 
     allCells = allCellsDict.values()
@@ -1703,10 +1714,10 @@ def chunkify_cell_arrangement(width, allCellsDict):
 
 
 def chunk_all_rows(width, cellsByRow):
-    """
-    Separate each row into chunks at least as long as
+    """ Separate each row into chunks at least as long as
     the items we want to place. Then we check if each
     chunk is consecutive.
+    
     """
     
     chunkList = []
@@ -1734,9 +1745,9 @@ def chunk_all_rows(width, cellsByRow):
 
 
 def are_consecutive(chunks):
-    """
-    Checks if each chunk in a list of chunks consists
-    of consecutive items. 
+    """ Checks if each chunk in a list of chunks consists
+    of consecutive items.
+    
     """
 
     if not chunks:
@@ -1758,9 +1769,9 @@ def are_consecutive(chunks):
 
 
 def num_unitcells(cells):
-    """
-    Compute the total number of unit cells in the
+    """ Compute the total number of unit cells in the
     selection.
+    
     """
 
     totalWidth = 0
@@ -1772,10 +1783,7 @@ def num_unitcells(cells):
 
 
 def get_item_id(column, row):
-    """ Returns an items id based on its row and column 
-    location. 
-
-    """
+    """ Returns an items id based on its row and column location. """
 
     return str(column) + ":" + str(row)
 
@@ -2009,7 +2017,7 @@ class InsertRow(QUndoCommand):
 
 
 class DeleteRow(QUndoCommand):
-    """ This class encapsulates the deletion of a row action. """
+    """ This class encapsulates the deletion of rows. """
 
 
     def __init__(self, canvas, rowShift, pivot, mode, parent = None):
@@ -2108,12 +2116,11 @@ class DeleteRow(QUndoCommand):
         for item in shiftItems:
             shift_item_row_wise(item, self.rowShift, self.unitHeight)
 
-        # reinsert selected cells
+        # reinsert previously selected cells
         for (key, entry) in self.deadSelectedCells.items():
             self.canvas._selectedCells[key] = entry
 
-        # now, re-insert all previously deleted items including previously
-        # selected cells
+        # now, re-insert all previously deleted items
         for entry in self.deletedCells:
             location = QPointF(entry.column * self.unitWidth,
                                entry.row * self.unitHeight)
@@ -2154,7 +2161,7 @@ class DeleteRow(QUndoCommand):
 
 
 class InsertColumn(QUndoCommand):
-    """ This class encapsulates the insertion of a column action. """
+    """ This class encapsulates the insertion of columns. """
 
 
     def __init__(self, canvas, columnShift, pivot, mode, parent = None):
@@ -2252,6 +2259,151 @@ class InsertColumn(QUndoCommand):
 
 
 
+
+
+class DeleteColumn(QUndoCommand):
+    """ This class encapsulates the deletion of columns. """
+
+
+    def __init__(self, canvas, columnShift, pivot, mode, parent = None):
+
+        super(DeleteColumn, self).__init__(parent)
+        self.setText("delete column")
+        self.canvas = canvas
+        self.columnShift = columnShift
+        self.pivot = pivot
+        self.mode = mode
+        self.numRows = canvas._numRows
+        self.numColumns = canvas._numColumns
+        self.unitHeight = self.canvas._unitCellDim.height()
+        self.unitWidth = self.canvas._unitCellDim.width()
+
+
+
+    def redo(self):
+        """ The redo action. 
+        
+        Delete items then shift remaining items left of or right of
+        the pivot.
+        
+        """
+
+        # deleting always implies shifting some things to the left
+        columnLeftShift = -1 * self.columnShift
+
+        if self.mode == "left of":
+            deleteRange = range(self.pivot - self.columnShift, self.pivot)
+            shiftRange = range(self.pivot, self.numColumns)
+        else:
+            deleteRange = range(self.pivot, self.pivot + self.columnShift)
+            shiftRange = range(self.pivot + self.columnShift, self.numColumns)
+
+        # delete requested items
+        self.deletedCells = []
+        for rowID in range(0, self.numRows):
+            for colID in deleteRange:
+                # delete canvas items
+                item = self.canvas._item_at_row_col(colID, rowID)
+                self.deletedCells.append(\
+                        PatternCanvasEntry(item.column, item.row, 
+                                           item.width, item.color, item.symbol))
+                self.canvas.removeItem(item)
+                del item
+
+        # remove cells from current selection if they intersect
+        self.deadSelectedCells = {}
+        cellsByColumn = order_selection_by_columns(\
+            self.canvas._selectedCells.values())
+        for colID in deleteRange:
+            if colID in cellsByColumn:
+                for entry in cellsByColumn[colID]:
+                    entryID = get_item_id(entry.column, entry.row)
+                    self.deadSelectedCells[entryID] = entry
+                    del self.canvas._selectedCells[entryID]
+
+        # shift the rest back into place
+        for rowID in range(0, self.numRows):
+            for colID in shiftRange:
+                item = self.canvas._item_at_row_col(colID, rowID)
+                shift_item_column_wise(item, columnLeftShift, self.unitWidth)
+
+        shift_legend_horizontally(self.canvas.gridLegend, columnLeftShift, 
+                                  self.unitWidth, self.numRows, self.unitHeight)
+        self.canvas._selectedCells = \
+                shift_selection_horizontally(self.canvas._selectedCells,
+                                             self.pivot, columnLeftShift)
+
+        self.canvas._numColumns -= self.columnShift
+        self._finalize()
+       
+
+
+    def undo(self):
+        """ The undo action. """
+
+        # make sure to shift first before inserting
+        shift_legend_horizontally(self.canvas.gridLegend, self.columnShift, 
+                                  self.unitWidth, self.numRows,
+                                  self.unitHeight)
+        self.canvas._selectedCells = \
+                shift_selection_horizontally(self.canvas._selectedCells,
+                                             self.pivot, self.columnShift)
+
+        if self.mode == "left of":
+            shiftRange  = range(self.pivot - self.columnShift, 
+                                self.numColumns - self.columnShift)
+        else:
+            shiftRange  = range(self.pivot, self.numColumns - self.columnShift)
+
+        # first, we shift all items to the right
+        shiftItems = []
+        for colID in shiftRange:
+            for rowID in range(0, self.numRows):
+                shiftItems.append(self.canvas._item_at_row_col(colID, rowID))
+
+        for item in shiftItems:
+            shift_item_column_wise(item, self.columnShift, self.unitWidth)
+
+        # reinsert previously selected cells
+        for (key, entry) in self.deadSelectedCells.items():
+            self.canvas._selectedCells[key] = entry
+
+        # now, re-insert all previously deleted items
+        for entry in self.deletedCells:
+            location = QPointF(entry.column * self.unitWidth,
+                               entry.row * self.unitHeight)
+            item = \
+                 self.canvas.create_pattern_grid_item(location, 
+                                                      self.canvas._unitCellDim,
+                                                      entry.column, 
+                                                      entry.row, 
+                                                      entry.width, 
+                                                      1,
+                                                      entry.symbol,
+                                                      entry.color)
+            self.canvas.addItem(item)
+
+            # if item was selected, press it
+            itemID = get_item_id(entry.column, entry.row)
+            if itemID in self.deadSelectedCells:
+                item._select()
+
+        self.canvas._numColumns += self.columnShift
+        self._finalize()
+       
+
+
+    def _finalize(self):
+        """ Common stuff for redo/undo after the canvas has been adjusted
+        appropriately.
+
+        """
+
+        self.canvas.set_up_labels()
+        self.canvas.emit(SIGNAL("adjust_view"))
+        self.canvas.emit(SIGNAL("scene_changed"))
+        self.canvas.insertDeleteRowColDialog.set_upper_column_limit( \
+                self.canvas._numColumns)
 
 
 
@@ -2364,7 +2516,8 @@ class PaintCells(QUndoCommand):
                 itemID = get_item_id(item.column, item.row) 
                 self.canvas._selectedCells[itemID] = \
                         PatternCanvasEntry(item.column, item.row, 
-                                            item.width, item.color, item.symbol) 
+                                           item.width, item.color,
+                                           item.symbol) 
                 item = self.canvas._item_at_row_col(item.column, item.row)
                 item._select()
 
@@ -2416,8 +2569,8 @@ class PaintCells(QUndoCommand):
             numNewItems = int(totalWidth/self.width)
             for i in range(0, numNewItems):
                 item = self.canvas.create_pattern_grid_item(origin,
-                            self.canvas._unitCellDim, column, row, self.width, 1,
-                            self.activeSymbolContent, self.activeColor)
+                            self.canvas._unitCellDim, column, row, self.width,
+                            1, self.activeSymbolContent, self.activeColor)
                 self.canvas.addItem(item)
                 
                 itemID = get_item_id(column, row)
@@ -2426,9 +2579,9 @@ class PaintCells(QUndoCommand):
                                            self.activeColor,
                                            self.activeSymbolContent)
 
-                origin = QPointF(origin.x() + \
-                                    (self.width * self.canvas._unitCellDim.width()),
-                                    origin.y())
+                origin = QPointF(origin.x() + (self.width * \
+                                 self.canvas._unitCellDim.width()),
+                                 origin.y())
                 column = column + self.width
 
             self.canvas._selectedCells.clear()
@@ -2457,7 +2610,7 @@ class PaintCells(QUndoCommand):
                 itemID = get_item_id(item.column, item.row) 
                 self.canvas._selectedCells[itemID] = \
                         PatternCanvasEntry(item.column, item.row, 
-                                            item.width, item.color, item.symbol) 
+                                           item.width, item.color, item.symbol) 
                 item = self.canvas._item_at_row_col(item.column, item.row)
                 item._select()
 

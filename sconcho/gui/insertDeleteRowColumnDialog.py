@@ -41,9 +41,7 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
 
 
     def __init__(self, numRows, numCols, row, col, parent = None):
-        """
-        Initialize the dialog.
-        """
+        """ Initialize this dialog. """
 
         super(InsertDeleteRowColumnDialog, self).__init__(parent)
         self.setupUi(self)
@@ -69,83 +67,65 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
 
 
     def insert_row_button_pressed(self):
-        """ This method forwards clicks on the insertRowButton.
+        """ This method forwards clicks on the insertRowButton. """
 
-        NOTE: Row addition always succeeds (short of a bug) and
-        we can directly update the widget limits.
-        """
-
-        rowAdd     = self.numInsertRows.value()
-        pivot      = self.insertRowPivot.value()
+        rowAdd = self.numInsertRows.value()
+        pivot = self.insertRowPivot.value()
         insertMode = self.insertRowMode.currentText()
 
         if pivot <= 0:
             return
 
-        self.emit(SIGNAL("insert_row"), rowAdd, insertMode, pivot)
-        
+        self.emit(SIGNAL("insert_rows"), rowAdd, insertMode, pivot)
+
         
         
     def delete_row_button_pressed(self):
         """ This method forwards clicks on the deleteRowButton. """
 
-        rowDelete  = self.numDeleteRows.value()
-        pivot      = self.deleteRowPivot.value()
+        numRowsToDelete = self.numDeleteRows.value()
+        pivot = self.deleteRowPivot.value()
         deleteMode = self.deleteRowMode.currentText()
 
         if pivot <= 0:
             return
 
-        self.emit(SIGNAL("delete_row"), rowDelete, deleteMode, pivot)
+        self.emit(SIGNAL("delete_rows"), numRowsToDelete, deleteMode, pivot)
 
 
 
     def insert_column_button_pressed(self):
-        """ This method forwards clicks on the insertColumnButton.
-
-        NOTE: For column addition we can not simpy update the
-        limits of the spin boxes since addition may fail due
-        to the layout. Thus, we have to wait for the success
-        signal from the PatternCanvas before we can update
-        widgets.
-        """
+        """ This method forwards clicks on the insertColumnButton. """
         
-        addColumns = self.numInsertColumns.value()
-        pivot      = self.insertColumnPivot.value()
+        numColumnsToAdd = self.numInsertColumns.value()
+        pivot = self.insertColumnPivot.value()
         insertMode = self.insertColumnMode.currentText()
 
         if pivot <= 0:
             return
 
-        self.emit(SIGNAL("insert_column"), addColumns, insertMode, pivot)
+        self.emit(SIGNAL("insert_columns"), numColumnsToAdd, insertMode, pivot)
 
 
 
     def delete_column_button_pressed(self):
-        """ This method forwards clicks on the deleteColumnButton.
+        """ This method forwards clicks on the deleteColumnButton. """
 
-        NOTE: For column deletion we can not simpy update the
-        limits of the spin boxes since addition may fail due
-        to the layout. Thus, we have to wait for the success
-        signal from the PatternCanvas before we can update
-        widgets.
-        """
+        numColumnsToDelete = self.numDeleteColumns.value()
+        pivot = self.deleteColumnPivot.value()
+        deleteMode = self.deleteColumnMode.currentText()
 
-        if self._numColumns <= 1:
-            QMessageBox.warning(self, msg.numColTooSmallTitle,
-                                msg.numColTooSmallText,
-                                QMessageBox.Close)
-
+        if pivot <= 0:
             return
 
-        deadColumnID = self.deleteColumnID.value()
-        self.emit(SIGNAL("delete_column"), deadColumnID)
-        
+        self.emit(SIGNAL("delete_columns"), numColumnsToDelete, deleteMode, pivot)
+
 
 
     def set_upper_row_limit(self, numRows):
         """ Sets the upper limit of the row selectors based
         on the number of available rows.
+        
         """
 
         self.insertRowPivot.setMinimum(1)
@@ -158,15 +138,15 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
 
 
     def set_upper_column_limit(self, numCols):
-        """
-        Sets the upper limit of the column selectors based
+        """ Sets the upper limit of the column selectors based
         on the number of available columns.
+        
         """
 
         self.insertColumnPivot.setMinimum(1)
         self.insertColumnPivot.setMaximum(numCols)
-        self.deleteColumnID.setMinimum(1)
-        self.deleteColumnID.setMaximum(numCols)
+        self.deleteColumnPivot.setMinimum(1)
+        self.deleteColumnPivot.setMaximum(numCols)
         self._numColumns = numCols
 
 
@@ -174,8 +154,10 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
     def set_row_col(self, row, col):
         """ Set the current value of row/column entry to
         be changed.
+        
         """
 
         self.insertRowPivot.setValue(self._numRows - row)
         self.deleteRowPivot.setValue(self._numRows - row)
         self.insertColumnPivot.setValue(self._numColumns - col)
+        self.deleteColumnPivot.setValue(self._numColumns - col)
