@@ -2287,8 +2287,6 @@ class PaintCells(QUndoCommand):
         self.activeSymbolContent = self.activeSymbol.get_content()
         self.width = int(self.activeSymbolContent["width"])
         self.chunks = chunkify_cell_arrangement(self.width, self.oldSelection)
-        print(self.oldSelection)
-        print(self.chunks)
 
         for chunk in self.chunks:
             totalWidth = 0
