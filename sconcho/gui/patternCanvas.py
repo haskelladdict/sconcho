@@ -823,6 +823,8 @@ class PatternCanvas(QGraphicsScene):
         pivot = self.convert_canvas_column_to_internal(columnPivot)
         assert(pivot >= 0 and pivot < self._numColumns)
 
+        # first we need to check if we can actually insert num
+        # columns given the current configuration
         isExternalColumn = False
         if mode == QString("left of"):
             shift = 0
@@ -837,7 +839,6 @@ class PatternCanvas(QGraphicsScene):
         # pivot to work each row has to have a cell that starts at
         # this pivot or right of it.
         # Obviously, we can always add columns at the edges.
-        """ 
         rowCounter = 0
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem):
@@ -850,8 +851,7 @@ class PatternCanvas(QGraphicsScene):
                                 msg.noColInsertLayoutText,
                                 QMessageBox.Close)
                 return
-        """
-
+       
         if not isExternalColumn:
             for row in range(0, self._numRows):
                 item = self._item_at_row_col(pivot + shift, row)
@@ -862,29 +862,10 @@ class PatternCanvas(QGraphicsScene):
                                             QMessageBox.Close)
                         return
 
-        return
-        deleteRowCommand = DeleteRow(self, num, pivot, mode)
-        self._undoStack.push(deleteRowCommand)
+        # ok we're good to delete then 
+        insertColumnCommand = InsertColumn(self, num, pivot, mode)
+        self._undoStack.push(insertColumnCommand)
 
-        """
-        for graphicsItem in self.items():
-            if isinstance(graphicsItem, PatternGridItem):
-                if cmpOp(graphicsItem.column, pivot):
-                    shift_item_column_wise(graphicsItem, num, 
-                            self._unitCellDim.width())
-
-        for column in range(0, num):
-            self._create_column(pivot + shift + column)
-
-        shift_legend_right(self.gridLegend, num, self._unitCellDim.width(),
-                          self._numRows, self._unitCellDim.height())
-        
-        self._numColumns += num
-        self.set_up_labels()
-        self.emit(SIGNAL("adjust_view"))
-        self.emit(SIGNAL("scene_changed"))
-        self.insertDeleteRowColDialog.set_upper_column_limit(self._numColumns)
-        """
 
 
     def delete_grid_column(self, deadColumn):
@@ -1498,18 +1479,18 @@ def shift_selection_vertically(selection, pivot, rowShift):
 
 
 
-def shift_legend_right(legendList, numAdditionalColumns, unitCellWidth,
-                      numRows, unitHeight):
+def shift_legend_horizontally(legendList, columnShift, unitCellWidth,
+                              numRows, unitHeight):
     """ Shift all legend items to the right of the grid right by
-    numAdditionalColumns 
+    columnShift.
     
     """
 
-    xShift = numAdditionalColumns * unitCellWidth
+    xShift = columnShift * unitCellWidth
 
     for item in legendList.values():
         symbol = legendItem_symbol(item)
-        text   = legendItem_text(item)
+        text = legendItem_text(item)
 
         # we ignore all items above or right of the
         # pattern grid
@@ -1522,6 +1503,25 @@ def shift_legend_right(legendList, numAdditionalColumns, unitCellWidth,
             
             text.prepareGeometryChange()
             text.setPos(text.pos() + QPointF(xShift, 0.0))
+
+
+
+def shift_selection_horizontally(selection, pivot, columnShift):
+        """ Shifts all items in the current selection that are right
+        of the pivot to the right. 
+        
+        """
+
+        newSelection = {}
+        for (key, entry) in selection.items():
+
+            if entry.column >= pivot:
+                entry.column += columnShift
+
+            newId = get_item_id(entry.column, entry.row)
+            newSelection[newId] = entry
+
+        return newSelection
 
 
 
@@ -1950,6 +1950,7 @@ class InsertRow(QUndoCommand):
 
         shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
                                 self.unitHeight, self.numColumns, self.unitWidth)
+
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
                                            self.rowShift)
@@ -2150,6 +2151,114 @@ class DeleteRow(QUndoCommand):
 
 
 
+
+
+class InsertColumn(QUndoCommand):
+    """ This class encapsulates the insertion of a column action. """
+
+
+    def __init__(self, canvas, columnShift, pivot, mode, parent = None):
+
+        super(InsertColumn, self).__init__(parent)
+        self.setText("insert column")
+        self.canvas = canvas
+        self.columnShift = columnShift
+        self.numRows = canvas._numRows
+        self.numColumns = canvas._numColumns
+        self.unitHeight = self.canvas._unitCellDim.height()
+        self.unitWidth = self.canvas._unitCellDim.width()
+
+        if mode == QString("left of"):
+            self.pivot = pivot
+        else:
+            self.pivot = pivot + 1
+
+
+
+    def redo(self):
+        """ The redo action. 
+        
+        Shift all existing items right of or left of the pivot
+        then insert the new columns.
+        
+        """
+    
+        shiftedItems = []
+        for rowId in range(0, self.numRows):
+            for colId in range(self.pivot, self.numColumns):
+                shiftedItems.append(self.canvas._item_at_row_col(colId, rowId))
+
+        for item in shiftedItems:
+            shift_item_column_wise(item, self.columnShift, self.unitWidth)
+
+        for column in range(0, self.columnShift):
+            self.canvas._create_column(self.pivot + column)
+
+        shift_legend_horizontally(self.canvas.gridLegend, self.columnShift, 
+                                  self.unitWidth, self.numColumns, self.unitHeight)
+        self.canvas._selectedCells = \
+                shift_selection_horizontally(self.canvas._selectedCells, self.pivot, 
+                                             self.columnShift)
+        
+        self.canvas._numColumns += self.columnShift
+        self._finalize()
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        # NOTE: Shifting left corresponds to a negative colunm shift
+        columnLeftShift = -1 * self.columnShift
+
+        # shift first then remove
+        shift_legend_horizontally(self.canvas.gridLegend, columnLeftShift, 
+                                  self.unitWidth, self.numRows, self.unitHeight)
+        self.canvas._selectedCells = \
+                shift_selection_horizontally(self.canvas._selectedCells, 
+                                             self.pivot, columnLeftShift)
+
+        # remove all previously inserted columns
+        for rowId in range(0, self.numRows):
+            for colId in range(self.pivot, self.pivot + self.columnShift):
+                item = self.canvas._item_at_row_col(colId, rowId)
+                self.canvas.removeItem(item)
+                del item
+
+        # shift the rest back into place
+        for rowId in range(0, self.numRows):
+            for colId in range(self.pivot + self.columnShift, 
+                               self.numColumns + self.columnShift):
+                item = self.canvas._item_at_row_col(colId, rowId)
+                shift_item_column_wise(item, columnLeftShift, self.unitWidth)
+ 
+        
+        self.canvas._numColumns -= self.columnShift
+        self._finalize()
+       
+
+
+    def _finalize(self):
+        """ Common stuff for redo/undo after the canvas has been adjusted
+        appropriately.
+
+        """
+
+        self.canvas.set_up_labels()
+        self.canvas.emit(SIGNAL("adjust_view"))
+        self.canvas.emit(SIGNAL("scene_changed"))
+        self.canvas.insertDeleteRowColDialog.set_upper_column_limit( \
+                self.canvas._numColumns)
+
+
+
+
+
+
+
+
+
+
 class ActivateSymbol(QUndoCommand):
     """ This class encapsulates the management of the currently
     active knitting symbol. 
@@ -2200,10 +2309,7 @@ class PaintCells(QUndoCommand):
     """ This class encapsulates the canvas paint action. I.e. all
     currently selected cells are painted with the currently
     active symbol.
-
-    NOTE: This action assumes the painting within the provided chunks
-    is possible and thus needs to be checked before calling the class.
-
+    
     """
 
     
@@ -2275,6 +2381,7 @@ class PaintCells(QUndoCommand):
 
                 item = self.canvas._item_at_row_col(item.column, item.row)
                 item._unselect()
+
 
 
     def _redo_paintActiveSymbol(self):
