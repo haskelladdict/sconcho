@@ -158,7 +158,7 @@
           <widget class="QComboBox" name="deleteRowMode">
            <item>
             <property name="text">
-             <string>below and including</string>
+             <string>below and starting at</string>
             </property>
            </item>
            <item>
@@ -348,7 +348,7 @@
           <widget class="QComboBox" name="deleteColumnMode">
            <item>
             <property name="text">
-             <string>right of and including</string>
+             <string>right of and starting at</string>
             </property>
            </item>
            <item>

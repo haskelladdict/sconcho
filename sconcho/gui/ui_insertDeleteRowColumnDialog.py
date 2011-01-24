@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/insertDeleteRowColumnDialog.ui'
 #
-# Created: Sun Jan 23 11:22:56 2011
+# Created: Sun Jan 23 23:36:18 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -225,7 +225,7 @@ class Ui_InsertDeleteRowColumnDialog(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "insert row", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "&delete", None, QtGui.QApplication.UnicodeUTF8))
         self.label_10.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "row&s", None, QtGui.QApplication.UnicodeUTF8))
-        self.deleteRowMode.setItemText(0, QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "below and including", None, QtGui.QApplication.UnicodeUTF8))
+        self.deleteRowMode.setItemText(0, QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "below and starting at", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteRowMode.setItemText(1, QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "above", None, QtGui.QApplication.UnicodeUTF8))
         self.label_9.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "&row", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteRowButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "Delete Row(s)", None, QtGui.QApplication.UnicodeUTF8))
@@ -239,7 +239,7 @@ class Ui_InsertDeleteRowColumnDialog(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "insert column", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "&delete", None, QtGui.QApplication.UnicodeUTF8))
         self.label_11.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "column&s", None, QtGui.QApplication.UnicodeUTF8))
-        self.deleteColumnMode.setItemText(0, QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "right of and including", None, QtGui.QApplication.UnicodeUTF8))
+        self.deleteColumnMode.setItemText(0, QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "right of and starting at", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteColumnMode.setItemText(1, QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "left of", None, QtGui.QApplication.UnicodeUTF8))
         self.label_12.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "&column", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteColumnButton.setText(QtGui.QApplication.translate("InsertDeleteRowColumnDialog", "Delete Column(s)", None, QtGui.QApplication.UnicodeUTF8))
