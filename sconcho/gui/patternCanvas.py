@@ -2190,10 +2190,10 @@ class InsertColumn(QUndoCommand):
         
         """
     
-        shiftedItems = []
+        shiftedItems = set()
         for rowID in range(0, self.numRows):
             for colID in range(self.pivot, self.numColumns):
-                shiftedItems.append(self.canvas._item_at_row_col(colID, rowID))
+                shiftedItems.add(self.canvas._item_at_row_col(colID, rowID))
 
         for item in shiftedItems:
             shift_item_column_wise(item, self.columnShift, self.unitWidth)
@@ -2233,13 +2233,15 @@ class InsertColumn(QUndoCommand):
                 del item
 
         # shift the rest back into place
+        selection = set()
         for rowID in range(0, self.numRows):
             for colID in range(self.pivot + self.columnShift, 
                                self.numColumns + self.columnShift):
-                item = self.canvas._item_at_row_col(colID, rowID)
-                shift_item_column_wise(item, columnLeftShift, self.unitWidth)
+                selection.add(self.canvas._item_at_row_col(colID, rowID))
+
+        for item in selection:
+            shift_item_column_wise(item, columnLeftShift, self.unitWidth)
  
-        
         self.canvas._numColumns -= self.columnShift
         self._finalize()
        
@@ -2299,16 +2301,19 @@ class DeleteColumn(QUndoCommand):
             shiftRange = range(self.pivot + self.columnShift, self.numColumns)
 
         # delete requested items
-        self.deletedCells = []
+        selection = set()
         for rowID in range(0, self.numRows):
             for colID in deleteRange:
                 # delete canvas items
-                item = self.canvas._item_at_row_col(colID, rowID)
-                self.deletedCells.append(\
-                        PatternCanvasEntry(item.column, item.row, 
-                                           item.width, item.color, item.symbol))
-                self.canvas.removeItem(item)
-                del item
+                selection.add(self.canvas._item_at_row_col(colID, rowID))
+
+        self.deletedCells = []
+        for item in selection:
+            self.deletedCells.append(PatternCanvasEntry(item.column, item.row, 
+                                                        item.width, item.color, 
+                                                        item.symbol))
+            self.canvas.removeItem(item)
+            del item
 
         # remove cells from current selection if they intersect
         self.deadSelectedCells = {}
@@ -2322,10 +2327,13 @@ class DeleteColumn(QUndoCommand):
                     del self.canvas._selectedCells[entryID]
 
         # shift the rest back into place
+        selection = set()
         for rowID in range(0, self.numRows):
             for colID in shiftRange:
-                item = self.canvas._item_at_row_col(colID, rowID)
-                shift_item_column_wise(item, columnLeftShift, self.unitWidth)
+                selection.add(self.canvas._item_at_row_col(colID, rowID))
+
+        for item in selection:
+            shift_item_column_wise(item, columnLeftShift, self.unitWidth)
 
         shift_legend_horizontally(self.canvas.gridLegend, columnLeftShift, 
                                   self.unitWidth, self.numRows, self.unitHeight)
@@ -2356,10 +2364,10 @@ class DeleteColumn(QUndoCommand):
             shiftRange  = range(self.pivot, self.numColumns - self.columnShift)
 
         # first, we shift all items to the right
-        shiftItems = []
+        shiftItems = set()
         for colID in shiftRange:
             for rowID in range(0, self.numRows):
-                shiftItems.append(self.canvas._item_at_row_col(colID, rowID))
+                shiftItems.add(self.canvas._item_at_row_col(colID, rowID))
 
         for item in shiftItems:
             shift_item_column_wise(item, self.columnShift, self.unitWidth)
