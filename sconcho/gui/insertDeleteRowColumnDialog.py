@@ -63,7 +63,10 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
                      self.insert_column_button_pressed)
         self.connect(self.deleteColumnButton, SIGNAL("pressed()"),
                      self.delete_column_button_pressed)
-
+        self.connect(self.numDeleteColumns, SIGNAL("valueChanged(int)"),
+                     self.adjust_delete_columns_combo_box)
+        self.connect(self.numDeleteRows, SIGNAL("valueChanged(int)"),
+                     self.adjust_delete_rows_combo_box)
 
 
     def insert_row_button_pressed(self):
@@ -161,3 +164,38 @@ class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
         self.deleteRowPivot.setValue(self._numRows - row)
         self.insertColumnPivot.setValue(self._numColumns - col)
         self.deleteColumnPivot.setValue(self._numColumns - col)
+
+
+
+    def adjust_delete_columns_combo_box(self, value):
+        """ Adjust the first entry in the combo box for selecting
+        the deletion mode dynamically depending on how many columns 
+        are selected. 
+
+        NOTE: Changing the UI like this seems sort of confusing
+        but the hope is that it will be more easy to part that
+        way.
+
+        """
+
+        if value == 1:
+            self.deleteColumnMode.setItemText(0, "at")
+        else:
+            self.deleteColumnMode.setItemText(0, "at and to the right of")
+
+
+
+    def adjust_delete_rows_combo_box(self, value):
+        """ Adjust the first entry in the combo box for selecting the
+        deletion mode dynamically depending on how many rows are selected. 
+
+        NOTE: Changing the UI like this seems sort of confusing
+        but the hope is that it will be more easy to part that
+        way.
+
+        """
+
+        if value == 1:
+            self.deleteRowMode.setItemText(0, "at")
+        else:
+            self.deleteRowMode.setItemText(0, "at and below")
