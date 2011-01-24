@@ -1600,7 +1600,7 @@ def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos,
     which comes from a parsed spf file.
 
     """
-   
+ 
     if legendID in legendItems:
         
         legendItem = legendItems[legendID]
@@ -2548,6 +2548,14 @@ class PaintCells(QUndoCommand):
         self.width = int(self.activeSymbolContent["width"])
         self.chunks = chunkify_cell_arrangement(self.width, self.oldSelection)
 
+        # FIXME: This might require a bit more thinking
+        # If the symbol itself provides a color other than
+        # white it overrides the active color
+        if "backgroundColor" in self.activeSymbolContent:
+            itemColor = QColor(self.activeSymbolContent["backgroundColor"])
+        else:
+            itemColor = self.activeColor
+
         for chunk in self.chunks:
             totalWidth = 0
 
@@ -2570,13 +2578,14 @@ class PaintCells(QUndoCommand):
             for i in range(0, numNewItems):
                 item = self.canvas.create_pattern_grid_item(origin,
                             self.canvas._unitCellDim, column, row, self.width,
-                            1, self.activeSymbolContent, self.activeColor)
+                            1, self.activeSymbolContent, itemColor)
                 self.canvas.addItem(item)
                 
                 itemID = get_item_id(column, row)
+
                 self.newSelection[itemID] = \
                         PatternCanvasEntry(column, row, self.width,
-                                           self.activeColor,
+                                           itemColor,
                                            self.activeSymbolContent)
 
                 origin = QPointF(origin.x() + (self.width * \
