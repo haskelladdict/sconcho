@@ -2616,7 +2616,7 @@ class PaintCells(QUndoCommand):
 
         self.activeSymbol = canvas._activeSymbol
         self.activeColor = canvas._activeColor
-       
+        self.didInsertActiveSymbol = False
 
 
     def redo(self):
@@ -2635,9 +2635,9 @@ class PaintCells(QUndoCommand):
         """ This is the undo action. """
 
 
-        # only do this if we previously painted an active
+        # only do this if we previously inserted an active
         # symbol in redo
-        if self.activeSymbol:
+        if self.didInsertActiveSymbol:
             self._undo_paintActiveSymbol()
             
         self._undo_selectedCells() 
@@ -2684,6 +2684,8 @@ class PaintCells(QUndoCommand):
         self.activeSymbolContent = self.activeSymbol.get_content()
         self.width = int(self.activeSymbolContent["width"])
         self.chunks = chunkify_cell_arrangement(self.width, self.oldSelection)
+        if self.chunks:
+            self.didInsertActiveSymbol = True
 
         # FIXME: This might require a bit more thinking
         # If the symbol itself provides a color other than
@@ -2782,7 +2784,8 @@ class PaintCells(QUndoCommand):
             item = self.canvas.create_pattern_grid_item(location, 
                                                     self.canvas._unitCellDim, 
                                                     column, row,
-                                                    entry.width, 1,
+                                                    entry.width,
+                                                    1,
                                                     entry.symbol, 
                                                     entry.color)
 
