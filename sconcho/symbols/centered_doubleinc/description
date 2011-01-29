@@ -2,7 +2,7 @@
 <sconcho>
   <knittingSymbol>
     <svgName>centered_doubleinc</svgName>  
-    <category>basic:11</category>
+    <category>increases:4</category>
     <symbolName>centered double increase</symbolName>
     <symbolDescription>knit in back and front of same st, then pick up vertical strand that runs between those 2 sts and knit it through the back</symbolDescription>
     <symbolWidth>1</symbolWidth>

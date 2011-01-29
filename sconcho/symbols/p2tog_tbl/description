@@ -2,7 +2,7 @@
 <sconcho>
   <knittingSymbol>
     <svgName>p2tog_tbl</svgName>
-    <category>basic</category>
+    <category>decreases:4</category>
     <symbolName>p2tog tbl</symbolName>
     <symbolDescription>Purl 2 together through the back loop</symbolDescription>
     <symbolWidth>1</symbolWidth>

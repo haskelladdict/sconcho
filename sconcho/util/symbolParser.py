@@ -58,7 +58,7 @@ def parse_all_symbols(symbolTopLevelPaths):
 
         # try to add symbol to symbol database
         try:
-            symbolID = symbolDesc["category"] + "::" + symbolDesc["name"]
+            symbolID = symbolDesc["name"] 
             allSymbolDesc[symbolID] = symbolDesc
         except KeyError:
             continue

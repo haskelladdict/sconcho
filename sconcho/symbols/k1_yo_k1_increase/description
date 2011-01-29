@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>k1_yo_k1_increase</svgName>
+    <category>increases:6</category>
+    <symbolName>k1, yo, k1 increase</symbolName>
+    <symbolDescription>k1, leaving stitch on left hand needle, yo, k1 into same stitch</symbolDescription>
+    <symbolWidth>1</symbolWidth>
+  </knittingSymbol>
+</sconcho>

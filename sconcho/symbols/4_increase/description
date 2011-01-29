@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>4_increase</svgName>
+    <category>increases:7</category>
+    <symbolName>4 increase</symbolName>
+    <symbolDescription>k1, p1, k1, p1 into same stitch</symbolDescription>
+    <symbolWidth>1</symbolWidth>
+  </knittingSymbol>
+</sconcho>

@@ -1045,10 +1045,9 @@ class PatternCanvas(QGraphicsScene):
                 name     = newItem["name"]
                 color    = QColor(newItem["color"])
                 category = newItem["category"]
-                symbolID = category + "::" + name
                 location = QPointF(colID * self._unitCellDim.width(),
                                     rowID * self._unitCellDim.height())
-                symbol   = knittingSymbols[symbolID]
+                symbol   = knittingSymbols[name]
 
                 allPatternGridItems.append((location, self._unitCellDim, 
                                             colID, rowID, width, 
@@ -1589,7 +1588,7 @@ def generate_legend_id(symbol, color):
     name = symbol["name"]
     category = symbol["category"]
 
-    return (name, category, color.name())
+    return (name, color.name())
 
 
 
@@ -1600,7 +1599,7 @@ def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos,
     which comes from a parsed spf file.
 
     """
- 
+
     if legendID in legendItems:
         
         legendItem = legendItems[legendID]

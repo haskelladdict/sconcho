@@ -2,7 +2,7 @@
 <sconcho>
   <knittingSymbol>
     <svgName>centered_doubledec</svgName>  
-    <category>basic:10</category>
+    <category>decreases:5</category>
     <symbolName>centered double decrease</symbolName>
     <symbolDescription>slip 2 sts knitwise, k1 st from left needle, pass 2 slipped sts over</symbolDescription>
     <symbolWidth>1</symbolWidth>

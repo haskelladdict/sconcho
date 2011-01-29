@@ -2,7 +2,7 @@
 <sconcho>
   <knittingSymbol>
     <svgName>4tog_decrease</svgName>
-    <category>basic</category>
+    <category>decreases:8</category>
     <symbolName>4tog decrease</symbolName>
     <symbolDescription>Ssk, k2tog, then pass the ssk over the k2tog</symbolDescription>
     <symbolWidth>1</symbolWidth>

@@ -2,7 +2,7 @@
 <sconcho>
   <knittingSymbol>
     <svgName>doubledec</svgName>  
-    <category>basic:9</category>
+    <category>decreases:6</category>
     <symbolName>double decrease</symbolName>
     <symbolDescription>slip 1 st knitwise, k2 sts together from left needle, pass slipped stitch over</symbolDescription>
     <symbolWidth>1</symbolWidth>

@@ -2,7 +2,7 @@
 <sconcho>
   <knittingSymbol>
     <svgName>k3tog</svgName>  
-    <category>basic:4</category>
+    <category>decreases:7</category>
     <symbolName>k3tog</symbolName>
     <symbolDescription>Knit 3 together</symbolDescription>
     <symbolWidth>1</symbolWidth>

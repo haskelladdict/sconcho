@@ -52,9 +52,9 @@ def sconcho_gui_launcher(fileName = None):
     # we terminate right away.
     knittingSymbols = parser.parse_all_symbols(symbolPaths)
     try:
-        knittingSymbols[QString("basic::knit")]
+        knittingSymbols[QString("knit")]
     except KeyError:
-        sys.exit(msg.errorOpeningKnittingSymbols % symbolPath)
+        sys.exit(msg.errorOpeningKnittingSymbols % symbolPaths)
     
     # fire up the MainWindow
     app = QApplication(sys.argv)
