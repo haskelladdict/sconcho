@@ -237,7 +237,7 @@ class ColorSynchronizer(QObject):
         if self._activeWidget == target:
             self._activeWidget.activate_me()
             self.emit(SIGNAL("synchronized_object_changed"),
-                      self._activeWidget.get_content())
+                      self._activeWidget)
         else:
             if self._activeWidget:
                 self._activeWidget.inactivate_me()
@@ -245,7 +245,7 @@ class ColorSynchronizer(QObject):
             self._activeWidget = target
             self._activeWidget.activate_me()
             self.emit(SIGNAL("synchronized_object_changed"),
-                      self._activeWidget.get_content())
+                      self._activeWidget)
 
 
 

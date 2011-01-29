@@ -65,7 +65,7 @@ class PatternCanvas(QGraphicsScene):
 
         self._activeSymbol = None
         self._defaultSymbol = defaultSymbol
-        self._activeColor = None
+        self._activeColorObject = None
         self._defaultColor = QColor(Qt.white)
         self._selectedCells = {}
 
@@ -168,7 +168,7 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        self._activeColor = color
+        self._activeColorObject = color
         self.paint_cells()
             
 
@@ -2615,7 +2615,7 @@ class PaintCells(QUndoCommand):
         self.unselectedCells = unselectedCells 
 
         self.activeSymbol = canvas._activeSymbol
-        self.activeColor = canvas._activeColor
+        self.activeColor = canvas._activeColorObject.get_content()
         self.didInsertActiveSymbol = False
 
 
