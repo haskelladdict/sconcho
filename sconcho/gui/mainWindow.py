@@ -98,8 +98,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.setScene(self.canvas)
         self.connect(self.canvas, SIGNAL("adjust_view"),
                      self.graphicsView.adjust_scene)
-        self.connect(self.canvas, SIGNAL("active_color_changed"),
-                     self.colorWidget.set_active_color)
         self.graphicsView.adjust_scene()
 
         # set up all the connections
@@ -321,17 +319,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         symbolTracker = SymbolSynchronizer()
-        self.connect(symbolTracker, 
-                     SIGNAL("synchronized_object_changed"),
+        self.connect(self.canvas, 
+                     SIGNAL("activate_symbol"),
                      self.activeSymbolWidget.active_symbol_changed)
         
-        self.connect(symbolTracker, 
-                     SIGNAL("synchronized_object_changed"),
+        self.connect(self.canvas, 
+                     SIGNAL("unactivate_symbol"),
+                     partial(self.activeSymbolWidget.active_symbol_changed,
+                             None))
+        
+        self.connect(self.canvas,
+                     SIGNAL("activate_symbol"),
                      self.set_project_dirty)
 
-        self.connect(self,
-                     SIGNAL("unselect_active_symbol"),
-                     symbolTracker.unselect)
+        self.connect(self.canvas,
+                     SIGNAL("unactivate_symbol"),
+                     self.set_project_dirty)
 
         # the connection between canvas and symbolTracker has
         # to be bi-directional so the canvas can properly 
@@ -375,8 +378,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.selectedSymbol = self.symbolSelector[categoryName]
         self.symbolSelectorLayout.addWidget(self.selectedSymbol)
-        
-        
+
+
 
     def initialize_color_widget(self):
         """ Proxy for adding all the color selectors to the color selector
@@ -385,33 +388,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         colorTracker = ColorSynchronizer()
-        self.connect(colorTracker, 
-                     SIGNAL("synchronized_object_changed"),
-                     self.activeSymbolWidget.active_color_changed)
-
-        self.connect(colorTracker, 
-                     SIGNAL("synchronized_object_changed"),
+        self.connect(self.canvas,
+                     SIGNAL("activate_color_selector"),
+                     self.activeSymbolWidget.active_colorObject_changed)
+        
+        self.connect(self.canvas,
+                     SIGNAL("activate_color_selector"),
                      self.set_project_dirty)
 
-        # the connection between canvas and symbolTracker has
+        # the connection between canvas and colorTracker has
         # to be bi-directional so the canvas can properly 
         # undo/redo selections
-        """
-        self.connect(symbolTracker, 
-                     SIGNAL("synchronized_object_changed"),
-                     self.canvas.set_active_symbol)
-
-        self.connect(self.canvas,
-                     SIGNAL("activate_symbol"),
-                     symbolTracker.select_plain)
-
-        self.connect(self.canvas,
-                     SIGNAL("unactivate_symbol"),
-                     symbolTracker.unselect)
-        """
         self.connect(colorTracker, 
                      SIGNAL("synchronized_object_changed"),
-                     self.canvas.set_active_color)
+                     self.canvas.set_active_colorObject)
+
+        self.connect(self.canvas,
+                     SIGNAL("activate_color_selector"),
+                     colorTracker.select_plain)
+
+        self.connect(colorTracker,
+                     SIGNAL("active_color_changed"),
+                     self.canvas.change_active_color)
 
 
         colorList = [QColor(name) for name in [Qt.white, Qt.red, Qt.blue, \
@@ -825,16 +823,16 @@ class ActiveSymbolWidget(QWidget):
             
 
 
-    def active_color_changed(self, colorObject):
+    def active_colorObject_changed(self, newColorObject):
         """ Update the background of the displayed active
         widget (if there is one) after a user color change.
         
         """
 
-        self.color = colorObject.get_content()
+        self.color = newColorObject.get_content()
         
         if self.widget:
-            self.widget.set_backcolor(self.color)
+            self.widget.set_backcolor(self.color)
         
 
             

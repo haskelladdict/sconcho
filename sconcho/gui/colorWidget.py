@@ -81,9 +81,7 @@ class ColorWidget(QWidget):
     def set_active_color(self, color):
         """ Set the color of the currently active color widget """
 
-        activeColorWidget = self._synchronizer.get_active_widget()
-        activeColorWidget.set_content(color)
-        activeColorWidget.activate()
+        self._synchronizer.change_active_color(color)
 
 
 
@@ -143,13 +141,6 @@ class ColorSelectorItem(QFrame):
 
         self.color = color
         self.define_stylesheets()
-
-
-
-    def activate(self):
-        """ Activate ourselves. """
-
-        self._synchronizer.select(self)
 
 
 
@@ -224,35 +215,57 @@ class ColorSynchronizer(QObject):
 
         QObject.__init__(self, parent)
         self._activeWidget = None
+        self._activeColor = None
 
-    
-    
+
+
     def select(self, target):
-        """
-        This method "remembers" the newly activated
-        widget and makes sure to deactivate
-        the previous one.
+        """ This method notifies the canvas that the color selector
+        has changed.
+
+        NOTE: We need to go via the canvas since it needs to keep
+        track for the undo/redo framework.
+        
         """
 
-        if self._activeWidget == target:
-            self._activeWidget.activate_me()
-            self.emit(SIGNAL("synchronized_object_changed"),
-                      self._activeWidget)
-        else:
+        self.emit(SIGNAL("synchronized_object_changed"), target) 
+
+
+
+    def change_active_color(self, newColor):
+        """ This method notifies the canvas that the color of
+        the currently active selector has changed.
+
+        NOTE: We need to go via the canvas since it needs to keep
+        track for the undo/redo framework.
+        
+        """
+    
+        self.emit(SIGNAL("active_color_changed"), newColor)
+
+        
+
+    def select_plain(self, target):
+        """ This function does most of the work and is also
+        called by the canvas redo/undo machinery after we emit
+        synchronized_color_selector.
+
+        """
+
+        if self._activeWidget != target:
             if self._activeWidget:
                 self._activeWidget.inactivate_me()
-                
-            self._activeWidget = target
-            self._activeWidget.activate_me()
-            self.emit(SIGNAL("synchronized_object_changed"),
-                      self._activeWidget)
 
+        self._activeWidget = target
+        self._activeWidget.activate_me()
 
+        
 
     def get_active_widget(self):
-        """
-        Simply returns the active widget
-        to anybody who cares to know.
-        """
+        """ Simply returns the active widget to anybody who cares to know. """
 
         return self._activeWidget
+
+
+
+        

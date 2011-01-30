@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import operator
+import copy
 from functools import partial
 
 from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF, 
@@ -162,14 +163,21 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def set_active_color(self, color):
+    def set_active_colorObject(self, colorObject):
         """ This function received the currently active
         background color and stores it.
 
         """
 
-        self._activeColorObject = color
-        self.paint_cells()
+        selectCommand = ActivateColor(self, colorObject)
+        self._undoStack.push(selectCommand)
+
+
+
+    def change_active_color(self, newColor):
+
+        selectCommand = ActivateColor(self, self._activeColorObject, newColor)
+        self._undoStack.push(selectCommand)
             
 
 
@@ -603,7 +611,7 @@ class PatternCanvas(QGraphicsScene):
 
         color = allItems[0].color
         self.emit(SIGNAL("active_color_changed"), color)
- 
+
 
 
     def copy_selection(self, colDim, rowDim):
@@ -2545,9 +2553,6 @@ class DeleteColumn(QUndoCommand):
 
 
 
-
-
-
 class ActivateSymbol(QUndoCommand):
     """ This class encapsulates the management of the currently
     active knitting symbol. 
@@ -2594,6 +2599,57 @@ class ActivateSymbol(QUndoCommand):
 
 
 
+
+class ActivateColor(QUndoCommand):
+    """ This class encapsulates the management of the currently
+    active color. 
+    
+    """
+
+
+    def __init__(self, canvas, newColorObject, newColor = None,
+                 parent = None):
+
+        super(ActivateColor, self).__init__(parent) 
+        self.setText("activate color")
+        self.canvas = canvas
+        
+        self.oldColorObject = canvas._activeColorObject
+        if self.oldColorObject:
+            self.oldColor = canvas._activeColorObject.get_content()
+            
+        self.newColorObject = newColorObject
+        if newColor:
+            self.newColor = newColor
+        else:
+            self.newColor = newColorObject.get_content()
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        self.canvas._activeColorObject = self.newColorObject
+        self.canvas._activeColorObject.set_content(self.newColor)
+        self.canvas.emit(SIGNAL("activate_color_selector"),
+                         self.newColorObject)
+
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        # we need this check to make sure that we don't call
+        # with a None color object before the stack unwinds
+        if self.oldColorObject:
+            self.oldColorObject.set_content(self.oldColor)
+            self.canvas._activeColorObject = self.oldColorObject
+            self.canvas.emit(SIGNAL("activate_color_selector"),
+                             self.oldColorObject)
+
+
+            
 class PaintCells(QUndoCommand):
     """ This class encapsulates the canvas paint action. I.e. all
     currently selected cells are painted with the currently

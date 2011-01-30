@@ -319,7 +319,7 @@ class SymbolSynchronizer(QObject):
 
 
     def select(self, target):
-        """ This method "remembers" the newly activated
+        """ This method 'remembers' the newly activated
         widget and makes sure to deactivate the previous one.
 
         """
