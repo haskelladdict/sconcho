@@ -311,8 +311,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._save_settings()
 
             # remove recovery file
-            recoveryFileHandle = QFile(self._recoveryFilePath)
-            recoveryFileHandle.remove()
+            if self._recoveryFilePath:
+                recoveryFileHandle = QFile(self._recoveryFilePath)
+                recoveryFileHandle.remove()
             
             event.accept()
 
