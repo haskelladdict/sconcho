@@ -184,6 +184,13 @@ noNameErrorText      = "Error: Please enter a name for your symbol."
 deleteSymbolTitle    = "sconcho: Delete Symbol"
 deleteSymbolText     = "Are you sure you would like to delete symbol %s?"
 
+recoveryFilePresentTitle = "sconcho: Pattern File Recovery"
+recoveryFilePresentText = ("A recovery file for pattern file %s has been "
+                           "detected.\n\nThis may have been caused by a system "
+                           "crash. Do you want to recover this file now? " 
+                           "Canceling will remove the recovery file and "
+                           "continue with loading %s.")
+
 
 
 ########################################################################

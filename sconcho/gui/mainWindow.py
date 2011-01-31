@@ -106,9 +106,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # nothing happened so far
         self._projectIsDirty = False
 
-        # read project if we received a filename
+        # read project if we received a filename but first check
+        # if we have a recovery file.
         if fileName:
-            self._read_project(fileName)
+            (was_recovered, readFileName) = check_for_recovery_file(fileName)
+            self._read_project(readFileName)
+            self.set_project_save_file(fileName)
+            if not was_recovered:
+                self.mark_project_clean()
 
         # set up timers
         # NOTE: Needs to be last, otherwise some signals may not
@@ -282,7 +287,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def set_project_clean(self):
+    def mark_project_clean(self):
         """ This function marks the project as clean, aka it does not need
         to be saved.
         
@@ -519,14 +524,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.set_project_save_file(saveFilePath)
 
         # write recovery file
-        self._save_pattern(self._recoveryFilePath, setProjectClean = False)
+        self._save_pattern(self._recoveryFilePath, markProjectClean = False)
 
         # ready to save
         return self._save_pattern(self._saveFilePath)
     
 
 
-    def _save_pattern(self, filePath, setProjectClean = True):
+    def _save_pattern(self, filePath, markProjectClean = True):
         """ Main save routine.
 
         If there is no filepath we return (e.g. when called by the saveTimer).
@@ -552,8 +557,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar().showMessage("successfully saved " + \
                                      saveFileName, 2000)
 
-        if setProjectClean:
-            self.set_project_clean()
+        if markProjectClean:
+            self.mark_project_clean()
             
         return True
 
@@ -575,6 +580,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         self._read_project(readFilePath)
+        self.set_project_save_file(readFilePath)
+        self.mark_project_clean()
 
         
 
@@ -602,8 +609,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.activate_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
         readFileName = QFileInfo(readFilePath).fileName()
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
-        self.set_project_save_file(readFilePath)
-        self.set_project_clean()
 
 
 
@@ -700,10 +705,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             + QFileInfo(fileName).fileName() + "[*]")
 
         # generate recovery file path
-        recoveryFileInfo = QFileInfo(fileName)
-        self._recoveryFilePath = recoveryFileInfo.path() + "/." + \
-                                 recoveryFileInfo.fileName() + ".swp"
-
+        self._recoveryFilePath = generate_recovery_filepath(fileName)
 
 
 
@@ -945,3 +947,35 @@ def set_up_colors(widget, colors):
 
 
 
+def generate_recovery_filepath(filePath):
+    """ Based on a filePath generate the name for the recovery File. """
+
+    recoveryFileInfo = QFileInfo(filePath)
+    recoveryFilePath = recoveryFileInfo.path() + "/." + \
+                           recoveryFileInfo.fileName() + ".swp"
+
+    return recoveryFilePath
+
+
+
+def check_for_recovery_file(filePath):
+    """ Check for presence of recovery file. If we have
+    one, ask we if should open if and return a tuple
+    (status, filename of file to open).
+
+    """
+    
+    returnPath = (False, filePath)
+    recoveryFilePath = generate_recovery_filepath(filePath)
+    recoveryFile = QFile(recoveryFilePath)
+    if recoveryFile.exists():
+        answer = QMessageBox.question(None,
+                                      msg.recoveryFilePresentTitle, 
+                                      msg.recoveryFilePresentText % (filePath,
+                                                                     filePath),
+                                      QMessageBox.Ok | QMessageBox.Cancel)
+
+        if (answer == QMessageBox.Ok):
+            returnPath = (True, recoveryFilePath)
+
+    return returnPath
