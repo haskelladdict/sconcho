@@ -103,15 +103,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # set up all the connections
         self._set_up_connections()
 
-        # set up timers
-        #self._set_up_timers()
-
         # nothing happened so far
         self._projectIsDirty = False
 
         # read project if we received a filename
         if fileName:
             self._read_project(fileName)
+
+        # set up timers
+        # NOTE: Needs to be last, otherwise some signals may not
+        # connect properly
+        self._set_up_timers()
 
 
 
@@ -260,12 +262,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _set_up_timers(self):
         """ Set up timers. """
 
-        pass 
-        """
         saveTimer = QTimer(self)
-        self.connect(saveTimer, SIGNAL("timeout()"), self._save_pattern)
+        self.connect(saveTimer, SIGNAL("timeout()"),
+                     partial(self._save_pattern, self._recoveryFilePath,
+                             False))
         saveTimer.start(10000)
-        """
+
 
 
 
@@ -302,8 +304,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             # before we exit save our settings
             self._save_settings()
+
+            # remove recovery file
+            recoveryFileHandle = QFile(self._recoveryFilePath)
+            recoveryFileHandle.remove()
+            
             event.accept()
-        
 
 
 
@@ -490,7 +496,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # with "save as" we always want to save so
             self._projectIsDirty = True
 
-
             if not saveFilePath:
                 return False
 
@@ -513,28 +518,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.set_project_save_file(saveFilePath)
 
+        # write recovery file
+        self._save_pattern(self._recoveryFilePath, setProjectClean = False)
+
         # ready to save
-        return self._save_pattern()
+        return self._save_pattern(self._saveFilePath)
     
 
 
-    def _save_pattern(self):
+    def _save_pattern(self, filePath, setProjectClean = True):
         """ Main save routine.
 
         If there is no filepath we return (e.g. when called by the saveTimer).
         
         """
         
-        if not self._saveFilePath or not self._projectIsDirty:
+        if not filePath or not self._projectIsDirty:
             return False
 
-        saveFileName = QFileInfo(self._saveFilePath).fileName()
+        saveFileName = QFileInfo(filePath).fileName()
         self.statusBar().showMessage("saving " + saveFileName)
 
         (status, errMsg) = io.save_project(self.canvas, 
                                            self.colorWidget.get_all_colors(),
                                            self.activeSymbolWidget.get_symbol(),
-                                           self.settings, self._saveFilePath)
+                                           self.settings, filePath)
 
         if not status:
             QMessageBox.critical(self, msg.errorSavingProjectTitle,
@@ -543,7 +551,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.statusBar().showMessage("successfully saved " + \
                                      saveFileName, 2000)
-        self.set_project_clean()
+
+        if setProjectClean:
+            self.set_project_clean()
+            
         return True
 
 
@@ -688,6 +699,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle(QApplication.applicationName() + ": " \
                             + QFileInfo(fileName).fileName() + "[*]")
 
+        # generate recovery file path
+        recoveryFileInfo = QFileInfo(fileName)
+        self._recoveryFilePath = recoveryFileInfo.path() + "/." + \
+                                 recoveryFileInfo.fileName() + ".swp"
+
+
 
 
     def clear_project_save_file(self):
@@ -695,6 +712,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         self._saveFilePath = None
+        self._recoveryFilePath = None
         self.setWindowTitle(QApplication.applicationName() + ": "\
                             + misc.get_random_knitting_quote() + "[*]")
 
@@ -921,7 +939,7 @@ def set_up_colors(widget, colors):
         (color, state) = colors[i]
         item.set_content(color)
         if state == 1:
-            item.activate()
+            widget._synchronizer.select(item)
             
         item.repaint()
 
