@@ -1,3 +1,14 @@
+01-31-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Release of 0.1.0_a7
+	* Undo/Redo Framwork: Almost complete implementation of Undo/Redo 
+	framework for actions on the canvas.
+	* Implementation of recovery file mechanism to deal with system
+	crashes.
+	* Added new symbols and reorganized them.
+	* Many bugfixes.
+
+
 01-10-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>
 
 	* Release of 0.1.0_a6
@@ -10,7 +21,7 @@
 12-07-2010: Markus Dittrich <haskelladdict@users.sourceforge.net>
 
 	* Release of 0.1_a5
-	* many bugfixes 
+	* many bugfixes
 	* a problem with deleting/inserting rows/columns in previous
 	  versions should be resolved.
 	* added ability to change label and legend fonts
