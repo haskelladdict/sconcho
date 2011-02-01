@@ -327,6 +327,12 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def clear_undo_stack(self):
+        """ Completely clears the undo stack. """
+
+        self._undoStack.clear()
+
+
 
     def clear_all_selected_cells(self):
         """ Unselects all currently selected cells. """
@@ -610,7 +616,7 @@ class PatternCanvas(QGraphicsScene):
             return
 
         color = allItems[0].color
-        self.emit(SIGNAL("active_color_changed"), color)
+        self.change_active_color(color)
 
 
 

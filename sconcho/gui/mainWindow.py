@@ -112,6 +112,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             (was_recovered, readFileName) = check_for_recovery_file(fileName)
             self._read_project(readFileName)
             self.set_project_save_file(fileName)
+            self.canvas.clear_undo_stack()
             if not was_recovered:
                 self.mark_project_clean()
 
