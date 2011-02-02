@@ -266,14 +266,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def _set_up_timers(self):
-        """ Set up timers. """
+        """ Set up timers.
+
+        NOTE: We can't use functools.partial to bind the recoveryFilePath
+        since it might change during the life time of the program.
+
+        """
 
         saveTimer = QTimer(self)
         self.connect(saveTimer, SIGNAL("timeout()"),
-                     partial(self._save_pattern, self._recoveryFilePath,
-                             False))
+                     self._save_timed_recovery_file)
         saveTimer.start(10000)
 
+
+
+    def _save_timed_recovery_file(self):
+        """ Simple function that calls the saving routine. """
+
+        if self._recoveryFilePath:
+            self._save_pattern(self._recoveryFilePath, False)
 
 
 
@@ -970,12 +981,12 @@ def check_for_recovery_file(filePath):
     returnPath = (False, filePath)
     recoveryFilePath = generate_recovery_filepath(filePath)
     recoveryFile = QFile(recoveryFilePath)
+    fileName = QFileInfo(filePath).fileName()
     if recoveryFile.exists():
         answer = QMessageBox.question(None,
-                                      msg.recoveryFilePresentTitle, 
-                                      msg.recoveryFilePresentText % (filePath,
-                                                                     filePath),
-                                      QMessageBox.Ok | QMessageBox.Cancel)
+                                 msg.recoveryFilePresentTitle, 
+                                 msg.recoveryFilePresentText.format(fileName),
+                                 QMessageBox.Ok | QMessageBox.Cancel)
 
         if (answer == QMessageBox.Ok):
             returnPath = (True, recoveryFilePath)
