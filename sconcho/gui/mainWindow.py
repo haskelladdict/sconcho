@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 
-__version__ = "0.1.0_a7"
+__version__ = "0.1.0_a8"
 
 
 import platform, os
