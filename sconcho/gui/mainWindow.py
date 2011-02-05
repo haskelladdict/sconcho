@@ -125,29 +125,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _restore_window_settings(self):
         """ Restore the previously saved settings. """
-        
-        newSize = self.settings.value("MainWindow/Size",
-                                       QVariant(QSize(1200, 800))).toSize()
-        self.resize(newSize)
 
-        newPosition = self.settings.value("MainWindow/Position",
-                                          QVariant(QPoint(0,0))).toPoint()
-        self.move(newPosition)
-        
-        self.restoreState(\
-            self.settings.value("MainWindow/State").toByteArray())
+        self.resize(self.settings.main_window_size)
+        self.move(self.settings.main_window_position)
+        self.restoreState(self.settings.main_window_state)
 
 
 
     def _save_settings(self):
         """ Save all settings. """
         
-        self.settings.setValue("MainWindow/Size", QVariant(self.size()))
-        self.settings.setValue("MainWindow/Position", QVariant(self.pos()))
-        self.settings.setValue("MainWindow/State", QVariant(self.saveState()))
+        self.settings.main_window_size = self.size()
+        self.settings.main_window_position = self.pos()
+        self.settings.main_window_state = self.saveState()
 
 
-                          
+
     def _set_up_connections(self):
         """ Set up all connections for MainWindow. """
         

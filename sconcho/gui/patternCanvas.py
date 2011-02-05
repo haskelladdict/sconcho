@@ -37,8 +37,6 @@ from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor,
                          QUndoStack, QUndoCommand)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 
-from sconcho.util.settings import (get_grid_dimensions, get_label_font,
-                                   get_legend_font, get_label_interval)
 from sconcho.util.canvas import (is_click_in_grid, is_click_on_labels, 
                                  convert_pos_to_col_row, convert_col_row_to_pos)
 from sconcho.gui.insertDeleteRowColumnDialog import InsertDeleteRowColumnDialog
@@ -72,7 +70,8 @@ class PatternCanvas(QGraphicsScene):
 
         self._undoStack = QUndoStack(self)
 
-        self._unitCellDim = QSizeF(get_grid_dimensions(theSettings))
+        self._unitCellDim = QSizeF(self.settings.grid_cell_width,
+                                   self.settings.grid_cell_height)
         self._numRows = 10
         self._numColumns = 10
 
@@ -110,8 +109,8 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
-        interval = get_label_interval(self.settings)
-        labelFont = get_label_font(self.settings)
+        interval = self.settings.label_interval
+        labelFont = self.settings.label_font
 
         for label in self._textLabels:
             self.removeItem(label)
@@ -294,7 +293,7 @@ class PatternCanvas(QGraphicsScene):
         textItem.setFlag(QGraphicsItem.ItemIsMovable)
         textItem.setTextInteractionFlags(Qt.TextEditorInteraction);
         textItem.setPlainText(symbol["description"])
-        textItem.setFont(get_legend_font(self.settings))
+        textItem.setFont(self.settings.legend_font)
         self.addItem(textItem)
 
         self.emit(SIGNAL("adjust_view"))
@@ -1135,7 +1134,7 @@ class PatternCanvas(QGraphicsScene):
         
         """
         
-        labelFont = get_label_font(self.settings)
+        labelFont = self.settings.label_font
         for item in self.items():
             if isinstance(item, PatternLabelItem):
                 item.setFont(labelFont)
@@ -1166,7 +1165,7 @@ class PatternCanvas(QGraphicsScene):
         
         """
         
-        legendFont = get_legend_font(self.settings)
+        legendFont = self.settings.legend_font
         for item in self.gridLegend.values():
             legendItem_text(item).setFont(legendFont)
 

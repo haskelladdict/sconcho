@@ -24,7 +24,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QSettings, QString, QSize, QDir)
+from PyQt4.QtCore import (QSettings, QString, QSize, QDir, QVariant,
+                          QPoint)
 from PyQt4.QtGui import (QFont, QFontDatabase)
 
 
@@ -33,174 +34,267 @@ GRID_CELL_WIDTH  = "30"
 GRID_CELL_HEIGHT = "30"
 
 
-def initialize(settings):
-    """ Initializes some basic settings if none exist. """
 
-    labelFont = settings.value("global/labelFont" ).toString()
-    if labelFont.isEmpty():
-      settings.setValue("global/labelFont", "Arial,10,-1,5,50,0,0,0,0,0")
+class DefaultSettings(QSettings):
 
-    legendFont = settings.value( "global/legendFont" ).toString()
-    if legendFont.isEmpty():
-      settings.setValue("global/legendFont", "Arial,10,-1,5,50,0,0,0,0,0")
 
-    exportPatternGrid =  \
-        settings.value("global/exportPatternGrid").toString()
-    if exportPatternGrid.isEmpty():
-        settings.setValue("global/exportPatternGrid", "True")
+    def __init__(self, parent = None):
 
-    exportLegend = settings.value("global/exportLegend").toString()
-    if exportLegend.isEmpty():
-        settings.setValue("global/exportLegend", "True")
+        super(DefaultSettings, self).__init__(parent)
 
-    labelInterval = settings.value("global/labelInterval").toString()
-    if labelInterval.isEmpty():
-        settings.setValue("global/labelInterval", "1")
-
-    cellWidth = settings.value("global/cellWidth").toString()
-    if cellWidth.isEmpty():
-        defaultWidth = QString(GRID_CELL_WIDTH)
-        settings.setValue("global/cellWidth", defaultWidth )
-
-    cellHeight = settings.value("global/cellHeight").toString()
-    if cellHeight.isEmpty():
-        defaultHeight = QString(GRID_CELL_HEIGHT)
-        settings.setValue("global/cellHeight", defaultHeight)
-
-    personalSymbolsPath = settings.value("global/personalSymbolPath").toString()
-    if personalSymbolsPath.isEmpty():
-        homePath = QDir.homePath()
-        defaultDir = QDir.convertSeparators(homePath + "/sconcho_symbols")
-        settings.setValue("global/personalSymbolPath", defaultDir)
+        self.initialize()
 
 
 
-def get_grid_dimensions(settings):
-    """ Helper function returning a tuple with width and height
-    for grid cells.
-    """
+    def initialize(self):
+        """ Initializes some basic settings if none exist. """
 
-    (cellWidth, widthStatus) = \
-                settings.value("global/cellWidth").toString().toInt()
-    (cellHeight, heightStatus) = \
-                 settings.value("global/cellHeight").toString().toInt()
+        labelFont = self.value("global/labelFont" ).toString()
+        if labelFont.isEmpty():
+            self.setValue("global/labelFont", "Arial,10,-1,5,50,0,0,0,0,0")
 
-    if not widthStatus or not heightStatus:
-        print("Error: Failed to retrieve grid dimensions from settings.")
+        legendFont = self.value( "global/legendFont" ).toString()
+        if legendFont.isEmpty():
+            self.setValue("global/legendFont", "Arial,10,-1,5,50,0,0,0,0,0")
 
-    return QSize(cellWidth, cellHeight)
+        exportPatternGrid =  \
+            self.value("global/exportPatternGrid").toString()
+        if exportPatternGrid.isEmpty():
+            self.setValue("global/exportPatternGrid", "True")
+
+        exportLegend = self.value("global/exportLegend").toString()
+        if exportLegend.isEmpty():
+            self.setValue("global/exportLegend", "True")
+
+        labelInterval = self.value("global/labelInterval").toString()
+        if labelInterval.isEmpty():
+            self.setValue("global/labelInterval", "1")
+
+        cellWidth = self.value("global/cellWidth").toString()
+        if cellWidth.isEmpty():
+            defaultWidth = QString(GRID_CELL_WIDTH)
+            self.setValue("global/cellWidth", defaultWidth )
+
+        cellHeight = self.value("global/cellHeight").toString()
+        if cellHeight.isEmpty():
+            defaultHeight = QString(GRID_CELL_HEIGHT)
+            self.setValue("global/cellHeight", defaultHeight)
+
+        personalSymbolsPath = self.value("global/personalSymbolPath").toString()
+        if personalSymbolsPath.isEmpty():
+            homePath = QDir.homePath()
+            defaultDir = QDir.convertSeparators(homePath + "/sconcho_symbols")
+            self.setValue("global/personalSymbolPath", defaultDir)
 
 
 
-def get_personal_symbol_path(settings):
-    """ Return the path where the user stores her/his personal symbols """
+    @property
+    def grid_cell_width(self):
+        """ Return the grid cell width. """
 
-    path = settings.value("global/personalSymbolPath").toString()
+        (cellWidth, widthStatus) = \
+                    self.value("global/cellWidth").toString().toInt()
+
+        if not widthStatus:
+            print("Error: Failed to retrieve grid cell width from settings.")
+
+        return cellWidth
+
+
+
+    @grid_cell_width.setter
+    def grid_cell_width(self, width):
+        """ Store the width of grid cells. """
+
+        self.setValue("global/cellWidth", QString(unicode(width)))
+
+
+
+    @property
+    def grid_cell_height(self):
+        """ Return the grid cell height. """
+
+        (cellHeight, heightStatus) = \
+                    self.value("global/cellHeight").toString().toInt()
+
+        if not heightStatus:
+            print("Error: Failed to retrieve grid dimensions from settings.")
+
+        return cellHeight
+
+
+
+    @grid_cell_height.setter
+    def grid_cell_height(self, height):
+        """ Store the grid cell height. """
+
+        self.setValue("global/cellHeight", QString(unicode(height)))
+
+
+        
+    @property
+    def personal_symbol_path(self):
+        """ Return path where custom symbols are located. """
+
+        path = self.value("global/personalSymbolPath").toString()
+
+        if not path:
+            print("Error: Failed to retrieve personal symbol path.")
+            return("")
+
+        return path
+
+
     
-    if not path:
-        print("Error: Failed to retrieve personal symbol path.")
-        return ""
+    @personal_symbol_path.setter
+    def personal_symbol_path(self, newPath):
+        """ Set the path where custom symbols are located. """
 
-    return path
-
-
-
-def set_personal_symbol_path(settings, newPath):
-    """ Helper function for setting the path for custom symbols. """
-
-    settings.setValue("global/personalSymbolPath", newPath)
+        self.setValue("global/personalSymbolPath", newPath)
 
 
 
-def get_text_font(settings):
-    """ Helper function for extracting the currently selected text font
-    from settings.
-    """
+    @property
+    def text_font(self):
+        """ Return the currently selected text font. """
 
-    fontString = settings.value("global/font").toString()
+        fontString = self.value("global/font").toString()
 
-    font = QFont()
-    if not font.fromString(fontString):
-        print("Error: Failed to retrieve font from settings.")
+        font = QFont()
+        if not font.fromString(fontString):
+            print("Error: Failed to retrieve font from settings.")
 
-    return font
-
-
-
-def get_label_font(settings):
-    """ Helper function for extracting the currently label font
-    from settings.
-    """
-
-    labelFontString = settings.value("global/labelFont").toString()
-
-    font = QFont()
-    if not font.fromString(labelFontString):
-        print("Error: Failed to retrieve label font from settings.")
-
-    return font
+        return font
 
 
 
-def set_label_font(settings, newLabelFont):
-    """ Helper function for extracting the currently label font
-    from settings.
-    """
+    @property
+    def label_font(self):
+        """ Return the current label font. """
 
-    if fontDatabase_has_font(newLabelFont):
-        fontString = newLabelFont.toString()
-        settings.setValue( "global/labelFont", fontString)
+        labelFontString = self.value("global/labelFont").toString()
 
+        font = QFont()
+        if not font.fromString(labelFontString):
+            print("Error: Failed to retrieve label font from settings.")
 
-
-def get_legend_font(settings):
-    """ Helper function for extracting the currently legend font
-    from settings.
-    """
-
-    legendFontString = settings.value("global/legendFont").toString()
-
-    font = QFont()
-    if not font.fromString(legendFontString):
-        print("Error: Failed to retrieve legend font from settings.")
-
-    return font
+        return font
 
 
 
-def set_legend_font(settings, newLegendFont):
-    """ Helper function for setting the currently legend font. """
+    @label_font.setter
+    def label_font(self, newLabelFont):
+        """ Set the current label font. """
 
-    if fontDatabase_has_font(newLegendFont):
-        fontString = newLegendFont.toString()
-        settings.setValue("global/legendFont", fontString)
-
-
-
-def get_label_interval(settings):
-    """ Helper function for extracting the current interval
-    with which the labels are spaced.
-    """
-
-    legendIntervalString = settings.value("global/labelInterval").toString()
-    (legendInterval, status) = legendIntervalString.toInt()
-
-    if not status:
-        return 1
-
-    return legendInterval
+        if fontDatabase_has_font(newLabelFont):
+            fontString = newLabelFont.toString()
+            self.setValue("global/labelFont", fontString)
 
 
 
-def set_label_interval(settings, interval):
-    """ Helper function for setting the current interval
-    with which the labels are spaced.
-    """
+    @property
+    def legend_font(self):
+        """ Return the current legend font. """
 
-    settings.setValue("global/labelInterval", QString(unicode(interval)))
+        legendFontString = self.value("global/legendFont").toString()
+
+        font = QFont()
+        if not font.fromString(legendFontString):
+            print("Error: Failed to retrieve legend font from settings.")
+
+        return font
 
 
 
+    @legend_font.setter
+    def legend_font(self, newLegendFont):
+        """ Set the current legend font. """
+
+        if fontDatabase_has_font(newLegendFont):
+            fontString = newLegendFont.toString()
+            self.setValue("global/legendFont", fontString)
+
+
+
+    @property
+    def label_interval(self):
+        """ Return the interval with which the labels are spaced. """
+
+        legendIntervalString = self.value("global/labelInterval").toString()
+        (legendInterval, status) = legendIntervalString.toInt()
+
+        if not status:
+            return 1
+
+        return legendInterval
+
+
+
+    @label_interval.setter
+    def label_interval(self, interval):
+        """ Store the interval with which the labels are spaced. """
+
+        self.setValue("global/labelInterval", QString(unicode(interval)))
+
+
+
+    @property
+    def main_window_size(self):
+        """ Return the size of the main window. """
+
+        return self.value("MainWindow/Size",
+                          QVariant(QSize(1200, 800))).toSize()
+
+
+
+    @main_window_size.setter
+    def main_window_size(self, size):
+        """ Set the size of the main window. """
+
+        self.setValue("MainWindow/Size", QVariant(size))
+                          
+
+
+    @property
+    def main_window_position(self):
+        """ Return the position of the main window. """
+        
+        return self.value("MainWindow/Position",
+                          QVariant(QPoint(0,0))).toPoint()
+
+
+
+    @main_window_position.setter
+    def main_window_position(self, position):
+        """ Set the size of the main window. """
+
+        self.setValue("MainWindow/Position", QVariant(position))
+
+
+
+    @property
+    def main_window_state(self):
+        """ Return the saved state of the main window. """
+
+        return self.value("MainWindow/State").toByteArray()
+
+
+
+    @main_window_state.setter
+    def main_window_state(self, state):
+        """ Set the state of the main window. """
+
+        self.setValue("MainWindow/State", QVariant(state))
+
+    
+
+
+
+#######################################################################
+#
+# some helper functions
+#
+#######################################################################
 def fontDatabase_has_font(font):
     """ This is helper function checks if a certain font family
     exists on the current system.
@@ -210,21 +304,3 @@ def fontDatabase_has_font(font):
     families = fontDatabase.families()
     
     return families.contains(font.family())
-
-
-
-def set_grid_cell_width(settings, width):
-    """ Helper function storing the setting for the width 
-    for grid cells.
-    """
-
-    settings.setValue("global/cellWidth", QString(unicode(width)))
-
-
-
-def set_grid_cell_height(settings, height):
-    """ Helper function storing the setting for the width 
-    for grid cells.
-    """
-
-    settings.setValue("global/cellHeight", QString(unicode(height)))

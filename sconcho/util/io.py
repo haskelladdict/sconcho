@@ -37,12 +37,9 @@ from sconcho.gui.patternCanvas import (PatternGridItem, PatternLegendItem,
 from sconcho.util.misc import wait_cursor
 from sconcho.util.exceptions import PatternReadError
 import sconcho.util.messages as msg
-from sconcho.util.settings import (get_label_font, get_legend_font,
-                                   set_legend_font, set_label_font,
-                                   get_label_interval, set_label_interval)
 
 
-# magick number to specify binary API
+# magic number to specify binary API
 MAGIC_NUMBER = 0xA3D1
 API_VERSION  = 1
 
@@ -172,9 +169,9 @@ def write_active_symbol(stream, activeSymbol):
 def write_settings(stream, settings):
     """ Write all settings such as fonts for labels and legend """
 
-    labelFont     = get_label_font(settings)
-    labelInterval = get_label_interval(settings)
-    legendFont    = get_legend_font(settings)
+    labelFont     = settings.label_font
+    labelInterval = settings.label_interval
+    legendFont    = settings.legend_font
 
     stream << labelFont
     stream.writeInt32(labelInterval)
@@ -376,13 +373,13 @@ def read_settings(stream, settings):
     # make sure we parsed something sensible before 
     # touching the settings
     if labelFont.family():
-        set_label_font(settings, labelFont)
+        settings.label_font = labelFont
 
     if labelInterval != 0:
-        set_label_interval(settings, labelInterval)
+        settings.label_interval = labelInterval
 
     if legendFont.family():
-        set_legend_font(settings, legendFont)
+        settings.legend_font = legendFont
 
 
 

@@ -42,9 +42,9 @@ APPLICATION         = "sconcho"
 def sconcho_gui_launcher(fileName = None):
     """ Main routine starting up the sconcho framework. """
 
-    newSettings = load_settings()
+    defaultSettings = settings.DefaultSettings()
     currPath = os.path.dirname(__file__)
-    symbolPaths = set_up_symbol_paths(currPath, newSettings)
+    symbolPaths = set_up_symbol_paths(currPath, defaultSettings)
 
     # We attempt to read all available knitting symbols 
     # before firing up the MainWindow. At the very least we
@@ -61,7 +61,7 @@ def sconcho_gui_launcher(fileName = None):
     app.setOrganizationName(ORGANIZATION)
     app.setOrganizationDomain(ORGANIZATION_DOMAIN)
     app.setApplicationName(APPLICATION)
-    window = MainWindow(currPath, newSettings, knittingSymbols, fileName)
+    window = MainWindow(currPath, defaultSettings, knittingSymbols, fileName)
     window.show()
     app.exec_()
 
@@ -77,12 +77,12 @@ def load_settings():
 
 
 
-def set_up_symbol_paths(path, newSettings):
+def set_up_symbol_paths(path, settings):
     """ Creates the list with paths where symbols should
     be loaded from. """
 
     symbolPaths = [os.path.join(path, "symbols")]
-    customSymbolPath = settings.get_personal_symbol_path(newSettings)
+    customSymbolPath = settings.personal_symbol_path
     symbolPaths.append(customSymbolPath)
 
     return symbolPaths

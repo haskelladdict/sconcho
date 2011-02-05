@@ -29,13 +29,6 @@ from PyQt4.QtGui import (QDialog, QFontDatabase, QFileDialog)
 
 import sconcho.util.misc as misc
 import sconcho.util.messages as msg
-from sconcho.util.settings import (get_label_font, get_legend_font, 
-                                   set_legend_font, set_label_font,
-                                   get_label_interval, set_label_interval,
-                                   get_grid_dimensions, set_grid_cell_width,
-                                   set_grid_cell_height,
-                                   get_personal_symbol_path,
-                                   set_personal_symbol_path)
 from sconcho.gui.ui_preferencesDialog import Ui_PreferencesDialog
 
 
@@ -70,13 +63,13 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         the font selectors correspondingly.
         """
 
-        legendFont = get_legend_font(self.settings)
+        legendFont = self.settings.legend_font
         self.legendFontComboBox.setCurrentFont(legendFont)
         self.legendExampleText.setText(misc.get_random_knitting_quote())
         self.legendExampleText.setFont(legendFont)
         self.update_legend_font_display(legendFont)
 
-        labelFont = get_label_font(self.settings)
+        labelFont = self.settings.label_font
         self.labelFontComboBox.setCurrentFont(labelFont)
         self.labelExampleText.setText(misc.get_random_knitting_quote())
         self.labelExampleText.setFont(labelFont)
@@ -172,7 +165,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         fontDataBase  = QFontDatabase()
         newLegendFont = fontDataBase.font(fontFamily, fontStyle, fontSize)
-        set_legend_font(self.settings, newLegendFont)
+        self.settings.legend_font = newLegendFont
         self.legendExampleText.setFont(newLegendFont)
 
         self.emit(SIGNAL("legend_font_changed"))
@@ -236,7 +229,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         fontDataBase  = QFontDatabase()
         newLabelFont = fontDataBase.font(fontFamily, fontStyle, fontSize)
-        set_label_font(self.settings, newLabelFont)
+        self.settings.label_font = newLabelFont
         self.labelExampleText.setFont(newLabelFont)
 
         self.emit(SIGNAL("label_font_changed"))
@@ -246,7 +239,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def set_up_label_interval_selector(self):
         """ Sets up the label interval selector. """
        
-        interval = get_label_interval(self.settings)
+        interval = self.settings.label_interval
         self.labelIntervalSpinner.setValue(interval)
         self.connect(self.labelIntervalSpinner,
                      SIGNAL("valueChanged(int)"),
@@ -257,7 +250,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def change_label_interval(self, interval):
         """ Sets the new label interval and lets the canvas know. """
 
-        set_label_interval(self.settings, interval)
+        self.settings.label_interval = interval
         self.emit(SIGNAL("label_interval_changed"))
 
 
@@ -268,7 +261,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         user has stored her/his personal symbol paths.
         """
 
-        symbolLocation = get_personal_symbol_path(self.settings)
+        symbolLocation = self.settings.personal_symbol_path
         self.customSymbolPathEdit.setText(symbolLocation)
 
         self.connect(self.customSymbolPathEdit,
@@ -284,7 +277,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def update_personal_symbol_path(self, newPath):
         """ Update the path to a user's custom symbol location. """
 
-        set_personal_symbol_path(self.settings, newPath)
+        self.settings.personal_symbol_path = newPath
 
 
 
@@ -298,7 +291,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                                             QDir.homePath())
 
         if customSymbolFilePath:
-            set_personal_symbol_path(self.settings, customSymbolFilePath)
+            self.settings.personal_symbol_path = customSymbolFilePath
             self.customSymbolPathEdit.setText(customSymbolFilePath)
 
 
@@ -306,13 +299,11 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         """ Initialize the selectors for grid cell height and width
         with the current value and connect the selectors to the
         proper slots.
+        
         """
 
-        cellDim = get_grid_dimensions(self.settings)
-
-        self.gridCellWidthSpinner.setValue(cellDim.width())
-        self.gridCellHeightSpinner.setValue(cellDim.height())
-
+        self.gridCellWidthSpinner.setValue(self.settings.grid_cell_width)
+        self.gridCellHeightSpinner.setValue(self.settings.grid_cell_height)
 
         self.connect(self.gridCellWidthSpinner,
                      SIGNAL("valueChanged(int)"),
@@ -327,7 +318,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def _grid_cell_width_changed(self, newWidth):
         """ Slot taking care of changes to the width of grid cells. """
 
-        set_grid_cell_width(self.settings, newWidth)
+        self.settings.grid_cell_width = newWidth
         self.emit(SIGNAL("grid_cell_width_changed"), newWidth)  
 
 
@@ -335,5 +326,5 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def _grid_cell_height_changed(self, newHeight):
         """ Slot taking care of changes to the width of grid cells. """
 
-        set_grid_cell_height(self.settings, newHeight)
+        self.settings.grid_cell_height = newHeight
         self.emit(SIGNAL("grid_cell_height_changed"), newHeight)  
