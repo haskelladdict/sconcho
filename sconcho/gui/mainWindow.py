@@ -695,7 +695,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         sortedSymbols = symbols_by_category(self._knittingSymbols)
         symbolCategories = sortedSymbols.keys()
-        personalSymbolPath = settings.get_personal_symbol_path(self.settings)
+        personalSymbolPath = self.settings.personal_symbol_path
         manager = ManageKnittingSymbolDialog(personalSymbolPath, 
                                              symbolCategories, self)
         manager.exec_()

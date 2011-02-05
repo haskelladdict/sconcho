@@ -42,7 +42,7 @@ APPLICATION         = "sconcho"
 def sconcho_gui_launcher(fileName = None):
     """ Main routine starting up the sconcho framework. """
 
-    defaultSettings = settings.DefaultSettings()
+    defaultSettings = settings.DefaultSettings(ORGANIZATION, APPLICATION)
     currPath = os.path.dirname(__file__)
     symbolPaths = set_up_symbol_paths(currPath, defaultSettings)
 
@@ -64,16 +64,6 @@ def sconcho_gui_launcher(fileName = None):
     window = MainWindow(currPath, defaultSettings, knittingSymbols, fileName)
     window.show()
     app.exec_()
-
-
-
-def load_settings():
-    """ Create Settings object and initialize it """
-
-    newSettings = QSettings(ORGANIZATION, APPLICATION)
-    settings.initialize(newSettings)
-    
-    return newSettings
 
 
 
