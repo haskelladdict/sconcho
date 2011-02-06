@@ -674,12 +674,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          self.set_project_dirty)
 
             self.connect(self.preferencesDialog,
-                         SIGNAL("grid_cell_width_changed"),
-                         self.canvas.change_grid_cell_width)
+                         SIGNAL("grid_cell_dimensions_changed"),
+                         self.canvas.change_grid_cell_dimensions)
 
             self.connect(self.preferencesDialog,
-                         SIGNAL("grid_cell_height_changed"),
-                         self.canvas.change_grid_cell_height)
+                         SIGNAL("grid_cell_dimensions_changed"),
+                         self.set_project_dirty)
 
         self.preferencesDialog.raise_()
         self.preferencesDialog.show()

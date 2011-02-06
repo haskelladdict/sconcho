@@ -213,24 +213,17 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def change_grid_cell_width(self, newWidth):
-        """ This slot handles changes of the unit grid cell width.
-        First we change the unitCellDim and then redraw the canvas.
+    def change_grid_cell_dimensions(self):
+        """ This function adjust the grid cell dimensions if either
+        cell height, width or both have changed.
+
         """
-       
-        self._unitCellDim = QSizeF(newWidth, self._unitCellDim.height())
+
+        self._unitCellDim = QSizeF(self.settings.grid_cell_width,
+                                   self.settings.grid_cell_height)
         self._redraw_canvas_after_grid_dimension_change()
 
-
-
-    def change_grid_cell_height(self, newHeight):
-        """ This slot handles changes of the unit grid cell height.
-        First we change the unitCellDim and then redraw the canvas.
-        """
-       
-        self._unitCellDim = QSizeF(self._unitCellDim.width(), newHeight)
-        self._redraw_canvas_after_grid_dimension_change()
-
+        
 
 
     def _redraw_canvas_after_grid_dimension_change(self):
@@ -1043,7 +1036,46 @@ class PatternCanvas(QGraphicsScene):
         corrupted file perhaps).
         
         """
+
+        (status, allPatternGridItems) = \
+                 self._load_pattern_grid_items(patternGridItemInfo,
+                                               knittingSymbols)
+        if not status:
+            return status
+
+        (status, allLegendItems) = \
+                 self._load_legend_items(legendItemInfo)
+
+        if not status:
+            return status
         
+
+        # not that we have all canvas items, let's put them back in place
+        self._clear_canvas()
+        for entry in allPatternGridItems:
+            item = self.create_pattern_grid_item(*entry)
+            self.addItem(item)
+
+        for entry in allLegendItems:
+            arrange_label_item(self.gridLegend, *entry)
+
+        # need to clear our label cache, otherwise set_up_labels()
+        # will try to remove non-existing items
+        self._textLabels = []
+        self.set_up_labels()
+        self.change_grid_cell_dimensions()
+
+        self.emit(SIGNAL("adjust_view"))
+        return True
+
+
+
+    def _load_pattern_grid_items(self, patternGridItemInfo, knittingSymbols):
+        """ Re-create all patternGridItems based on loaded
+        sconcho project.
+
+        """
+
         # need this to determine the number of columns and rows
         maxCol = 0
         maxRow = 0
@@ -1074,7 +1106,18 @@ class PatternCanvas(QGraphicsScene):
             QMessageBox.critical(None, msg.errorLoadingGridTitle,
                                  msg.errorLoadingGridText % e,
                                  QMessageBox.Close)
-            return False
+            return (False, [])
+
+        # set limits
+        self._numRows    = maxRow + 1
+        self._numColumns = maxCol + 1
+        
+        return (True, allPatternGridItems)
+
+
+
+    def _load_legend_items(self, legendItemInfo):
+        """ Re-create all legend items based on loaded sconcho project. """       
 
         allLegendItems = []
         try:
@@ -1091,25 +1134,9 @@ class PatternCanvas(QGraphicsScene):
             QMessageBox.critical(None, msg.errorLoadingLegendTitle,
                                  msg.errorLoadingLegendText % e,
                                  QMessageBox.Close)
-            return False
+            return (False, [])
 
-        self._clear_canvas()
-        for entry in allPatternGridItems:
-            item = self.create_pattern_grid_item(*entry)
-            self.addItem(item)
-
-        for entry in allLegendItems:
-            arrange_label_item(self.gridLegend, *entry)
-
-        # need to clear our label cache, otherwise set_up_labels()
-        # will try to remove non-existing items
-        self._numRows    = maxRow + 1
-        self._numColumns = maxCol + 1
-        self._textLabels = []
-        self.set_up_labels()
-
-        self.emit(SIGNAL("adjust_view"))
-        return True
+        return (True, allLegendItems)
 
 
 

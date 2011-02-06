@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferencesDialog.ui'
 #
-# Created: Sun Feb  6 11:08:56 2011
+# Created: Sun Feb  6 13:14:28 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -62,11 +62,11 @@ class Ui_PreferencesDialog(object):
         self.verticalLayout_2.addItem(spacerItem)
         self.horizontalLayout_5 = QtGui.QHBoxLayout()
         self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_5.addItem(spacerItem1)
         self.legendPrefDefaultButton = QtGui.QPushButton(self.legendTab)
         self.legendPrefDefaultButton.setObjectName(_fromUtf8("legendPrefDefaultButton"))
         self.horizontalLayout_5.addWidget(self.legendPrefDefaultButton)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_5.addItem(spacerItem1)
         self.verticalLayout_2.addLayout(self.horizontalLayout_5)
         self.tabWidget.addTab(self.legendTab, _fromUtf8(""))
         self.labelTab = QtGui.QWidget()
@@ -125,11 +125,11 @@ class Ui_PreferencesDialog(object):
         self.verticalLayout.addItem(spacerItem2)
         self.horizontalLayout_6 = QtGui.QHBoxLayout()
         self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
-        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_6.addItem(spacerItem3)
         self.labelPrefDefaultButton = QtGui.QPushButton(self.labelTab)
         self.labelPrefDefaultButton.setObjectName(_fromUtf8("labelPrefDefaultButton"))
         self.horizontalLayout_6.addWidget(self.labelPrefDefaultButton)
+        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_6.addItem(spacerItem3)
         self.verticalLayout.addLayout(self.horizontalLayout_6)
         self.tabWidget.addTab(self.labelTab, _fromUtf8(""))
         self.tab_2 = QtGui.QWidget()
@@ -161,11 +161,11 @@ class Ui_PreferencesDialog(object):
         self.verticalLayout_3.addItem(spacerItem5)
         self.horizontalLayout_7 = QtGui.QHBoxLayout()
         self.horizontalLayout_7.setObjectName(_fromUtf8("horizontalLayout_7"))
-        spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_7.addItem(spacerItem6)
         self.cellDimPrefDefaultButton = QtGui.QPushButton(self.tab_2)
         self.cellDimPrefDefaultButton.setObjectName(_fromUtf8("cellDimPrefDefaultButton"))
         self.horizontalLayout_7.addWidget(self.cellDimPrefDefaultButton)
+        spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_7.addItem(spacerItem6)
         self.verticalLayout_3.addLayout(self.horizontalLayout_7)
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         self.tab = QtGui.QWidget()

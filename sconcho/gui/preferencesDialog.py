@@ -393,7 +393,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         """ Slot taking care of changes to the width of grid cells. """
 
         self.settings.grid_cell_width = newWidth
-        self.emit(SIGNAL("grid_cell_width_changed"), newWidth)  
+        self.emit(SIGNAL("grid_cell_dimensions_changed"))  
 
 
 
@@ -401,7 +401,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         """ Slot taking care of changes to the width of grid cells. """
 
         self.settings.grid_cell_height = newHeight
-        self.emit(SIGNAL("grid_cell_height_changed"), newHeight)
+        self.emit(SIGNAL("grid_cell_dimensions_changed"))
 
 
     

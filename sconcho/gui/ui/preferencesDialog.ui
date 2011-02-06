@@ -95,6 +95,13 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
+          <widget class="QPushButton" name="legendPrefDefaultButton">
+           <property name="text">
+            <string>Make Default</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="horizontalSpacer_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -106,13 +113,6 @@
             </size>
            </property>
           </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="legendPrefDefaultButton">
-           <property name="text">
-            <string>Make Default</string>
-           </property>
-          </widget>
          </item>
         </layout>
        </item>
@@ -227,6 +227,13 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
+          <widget class="QPushButton" name="labelPrefDefaultButton">
+           <property name="text">
+            <string>Make Default</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="horizontalSpacer_3">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -238,13 +245,6 @@
             </size>
            </property>
           </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="labelPrefDefaultButton">
-           <property name="text">
-            <string>Make Default</string>
-           </property>
-          </widget>
          </item>
         </layout>
        </item>
@@ -322,6 +322,13 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_7">
          <item>
+          <widget class="QPushButton" name="cellDimPrefDefaultButton">
+           <property name="text">
+            <string>Make Default</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="horizontalSpacer_4">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -333,13 +340,6 @@
             </size>
            </property>
           </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cellDimPrefDefaultButton">
-           <property name="text">
-            <string>Make Default</string>
-           </property>
-          </widget>
          </item>
         </layout>
        </item>
