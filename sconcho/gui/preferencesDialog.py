@@ -107,6 +107,36 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      SIGNAL("currentIndexChanged(int)"),
                      self.update_current_label_font)
 
+        self.connect(self.legendPrefDefaultButton,
+                     SIGNAL("pressed()"),
+                     self.set_legend_defaults)
+
+        self.connect(self.labelPrefDefaultButton,
+                     SIGNAL("pressed()"),
+                     self.set_label_defaults)
+
+
+
+    def set_legend_defaults(self):
+        """ Stores the currently selected legend properties as default. """
+
+        # set font
+        newLegendFont = self._get_legend_font_from_widget()
+        self.settings.set_default_legend_font(newLegendFont)
+
+
+
+    def set_label_defaults(self):
+        """ Stores the currently selected label properties as default. """
+
+        # set font
+        newLabelsFont = self._get_label_font_from_widget()
+        self.settings.set_default_label_font(newLabelsFont)
+
+        # set label interval
+        interval = self.labelIntervalSpinner.value()
+        self.settings.set_default_label_interval(interval)
+
 
 
     def update_legend_font_display(self, newLegendFont):
@@ -114,6 +144,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         selected legend font.
         
         Updated properties are font style, size, example text.
+        
         """
 
         # block signals from to avoid that update_current_legend_font
@@ -156,8 +187,11 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
 
 
-    def update_current_legend_font(self, index = None):
-        """ This function updates the currently active legend font."""
+    def _get_legend_font_from_widget(self):
+        """ Helper function extracting the currently selected
+        legend font info from the widget.
+
+        """
 
         fontFamily = self.legendFontComboBox.currentFont().family()
         fontStyle  = self.legendStyleComboBox.currentText()
@@ -165,6 +199,15 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         fontDataBase  = QFontDatabase()
         newLegendFont = fontDataBase.font(fontFamily, fontStyle, fontSize)
+
+        return newLegendFont
+
+
+
+    def update_current_legend_font(self):
+        """ This function updates the currently active legend font. """
+
+        newLegendFont = self._get_legend_font_from_widget()
         self.settings.legend_font = newLegendFont
         self.legendExampleText.setFont(newLegendFont)
 
@@ -177,6 +220,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         selected label font.
         
         Updated properties are font style, size, example text.
+        
         """
 
         # block signals from to avoid that update_current_label_font
@@ -220,8 +264,11 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
 
 
-    def update_current_label_font(self, index = None):
-        """ This function updates the currently active label font."""
+    def _get_label_font_from_widget(self):
+        """ Helper function extracting the currently selected
+        labels font info from the widget.
+
+        """
 
         fontFamily = self.labelFontComboBox.currentFont().family()
         fontStyle  = self.labelStyleComboBox.currentText()
@@ -229,6 +276,16 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         fontDataBase  = QFontDatabase()
         newLabelFont = fontDataBase.font(fontFamily, fontStyle, fontSize)
+
+        return newLabelFont
+
+        
+
+    def update_current_label_font(self):
+        """ This function updates the currently active label font. """
+
+
+        newLabelFont = self._get_label_font_from_widget()
         self.settings.label_font = newLabelFont
         self.labelExampleText.setFont(newLabelFont)
 
@@ -259,6 +316,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def set_up_personal_symbol_path(self):
         """ Sets up the widget for changing the path where the
         user has stored her/his personal symbol paths.
+        
         """
 
         symbolLocation = self.settings.personal_symbol_path
@@ -284,6 +342,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def show_symbol_path_fileSelector(self):
         """ Open up a file selector dialog allowing a user to change
         the path to where the custom knitting symbols are.
+        
         """
 
         customSymbolFilePath = QFileDialog.getExistingDirectory(self,
@@ -307,15 +366,30 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         self.connect(self.gridCellWidthSpinner,
                      SIGNAL("valueChanged(int)"),
-                     self._grid_cell_width_changed)
+                     self.grid_cell_width_changed)
 
         self.connect(self.gridCellHeightSpinner,
                      SIGNAL("valueChanged(int)"),
-                     self._grid_cell_height_changed)
+                     self.grid_cell_height_changed)
 
-   
+        self.connect(self.cellDimPrefDefaultButton,
+                     SIGNAL("pressed()"),
+                     self.set_grid_dimension_defaults)
 
-    def _grid_cell_width_changed(self, newWidth):
+
+        
+    def set_grid_dimension_defaults(self):
+        """ Set the defaults for the grid dimensions. """
+        
+        cellWidth = self.gridCellWidthSpinner.value()
+        cellHeight = self.gridCellHeightSpinner.value()
+
+        self.settings.set_default_grid_cell_width(cellWidth)
+        self.settings.set_default_grid_cell_height(cellHeight)
+
+
+
+    def grid_cell_width_changed(self, newWidth):
         """ Slot taking care of changes to the width of grid cells. """
 
         self.settings.grid_cell_width = newWidth
@@ -323,8 +397,11 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
 
 
-    def _grid_cell_height_changed(self, newHeight):
+    def grid_cell_height_changed(self, newHeight):
         """ Slot taking care of changes to the width of grid cells. """
 
         self.settings.grid_cell_height = newHeight
-        self.emit(SIGNAL("grid_cell_height_changed"), newHeight)  
+        self.emit(SIGNAL("grid_cell_height_changed"), newHeight)
+
+
+    

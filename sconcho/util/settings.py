@@ -29,13 +29,26 @@ from PyQt4.QtCore import (QSettings, QString, QSize, QDir, QVariant,
 from PyQt4.QtGui import (QFont, QFontDatabase)
 
 
-### some global settings (is there a better way to do this)
-GRID_CELL_WIDTH  = "30"
-GRID_CELL_HEIGHT = "30"
-
-
 
 class DefaultSettings(QSettings):
+    """ The DefaultSettings class encapsulates the infrastructure
+    needed to interact with the currently active settings.
+
+    There are two types of settings, default and session. The default
+    settings are loaded on startup and also initialize the session settings.
+    All further changes in the preferences dialog affect only the
+    current session and are thus forgotten upon application shutdown
+    (i.e. are session settings). The current session settings for a
+    given category (labels, legend, etc.) can be made the default via
+    pressing the corresponding 'Make Defaults' button.
+
+    """
+
+    # defaults 
+    DEFAULT_GRID_CELL_WIDTH  = "30"
+    DEFAULT_GRID_CELL_HEIGHT = "30"
+    DEFAULT_FONT = "Arial,10,-1,5,50,0,0,0,0,0"
+    DEFAULT_INTERVAL = "1"
 
 
     def __init__(self, organization, application, parent = None):
@@ -43,6 +56,9 @@ class DefaultSettings(QSettings):
         super(DefaultSettings, self).__init__(organization,
                                               application,
                                               parent)
+
+        # remove old "global" namespace
+        self.remove("global")
 
         self.load_defaults()
         self.set_session_values()
@@ -54,34 +70,30 @@ class DefaultSettings(QSettings):
 
         labelFont = self.value("default/labelFont" ).toString()
         if labelFont.isEmpty():
-            self.setValue("default/labelFont", "Arial,10,-1,5,50,0,0,0,0,0")
+            self.setValue("default/labelFont",
+                          DefaultSettings.DEFAULT_FONT)
 
         legendFont = self.value( "default/legendFont" ).toString()
         if legendFont.isEmpty():
-            self.setValue("default/legendFont", "Arial,10,-1,5,50,0,0,0,0,0")
-
-        exportPatternGrid =  \
-            self.value("default/exportPatternGrid").toString()
-        if exportPatternGrid.isEmpty():
-            self.setValue("default/exportPatternGrid", "True")
-
-        exportLegend = self.value("defaul/exportLegend").toString()
-        if exportLegend.isEmpty():
-            self.setValue("default/exportLegend", "True")
+            self.setValue("default/legendFont",
+                          DefaultSettings.DEFAULT_FONT)
 
         labelInterval = self.value("default/labelInterval").toString()
         if labelInterval.isEmpty():
-            self.setValue("default/labelInterval", "1")
+            self.setValue("default/labelInterval",
+                          DefaultSettings.DEFAULT_INTERVAL)
 
         cellWidth = self.value("default/cellWidth").toString()
         if cellWidth.isEmpty():
             defaultWidth = QString(GRID_CELL_WIDTH)
-            self.setValue("default/cellWidth", defaultWidth )
+            self.setValue("default/cellWidth",
+                          DefaultSettings.DEFAULT_GRID_CELL_WIDTH)
 
         cellHeight = self.value("default/cellHeight").toString()
         if cellHeight.isEmpty():
             defaultHeight = QString(GRID_CELL_HEIGHT)
-            self.setValue("default/cellHeight", defaultHeight)
+            self.setValue("default/cellHeight", 
+                          DefaultSettings.DEFAULT_GRID_CELL_HEIGHT)
 
         personalSymbolsPath = self.value("default/personalSymbolPath").toString()
         if personalSymbolsPath.isEmpty():
@@ -99,13 +111,6 @@ class DefaultSettings(QSettings):
 
         legendFont = self.value( "default/legendFont" ).toString()
         self.setValue("session/legendFont", legendFont)
-
-        doExportPatternGrid =  \
-            self.value("default/exportPatternGrid").toString()
-        self.setValue("session/exportPatternGrid", doExportPatternGrid)
-
-        doExportLegend = self.value("defaul/exportLegend").toString()
-        self.setValue("session/exportLegend", doExportLegend)
 
         labelInterval = self.value("default/labelInterval").toString()
         self.setValue("session/labelInterval", labelInterval)
@@ -140,6 +145,13 @@ class DefaultSettings(QSettings):
 
 
 
+    def set_default_grid_cell_width(self, width):
+        """ Store the default width of grid cells. """
+
+        self.setValue("default/cellWidth", QString(unicode(width)))
+
+
+
     @property
     def grid_cell_height(self):
         """ Return the grid cell height. """
@@ -162,6 +174,13 @@ class DefaultSettings(QSettings):
 
 
         
+    def set_default_grid_cell_height(self, height):
+        """ Store the default grid cell height. """
+
+        self.setValue("default/cellHeight", QString(unicode(height)))
+
+
+
     @property
     def personal_symbol_path(self):
         """ Return path where custom symbols are located. """
@@ -180,7 +199,7 @@ class DefaultSettings(QSettings):
     def personal_symbol_path(self, newPath):
         """ Set the path where custom symbols are located. """
 
-        self.setValue("session/personalSymbolPath", newPath)
+        self.setValue("default/personalSymbolPath", newPath)
 
 
 
@@ -222,6 +241,15 @@ class DefaultSettings(QSettings):
 
 
 
+    def set_default_label_font(self, defaultLabelFont):
+        """ Set the default label font. """
+
+        if fontDatabase_has_font(defaultLabelFont):
+            fontString = defaultLabelFont.toString()
+            self.setValue("default/labelFont", fontString)
+
+
+
     @property
     def legend_font(self):
         """ Return the current legend font. """
@@ -246,6 +274,15 @@ class DefaultSettings(QSettings):
 
 
 
+    def set_default_legend_font(self, defaultLegendFont):
+        """ Set the default legend font. """
+
+        if fontDatabase_has_font(defaultLegendFont):
+            fontString = defaultLegendFont.toString()
+            self.setValue("default/legendFont", fontString)
+
+
+
     @property
     def label_interval(self):
         """ Return the interval with which the labels are spaced. """
@@ -262,9 +299,17 @@ class DefaultSettings(QSettings):
 
     @label_interval.setter
     def label_interval(self, interval):
-        """ Store the interval with which the labels are spaced. """
+        """ Store the current interval with which the labels are spaced. """
 
         self.setValue("session/labelInterval", QString(unicode(interval)))
+
+
+
+    def set_default_label_interval(self, defaultInterval):
+        """ Store the default interval with which the labels are spaced. """
+
+        self.setValue("default/labelInterval",
+                      QString(unicode(defaultInterval)))
 
 
 

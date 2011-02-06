@@ -240,7 +240,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="labelsPrefDefaultButton">
+          <widget class="QPushButton" name="labelPrefDefaultButton">
            <property name="text">
             <string>Make Default</string>
            </property>

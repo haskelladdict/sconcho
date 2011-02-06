@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferencesDialog.ui'
 #
-# Created: Sat Feb  5 11:04:25 2011
+# Created: Sun Feb  6 11:08:56 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -127,9 +127,9 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
         spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_6.addItem(spacerItem3)
-        self.labelsPrefDefaultButton = QtGui.QPushButton(self.labelTab)
-        self.labelsPrefDefaultButton.setObjectName(_fromUtf8("labelsPrefDefaultButton"))
-        self.horizontalLayout_6.addWidget(self.labelsPrefDefaultButton)
+        self.labelPrefDefaultButton = QtGui.QPushButton(self.labelTab)
+        self.labelPrefDefaultButton.setObjectName(_fromUtf8("labelPrefDefaultButton"))
+        self.horizontalLayout_6.addWidget(self.labelPrefDefaultButton)
         self.verticalLayout.addLayout(self.horizontalLayout_6)
         self.tabWidget.addTab(self.labelTab, _fromUtf8(""))
         self.tab_2 = QtGui.QWidget()
@@ -219,7 +219,7 @@ class Ui_PreferencesDialog(object):
         self.label_12.setText(QtGui.QApplication.translate("PreferencesDialog", "Size", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Label Properties", None, QtGui.QApplication.UnicodeUTF8))
         self.label_13.setText(QtGui.QApplication.translate("PreferencesDialog", "Interval", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelsPrefDefaultButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Make Default", None, QtGui.QApplication.UnicodeUTF8))
+        self.labelPrefDefaultButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Make Default", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.labelTab), QtGui.QApplication.translate("PreferencesDialog", "Labels", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("PreferencesDialog", "Grid Cell Width (pixels)", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("PreferencesDialog", "Grid Cell Height (pixels)", None, QtGui.QApplication.UnicodeUTF8))
