@@ -49,19 +49,38 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.setupUi(self)
 
         self.settings = settings
-        self.set_up_font_selectors()
-        self.set_up_label_interval_selector()
-        self.set_up_grid_dimension_selector()
+        self.populate_interface()
+        self.establish_connections()
         self.set_up_personal_symbol_path()
 
 
 
-    def set_up_font_selectors(self):
-        """ Extract the currently active font.
+    def populate_interface(self):
+        """ This function dispatches all members required
+        to load the currently active session settings into the widget.
 
-        Extract the font for labels and legend and set up
-        the font selectors correspondingly.
         """
+
+        self.set_up_font_selectors()
+        self.set_up_label_interval_selector()
+        self.set_up_grid_dimension_selector()
+
+
+
+    def establish_connections(self):
+        """ This function dispatches all members required to establish
+        widget connections.
+
+        """
+
+        self.set_up_font_selector_connections()
+        self.set_up_label_interval_selector_connections()
+        self.set_up_grid_dimension_selector_connections()
+
+
+        
+    def set_up_font_selectors(self):
+        """ Load widget with the currently active font. """
 
         legendFont = self.settings.legend_font
         self.legendFontComboBox.setCurrentFont(legendFont)
@@ -74,6 +93,11 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.labelExampleText.setText(misc.get_random_knitting_quote())
         self.labelExampleText.setFont(labelFont)
         self.update_label_font_display(labelFont)
+
+
+
+    def set_up_font_selector_connections(self):
+        """ Set up the connection for the font selectors. """
 
         self.connect(self.legendFontComboBox, 
                      SIGNAL("currentFontChanged(QFont)"),
@@ -298,6 +322,12 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
        
         interval = self.settings.label_interval
         self.labelIntervalSpinner.setValue(interval)
+
+
+
+    def set_up_label_interval_selector_connections(self):
+        """ Set up connection for label interval selector. """
+        
         self.connect(self.labelIntervalSpinner,
                      SIGNAL("valueChanged(int)"),
                      self.change_label_interval)
@@ -356,14 +386,18 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
     def set_up_grid_dimension_selector(self):
         """ Initialize the selectors for grid cell height and width
-        with the current value and connect the selectors to the
-        proper slots.
+        with the current value.
         
         """
 
         self.gridCellWidthSpinner.setValue(self.settings.grid_cell_width)
         self.gridCellHeightSpinner.setValue(self.settings.grid_cell_height)
 
+
+
+    def set_up_grid_dimension_selector_connections(self):
+        """ Set up the connections for the grid dimension selectors. """
+        
         self.connect(self.gridCellWidthSpinner,
                      SIGNAL("valueChanged(int)"),
                      self.grid_cell_width_changed)

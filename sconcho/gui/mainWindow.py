@@ -614,6 +614,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         set_up_colors(self.colorWidget, colors)
         self.activate_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
         readFileName = QFileInfo(readFilePath).fileName()
+        self.emit(SIGNAL("update_preferences"))
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
 
 
@@ -680,6 +681,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.connect(self.preferencesDialog,
                          SIGNAL("grid_cell_dimensions_changed"),
                          self.set_project_dirty)
+
+            self.connect(self,
+                         SIGNAL("update_preferences"),
+                         self.preferencesDialog.populate_interface)
+
 
         self.preferencesDialog.raise_()
         self.preferencesDialog.show()
