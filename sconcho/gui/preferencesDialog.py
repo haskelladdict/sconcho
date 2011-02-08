@@ -53,6 +53,9 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.establish_connections()
         self.set_up_personal_symbol_path()
 
+        self.connect(self.makeDefaultButton,
+                     SIGNAL("pressed()"),
+                     self.make_settings_the_default)
 
 
     def populate_interface(self):
@@ -131,35 +134,29 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      SIGNAL("currentIndexChanged(int)"),
                      self.update_current_label_font)
 
-        self.connect(self.legendPrefDefaultButton,
-                     SIGNAL("pressed()"),
-                     self.set_legend_defaults)
-
-        self.connect(self.labelPrefDefaultButton,
-                     SIGNAL("pressed()"),
-                     self.set_label_defaults)
 
 
+    def make_settings_the_default(self):
+        """ Stores the currently selected properties as the default. """
 
-    def set_legend_defaults(self):
-        """ Stores the currently selected legend properties as default. """
-
-        # set font
+        # set legend font
         newLegendFont = self._get_legend_font_from_widget()
         self.settings.set_default_legend_font(newLegendFont)
 
-
-
-    def set_label_defaults(self):
-        """ Stores the currently selected label properties as default. """
-
-        # set font
+        # set label font
         newLabelsFont = self._get_label_font_from_widget()
         self.settings.set_default_label_font(newLabelsFont)
 
         # set label interval
         interval = self.labelIntervalSpinner.value()
         self.settings.set_default_label_interval(interval)
+
+        # set cell dimension
+        cellWidth = self.gridCellWidthSpinner.value()
+        cellHeight = self.gridCellHeightSpinner.value()
+
+        self.settings.set_default_grid_cell_width(cellWidth)
+        self.settings.set_default_grid_cell_height(cellHeight)
 
 
 
@@ -406,20 +403,6 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      SIGNAL("valueChanged(int)"),
                      self.grid_cell_height_changed)
 
-        self.connect(self.cellDimPrefDefaultButton,
-                     SIGNAL("pressed()"),
-                     self.set_grid_dimension_defaults)
-
-
-        
-    def set_grid_dimension_defaults(self):
-        """ Set the defaults for the grid dimensions. """
-        
-        cellWidth = self.gridCellWidthSpinner.value()
-        cellHeight = self.gridCellHeightSpinner.value()
-
-        self.settings.set_default_grid_cell_width(cellWidth)
-        self.settings.set_default_grid_cell_height(cellHeight)
 
 
 
