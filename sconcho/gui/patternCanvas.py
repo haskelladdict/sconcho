@@ -280,12 +280,8 @@ class PatternCanvas(QGraphicsScene):
         # add the description part of the legend
         textLocation = QPointF((width+1) * self._unitCellDim.width(),
                                 yMax + self._unitCellDim.height() + 10)
-        textItem = QGraphicsTextItem()
+        textItem = PatternLegendText(symbol["description"])
         textItem.setPos(textLocation)
-        textItem.setZValue(1)
-        textItem.setFlag(QGraphicsItem.ItemIsMovable)
-        textItem.setTextInteractionFlags(Qt.TextEditorInteraction);
-        textItem.setPlainText(symbol["description"])
         textItem.setFont(self.settings.legend_font)
         self.addItem(textItem)
 
@@ -1433,6 +1429,37 @@ class PatternLegendItem(QGraphicsSvgItem):
 
 #########################################################
 ## 
+## class for managing the descriptive text of a legend
+## item
+##
+#########################################################
+class PatternLegendText(QGraphicsTextItem):
+
+    Type = 70000 + 3
+
+
+    def __init__(self, text, parent = None):
+
+        super(PatternLegendText, self).__init__(text, parent)
+
+        self.setZValue(1)
+        self.setFlag(QGraphicsItem.ItemIsMovable)
+        self.setTextInteractionFlags(Qt.TextEditorInteraction);
+
+
+
+    def keyPressEvent(self, event):
+
+
+        #print(self.toPlainText())
+        QGraphicsTextItem.keyPressEvent(self, event)
+        #print(self.toPlainText())
+        
+
+    
+
+#########################################################
+## 
 ## class for managing a single pattern grid label
 ## (this does nothing spiffy at all, we just need
 ## it to identify the item on the canvas)
@@ -1440,12 +1467,16 @@ class PatternLegendItem(QGraphicsSvgItem):
 #########################################################
 class PatternLabelItem(QGraphicsTextItem):
 
-    Type = 70000 + 3
+    Type = 70000 + 4
 
 
     def __init__(self, text, parent = None):
 
         super(PatternLabelItem, self).__init__(text, parent)
+
+
+
+
 
 
 
