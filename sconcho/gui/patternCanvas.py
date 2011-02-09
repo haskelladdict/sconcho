@@ -1448,15 +1448,6 @@ class PatternLegendText(QGraphicsTextItem):
 
 
 
-    def keyPressEvent(self, event):
-
-
-        #print(self.toPlainText())
-        QGraphicsTextItem.keyPressEvent(self, event)
-        #print(self.toPlainText())
-        
-
-    
 
 #########################################################
 ## 

@@ -85,13 +85,11 @@ class DefaultSettings(QSettings):
 
         cellWidth = self.value("default/cellWidth").toString()
         if cellWidth.isEmpty():
-            defaultWidth = QString(GRID_CELL_WIDTH)
             self.setValue("default/cellWidth",
                           DefaultSettings.DEFAULT_GRID_CELL_WIDTH)
 
         cellHeight = self.value("default/cellHeight").toString()
         if cellHeight.isEmpty():
-            defaultHeight = QString(GRID_CELL_HEIGHT)
             self.setValue("default/cellHeight", 
                           DefaultSettings.DEFAULT_GRID_CELL_HEIGHT)
 
