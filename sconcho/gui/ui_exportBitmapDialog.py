@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/exportBitmapDialog.ui'
 #
-# Created: Mon Feb  7 22:35:34 2011
+# Created: Tue Feb  8 21:14:00 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -111,7 +111,7 @@ class Ui_ExportBitmapDialog(object):
         ExportBitmapDialog.setTabOrder(self.fileNameEdit, self.browseButton)
 
     def retranslateUi(self, ExportBitmapDialog):
-        ExportBitmapDialog.setWindowTitle(QtGui.QApplication.translate("ExportBitmapDialog", "sconcho: Export as Bitmap", None, QtGui.QApplication.UnicodeUTF8))
+        ExportBitmapDialog.setWindowTitle(QtGui.QApplication.translate("ExportBitmapDialog", "sconcho: Export as Bitmap or Svg", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("ExportBitmapDialog", "<b>Image Size</b>", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Width", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Height", None, QtGui.QApplication.UnicodeUTF8))

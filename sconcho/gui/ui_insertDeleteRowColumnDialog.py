@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/insertDeleteRowColumnDialog.ui'
 #
-# Created: Mon Feb  7 22:35:34 2011
+# Created: Tue Feb  8 21:14:00 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
