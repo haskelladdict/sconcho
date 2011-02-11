@@ -358,6 +358,17 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def legend_item_position_changed(self, legendItem, oldPosition, newPosition):
+        """ A legend item calls this function if its position on the
+        canvas has changed via a user action.
+
+        """
+
+        moveCommand = MoveLegendItem(legendItem, oldPosition, newPosition)
+        self._undoStack.push(moveCommand)
+
+        
+
     def create_pattern_grid_item(self, origin, unitDim, col, row,
                                  width, height, knittingSymbol,
                                  color):
@@ -1379,6 +1390,32 @@ class PatternLegendItem(QGraphicsSvgItem):
 
 
 
+    def mousePressEvent(self, event):
+        """ We reimplement this function to store the position of
+        the item when a user issues a mouse press.
+
+        """
+
+        self._position = self.pos()
+        QGraphicsSvgItem.mousePressEvent(self, event)
+
+
+
+    def mouseReleaseEvent(self, event):
+        """ We reimplement this function to check if its position
+        has changed since the last mouse click. If yes we
+        let the canvas know so it can store the action as
+        a Redo/Undo event.
+
+        """
+
+        if self._position != self.pos():
+           self.scene().legend_item_position_changed(self, self._position, self.pos()) 
+
+        QGraphicsSvgItem.mouseReleaseEvent(self, event)
+
+
+
     def change_geometry(self, newDim):
         """ This slot changes the unit dimensions of the item. """
 
@@ -1446,6 +1483,35 @@ class PatternLegendText(QGraphicsTextItem):
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setTextInteractionFlags(Qt.TextEditorInteraction);
 
+        self._position = self.pos()
+
+
+
+    def mousePressEvent(self, event):
+        """ We reimplement this function to store the position of
+        the item when a user issues a mouse press.
+
+        """
+
+        self._position = self.pos()
+        QGraphicsTextItem.mousePressEvent(self, event)
+
+
+
+
+    def mouseReleaseEvent(self, event):
+        """ We reimplement this function to check if its position
+        has changed since the last mouse click. If yes we
+        let the canvas know so it can store the action as
+        a Redo/Undo event.
+
+        """
+
+        if self._position != self.pos():
+           self.scene().legend_item_position_changed(self, self._position, self.pos()) 
+
+        QGraphicsTextItem.mouseReleaseEvent(self, event)
+    
 
 
 
@@ -2905,3 +2971,34 @@ class PaintCells(QUndoCommand):
         self.canvas._selectedCells = self.oldSelection
 
 
+
+class MoveLegendItem(QUndoCommand):
+    """ This class encapsulates the movement of legend items
+    (PatternLabelItem or PatternLabelText).
+    
+    """
+
+    
+    def __init__(self, legendItem, oldPosition, newPosition, parent = None):
+
+        super(MoveLegendItem, self).__init__(parent) 
+        self.setText("move legend item")
+
+        self.legendItem = legendItem
+        
+        self.oldPosition = oldPosition
+        self.newPosition = newPosition
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        self.legendItem.setPos(self.newPosition)
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        self.legendItem.setPos(self.oldPosition)
