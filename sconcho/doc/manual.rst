@@ -10,16 +10,17 @@ printed to a printer of saved in PDF or PostScript format.
 
 **Contents of this manual**:
 
-1. `Starting a new Project`_
-2. `Adding Symbols to Pattern Grid`_
-3. `Copy and Pasting a Selection`_
-4. `Changing a Symbol's Background Color`_ 
-5. `Changing the Legend Layout`_
-6. `Inserting and Deleting Columns and Rows in the Chart`_
-7. `Saving and Opening Sconcho Projects`_
-8. `Exporting and Printing Charts`_
-9. `Changing the Label and Legend Properties`_
-10. `Creating your own Custom Symbols`_
+* `Starting a new Project`_
+* `Adding Symbols to Pattern Grid`_
+* `Copy and Pasting a Selection`_
+* `Un-doing/Re-doing Canvas Actions`_
+* `Changing a Symbol's Background Color`_ 
+* `Changing the Legend Layout`_
+* `Inserting and Deleting Columns and Rows in the Chart`_
+* `Saving and Opening Sconcho Projects`_
+* `Exporting and Printing Charts`_
+* `Changing the Label and Legend Properties`_
+* `Creating your own Custom Symbols`_
 
 
 Starting a new Project
@@ -84,6 +85,14 @@ than a single cell (e.g. 2, 3, 4, 5, or 6 stitch cables).
 If the current selection is not rectangular or consists of multiple disconnected
 pieces it can not be copied and the *Copy Selection* option is grayed out.
 
+
+
+Un-doing/Re-doing Canvas Actions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Sconcho allows unlimited undo and redo of all canvas actions,
+including adding symbols, copy & paste, deleting/inserting rows and columns, 
+changing colors, and moving and editing legend items.
 
 
 Changing a Symbol's Background Color

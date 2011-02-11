@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
 <title>Sconcho Manual</title>
 <style type="text/css">
 
 /*
 :Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 6253 2010-03-02 00:24:53Z milde $
+:Id: $Id: html4css1.css 5951 2009-05-18 18:03:10Z milde $
 :Copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
@@ -157,21 +157,15 @@ h2.subtitle {
 hr.docutils {
   width: 75% }
 
-img.align-left, .figure.align-left, object.align-left {
+img.align-left, .figure.align-left{
   clear: left ;
   float: left ;
   margin-right: 1em }
 
-img.align-right, .figure.align-right, object.align-right {
+img.align-right, .figure.align-right {
   clear: right ;
   float: right ;
   margin-left: 1em }
-
-img.align-center, .figure.align-center, object.align-center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
 
 .align-left {
   text-align: left }
@@ -319,10 +313,11 @@ a platform independent format as sconcho project files (spf) and can be edited
 at a later time. Charts can be exported in a variety of image formats and also
 printed to a printer of saved in PDF or PostScript format.</p>
 <p><strong>Contents of this manual</strong>:</p>
-<ol class="arabic simple">
+<ul class="simple">
 <li><a class="reference internal" href="#starting-a-new-project">Starting a new Project</a></li>
 <li><a class="reference internal" href="#adding-symbols-to-pattern-grid">Adding Symbols to Pattern Grid</a></li>
 <li><a class="reference internal" href="#copy-and-pasting-a-selection">Copy and Pasting a Selection</a></li>
+<li><a class="reference internal" href="#un-doing-re-doing-canvas-actions">Un-doing/Re-doing Canvas Actions</a></li>
 <li><a class="reference internal" href="#changing-a-symbol-s-background-color">Changing a Symbol's Background Color</a></li>
 <li><a class="reference internal" href="#changing-the-legend-layout">Changing the Legend Layout</a></li>
 <li><a class="reference internal" href="#inserting-and-deleting-columns-and-rows-in-the-chart">Inserting and Deleting Columns and Rows in the Chart</a></li>
@@ -330,7 +325,7 @@ printed to a printer of saved in PDF or PostScript format.</p>
 <li><a class="reference internal" href="#exporting-and-printing-charts">Exporting and Printing Charts</a></li>
 <li><a class="reference internal" href="#changing-the-label-and-legend-properties">Changing the Label and Legend Properties</a></li>
 <li><a class="reference internal" href="#creating-your-own-custom-symbols">Creating your own Custom Symbols</a></li>
-</ol>
+</ul>
 <div class="section" id="starting-a-new-project">
 <h1>Starting a new Project</h1>
 <p>After startup, sconcho by default presents a pattern grid with 10 rows and
@@ -386,6 +381,12 @@ than a single cell (e.g. 2, 3, 4, 5, or 6 stitch cables).</p>
 <p><strong>Note:</strong> Presently, only rectangular selections can be copied and pasted.
 If the current selection is not rectangular or consists of multiple disconnected
 pieces it can not be copied and the <em>Copy Selection</em> option is grayed out.</p>
+</div>
+<div class="section" id="un-doing-re-doing-canvas-actions">
+<h1>Un-doing/Re-doing Canvas Actions</h1>
+<p>Sconcho allows unlimited undo and redo of all canvas actions,
+including adding symbols, copy &amp; paste, deleting/inserting rows and columns,
+changing colors, and moving and editing legend items.</p>
 </div>
 <div class="section" id="changing-a-symbol-s-background-color">
 <h1>Changing a Symbol's Background Color</h1>
