@@ -775,8 +775,7 @@ class PatternCanvas(QGraphicsScene):
                          self.convert_canvas_row_to_internal(item.row)
                     canvasColumn = \
                          self.convert_canvas_column_to_internal(item.column)
-                    removedItems.append((item.symbol["name"], canvasColumn,
-                                         canvasRow))
+                    removedItems.append((item.name, canvasColumn, canvasRow))
                     item = items[index]
                     self.removeItem(item)
                     del item
