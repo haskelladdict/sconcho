@@ -554,6 +554,11 @@ class PatternCanvas(QGraphicsScene):
         colorAction = gridMenu.addAction("&Grab Color")
         gridMenu.addSeparator()
 
+        outlineAction = gridMenu.addAction("&Add Border Around Selection")
+        if not can_outline_selection(self._selectedCells.values()):
+            outlineAction.setEnabled(False)
+        gridMenu.addSeparator()
+
         copyAction = gridMenu.addAction("&Copy Selection")
         (status, (colDim, rowDim)) = \
                 is_active_selection_rectangular(self._selectedCells.values())
@@ -1859,6 +1864,34 @@ def is_active_selection_rectangular(selectedCells):
     numCols = values.pop()
     numRows = len(cellsByRow)
     return (True, (numCols, numRows))
+
+
+
+def can_outline_selection(selection):
+    """ This function determines if the currently action selection
+    can be outlined. This requires the selection to be connected
+    without any holes.
+
+    """
+
+    # check that rows are consecutive
+    cellsByRow = order_selection_by_rows(selection)
+    keys = cellsByRow.keys()
+    keys.sort()
+    differences = set([(j-i) for (i,j) in zip(keys, keys[1:])])
+    if len(differences) > 1: 
+        return False
+    elif len(differences) == 1 and (1 not in differences):
+        return False
+
+    # check that each row has no holes
+    for row in cellsByRow.values():
+        row.sort(lambda x, y: cmp(x.column, y.column))
+
+        if not are_consecutive([row]):
+            return False
+
+    return True
 
 
 
