@@ -80,6 +80,9 @@ class PatternCanvas(QGraphicsScene):
 
         self._textLabels = []
 
+        # toggles the visbility of nostitch symbols
+        self._nostitchVisible = True
+
         self.insertDeleteRowColDialog = None
 
         self.gridLegend = {}
@@ -194,6 +197,12 @@ class PatternCanvas(QGraphicsScene):
         else:
             (item, textItem) = self._add_legend_item(item.symbol, item.color)
             self.gridLegend[legendID] = [1, item, textItem]
+
+            # if this is the first time we add a nostitch we need to
+            # check if the users want is visible
+            if item.name == "nostitch" and not self._nostitchVisible:
+                item.hide()
+                textItem.hide()
 
 
 
@@ -383,6 +392,11 @@ class PatternCanvas(QGraphicsScene):
         self.connect(item, SIGNAL("cell_selected"), self.grid_cell_activated)
         self.connect(item, SIGNAL("cell_unselected"),
                      self.grid_cell_inactivated)
+
+        # if symbol is a nostitch hide it if requested
+        if item.name == "nostitch" and not self._nostitchVisible:
+            item.hide()
+        
         return item
 
 
@@ -1161,6 +1175,59 @@ class PatternCanvas(QGraphicsScene):
                     item.hide()
 
 
+    def toggle_nostitch_visibility(self, status):
+        """ Per request from the main window toggle the visibility
+        of nostitch symbols.
+
+        """
+
+        # set status so we can deal with new newstitch symbols 
+        self._nostitchVisible = status
+
+        nostitchSymbol = None
+        for item in self.items():
+            if isinstance(item, PatternGridItem):
+                if item.name == "nostitch":
+                    nostitchSymbol = item
+                    if status:
+                        item.show()
+                    else:
+                        item.hide()
+
+        if nostitchSymbol:
+            self.toggle_nostitch_legend_visibility(nostitchSymbol, status)
+
+                
+
+    def toggle_nostitch_legend_visibility(self, nostitchSymbol, status):
+        """ Per request from the main window toggle the visibility
+        of nostitch symbols' legend entry.
+
+        NOTE: The current way of determining the legendID, namely via
+        a reference to a nostitch symbol is kind of clunky. Maybe we
+        should think about improving this?
+
+        """
+
+        legendID = generate_legend_id(nostitchSymbol.symbol,
+                                      nostitchSymbol.color)
+        
+        if legendID in self.gridLegend:
+            (dummy, item, textItem) = self.gridLegend[legendID]
+
+            if status:
+                item.show()
+                textItem.show()
+            else:
+                item.hide()
+                textItem.hide()
+
+        # this should never happen, if there is an nonstitch item
+        # on the canvas we should have a legend entry
+        else:
+            print("Error: Could not find nostitch legend entry.")
+
+
 
     def label_font_changed(self):
         """ This slot is called when the label font has
@@ -1271,10 +1338,8 @@ class PatternGridItem(QGraphicsSvgItem):
         """ Handle user press events on the item. """
 
         if not self._selected:
-            #self._select()
             self.emit(SIGNAL("cell_selected"), self)
         else:
-            #self._unselect()
             self.emit(SIGNAL("cell_unselected"), self)
 
 
@@ -1286,6 +1351,13 @@ class PatternGridItem(QGraphicsSvgItem):
         self.size    = QSizeF(self.unitDim.width() * self.width,
                               self.unitDim.height() * self.height)
 
+
+    @property
+    def name(self):
+        """ Return the name of the symbol we contain """
+
+        return self.symbol["name"]
+    
 
 
     def _unselect(self):
@@ -1410,7 +1482,8 @@ class PatternLegendItem(QGraphicsSvgItem):
         """
 
         if self._position != self.pos():
-           self.scene().legend_item_position_changed(self, self._position, self.pos()) 
+           self.scene().legend_item_position_changed(self, self._position,
+                                                     self.pos()) 
 
         QGraphicsSvgItem.mouseReleaseEvent(self, event)
 
@@ -1422,6 +1495,14 @@ class PatternLegendItem(QGraphicsSvgItem):
         self.unitDim = newDim
         self.size    = QSizeF(self.unitDim.width() * self.width,
                               self.unitDim.height() * self.height)
+
+
+
+    @property
+    def name(self):
+        """ Return the name of the knitting symbol we contain. """
+
+        return self.symbol["name"]
 
 
 

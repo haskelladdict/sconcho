@@ -189,6 +189,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.actionShow_pattern_grid, SIGNAL("toggled(bool)"),
                      self.canvas.toggle_pattern_grid_visibility)
+
+        self.connect(self.actionShow_nostitch_symbols, SIGNAL("toggled(bool)"),
+                     self.canvas.toggle_nostitch_visibility)
         
         self.connect(self.canvas, SIGNAL("scene_changed"),
                      self.set_project_dirty)

@@ -62,8 +62,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>759</width>
-           <height>78</height>
+           <width>757</width>
+           <height>76</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout"/>
@@ -80,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>1137</width>
-     <height>25</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -119,6 +119,7 @@
     <addaction name="actionShow_pattern_grid"/>
     <addaction name="actionShow_grid_labels"/>
     <addaction name="actionShow_legend"/>
+    <addaction name="actionShow_nostitch_symbols"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -514,6 +515,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionShow_nostitch_symbols">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show &amp;Nostitch Symbols</string>
    </property>
   </action>
  </widget>

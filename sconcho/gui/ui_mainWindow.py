@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Tue Feb  8 21:14:00 2011
+# Created: Sat Feb 12 11:11:06 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -48,7 +48,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.colorWidgetContainer = QtGui.QWidget()
-        self.colorWidgetContainer.setGeometry(QtCore.QRect(0, 0, 759, 78))
+        self.colorWidgetContainer.setGeometry(QtCore.QRect(0, 0, 757, 76))
         self.colorWidgetContainer.setObjectName(_fromUtf8("colorWidgetContainer"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.colorWidgetContainer)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
@@ -57,7 +57,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addLayout(self.verticalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1137, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1137, 30))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -202,6 +202,10 @@ class Ui_MainWindow(object):
         self.action_Undo.setObjectName(_fromUtf8("action_Undo"))
         self.action_Redo = QtGui.QAction(MainWindow)
         self.action_Redo.setObjectName(_fromUtf8("action_Redo"))
+        self.actionShow_nostitch_symbols = QtGui.QAction(MainWindow)
+        self.actionShow_nostitch_symbols.setCheckable(True)
+        self.actionShow_nostitch_symbols.setChecked(True)
+        self.actionShow_nostitch_symbols.setObjectName(_fromUtf8("actionShow_nostitch_symbols"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -224,6 +228,7 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.actionShow_pattern_grid)
         self.menuView.addAction(self.actionShow_grid_labels)
         self.menuView.addAction(self.actionShow_legend)
+        self.menuView.addAction(self.actionShow_nostitch_symbols)
         self.menuHelp.addAction(self.actionSconcho_Manual)
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAbout_sconcho)
@@ -321,6 +326,7 @@ class Ui_MainWindow(object):
         self.action_Undo.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Z", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Redo.setText(QtGui.QApplication.translate("MainWindow", "&Redo", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Redo.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+R", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_nostitch_symbols.setText(QtGui.QApplication.translate("MainWindow", "Show &Nostitch Symbols", None, QtGui.QApplication.UnicodeUTF8))
 
 from patternView import PatternView
 import icons_rc
