@@ -838,7 +838,14 @@ class ActiveSymbolWidget(QWidget):
 
         if symbolObject:
             symbol = symbolObject.get_content()
-            self.widget = SymbolDisplayItem(symbol, self.color)
+
+            # for nostitch we use its default color
+            if symbolObject.name == "nostitch":
+                color = symbolObject.color
+            else:
+                color = self.color
+            
+            self.widget = SymbolDisplayItem(symbol, color)
             self.layout.addWidget(self.widget,0,1)
 
             if self.label is self.inactiveSymbolLabel:
@@ -866,7 +873,7 @@ class ActiveSymbolWidget(QWidget):
 
         self.color = newColorObject.get_content()
         
-        if self.widget:
+        if self.widget and not self.widget.name == "nostitch":
             self.widget.set_backcolor(self.color)
         
 
@@ -914,6 +921,13 @@ class SymbolDisplayItem(QFrame):
 
     
 
+    @property
+    def name(self):
+        """ Return the name of the underlying symbol. """
+
+        return self._symbol["name"]
+        
+    
 
     def set_backcolor(self, color):
         """ Sets the background color. """

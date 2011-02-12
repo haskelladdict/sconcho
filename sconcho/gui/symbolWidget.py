@@ -26,7 +26,8 @@ from __future__ import absolute_import
 
 from PyQt4.QtCore import (QString, QSize, QObject, SIGNAL, Qt)
 from PyQt4.QtGui import (QFrame, QGridLayout, QWidgetItem, QWidget, 
-                         QHBoxLayout, QLabel, QScrollArea, QMenu)
+                         QHBoxLayout, QLabel, QScrollArea, QMenu,
+                         QColor)
 from PyQt4.QtSvg import QSvgWidget
 
 
@@ -200,7 +201,7 @@ class SymbolSelectorItem(QFrame):
         self.setMaximumSize(svgWidth * 30, 30)
 
         # finalize the layout
-        layout    = QHBoxLayout()
+        layout = QHBoxLayout()
         layout.setContentsMargins( 0, 0, 0, 0 )
         layout.addWidget(svgWidget)
         self.setLayout(layout)
@@ -212,6 +213,30 @@ class SymbolSelectorItem(QFrame):
         """
 
         return self._symbol
+
+
+
+    @property
+    def name(self):
+        """ Returns the name of the underlying symbol. """
+
+        return self._symbol["name"]
+
+
+
+    @property
+    def color(self):
+        """ Returns the background color of the underlying symbol if
+        it has one or white otherwise
+
+        """
+
+        if "backgroundColor" in self._symbol:
+            backColor = self._symbol["backgroundColor"]
+        else:
+            backColor = "white"
+            
+        return QColor(backColor)
 
 
 
