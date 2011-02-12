@@ -550,11 +550,18 @@ class PatternCanvas(QGraphicsScene):
 
         gridMenu = QMenu()
         rowAction = gridMenu.addAction("Insert/Delete Rows and Columns")
+        self.connect(rowAction, SIGNAL("triggered()"),
+                     partial(self.insert_delete_rows_columns, col, row))
         gridMenu.addSeparator()
+        
         colorAction = gridMenu.addAction("&Grab Color")
+        self.connect(colorAction, SIGNAL("triggered()"),
+                     partial(self.grab_color_from_cell, event))
         gridMenu.addSeparator()
 
         outlineAction = gridMenu.addAction("&Add Border Around Selection")
+        self.connect(outlineAction, SIGNAL("triggered()"),
+                     self.add_border_to_selection)
         if not can_outline_selection(self._selectedCells.values()):
             outlineAction.setEnabled(False)
         gridMenu.addSeparator()
@@ -562,28 +569,21 @@ class PatternCanvas(QGraphicsScene):
         copyAction = gridMenu.addAction("&Copy Selection")
         (status, (colDim, rowDim)) = \
                 is_active_selection_rectangular(self._selectedCells.values())
+        self.connect(copyAction, SIGNAL("triggered()"),
+                     partial(self.copy_selection, colDim, rowDim))
         if not status:
             copyAction.setEnabled(False)
 
-        pasteAction = gridMenu.addAction("&Paste Selection") 
-        pasteAction.setEnabled(False)
-        if self._copySelectionDim:
-            colDim = self._copySelectionDim[0]
-            rowDim = self._copySelectionDim[1]
-            if self._rectangle_self_contained(col, row, colDim, rowDim):
-                pasteAction.setEnabled(True)
-
-        self.connect(rowAction, SIGNAL("triggered()"),
-                     partial(self.insert_delete_rows_columns, col, row))
-        
-        self.connect(colorAction, SIGNAL("triggered()"),
-                     partial(self.grab_color_from_cell, event))
-
-        self.connect(copyAction, SIGNAL("triggered()"),
-                     partial(self.copy_selection, colDim, rowDim))
-
+        pasteAction = gridMenu.addAction("&Paste Selection")
         self.connect(pasteAction, SIGNAL("triggered()"),
                      partial(self.paste_selection, col, row))
+        pasteAction.setEnabled(False)
+        if self._copySelectionDim:
+            pasteColDim = self._copySelectionDim[0]
+            pasteRowDim = self._copySelectionDim[1]
+            if self._rectangle_self_contained(col, row, pasteColDim,
+                                              pasteRowDim):
+                pasteAction.setEnabled(True)
 
         gridMenu.exec_(event.screenPos())
 
@@ -620,6 +620,20 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+
+    def add_border_to_selection(self):
+        """ Adds a border around the current selection.
+
+        NOTE: This function assumes that the selection has already been
+        checked for its ability to be outlines (i.e. it is connected
+        without holes.
+
+        """
+
+        print("outlining")
+
+
+
     def grab_color_from_cell(self, event):
         """ Extract the color from the selected cell
         and add it to the currently active color selector.
@@ -645,7 +659,7 @@ class PatternCanvas(QGraphicsScene):
             return
 
         self._copySelection.clear()
-        self._copySelection    = self._selectedCells.copy()
+        self._copySelection = self._selectedCells.copy()
         self._copySelectionDim = (colDim, rowDim)
         self.clear_all_selected_cells()
 
@@ -668,8 +682,14 @@ class PatternCanvas(QGraphicsScene):
                                     self._unitCellDim.width(),
                                     self._unitCellDim.height())
 
-        
+        # we need to add a small fraction to witdh and height
+        # in case of single row column selections (otherwise Qt
+        # doesn recognize the selection as a rectangle)
+        lowerRightCorner += QPointF(self._unitCellDim.width() * 0.01,
+                                    self._unitCellDim.height() * 0.01)
+
         allItems = self.items(QRectF(upperLeftCorner, lowerRightCorner))
+        print(allItems)
         patternGridItems = []
         for item in allItems:
             if isinstance(item, PatternGridItem):
@@ -1873,6 +1893,9 @@ def can_outline_selection(selection):
     without any holes.
 
     """
+
+    if len(selection) == 0:
+        return False
 
     # check that rows are consecutive
     cellsByRow = order_selection_by_rows(selection)
