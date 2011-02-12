@@ -559,12 +559,12 @@ class PatternCanvas(QGraphicsScene):
                      partial(self.grab_color_from_cell, event))
         gridMenu.addSeparator()
 
-        outlineAction = gridMenu.addAction("&Add Border Around Selection")
-        self.connect(outlineAction, SIGNAL("triggered()"),
-                     self.add_border_to_selection)
-        if not can_outline_selection(self._selectedCells.values()):
-            outlineAction.setEnabled(False)
-        gridMenu.addSeparator()
+        #outlineAction = gridMenu.addAction("&Add Border Around Selection")
+        #self.connect(outlineAction, SIGNAL("triggered()"),
+        #             self.add_border_to_selection)
+        #if not can_outline_selection(self._selectedCells.values()):
+        #    outlineAction.setEnabled(False)
+        #gridMenu.addSeparator()
 
         copyAction = gridMenu.addAction("&Copy Selection")
         (status, (colDim, rowDim)) = \
@@ -689,7 +689,6 @@ class PatternCanvas(QGraphicsScene):
                                     self._unitCellDim.height() * 0.01)
 
         allItems = self.items(QRectF(upperLeftCorner, lowerRightCorner))
-        print(allItems)
         patternGridItems = []
         for item in allItems:
             if isinstance(item, PatternGridItem):

@@ -1,3 +1,16 @@
+02-12-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Release of 0.1.0_a8
+	* Fixed serious bug in copy/paste code screwing up 
+	anything beyond the first copy and paste action
+	* Many small bugfixes
+	* Completely reworked preferences code; users can
+	now specify defaults.
+	* spf files now also contain the grid dimensions
+	* added ability to turn nostitch symbols on/off to
+	produce non-rectangular patterns
+
+
 01-31-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Release of 0.1.0_a7
