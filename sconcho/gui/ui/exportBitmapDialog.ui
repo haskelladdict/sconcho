@@ -148,6 +148,16 @@ p, li { white-space: pre-wrap; }
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QCheckBox" name="hideNostitchCheckBox">
+         <property name="toolTip">
+          <string>Checking this option will hide all &lt;i&gt;nostitch&lt;/i&gt; symbols in the exported image of your pattern. This can be used to generate non-rectangular patterns.</string>
+         </property>
+         <property name="text">
+          <string>Hide nostitch symbols</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>

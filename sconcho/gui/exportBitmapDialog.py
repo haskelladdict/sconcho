@@ -44,14 +44,13 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
     def __init__(self, size, parent = None):
-        """
-        Initialize the dialog.
-        """
+        """ Initialize the dialog. """
 
         super(ExportBitmapDialog, self).__init__(parent)
         self.setupUi(self)
         self.determine_image_formats()
 
+        self.hideNostitchSymbols = False
         self.width = math.floor(size.width())
         self.height = math.floor(size.height())
         self._originalWidth = self.width
@@ -73,6 +72,9 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
         self.connect(self.scalingSpinner, SIGNAL("editingFinished()"),
                      self.scaling_update)
+
+        self.connect(self.hideNostitchCheckBox, SIGNAL("stateChanged(int)"),
+                     self.hide_nostitch_update)
         
         self.connect(self.browseButton, SIGNAL("pressed()"),
                      self.open_file_selector)
@@ -91,6 +93,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
         NOTE: qt-4.7 seems to offer gif format even if it
         doesn't support it always so we manually punt it.
+        
         """
 
         self.formats = ["*.%s" % unicode(format).lower() for \
@@ -107,6 +110,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         """ Update height spinner after width change.
 
         Update according to the correct aspect ratio.
+        
         """
 
         newWidth = self.widthSpinner.value()
@@ -124,6 +128,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         """ Update width spinner after height change.
 
         Update according to the correct aspect ratio.
+        
         """
 
         newHeight = self.heightSpinner.value()
@@ -141,6 +146,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         """ Update scaling spinner after height change.
 
         Update according to the correct aspect ratio.
+        
         """
 
         newScale = self.scalingSpinner.value()
@@ -152,6 +158,16 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.widthSpinner.setValue(self.width)
         self.heightSpinner.setValue(self.height)
 
+
+
+    def hide_nostitch_update(self, state):
+        """ Update the current hide nostitch state """
+
+        if state == 0:
+            self.hideNostitchSymbols = False
+        else:
+            self.hideNostitchSymbols = True
+            
 
         
     def open_file_selector(self):
@@ -170,7 +186,9 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
     def accept(self):
         """ Checks that we have a path and reminds the user to
-        enter one if not. """
+        enter one if not.
+
+        """
 
         exportFilePath = self.fileNameEdit.text()
 
@@ -198,7 +216,9 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
     def keyPressEvent(self, event):
         """ We catch the return key so we don't open
-        up the browse menu. """
+        up the browse menu.
+
+        """
 
         if event.key() == Qt.Key_Return:
             return

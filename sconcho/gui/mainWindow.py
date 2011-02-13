@@ -190,9 +190,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionShow_pattern_grid, SIGNAL("toggled(bool)"),
                      self.canvas.toggle_pattern_grid_visibility)
 
-        self.connect(self.actionShow_nostitch_symbols, SIGNAL("toggled(bool)"),
-                     self.canvas.toggle_nostitch_visibility)
-        
         self.connect(self.canvas, SIGNAL("scene_changed"),
                      self.set_project_dirty)
 
@@ -628,12 +625,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         canvasSize = self.canvas.itemsBoundingRect()
         exportDialog = ExportBitmapDialog(canvasSize, self)
         if exportDialog.exec_():
-            width = exportDialog.width
-            height = exportDialog.height
-            exportFilePath = exportDialog.filePath
-            
-            io.export_scene(self.canvas, width, height, exportFilePath)
-            exportFileName = QFileInfo(exportFilePath).fileName()
+            io.export_scene(self.canvas,
+                            exportDialog.width,
+                            exportDialog.height,
+                            exportDialog.hideNostitchSymbols,
+                            exportDialog.filePath)
+            exportFileName = QFileInfo(exportDialog.filePath).fileName()
             self.statusBar().showMessage("successfully exported " + 
                                          exportFileName, 3000)
 

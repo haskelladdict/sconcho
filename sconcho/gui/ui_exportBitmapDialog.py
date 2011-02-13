@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/exportBitmapDialog.ui'
 #
-# Created: Sat Feb 12 11:11:06 2011
+# Created: Sun Feb 13 17:23:25 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -69,6 +69,9 @@ class Ui_ExportBitmapDialog(object):
         self.horizontalLayout.addWidget(self.label_8)
         spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem2)
+        self.hideNostitchCheckBox = QtGui.QCheckBox(ExportBitmapDialog)
+        self.hideNostitchCheckBox.setObjectName(_fromUtf8("hideNostitchCheckBox"))
+        self.horizontalLayout.addWidget(self.hideNostitchCheckBox)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.verticalLayout_4.addLayout(self.verticalLayout_2)
         self.verticalLayout_3 = QtGui.QVBoxLayout()
@@ -123,6 +126,8 @@ class Ui_ExportBitmapDialog(object):
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Scaling</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("ExportBitmapDialog", "%", None, QtGui.QApplication.UnicodeUTF8))
+        self.hideNostitchCheckBox.setToolTip(QtGui.QApplication.translate("ExportBitmapDialog", "Checking this option will hide all <i>nostitch</i> symbols in the exported image of your pattern. This can be used to generate non-rectangular patterns.", None, QtGui.QApplication.UnicodeUTF8))
+        self.hideNostitchCheckBox.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Hide nostitch symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("ExportBitmapDialog", "< b>File Name</b>", None, QtGui.QApplication.UnicodeUTF8))
         self.browseButton.setText(QtGui.QApplication.translate("ExportBitmapDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.cancelButton.setText(QtGui.QApplication.translate("ExportBitmapDialog", "&Cancel", None, QtGui.QApplication.UnicodeUTF8))

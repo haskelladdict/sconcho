@@ -379,11 +379,14 @@ def read_settings(stream, settings):
 #
 #############################################################################
 @wait_cursor
-def export_scene(canvas, width, height, exportFileName):
-    """
-    This function exports the scene to a file.
-    """
+def export_scene(canvas, width, height, hideNostitchSymbols,
+                 exportFileName):
+    """ This function exports the scene to a file. """
+
     canvas.clear_all_selected_cells()
+
+    if hideNostitchSymbols:
+        canvas.toggle_nostitch_symbol_visbility(False)
 
     # NOTE: We seem to need the 1px buffer region to avoid
     # the image being cut off
@@ -419,6 +422,9 @@ def export_scene(canvas, width, height, exportFileName):
 
     if not svg:
         generator.save(exportFileName)
+
+    if hideNostitchSymbols:
+        canvas.toggle_nostitch_symbol_visbility(True)
 
 
 

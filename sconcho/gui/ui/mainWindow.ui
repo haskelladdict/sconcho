@@ -119,7 +119,6 @@
     <addaction name="actionShow_pattern_grid"/>
     <addaction name="actionShow_grid_labels"/>
     <addaction name="actionShow_legend"/>
-    <addaction name="actionShow_nostitch_symbols"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">

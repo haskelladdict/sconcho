@@ -80,9 +80,6 @@ class PatternCanvas(QGraphicsScene):
 
         self._textLabels = []
 
-        # toggles the visbility of nostitch symbols
-        self._nostitchVisible = True
-
         self.insertDeleteRowColDialog = None
 
         self.gridLegend = {}
@@ -197,12 +194,6 @@ class PatternCanvas(QGraphicsScene):
         else:
             (item, textItem) = self._add_legend_item(item.symbol, item.color)
             self.gridLegend[legendID] = [1, item, textItem]
-
-            # if this is the first time we add a nostitch we need to
-            # check if the users want is visible
-            if item.name == "nostitch" and not self._nostitchVisible:
-                item.hide()
-                textItem.hide()
 
 
 
@@ -339,6 +330,40 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def toggle_nostitch_symbol_visbility(self, status):
+        """ Toggles the visibility of all nostitch symbols to on
+        or off via show() and hide().
+
+        WARNING: This should only be done temporary while no user
+        interaction with the canvas is possible, e.g. during
+        exporting. Otherwise it will screw up the undo/redo framwork
+        completely.
+
+        """
+
+        nostitchItem = None
+        for item in self.items():
+            if isinstance(item, PatternGridItem):
+                if item.name == "nostitch":
+                    nostitchItem = item
+                    if status:
+                        item.show()
+                    else:
+                        item.hide()
+                        
+        if nostitchItem:
+            legendID = generate_legend_id(nostitchItem.symbol,
+                                          nostitchItem.color)
+            (dummy, legendItem, legendTextItem) = self.gridLegend[legendID]
+            if status:
+                legendItem.show()
+                legendTextItem.show()
+            else:
+                legendItem.hide()
+                legendTextItem.hide()
+
+            
+
     def grid_cell_activated(self, item):
         """ If a grid cell notifies it has been activated add it
         to the collection of selected cells and try to paint
@@ -393,10 +418,6 @@ class PatternCanvas(QGraphicsScene):
         self.connect(item, SIGNAL("cell_unselected"),
                      self.grid_cell_inactivated)
 
-        # if symbol is a nostitch hide it if requested
-        if item.name == "nostitch" and not self._nostitchVisible:
-            item.hide()
-        
         return item
 
 
@@ -1196,59 +1217,6 @@ class PatternCanvas(QGraphicsScene):
                     item.show()
                 else:
                     item.hide()
-
-
-    def toggle_nostitch_visibility(self, status):
-        """ Per request from the main window toggle the visibility
-        of nostitch symbols.
-
-        """
-
-        # set status so we can deal with new newstitch symbols 
-        self._nostitchVisible = status
-
-        nostitchSymbol = None
-        for item in self.items():
-            if isinstance(item, PatternGridItem):
-                if item.name == "nostitch":
-                    nostitchSymbol = item
-                    if status:
-                        item.show()
-                    else:
-                        item.hide()
-
-        if nostitchSymbol:
-            self.toggle_nostitch_legend_visibility(nostitchSymbol, status)
-
-                
-
-    def toggle_nostitch_legend_visibility(self, nostitchSymbol, status):
-        """ Per request from the main window toggle the visibility
-        of nostitch symbols' legend entry.
-
-        NOTE: The current way of determining the legendID, namely via
-        a reference to a nostitch symbol is kind of clunky. Maybe we
-        should think about improving this?
-
-        """
-
-        legendID = generate_legend_id(nostitchSymbol.symbol,
-                                      nostitchSymbol.color)
-        
-        if legendID in self.gridLegend:
-            (dummy, item, textItem) = self.gridLegend[legendID]
-
-            if status:
-                item.show()
-                textItem.show()
-            else:
-                item.hide()
-                textItem.hide()
-
-        # this should never happen, if there is an nonstitch item
-        # on the canvas we should have a legend entry
-        else:
-            print("Error: Could not find nostitch legend entry.")
 
 
 

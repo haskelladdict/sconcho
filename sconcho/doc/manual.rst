@@ -20,7 +20,6 @@ printed to a printer of saved in PDF or PostScript format.
 * `Saving and Opening Sconcho Projects`_
 * `Exporting and Printing Charts`_
 * `Changing the Label and Legend Properties`_
-* `Non-rectangular Patterns`_
 * `Creating your own Custom Symbols`_
 
 
@@ -150,10 +149,14 @@ Exporting and Printing Charts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can either print your sconcho project on a printer (or print
-to a PDF file on some platforms) or export it as a bitmapped image
-file such as jped, tif, or png. The available image 
-file formats depends on the operating system. Soncho project can 
-also be saved in svg format.
+to a PDF file on some platforms), export it as a bitmapped image
+file, or save it as an svg image. The available image file formats 
+depend on the operating system. Click on the *Browse* button to
+see all available formats. Exported images can also be scaled. 
+
+To enable the generation of non-rectangular image files, sconcho can 
+hide all *nostitch* symbols in the exported image of your pattern.
+Check *Hide Nostitch Symbols* in the export dialog to select this.
 
 
 
@@ -166,20 +169,6 @@ dialog allows one to select the *interval i* with which the labels are displayed
 By default, *i* is set to 1. Both the label and legend font, size as well as label 
 interval are saved in sconcho project files and will be restored upon loading a
 previously saved project.
-
-
-Non-rectangular Patterns
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can create non-rectangular patterns in Sconcho by using the *nonstitch*
-symbol and then un-checking **View -> Show Nostitch Symbols**. This option
-toggles the visibility of all grid elements that contain a nostitch
-symbol (including the corresponding legend entry). While this option is
-unchecked all newly selected grid cells with the *nostitch* symbol active
-will disappear.
-
-**Please Note:** Hidden nostitch grid cells can be filled with different
-symbols only after they have been made visible again.
 
 
 Creating your own Custom Symbols

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainWindow.ui'
 #
-# Created: Sat Feb 12 11:11:06 2011
+# Created: Sun Feb 13 17:23:24 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -228,7 +228,6 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.actionShow_pattern_grid)
         self.menuView.addAction(self.actionShow_grid_labels)
         self.menuView.addAction(self.actionShow_legend)
-        self.menuView.addAction(self.actionShow_nostitch_symbols)
         self.menuHelp.addAction(self.actionSconcho_Manual)
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAbout_sconcho)
