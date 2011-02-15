@@ -496,13 +496,21 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        selection = []
+        selection = set()
+        unselection = set()
         for item in self.items(region):
             if isinstance(item, PatternGridItem):
-                selection.append(PatternCanvasEntry(item.column, item.row, 
-                                    item.width, item.color, item.symbol))
+                itemID = get_item_id(item.column, item.row)
+                if itemID in self._selectedCells:
+                    unselection.add(PatternCanvasEntry(item.column, item.row, 
+                                                       item.width, item.color,
+                                                       item.symbol))
+                else:
+                    selection.add(PatternCanvasEntry(item.column, item.row, 
+                                                     item.width, item.color,
+                                                     item.symbol))
 
-        paintCommand = PaintCells(self, selection)
+        paintCommand = PaintCells(self, selection, unselection)
         self._undoStack.push(paintCommand)
 
 
@@ -2925,15 +2933,15 @@ class PaintCells(QUndoCommand):
 
 
     def _redo_selectedCells(self):
-        """ Redo action for selected cells """
+        """ Redo action for selected cells. """
 
         if self.selectedCells:
             for item in self.selectedCells:
-                itemID = get_item_id(item.column, item.row) 
+                itemID = get_item_id(item.column, item.row)
                 self.canvas._selectedCells[itemID] = \
-                        PatternCanvasEntry(item.column, item.row, 
-                                           item.width, item.color,
-                                           item.symbol) 
+                            PatternCanvasEntry(item.column, item.row, 
+                                               item.width, item.color,
+                                               item.symbol) 
                 item = self.canvas._item_at_row_col(item.column, item.row)
                 item._select()
 
