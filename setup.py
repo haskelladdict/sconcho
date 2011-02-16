@@ -48,7 +48,7 @@ if __name__ == "__main__":
     symbolFiles = get_symbol_files()
 
     setup(name='sconcho',
-        version='0.1.0_a8',
+        version='0.1.0_a9',
         description='Program for Generating Knitting Charts',
         author='Markus Dittrich',
         author_email='haskelladdict@users.sourceforge.net',

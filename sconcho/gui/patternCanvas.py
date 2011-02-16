@@ -33,7 +33,7 @@ from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF,
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
                          QAction, QGraphicsItem, QMessageBox, 
-                         QGraphicsItemGroup, 
+                         QGraphicsItemGroup, QPainterPath,
                          QUndoStack, QUndoCommand)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 
@@ -588,12 +588,12 @@ class PatternCanvas(QGraphicsScene):
                      partial(self.grab_color_from_cell, event))
         gridMenu.addSeparator()
 
-        #outlineAction = gridMenu.addAction("&Add Border Around Selection")
-        #self.connect(outlineAction, SIGNAL("triggered()"),
-        #             self.add_border_to_selection)
-        #if not can_outline_selection(self._selectedCells.values()):
-        #    outlineAction.setEnabled(False)
-        #gridMenu.addSeparator()
+        outlineAction = gridMenu.addAction("&Add Border Around Selection")
+        self.connect(outlineAction, SIGNAL("triggered()"),
+                     self.add_border_to_selection)
+        if not can_outline_selection(self._selectedCells.values()):
+            outlineAction.setEnabled(False)
+        gridMenu.addSeparator()
 
         copyAction = gridMenu.addAction("&Copy Selection")
         (status, (colDim, rowDim)) = \
@@ -654,12 +654,36 @@ class PatternCanvas(QGraphicsScene):
         """ Adds a border around the current selection.
 
         NOTE: This function assumes that the selection has already been
-        checked for its ability to be outlines (i.e. it is connected
+        checked for its ability to be outlined (i.e. it is connected
         without holes.
 
         """
 
-        print("outlining")
+        
+        cellsByRow = order_selection_by_rows(self._selectedCells.values())
+        rowIDs = cellsByRow.keys()
+        rowIDs.sort()
+
+        counterPath = QPainterPath()
+        for rowID in rowIDs:
+
+            row = cellsByRow[rowID]
+            row.sort(lambda x, y: cmp(x.column, y.column))
+
+            xPos = row[0].column * self._unitCellDim.width()
+            yPos = row[0].row * self._unitCellDim.height()
+
+            counterElement = QPainterPath(QPointF(xPos, yPos))
+            counterElement.moveTo(xPos, yPos + self._unitCellDim.height())
+
+            counterPath += counterElement
+
+
+        print(counterElement)
+        pathPen = QPen()
+        pathPen.setWidth = 3
+        self.addPath(counterElement, pathPen, QBrush(Qt.red))
+
 
 
 
@@ -1885,7 +1909,6 @@ def can_outline_selection(selection):
     # check that each row has no holes
     for row in cellsByRow.values():
         row.sort(lambda x, y: cmp(x.column, y.column))
-
         if not are_consecutive([row]):
             return False
 
