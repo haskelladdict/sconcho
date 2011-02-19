@@ -38,9 +38,11 @@ from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor,
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 
 from sconcho.util.canvas import (is_click_in_grid, is_click_on_labels, 
-                                 convert_pos_to_col_row, convert_col_row_to_pos)
+                                 convert_pos_to_col_row,
+                                 convert_col_row_to_pos)
 from sconcho.gui.manage_grid_dialog import ManageGridDialog
 from sconcho.util.misc import wait_cursor
+from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
 import sconcho.util.messages as msg
 
 
@@ -412,7 +414,7 @@ class PatternCanvas(QGraphicsScene):
         """
 
         item = PatternGridItem(unitDim, col, row, width, height,
-                                knittingSymbol, color)
+                               knittingSymbol, color)
         item.setPos(origin)
         self.connect(item, SIGNAL("cell_selected"), self.grid_cell_activated)
         self.connect(item, SIGNAL("cell_unselected"),
@@ -698,11 +700,19 @@ class PatternCanvas(QGraphicsScene):
         counterPath.lineTo(counterClockWayPoints[0])
 
         pathItem = PatternRepeatItem(counterPath)
+        # NOTE: For some reason QGraphicsPathItem
+        # doesn't seem to inherit from QObject
+        # and thus signals and slots won't work
         self.addItem(pathItem)
         self.clear_all_selected_cells()
 
-        
 
+
+    def delete_pattern_repeat(self, repeatItem):
+        """ Delete the provided pattern repeat item from the canvas. """
+        
+        self.removeItem(repeatItem)
+        del repeatItem
 
 
 
@@ -1674,14 +1684,24 @@ class PatternRepeatItem(QGraphicsPathItem):
         super(PatternRepeatItem, self).__init__(painterPath, parent)
 
         # default pen
-        self.pen = QPen()
-        self.pen.setWidth(5)
-        self.pen.setBrush(Qt.red)
-        self.setPen(self.pen)
+        self.width = 5
+        self.color = QColor(Qt.red)
+        self.paint_path()
 
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setZValue(2)
 
+
+    def paint_path(self):
+        """ This member paints our path with the current
+        color and line width.
+
+        """
+        
+        pen = QPen()
+        pen.setWidth(self.width)
+        pen.setBrush(self.color)
+        self.setPen(pen)
 
 
     def mouseDoubleClickEvent(self, event):
@@ -1694,9 +1714,17 @@ class PatternRepeatItem(QGraphicsPathItem):
         if not (event.modifiers() & Qt.ControlModifier):
             event.ignore()
         else:
-
-            print("where is the dialog")
-            
+            dialog = PatternRepeatDialog(self.width, self.color)
+            status = dialog.exec_()
+            if status > 0:
+                self.color = dialog.color
+                self.width = dialog.width
+                self.paint_path()
+            elif status < 0:
+                # NOTE: For some reason QGraphicsPathItem
+                # doesn't seem to inherit from QObject
+                # and thus signals and slots won't work
+                self.scene().delete_pattern_repeat(self)
 
         QGraphicsPathItem.mouseDoubleClickEvent(self, event)
 

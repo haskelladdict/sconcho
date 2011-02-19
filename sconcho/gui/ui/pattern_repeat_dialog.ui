@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>PatternRepeatDialog</class>
+ <widget class="QDialog" name="PatternRepeatDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -45,10 +45,23 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="1" column="1">
          <widget class="QPushButton" name="colorButton">
           <property name="text">
-           <string>Change Line &amp;Color</string>
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Line &amp;Color</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="buddy">
+           <cstring>colorButton</cstring>
           </property>
          </widget>
         </item>
@@ -99,6 +112,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="acceptButton">
+       <property name="text">
+        <string>&amp;Accept</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -108,12 +128,12 @@
   <connection>
    <sender>pushButton_3</sender>
    <signal>clicked()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>PatternRepeatDialog</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>285</x>
-     <y>208</y>
+     <x>257</x>
+     <y>231</y>
     </hint>
     <hint type="destinationlabel">
      <x>237</x>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/pattern_repeat_dialog.ui'
 #
-# Created: Sat Feb 19 12:32:21 2011
+# Created: Sat Feb 19 13:07:51 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,13 +14,13 @@ try:
 except AttributeError:
     _fromUtf8 = lambda s: s
 
-class Ui_Dialog(object):
-    def setupUi(self, Dialog):
-        Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(353, 242)
-        self.verticalLayout_2 = QtGui.QVBoxLayout(Dialog)
+class Ui_PatternRepeatDialog(object):
+    def setupUi(self, PatternRepeatDialog):
+        PatternRepeatDialog.setObjectName(_fromUtf8("PatternRepeatDialog"))
+        PatternRepeatDialog.resize(353, 242)
+        self.verticalLayout_2 = QtGui.QVBoxLayout(PatternRepeatDialog)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.groupBox = QtGui.QGroupBox(Dialog)
+        self.groupBox = QtGui.QGroupBox(PatternRepeatDialog)
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.verticalLayout = QtGui.QVBoxLayout(self.groupBox)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -36,34 +36,44 @@ class Ui_Dialog(object):
         self.lineWidthSpinner.setObjectName(_fromUtf8("lineWidthSpinner"))
         self.gridLayout.addWidget(self.lineWidthSpinner, 0, 1, 1, 1)
         self.colorButton = QtGui.QPushButton(self.groupBox)
+        self.colorButton.setText(_fromUtf8(""))
         self.colorButton.setObjectName(_fromUtf8("colorButton"))
-        self.gridLayout.addWidget(self.colorButton, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.colorButton, 1, 1, 1, 1)
+        self.label_2 = QtGui.QLabel(self.groupBox)
+        self.label_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.verticalLayout_2.addWidget(self.groupBox)
         spacerItem = QtGui.QSpacerItem(20, 64, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.deleteButton = QtGui.QPushButton(Dialog)
+        self.deleteButton = QtGui.QPushButton(PatternRepeatDialog)
         self.deleteButton.setObjectName(_fromUtf8("deleteButton"))
         self.horizontalLayout_2.addWidget(self.deleteButton)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
-        self.pushButton_3 = QtGui.QPushButton(Dialog)
+        self.pushButton_3 = QtGui.QPushButton(PatternRepeatDialog)
         self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
         self.horizontalLayout_2.addWidget(self.pushButton_3)
+        self.acceptButton = QtGui.QPushButton(PatternRepeatDialog)
+        self.acceptButton.setObjectName(_fromUtf8("acceptButton"))
+        self.horizontalLayout_2.addWidget(self.acceptButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.label.setBuddy(self.lineWidthSpinner)
+        self.label_2.setBuddy(self.colorButton)
 
-        self.retranslateUi(Dialog)
-        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL(_fromUtf8("clicked()")), Dialog.close)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
+        self.retranslateUi(PatternRepeatDialog)
+        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL(_fromUtf8("clicked()")), PatternRepeatDialog.close)
+        QtCore.QMetaObject.connectSlotsByName(PatternRepeatDialog)
 
-    def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "sconcho: Pattern Repeat Properties", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("Dialog", "Line Properties", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("Dialog", "Line &Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.colorButton.setText(QtGui.QApplication.translate("Dialog", "Change Line &Color", None, QtGui.QApplication.UnicodeUTF8))
-        self.deleteButton.setText(QtGui.QApplication.translate("Dialog", "&Delete Repeat", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton_3.setText(QtGui.QApplication.translate("Dialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, PatternRepeatDialog):
+        PatternRepeatDialog.setWindowTitle(QtGui.QApplication.translate("PatternRepeatDialog", "sconcho: Pattern Repeat Properties", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox.setTitle(QtGui.QApplication.translate("PatternRepeatDialog", "Line Properties", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Line &Width", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Line &Color", None, QtGui.QApplication.UnicodeUTF8))
+        self.deleteButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Delete Repeat", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_3.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
+        self.acceptButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Accept", None, QtGui.QApplication.UnicodeUTF8))
 
