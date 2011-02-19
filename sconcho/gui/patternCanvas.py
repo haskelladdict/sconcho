@@ -33,7 +33,7 @@ from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF,
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
                          QAction, QGraphicsItem, QMessageBox, 
-                         QGraphicsItemGroup, QPainterPath,
+                         QGraphicsPathItem, QPainterPath,
                          QUndoStack, QUndoCommand)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 
@@ -659,30 +659,51 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        
         cellsByRow = order_selection_by_rows(self._selectedCells.values())
         rowIDs = cellsByRow.keys()
         rowIDs.sort()
 
-        counterPath = QPainterPath()
+        counterClockWayPoints = []
+        clockWayPoints = []
         for rowID in rowIDs:
 
             row = cellsByRow[rowID]
             row.sort(lambda x, y: cmp(x.column, y.column))
 
-            xPos = row[0].column * self._unitCellDim.width()
-            yPos = row[0].row * self._unitCellDim.height()
+            cellWidth = self._unitCellDim.width()
+            cellHeight = self._unitCellDim.height()
+            leftCol = row[0].column
+            rightCol = row[-1].column
 
-            counterElement = QPainterPath(QPointF(xPos, yPos))
-            counterElement.moveTo(xPos, yPos + self._unitCellDim.height())
+            counterClockWayPoints.append(QPointF(leftCol * cellWidth,
+                                                 rowID * cellHeight))
+            counterClockWayPoints.append(QPointF(leftCol * cellWidth,
+                                                 (rowID + 1) * cellHeight))
 
-            counterPath += counterElement
+            clockWayPoints.append(QPointF((rightCol + 1)* cellWidth,
+                                          rowID * cellHeight))
+            clockWayPoints.append(QPointF((rightCol + 1) * cellWidth,
+                                                 (rowID + 1) * cellHeight))
 
+        if not counterClockWayPoints:
+            return
+        
+        counterPath = QPainterPath(counterClockWayPoints[0])
 
-        print(counterElement)
-        pathPen = QPen()
-        pathPen.setWidth = 3
-        self.addPath(counterElement, pathPen, QBrush(Qt.red))
+        for edge in counterClockWayPoints:
+            counterPath.lineTo(edge)
+
+        clockWayPoints.reverse()
+        for edge in clockWayPoints:
+             counterPath.lineTo(edge)
+
+        counterPath.lineTo(counterClockWayPoints[0])
+
+        pathItem = PatternOutlineItem(counterPath)
+        self.addItem(pathItem)
+        self.clear_all_selected_cells()
+
+        
 
 
 
@@ -1639,6 +1660,37 @@ class PatternLabelItem(QGraphicsTextItem):
 
 
 
+#########################################################
+## 
+## class for managing a single pattern grid label
+## (this does nothing spiffy at all, we just need
+## it to identify the item on the canvas)
+##
+#########################################################
+class PatternOutlineItem(QGraphicsPathItem):
+
+    Type = 70000 + 5
+
+    def __init__(self, painterPath, parent = None):
+
+        super(PatternOutlineItem, self).__init__(painterPath, parent)
+
+        outlinePen = QPen()
+        outlinePen.setWidth(5)
+        outlinePen.setBrush(Qt.red)
+        self.setPen(outlinePen)
+
+#        self.setFlag(QGraphicsItem.ItemIsMovable)
+
+#        self.setZValue(2)
+
+
+
+    def mousePressEvent(self, event):
+
+        print("recto presed")
+
+        QGraphicsPathItem.mousePressEvent(self, event)
 
 
 
