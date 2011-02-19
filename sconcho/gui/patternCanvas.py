@@ -588,9 +588,9 @@ class PatternCanvas(QGraphicsScene):
                      partial(self.grab_color_from_cell, event))
         gridMenu.addSeparator()
 
-        outlineAction = gridMenu.addAction("&Add Border Around Selection")
+        outlineAction = gridMenu.addAction("&Add Pattern Repeat Around Selection")
         self.connect(outlineAction, SIGNAL("triggered()"),
-                     self.add_border_to_selection)
+                     self.add_pattern_repeat)
         if not can_outline_selection(self._selectedCells.values()):
             outlineAction.setEnabled(False)
         gridMenu.addSeparator()
@@ -649,9 +649,8 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-
-    def add_border_to_selection(self):
-        """ Adds a border around the current selection.
+    def add_pattern_repeat(self):
+        """ Adds a pattern repeat around the current selection.
 
         NOTE: This function assumes that the selection has already been
         checked for its ability to be outlined (i.e. it is connected
@@ -699,7 +698,7 @@ class PatternCanvas(QGraphicsScene):
 
         counterPath.lineTo(counterClockWayPoints[0])
 
-        pathItem = PatternOutlineItem(counterPath)
+        pathItem = PatternRepeatItem(counterPath)
         self.addItem(pathItem)
         self.clear_all_selected_cells()
 
@@ -1667,29 +1666,52 @@ class PatternLabelItem(QGraphicsTextItem):
 ## it to identify the item on the canvas)
 ##
 #########################################################
-class PatternOutlineItem(QGraphicsPathItem):
+class PatternRepeatItem(QGraphicsPathItem):
 
     Type = 70000 + 5
 
     def __init__(self, painterPath, parent = None):
 
-        super(PatternOutlineItem, self).__init__(painterPath, parent)
+        super(PatternRepeatItem, self).__init__(painterPath, parent)
 
-        outlinePen = QPen()
-        outlinePen.setWidth(5)
-        outlinePen.setBrush(Qt.red)
-        self.setPen(outlinePen)
+        # default pen
+        self.pen = QPen()
+        self.pen.setWidth(5)
+        self.pen.setBrush(Qt.red)
+        self.setPen(self.pen)
 
-#        self.setFlag(QGraphicsItem.ItemIsMovable)
+        self.setFlag(QGraphicsItem.ItemIsMovable)
+        self.setZValue(2)
 
-#        self.setZValue(2)
+
+
+    def mouseDoubleClickEvent(self, event):
+        """ Double clicking on a PatternRepeatItem
+        fires up a dialog that allows customizing of
+        properties as well as deleting the item.
+
+        """
+
+        if not (event.modifiers() & Qt.ControlModifier):
+            event.ignore()
+
+        QGraphicsPathItem.mouseDoubleClickEvent(self, event)
 
 
 
     def mousePressEvent(self, event):
+        """ Deal with mouse press events on the area spanned
+        by a PatternRepeatItem.
 
-        print("recto presed")
+        We only accept mouse press events with Control key
+        pressed to allow the motion of the item across the
+        canvas.
 
+        """
+        
+        if not (event.modifiers() & Qt.ControlModifier):
+            event.ignore()
+            
         QGraphicsPathItem.mousePressEvent(self, event)
 
 

@@ -212,6 +212,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionUnselect_All, SIGNAL("triggered()"),
                      self.canvas.clear_all_selected_cells)
 
+        self.connect(self.actionCreate_Pattern_Repeat, SIGNAL("triggered()"),
+                     self.canvas.add_pattern_repeat)
+
         self.connect(self.action_Undo, SIGNAL("triggered()"),
                      self.canvas.undo)
 

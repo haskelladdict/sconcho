@@ -115,6 +115,7 @@
     <addaction name="menu_Zoom"/>
     <addaction name="action_Insert_delete_rows_and_columns"/>
     <addaction name="actionUnselect_All"/>
+    <addaction name="actionCreate_Pattern_Repeat"/>
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>
     <addaction name="actionShow_grid_labels"/>
@@ -210,6 +211,7 @@
    <addaction name="action_Normal"/>
    <addaction name="separator"/>
    <addaction name="actionUnselect_All"/>
+   <addaction name="actionCreate_Pattern_Repeat"/>
   </widget>
   <action name="actionAbout_sconcho">
    <property name="icon">
@@ -470,7 +472,10 @@
      <normaloff>:/icons/select_all.png</normaloff>:/icons/select_all.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Unselect All</string>
+    <string>&amp;Deselect All</string>
+   </property>
+   <property name="toolTip">
+    <string>Deselect All: Deselects are currently selected cells on the Grid.</string>
    </property>
   </action>
   <action name="action_Copy">
@@ -525,6 +530,18 @@
    </property>
    <property name="text">
     <string>Show &amp;Nostitch Symbols</string>
+   </property>
+  </action>
+  <action name="actionCreate_Pattern_Repeat">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/patternRepeat.png</normaloff>:/icons/patternRepeat.png</iconset>
+   </property>
+   <property name="text">
+    <string>Create Pattern Repeat</string>
+   </property>
+   <property name="toolTip">
+    <string>Create Pattern Repeat: Create a pattern repeat box around the currently hightlighted cells. &lt;p&gt;You can interact with an existing repeat box by Control clicking on it. </string>
    </property>
   </action>
  </widget>
