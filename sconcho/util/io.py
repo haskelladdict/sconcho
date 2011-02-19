@@ -32,8 +32,8 @@ from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from PyQt4.QtSvg import QSvgGenerator
 
-from sconcho.gui.patternCanvas import (PatternGridItem, PatternLegendItem,
-                                       legendItem_symbol, legendItem_text)
+from sconcho.gui.pattern_canvas import (PatternGridItem, PatternLegendItem,
+                                        legendItem_symbol, legendItem_text)
 from sconcho.util.misc import wait_cursor
 from sconcho.util.exceptions import PatternReadError
 import sconcho.util.messages as msg

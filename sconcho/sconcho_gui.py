@@ -28,8 +28,8 @@ import os, sys
 
 from PyQt4.QtCore import (QString, QSettings)
 from PyQt4.QtGui import QApplication
-from sconcho.gui.mainWindow import MainWindow
-import sconcho.util.symbolParser as parser
+from sconcho.gui.main_window import MainWindow
+import sconcho.util.symbol_parser as parser
 import sconcho.util.messages as msg
 import sconcho.util.settings as settings
 

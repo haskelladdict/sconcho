@@ -39,7 +39,7 @@ from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 
 from sconcho.util.canvas import (is_click_in_grid, is_click_on_labels, 
                                  convert_pos_to_col_row, convert_col_row_to_pos)
-from sconcho.gui.insertDeleteRowColumnDialog import InsertDeleteRowColumnDialog
+from sconcho.gui.manage_grid_dialog import ManageGridDialog
 from sconcho.util.misc import wait_cursor
 import sconcho.util.messages as msg
 
@@ -630,9 +630,8 @@ class PatternCanvas(QGraphicsScene):
 
         if not self.insertDeleteRowColDialog:
             self.insertDeleteRowColDialog = \
-                InsertDeleteRowColumnDialog(self._numRows,
-                                            self._numColumns,
-                                            row, col, self.parent())
+                ManageGridDialog(self._numRows, self._numColumns,
+                                 row, col, self.parent())
             self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_rows"), 
                          self.insert_grid_row)
             self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_rows"), 
@@ -1694,6 +1693,10 @@ class PatternRepeatItem(QGraphicsPathItem):
 
         if not (event.modifiers() & Qt.ControlModifier):
             event.ignore()
+        else:
+
+            print("where is the dialog")
+            
 
         QGraphicsPathItem.mouseDoubleClickEvent(self, event)
 

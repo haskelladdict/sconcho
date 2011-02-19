@@ -40,21 +40,21 @@ from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QFrame, QColor, QApplication)
 from PyQt4.QtSvg import QSvgWidget
 
-from sconcho.gui.ui_mainWindow import Ui_MainWindow
+from sconcho.gui.ui_main_window import Ui_MainWindow
 import sconcho.util.messages as msg
 import sconcho.util.settings as settings
 import sconcho.util.misc as misc
 import sconcho.util.io as io
-import sconcho.util.symbolParser as parser
-from sconcho.gui.symbolWidget import (generate_symbolWidgets, SymbolSynchronizer,
+import sconcho.util.symbol_parser as parser
+from sconcho.gui.symbol_widget import (generate_symbolWidgets, SymbolSynchronizer,
                                       symbols_by_category)
-from sconcho.gui.colorWidget import (ColorWidget, ColorSynchronizer)
-from sconcho.gui.patternCanvas import PatternCanvas
-from sconcho.gui.exportBitmapDialog import ExportBitmapDialog
-from sconcho.gui.newPatternDialog import NewPatternDialog
-from sconcho.gui.preferencesDialog import PreferencesDialog
-from sconcho.gui.sconchoManual import SconchoManual
-from sconcho.gui.manageKnittingSymbolDialog import ManageKnittingSymbolDialog
+from sconcho.gui.color_widget import (ColorWidget, ColorSynchronizer)
+from sconcho.gui.pattern_canvas import PatternCanvas
+from sconcho.gui.export_bitmap_dialog import ExportBitmapDialog
+from sconcho.gui.new_pattern_dialog import NewPatternDialog
+from sconcho.gui.preferences_dialog import PreferencesDialog
+from sconcho.gui.sconcho_manual import SconchoManual
+from sconcho.gui.manage_symbol_dialog import ManageSymbolDialog
 from sconcho.util.exceptions import PatternReadError
 
 
@@ -705,7 +705,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         sortedSymbols = symbols_by_category(self._knittingSymbols)
         symbolCategories = sortedSymbols.keys()
         personalSymbolPath = self.settings.personal_symbol_path
-        manager = ManageKnittingSymbolDialog(personalSymbolPath, 
+        manager = ManageSymbolDialog(personalSymbolPath, 
                                              symbolCategories, self)
         manager.exec_()
 

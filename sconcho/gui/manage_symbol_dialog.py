@@ -33,11 +33,11 @@ from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog,
                          QMessageBox, QInputDialog, QLineEdit)
 from PyQt4.QtSvg import (QSvgWidget)
 
-from sconcho.gui.ui_manageKnittingSymbolDialog import Ui_ManageKnittingSymbolDialog
-from sconcho.util.symbolParser import (parse_all_symbols, create_new_symbol,
+from sconcho.gui.ui_manage_symbol_dialog import Ui_ManageKnittingSymbolDialog
+from sconcho.util.symbol_parser import (parse_all_symbols, create_new_symbol,
                                        remove_symbol, move_symbol, remove_directory)
 import sconcho.util.messages as msg
-import sconcho.gui.symbolWidget as symbolWidget
+import sconcho.gui.symbol_widget as symbolWidget
 
 
 ##########################################################################
@@ -46,7 +46,7 @@ import sconcho.gui.symbolWidget as symbolWidget
 # use in sconcho (adding, deleting, updating, ...)
 #
 ##########################################################################
-class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
+class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
     SYMBOL_SIZE   = 30
     ADD_ACTION    = 1
@@ -56,7 +56,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
     def __init__(self, symbolPath, symbolCategories, parent = None):
         """ Initialize the dialog. """
 
-        super(ManageKnittingSymbolDialog, self).__init__(parent)
+        super(ManageSymbolDialog, self).__init__(parent)
         self.setupUi(self)
 
         self.symbolEntryFrame.setVisible(False)
@@ -86,7 +86,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         self.symbolEntryFrame.setVisible(True)
         self.actionButton.setText("Add Symbol")
-        self._activeAction = ManageKnittingSymbolDialog.ADD_ACTION
+        self._activeAction = ManageSymbolDialog.ADD_ACTION
         self.disable_selection_buttons()
 
 
@@ -212,9 +212,9 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         
         """
 
-        if self._activeAction == ManageKnittingSymbolDialog.ADD_ACTION:
+        if self._activeAction == ManageSymbolDialog.ADD_ACTION:
             self.add_symbol()
-        elif self._activeAction == ManageKnittingSymbolDialog.UPDATE_ACTION:
+        elif self._activeAction == ManageSymbolDialog.UPDATE_ACTION:
             self.update_symbol()
 
 
@@ -281,7 +281,7 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         self.symbolEntryFrame.setVisible(True)
         self.actionButton.setText("Update Symbol")
-        self._activeAction = ManageKnittingSymbolDialog.UPDATE_ACTION
+        self._activeAction = ManageSymbolDialog.UPDATE_ACTION
 
 
 
@@ -605,8 +605,8 @@ class ManageKnittingSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
     def rescale_svg_item(self, item, width):
         """ Rescales the svg image if a user changes the symbol width. """
 
-        item.setFixedSize(ManageKnittingSymbolDialog.SYMBOL_SIZE * width,
-                          ManageKnittingSymbolDialog.SYMBOL_SIZE)
+        item.setFixedSize(ManageSymbolDialog.SYMBOL_SIZE * width,
+                          ManageSymbolDialog.SYMBOL_SIZE)
 
        
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/newPatternDialog.ui'
+# Form implementation generated from reading ui file 'ui/new_pattern_dialog.ui'
 #
-# Created: Sat Feb 19 11:13:23 2011
+# Created: Sat Feb 19 12:32:20 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_NewPatternDialog(object):
     def setupUi(self, NewPatternDialog):
         NewPatternDialog.setObjectName(_fromUtf8("NewPatternDialog"))
-        NewPatternDialog.resize(288, 178)
+        NewPatternDialog.resize(353, 179)
         self.verticalLayout = QtGui.QVBoxLayout(NewPatternDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label = QtGui.QLabel(NewPatternDialog)

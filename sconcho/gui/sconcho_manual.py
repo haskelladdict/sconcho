@@ -24,40 +24,28 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+
+from PyQt4.QtCore  import QUrl
 from PyQt4.QtGui import QDialog 
 
-from sconcho.gui.ui_newPatternDialog import Ui_NewPatternDialog
-
+from sconcho.gui.ui_sconcho_manual import Ui_SconchoManual
 
 
 ##########################################################################
 #
-# This widget allows initiates the start of a new project/patter
-# grid. Users can adjust the grid dimensions of the new pattern grid.
+# This dialog provides the sconcho manual 
 #
 ##########################################################################
-class NewPatternDialog(QDialog, Ui_NewPatternDialog):
+class SconchoManual(QDialog, Ui_SconchoManual):
 
 
-    def __init__(self, parent = None):
+    def __init__(self, manualPath, parent = None):
         """
         Initialize the dialog.
         """
 
-        super(NewPatternDialog, self).__init__(parent)
+        super(SconchoManual, self).__init__(parent)
         self.setupUi(self)
 
-
-
-    @property
-    def num_rows(self):
-        """ Return the number of rows selected. """
-
-        return self.rowSpinner.value()
-      
-
-    @property
-    def num_columns(self):
-        """ Return the number of columns selected. """
-
-        return self.columnSpinner.value()
+        url = QUrl.fromLocalFile(manualPath)
+        self.helpBrowser.setSource(url)

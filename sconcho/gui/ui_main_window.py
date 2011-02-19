@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/mainWindow.ui'
+# Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Feb 19 11:13:23 2011
+# Created: Sat Feb 19 12:32:20 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -320,7 +320,7 @@ class Ui_MainWindow(object):
         self.actionFit.setText(QtGui.QApplication.translate("MainWindow", "&Fit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSconcho_Manual.setText(QtGui.QApplication.translate("MainWindow", "Sconcho Manual", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrefs.setText(QtGui.QApplication.translate("MainWindow", "P&references", None, QtGui.QApplication.UnicodeUTF8))
-        self.action_Insert_delete_rows_and_columns1.setText(QtGui.QApplication.translate("MainWindow", "&Insert/Delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Insert_delete_rows_and_columns1.setText(QtGui.QApplication.translate("MainWindow", "&Manage Grid", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Manage_Knitting_Symbols.setText(QtGui.QApplication.translate("MainWindow", "&Manage Custom Knitting Symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.actionUnselect_All.setText(QtGui.QApplication.translate("MainWindow", "&Deselect All", None, QtGui.QApplication.UnicodeUTF8))
         self.actionUnselect_All.setToolTip(QtGui.QApplication.translate("MainWindow", "Deselect All: Deselects are currently selected cells on the Grid.", None, QtGui.QApplication.UnicodeUTF8))
@@ -337,5 +337,5 @@ class Ui_MainWindow(object):
         self.actionCreate_Pattern_Repeat.setText(QtGui.QApplication.translate("MainWindow", "Create Pattern Repeat", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCreate_Pattern_Repeat.setToolTip(QtGui.QApplication.translate("MainWindow", "Create Pattern Repeat: Create a pattern repeat box around the currently hightlighted cells. <p>You can interact with an existing repeat box by Control clicking on it. ", None, QtGui.QApplication.UnicodeUTF8))
 
-from patternView import PatternView
+from pattern_view import PatternView
 import icons_rc

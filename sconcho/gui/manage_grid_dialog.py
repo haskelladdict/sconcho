@@ -26,8 +26,7 @@ from __future__ import absolute_import
 
 from PyQt4.QtCore import (Qt, SIGNAL, QString)
 from PyQt4.QtGui import (QDialog, QMessageBox)
-from sconcho.gui.ui_insertDeleteRowColumnDialog \
-        import Ui_InsertDeleteRowColumnDialog
+from sconcho.gui.ui_manage_grid_dialog import Ui_ManageGridDialog
 import sconcho.util.messages as msg
 
 
@@ -37,13 +36,13 @@ import sconcho.util.messages as msg
 # of the main pattern grid.
 #
 ##########################################################################
-class InsertDeleteRowColumnDialog(QDialog, Ui_InsertDeleteRowColumnDialog):
+class ManageGridDialog(QDialog, Ui_ManageGridDialog):
 
 
     def __init__(self, numRows, numCols, row, col, parent = None):
         """ Initialize this dialog. """
 
-        super(InsertDeleteRowColumnDialog, self).__init__(parent)
+        super(ManageGridDialog, self).__init__(parent)
         self.setupUi(self)
 
         # set the maximum of the spinbox

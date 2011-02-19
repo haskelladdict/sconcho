@@ -458,7 +458,7 @@
   </action>
   <action name="action_Insert_delete_rows_and_columns">
    <property name="text">
-    <string>&amp;Insert/Delete rows and columns</string>
+    <string>&amp;Manage Grid</string>
    </property>
   </action>
   <action name="action_Manage_Knitting_Symbols">
@@ -549,7 +549,7 @@
   <customwidget>
    <class>PatternView</class>
    <extends>QGraphicsView</extends>
-   <header>patternView.h</header>
+   <header>pattern_view.h</header>
   </customwidget>
  </customwidgets>
  <resources>

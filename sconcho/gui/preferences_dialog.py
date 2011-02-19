@@ -29,7 +29,7 @@ from PyQt4.QtGui import (QDialog, QFontDatabase, QFileDialog)
 
 import sconcho.util.misc as misc
 import sconcho.util.messages as msg
-from sconcho.gui.ui_preferencesDialog import Ui_PreferencesDialog
+from sconcho.gui.ui_preferences_dialog import Ui_PreferencesDialog
 
 
 

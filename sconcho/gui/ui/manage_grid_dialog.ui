@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>InsertDeleteRowColumnDialog</class>
- <widget class="QDialog" name="InsertDeleteRowColumnDialog">
+ <class>ManageGridDialog</class>
+ <widget class="QDialog" name="ManageGridDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>805</width>
+    <width>812</width>
     <height>160</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>sconcho: Insert/Delete Rows and Columns</string>
+   <string>sconcho: Manage Grid</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
