@@ -503,14 +503,13 @@ class PatternCanvas(QGraphicsScene):
         for item in self.items(region):
             if isinstance(item, PatternGridItem):
                 itemID = get_item_id(item.column, item.row)
+                entry = PatternCanvasEntry(item.column, item.row, 
+                                           item.width, item.color,
+                                           item.symbol)
                 if itemID in self._selectedCells:
-                    unselection.add(PatternCanvasEntry(item.column, item.row, 
-                                                       item.width, item.color,
-                                                       item.symbol))
+                    unselection.add(entry)
                 else:
-                    selection.add(PatternCanvasEntry(item.column, item.row, 
-                                                     item.width, item.color,
-                                                     item.symbol))
+                    selection.add(entry)
 
         paintCommand = PaintCells(self, selection, unselection)
         self._undoStack.push(paintCommand)
@@ -532,12 +531,19 @@ class PatternCanvas(QGraphicsScene):
         else:
             selectedItems = self.get_row_items(row)
 
-        selection = []
+        selection = set()
+        unselection = set()
         for item in selectedItems:
-            selection.append(PatternCanvasEntry(item.column, item.row, 
-                                      item.width, item.color, item.symbol))
+            itemID = get_item_id(item.column, item.row)
+            entry = PatternCanvasEntry(item.column, item.row, 
+                                       item.width, item.color,
+                                       item.symbol)
+            if itemID in self._selectedCells:
+                unselection.add(entry)
+            else:
+                selection.add(entry)
 
-        paintCommand = PaintCells(self, selection)
+        paintCommand = PaintCells(self, selection, unselection)
         self._undoStack.push(paintCommand)
 
 
