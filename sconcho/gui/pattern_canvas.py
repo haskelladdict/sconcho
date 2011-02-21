@@ -28,13 +28,13 @@ import operator
 import copy
 from functools import partial
 
-from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF, 
+from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF, QLineF,
                           SIGNAL, QObject, QString, QPoint, QRect)
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
                          QAction, QGraphicsItem, QMessageBox, 
-                         QGraphicsPathItem, QPainterPath,
-                         QUndoStack, QUndoCommand)
+                         QGraphicsLineItem, QPainterPath, 
+                         QUndoStack, QUndoCommand, QGraphicsItemGroup)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 
 from sconcho.util.canvas import (is_click_in_grid, is_click_on_labels, 
@@ -42,9 +42,9 @@ from sconcho.util.canvas import (is_click_in_grid, is_click_on_labels,
                                  convert_col_row_to_pos)
 from sconcho.gui.manage_grid_dialog import ManageGridDialog
 from sconcho.util.misc import wait_cursor
+
 from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
 import sconcho.util.messages as msg
-
 
 
 
@@ -656,62 +656,47 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+
     def add_pattern_repeat(self):
         """ Adds a pattern repeat around the current selection.
 
-        NOTE: This function assumes that the selection has already been
-        checked for its ability to be outlined (i.e. it is connected
-        without holes.
-
         """
 
-        cellsByRow = order_selection_by_rows(self._selectedCells.values())
-        rowIDs = cellsByRow.keys()
-        rowIDs.sort()
+        edges = {}
+        for ID in self._selectedCells:
 
-        counterClockWayPoints = []
-        clockWayPoints = []
-        for rowID in rowIDs:
+            (row, col) = get_row_col_from_id(ID)
+            edgeIDs = [get_edge_id((row, col), (row, col + 1)),
+                       get_edge_id((row, col), (row + 1, col)),
+                       get_edge_id((row, col + 1), (row + 1, col + 1)),
+                       get_edge_id((row + 1, col), (row + 1, col + 1))]
+            
+            for edgeID in edgeIDs:
+                if edgeID in edges:
+                    edges[edgeID] = 0
+                else:
+                    edges[edgeID] = 1
+                
+        lines = []
+        cellWidth = self._unitCellDim.width()
+        cellHeight = self._unitCellDim.height()
+        for (edgeID, switch) in edges.items():
+            if switch:
+                (row1, col1, row2, col2) = map(int, edgeID.split(":"))
 
-            row = cellsByRow[rowID]
-            row.sort(lambda x, y: cmp(x.column, y.column))
+                line = QLineF(row1 * cellWidth, col1 * cellHeight,
+                              row2 * cellWidth, col2 * cellHeight)
+                lines.append(line)
 
-            cellWidth = self._unitCellDim.width()
-            cellHeight = self._unitCellDim.height()
-            leftCol = row[0].column
-            rightCol = row[-1].column
 
-            counterClockWayPoints.append(QPointF(leftCol * cellWidth,
-                                                 rowID * cellHeight))
-            counterClockWayPoints.append(QPointF(leftCol * cellWidth,
-                                                 (rowID + 1) * cellHeight))
-
-            clockWayPoints.append(QPointF((rightCol + 1)* cellWidth,
-                                          rowID * cellHeight))
-            clockWayPoints.append(QPointF((rightCol + 1) * cellWidth,
-                                                 (rowID + 1) * cellHeight))
-
-        if not counterClockWayPoints:
-            return
+        pathItem = PatternRepeatItem(self, lines)
         
-        counterPath = QPainterPath(counterClockWayPoints[0])
-
-        for edge in counterClockWayPoints:
-            counterPath.lineTo(edge)
-
-        clockWayPoints.reverse()
-        for edge in clockWayPoints:
-             counterPath.lineTo(edge)
-
-        counterPath.lineTo(counterClockWayPoints[0])
-
-        pathItem = PatternRepeatItem(counterPath)
         # NOTE: For some reason QGraphicsPathItem
         # doesn't seem to inherit from QObject
         # and thus signals and slots won't work
         self.addItem(pathItem)
         self.clear_all_selected_cells()
-
+        
 
 
     def delete_pattern_repeat(self, repeatItem):
@@ -1681,24 +1666,32 @@ class PatternLabelItem(QGraphicsTextItem):
 ## it to identify the item on the canvas)
 ##
 #########################################################
-class PatternRepeatItem(QGraphicsPathItem):
+class PatternRepeatItem(QGraphicsItemGroup):
 
     Type = 70000 + 5
 
-    def __init__(self, painterPath, parent = None):
+    def __init__(self, canvas, lines, parent = None):
 
-        super(PatternRepeatItem, self).__init__(painterPath, parent)
+        super(PatternRepeatItem, self).__init__(parent)
 
+        # set up group
+        self.lineElements = []
+        for line in lines:
+            lineElement = QGraphicsLineItem(line)
+            self.lineElements.append(lineElement)
+            self.addToGroup(lineElement)
+           
         # default pen
         self.width = 5
         self.color = QColor(Qt.red)
-        self.paint_path()
+        self.paint_elements()
 
-        self.setFlag(QGraphicsItem.ItemIsMovable)
-        self.setZValue(2)
+        self.setFlag(QGraphicsItem.ItemIsMovable, True)
 
 
-    def paint_path(self):
+
+
+    def paint_elements(self):
         """ This member paints our path with the current
         color and line width.
 
@@ -1707,7 +1700,8 @@ class PatternRepeatItem(QGraphicsPathItem):
         pen = QPen()
         pen.setWidth(self.width)
         pen.setBrush(self.color)
-        self.setPen(pen)
+        for line in self.lineElements:
+            line.setPen(pen)
 
 
     def mouseDoubleClickEvent(self, event):
@@ -1725,14 +1719,14 @@ class PatternRepeatItem(QGraphicsPathItem):
             if status > 0:
                 self.color = dialog.color
                 self.width = dialog.width
-                self.paint_path()
+                self.paint_elements()
             elif status < 0:
                 # NOTE: For some reason QGraphicsPathItem
                 # doesn't seem to inherit from QObject
                 # and thus signals and slots won't work
                 self.scene().delete_pattern_repeat(self)
 
-        QGraphicsPathItem.mouseDoubleClickEvent(self, event)
+        QGraphicsItemGroup.mouseDoubleClickEvent(self, event)
 
 
 
@@ -1749,7 +1743,8 @@ class PatternRepeatItem(QGraphicsPathItem):
         if not (event.modifiers() & Qt.ControlModifier):
             event.ignore()
             
-        QGraphicsPathItem.mousePressEvent(self, event)
+        QGraphicsItemGroup.mousePressEvent(self, event)
+
 
 
 
@@ -2158,6 +2153,45 @@ def get_item_id(column, row):
     """ Returns an items id based on its row and column location. """
 
     return str(column) + ":" + str(row)
+
+
+
+def get_row_col_from_id(id):
+    """ Given a row:col id return a tuple if ints with
+    the row and column id.
+
+    """
+
+    return map(int, id.split(":"))
+
+
+
+def get_edge_id(gridPoint1, gridPoint2):
+    """ Given the column and row values of two grid points
+    return an string ID.
+
+    NOTE: Each cell has 4 grid points. The upper left hand
+    corner corresponds to the row/column id of the cell.
+    The other corners each add +1 for row and/or column id.
+    E.g. lower right hand corner has an id of (row + 1, column + 1).
+
+    """
+
+    return ":".join(map(str, gridPoint1 + gridPoint2))
+
+
+
+def get_edge_from_id(edgeID):
+    """ From a given edge iD return the values of the two grid
+    point forming this edge.
+
+    Please see function get_edge_id for an explanation of
+    grid point IDs.
+
+    """
+
+    return map(int, edgeID.split(":"))
+
 
 
 
@@ -3247,3 +3281,5 @@ class MoveLegendItem(QUndoCommand):
         """ The undo action. """
 
         self.legendItem.setPos(self.oldPosition)
+
+
