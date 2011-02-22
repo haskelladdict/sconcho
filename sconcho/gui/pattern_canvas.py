@@ -688,13 +688,8 @@ class PatternCanvas(QGraphicsScene):
                               row2 * cellWidth, col2 * cellHeight)
                 lines.append(line)
 
-
-        pathItem = PatternRepeatItem(self, lines)
-        
-        # NOTE: For some reason QGraphicsPathItem
-        # doesn't seem to inherit from QObject
-        # and thus signals and slots won't work
-        self.addItem(pathItem)
+        patternRepeatCommand = AddPatternRepeat(self, lines)
+        self._undoStack.push(patternRepeatCommand)
         self.clear_all_selected_cells()
         
 
@@ -3283,3 +3278,32 @@ class MoveLegendItem(QUndoCommand):
         self.legendItem.setPos(self.oldPosition)
 
 
+
+
+class AddPatternRepeat(QUndoCommand):
+    """ This class encapsulates the creation of a pattern repeat
+    item on the canvas.
+
+    """
+
+    
+    def __init__(self, canvas, lines, parent = None):
+
+        super(AddPatternRepeat, self).__init__(parent)
+
+        self.canvas = canvas
+        self.lines = lines
+
+
+    def redo(self):
+
+        self.pathItem = PatternRepeatItem(self.canvas, self.lines)
+        self.canvas.addItem(self.pathItem)
+
+
+    def undo(self):
+
+        self.canvas.removeItem(self.pathItem)
+        del self.pathItem
+        
+        
