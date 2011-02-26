@@ -658,9 +658,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def add_pattern_repeat(self):
-        """ Adds a pattern repeat around the current selection.
-
-        """
+        """ Adds a pattern repeat around the current selection. """
 
         edges = {}
         for ID in self._selectedCells:
@@ -690,7 +688,6 @@ class PatternCanvas(QGraphicsScene):
 
         patternRepeatCommand = AddPatternRepeat(self, lines)
         self._undoStack.push(patternRepeatCommand)
-        self.clear_all_selected_cells()
         
 
 
@@ -1682,7 +1679,6 @@ class PatternRepeatItem(QGraphicsItemGroup):
         self.paint_elements()
 
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
-
 
 
 
@@ -3295,15 +3291,20 @@ class AddPatternRepeat(QUndoCommand):
         self.lines = lines
 
 
+
     def redo(self):
+        """ The redo action. """
 
         self.pathItem = PatternRepeatItem(self.canvas, self.lines)
         self.canvas.addItem(self.pathItem)
 
 
+
     def undo(self):
+        """ The undo action. """
 
         self.canvas.removeItem(self.pathItem)
         del self.pathItem
+         
         
         

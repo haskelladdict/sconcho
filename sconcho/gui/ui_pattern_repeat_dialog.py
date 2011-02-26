@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/pattern_repeat_dialog.ui'
 #
-# Created: Sat Feb 19 13:07:51 2011
+# Created: Sat Feb 26 10:54:34 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -54,12 +54,12 @@ class Ui_PatternRepeatDialog(object):
         self.horizontalLayout_2.addWidget(self.deleteButton)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
-        self.pushButton_3 = QtGui.QPushButton(PatternRepeatDialog)
-        self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
-        self.horizontalLayout_2.addWidget(self.pushButton_3)
         self.acceptButton = QtGui.QPushButton(PatternRepeatDialog)
         self.acceptButton.setObjectName(_fromUtf8("acceptButton"))
         self.horizontalLayout_2.addWidget(self.acceptButton)
+        self.pushButton_3 = QtGui.QPushButton(PatternRepeatDialog)
+        self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
+        self.horizontalLayout_2.addWidget(self.pushButton_3)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.label.setBuddy(self.lineWidthSpinner)
         self.label_2.setBuddy(self.colorButton)
@@ -74,6 +74,6 @@ class Ui_PatternRepeatDialog(object):
         self.label.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Line &Width", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Line &Color", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Delete Repeat", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton_3.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
         self.acceptButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Accept", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_3.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
 

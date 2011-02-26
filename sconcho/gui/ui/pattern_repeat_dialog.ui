@@ -106,16 +106,16 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="acceptButton">
        <property name="text">
-        <string>&amp;Close</string>
+        <string>&amp;Accept</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="acceptButton">
+      <widget class="QPushButton" name="pushButton_3">
        <property name="text">
-        <string>&amp;Accept</string>
+        <string>&amp;Close</string>
        </property>
       </widget>
      </item>

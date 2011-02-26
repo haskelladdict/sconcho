@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/manage_grid_dialog.ui'
 #
-# Created: Sat Feb 19 13:07:51 2011
+# Created: Sat Feb 26 10:54:33 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -181,8 +181,6 @@ class Ui_ManageGridDialog(object):
         self.closeButton = QtGui.QPushButton(ManageGridDialog)
         self.closeButton.setObjectName(_fromUtf8("closeButton"))
         self.horizontalLayout_9.addWidget(self.closeButton)
-        spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_9.addItem(spacerItem6)
         self.verticalLayout.addLayout(self.horizontalLayout_9)
         self.label.setBuddy(self.numInsertRows)
         self.label_2.setBuddy(self.insertRowMode)
