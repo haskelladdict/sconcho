@@ -34,7 +34,8 @@ from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor,
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
                          QAction, QGraphicsItem, QMessageBox, 
                          QGraphicsLineItem, QPainterPath, 
-                         QUndoStack, QUndoCommand, QGraphicsItemGroup)
+                         QUndoStack, QUndoCommand, QGraphicsItemGroup,
+                         QApplication, QCursor)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
 
 from sconcho.util.canvas import (is_click_in_grid, is_click_on_labels, 
@@ -130,7 +131,7 @@ class PatternCanvas(QGraphicsScene):
             yPos = self._unitCellDim.height() * row
             item.setPos(xPos, yPos)
             item.setFont(labelFont)
-            item.setToolTip("Control-Click to select whole row")
+            item.setToolTip("Shift-Click to select whole row")
             self.addItem(item)
             self._textLabels.append(item)
 
@@ -144,7 +145,7 @@ class PatternCanvas(QGraphicsScene):
             xPos = unitWidth * col + (unitWidth * 0.6 -textWidth)
             item.setPos(xPos, yPos)
             item.setFont(labelFont)
-            item.setToolTip("Control-Click to select whole column")
+            item.setToolTip("Shift-Click to select whole column")
 
             self.addItem(item)
             self._textLabels.append(item)
@@ -394,13 +395,13 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def legend_item_position_changed(self, legendItem, oldPosition, newPosition):
-        """ A legend item calls this function if its position on the
+    def canvas_item_position_changed(self, canvasItem, oldPosition, newPosition):
+        """ A canvas item calls this function if its position on the
         canvas has changed via a user action.
 
         """
 
-        moveCommand = MoveLegendItem(legendItem, oldPosition, newPosition)
+        moveCommand = MoveCanvasItem(canvasItem, oldPosition, newPosition)
         self._undoStack.push(moveCommand)
 
         
@@ -478,7 +479,7 @@ class PatternCanvas(QGraphicsScene):
                 return
 
         elif (event.button() == Qt.LeftButton) and \
-             (event.modifiers() & Qt.ControlModifier):
+             (event.modifiers() & Qt.ShiftModifier):
 
             if is_click_on_labels(col, row, self._numColumns, self._numRows):
                  self.handle_right_click_on_labels(col, row)
@@ -1370,7 +1371,16 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
     def mousePressEvent(self, event):
-        """ Handle user press events on the item. """
+        """ Handle user press events on the item.
+
+        NOTE: We ignore all events with shift or control clicked.
+
+        """
+
+        if (event.modifiers() & Qt.ControlModifier) or \
+               (event.modifiers() & Qt.ShiftModifier):
+            event.ignore()
+            return
 
         if not self._selected:
             self.emit(SIGNAL("cell_selected"), self)
@@ -1504,7 +1514,12 @@ class PatternLegendItem(QGraphicsSvgItem):
         """
 
         self._position = self.pos()
-        QGraphicsSvgItem.mousePressEvent(self, event)
+        
+        if (event.modifiers() & Qt.ControlModifier):
+            QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
+            QGraphicsSvgItem.mousePressEvent(self, event)
+        else:
+            event.ignore()
 
 
 
@@ -1515,12 +1530,14 @@ class PatternLegendItem(QGraphicsSvgItem):
         a Redo/Undo event.
 
         """
-
+        
+        QApplication.restoreOverrideCursor()
+        QGraphicsSvgItem.mouseReleaseEvent(self, event)
+        
         if self._position != self.pos():
-           self.scene().legend_item_position_changed(self, self._position,
+           self.scene().canvas_item_position_changed(self, self._position,
                                                      self.pos()) 
 
-        QGraphicsSvgItem.mouseReleaseEvent(self, event)
 
 
 
@@ -1610,8 +1627,12 @@ class PatternLegendText(QGraphicsTextItem):
         """
 
         self._position = self.pos()
-        QGraphicsTextItem.mousePressEvent(self, event)
 
+        if (event.modifiers() & Qt.ControlModifier):
+            QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
+            QGraphicsTextItem.mousePressEvent(self, event)
+        else:
+            event.ignore()
 
 
 
@@ -1623,11 +1644,13 @@ class PatternLegendText(QGraphicsTextItem):
 
         """
 
-        if self._position != self.pos():
-           self.scene().legend_item_position_changed(self, self._position, self.pos()) 
-
+        QApplication.restoreOverrideCursor()
         QGraphicsTextItem.mouseReleaseEvent(self, event)
-    
+
+        if self._position != self.pos():
+           self.scene().canvas_item_position_changed(self, self._position,
+                                                     self.pos()) 
+
 
 
 
@@ -1682,18 +1705,44 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
 
 
-    def paint_elements(self):
+    def paint_elements(self, brushStyle = None):
         """ This member paints our path with the current
         color and line width.
 
         """
-        
+
+        if brushStyle:
+            brush = QBrush(self.color, brushStyle)
+        else:
+            brush = QBrush(self.color)
+
         pen = QPen()
         pen.setWidth(self.width)
-        pen.setBrush(self.color)
+        pen.setBrush(brush)
         for line in self.lineElements:
             line.setPen(pen)
 
+
+
+    def highlight(self):
+        """ Highlights the cells somewhat so users can tell
+        what they clicked on.
+
+        """
+
+        self.paint_elements(Qt.Dense2Pattern)
+
+
+
+    def unhighlight(self):
+        """ Revert hightlighting of cells and go back to normal
+        brush.
+
+        """
+
+        self.paint_elements(Qt.NoBrush)
+
+         
 
     def mouseDoubleClickEvent(self, event):
         """ Double clicking on a PatternRepeatItem
@@ -1705,6 +1754,8 @@ class PatternRepeatItem(QGraphicsItemGroup):
         if not (event.modifiers() & Qt.ControlModifier):
             event.ignore()
         else:
+            self.highlight()
+            
             dialog = PatternRepeatDialog(self.width, self.color)
             status = dialog.exec_()
             if status > 0:
@@ -1716,6 +1767,8 @@ class PatternRepeatItem(QGraphicsItemGroup):
                 # doesn't seem to inherit from QObject
                 # and thus signals and slots won't work
                 self.scene().delete_pattern_repeat(self)
+
+            self.unhighlight()
 
         QGraphicsItemGroup.mouseDoubleClickEvent(self, event)
 
@@ -1729,12 +1782,34 @@ class PatternRepeatItem(QGraphicsItemGroup):
         pressed to allow the motion of the item across the
         canvas.
 
+        NOTE: We also change the cursor type to make the
+        motion of pattern repeat items a bit more visible.
+
+        """
+
+        self._position = self.pos()
+        
+        if (event.modifiers() & Qt.ControlModifier):
+            QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
+            QGraphicsItemGroup.mousePressEvent(self, event)
+        else:
+            event.ignore()
+
+
+
+    def mouseReleaseEvent(self, event):
+        """ Deal with mouse release events after a previous
+        mousePressEvent. Mostly, we just have to revert
+        the cursor back.
+
         """
         
-        if not (event.modifiers() & Qt.ControlModifier):
-            event.ignore()
-            
-        QGraphicsItemGroup.mousePressEvent(self, event)
+        QApplication.restoreOverrideCursor()
+        QGraphicsItemGroup.mouseReleaseEvent(self, event)
+
+        if self._position != self.pos():
+            self.scene().canvas_item_position_changed(self, self._position,
+                                                      self.pos()) 
 
 
 
@@ -3242,19 +3317,19 @@ class PaintCells(QUndoCommand):
 
 
 
-class MoveLegendItem(QUndoCommand):
+class MoveCanvasItem(QUndoCommand):
     """ This class encapsulates the movement of legend items
     (PatternLabelItem or PatternLabelText).
     
     """
 
     
-    def __init__(self, legendItem, oldPosition, newPosition, parent = None):
+    def __init__(self, canvasItem, oldPosition, newPosition, parent = None):
 
-        super(MoveLegendItem, self).__init__(parent) 
+        super(MoveCanvasItem, self).__init__(parent) 
         self.setText("move legend item")
 
-        self.legendItem = legendItem
+        self.canvasItem = canvasItem
         
         self.oldPosition = oldPosition
         self.newPosition = newPosition
@@ -3264,14 +3339,14 @@ class MoveLegendItem(QUndoCommand):
     def redo(self):
         """ The redo action. """
 
-        self.legendItem.setPos(self.newPosition)
+        self.canvasItem.setPos(self.newPosition)
 
 
 
     def undo(self):
         """ The undo action. """
 
-        self.legendItem.setPos(self.oldPosition)
+        self.canvasItem.setPos(self.oldPosition)
 
 
 
@@ -3289,13 +3364,12 @@ class AddPatternRepeat(QUndoCommand):
 
         self.canvas = canvas
         self.lines = lines
-
+        self.pathItem = PatternRepeatItem(self.canvas, self.lines)
 
 
     def redo(self):
         """ The redo action. """
 
-        self.pathItem = PatternRepeatItem(self.canvas, self.lines)
         self.canvas.addItem(self.pathItem)
 
 
@@ -3304,7 +3378,6 @@ class AddPatternRepeat(QUndoCommand):
         """ The undo action. """
 
         self.canvas.removeItem(self.pathItem)
-        del self.pathItem
          
         
         

@@ -52,6 +52,7 @@ class PatternView(QGraphicsView):
         self.rubberBandOrigin = None
 
 
+
     def mousePressEvent(self, event):
         """ Handles mouse press events.
 
@@ -66,8 +67,8 @@ class PatternView(QGraphicsView):
             self.rubberBandOrigin = event.pos()
             self.rubberBand.setGeometry(QRect(self.rubberBandOrigin, QSize()))
             self.rubberBand.show()
-        else:
-            QGraphicsView.mousePressEvent(self, event)
+        
+        QGraphicsView.mousePressEvent(self, event)
 
 
 
