@@ -1137,7 +1137,7 @@ class PatternCanvas(QGraphicsScene):
 
     @wait_cursor
     def load_previous_pattern(self, knittingSymbols, patternGridItemInfo,
-                          legendItemInfo):
+                              legendItemInfo, patternRepeats):
         """ Clear curent canvas and establishes a new canvas
         based on the passed canvas items. Returns True on success
         and False otherwise.
@@ -1169,6 +1169,10 @@ class PatternCanvas(QGraphicsScene):
         for entry in allLegendItems:
             arrange_label_item(self.gridLegend, *entry)
 
+        for entry in patternRepeats:
+            self._load_patternRepeatItem(entry)
+        
+
         # need to clear our label cache, otherwise set_up_labels()
         # will try to remove non-existing items
         self._textLabels = []
@@ -1177,6 +1181,17 @@ class PatternCanvas(QGraphicsScene):
 
         self.emit(SIGNAL("adjust_view"))
         return True
+
+
+
+    def _load_patternRepeatItem(self, itemInfo):
+        """ Recreates a pattern repeat item based on itemInfo. """
+        
+        repeatItem = PatternRepeatItem(itemInfo["lines"],
+                                       itemInfo["width"],
+                                       itemInfo["color"])
+        self.addItem(repeatItem)
+        repeatItem.setPos(itemInfo["position"])
 
 
 
@@ -1685,7 +1700,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
     Type = 70000 + 5
 
-    def __init__(self, canvas, lines, parent = None):
+    def __init__(self, lines, width, color, parent = None):
 
         super(PatternRepeatItem, self).__init__(parent)
 
@@ -1697,8 +1712,16 @@ class PatternRepeatItem(QGraphicsItemGroup):
             self.addToGroup(lineElement)
            
         # default pen
-        self.width = 5
-        self.color = QColor(Qt.red)
+        if width:
+            self.width = width
+        else:
+            self.width = 5
+
+        if color:
+            self.color = color
+        else:
+            self.color = QColor(Qt.red)
+            
         self.paint_elements()
 
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
@@ -1771,7 +1794,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
             self.unhighlight()
 
         QGraphicsItemGroup.mouseDoubleClickEvent(self, event)
-
+        QApplication.restoreOverrideCursor()
 
 
     def mousePressEvent(self, event):
@@ -1790,8 +1813,8 @@ class PatternRepeatItem(QGraphicsItemGroup):
         self._position = self.pos()
         
         if (event.modifiers() & Qt.ControlModifier):
-            QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
             QGraphicsItemGroup.mousePressEvent(self, event)
+            QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
         else:
             event.ignore()
 
@@ -1803,14 +1826,13 @@ class PatternRepeatItem(QGraphicsItemGroup):
         the cursor back.
 
         """
-        
-        QApplication.restoreOverrideCursor()
-        QGraphicsItemGroup.mouseReleaseEvent(self, event)
 
         if self._position != self.pos():
             self.scene().canvas_item_position_changed(self, self._position,
                                                       self.pos()) 
 
+        QGraphicsItemGroup.mouseReleaseEvent(self, event)
+        QApplication.restoreOverrideCursor()
 
 
 
@@ -3358,13 +3380,13 @@ class AddPatternRepeat(QUndoCommand):
     """
 
     
-    def __init__(self, canvas, lines, parent = None):
+    def __init__(self, canvas, lines, width = None, color = None,
+                 parent = None):
 
         super(AddPatternRepeat, self).__init__(parent)
 
         self.canvas = canvas
-        self.lines = lines
-        self.pathItem = PatternRepeatItem(self.canvas, self.lines)
+        self.pathItem = PatternRepeatItem(lines, width, color)
 
 
     def redo(self):

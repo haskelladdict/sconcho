@@ -600,8 +600,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         """
 
-        (status, errMsg, patternGridItems, legendItems, colors, activeItem) = \
-                               io.read_project(self.settings, readFilePath)
+        (status, errMsg, patternGridItems, legendItems, colors,
+         activeItem, patternRepeats) = io.read_project(self.settings,
+                                                       readFilePath)
            
         if not status:
             QMessageBox.critical(self, msg.errorOpeningProjectTitle,
@@ -611,7 +612,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # add newly loaded project
         if not self.canvas.load_previous_pattern(self._knittingSymbols, 
                                                  patternGridItems,
-                                                 legendItems):
+                                                 legendItems,
+                                                 patternRepeats):
             return
 
         set_up_colors(self.colorWidget, colors)

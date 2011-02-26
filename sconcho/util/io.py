@@ -26,14 +26,15 @@ from __future__ import absolute_import
 
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
                           Qt, QRectF, QDataStream, QSize, QRect, 
-                          QFileInfo)
+                          QFileInfo, QLineF, QPointF)
 from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
                          QPrinter, QPrintDialog, QDialog, QFont)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from PyQt4.QtSvg import QSvgGenerator
 
 from sconcho.gui.pattern_canvas import (PatternGridItem, PatternLegendItem,
-                                        legendItem_symbol, legendItem_text)
+                                        legendItem_symbol, legendItem_text,
+                                        PatternRepeatItem)
 from sconcho.util.misc import wait_cursor
 from sconcho.util.exceptions import PatternReadError
 import sconcho.util.messages as msg
@@ -56,6 +57,7 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
     # prepare data structures
     patternGridItems = get_patternGridItems(canvas)
     legendItems      = canvas.gridLegend.values()
+    patternRepeats   = get_patternRepeats(canvas)
 
     status = None
     handle = None
@@ -74,10 +76,11 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         stream.writeInt32(len(patternGridItems))
         stream.writeInt32(len(legendItems))
         stream.writeInt32(len(colors))
+        stream.writeInt32(len(patternRepeats))
 
-        # the next are 5 dummy entries so we can add more
+        # the next are 4 dummy entries so we can add more
         # output within the same API
-        for count in range(5):
+        for count in range(4):
             stream.writeInt32(0)
 
         # write content
@@ -86,6 +89,8 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         write_colors(stream, colors)
         write_active_symbol(stream, activeSymbol)
         write_settings(stream, settings)
+        write_patternRepeats(stream, patternRepeats)
+
 
     except (IOError, OSError) as e:
         status = "Failed to save: %s " % e
@@ -177,6 +182,49 @@ def write_settings(stream, settings):
 
 
 
+def get_patternRepeats(canvas):
+    """ Extract all the patternGridItems """
+
+    patternRepeats = []
+
+    for item in canvas.items():
+        if isinstance(item, PatternRepeatItem):
+            patternRepeats.append(item)
+
+    return patternRepeats
+
+
+
+def write_patternRepeats(stream, repeats):
+    """ Write all patternGridItems to our output stream.
+
+    NOTE: This is a little bit more work. For each pattern
+    repeat item, we extract the lines that make it up, and
+    then store pairs of points together with color and
+    line width information.
+
+    """
+
+    for repeat in repeats:
+
+        points = []
+        for element in repeat.lineElements:
+
+            line = element.line()
+            points.append(line.p1())
+            points.append(line.p2())
+
+        stream.writeInt32(len(points))
+        for point in points:
+            stream << point
+
+        stream << repeat.pos()
+        stream.writeInt32(repeat.width)
+        stream << repeat.color
+
+
+
+
 #############################################################################
 #
 # routines for writing a project.
@@ -210,9 +258,10 @@ def read_project(settings, openFileName):
         numGridItems   = stream.readInt32()
         numLegendItems = stream.readInt32()
         numColors      = stream.readInt32()
+        numRepeats     = stream.readInt32()
 
-        # the next are 5 dummy entries we just skip
-        for count in range(5):
+        # the next are 4 dummy entries we just skip
+        for count in range(4):
             stream.readInt32()
 
         # write elements
@@ -221,6 +270,7 @@ def read_project(settings, openFileName):
         colors           = read_colors(stream, numColors)
         activeSymbol     = read_active_symbol(stream)
         read_settings(stream, settings)
+        patternRepeats   = read_patternRepeats(stream, numRepeats)
 
 
     except (IOError, OSError) as e:
@@ -232,7 +282,8 @@ def read_project(settings, openFileName):
         if status is not None:
             return (False, status, None, None, None, None)
 
-    return (True, None, patternGridItems, legendItems, colors, activeSymbol)
+    return (True, None, patternGridItems, legendItems, colors, activeSymbol,
+            patternRepeats)
 
 
 
@@ -370,6 +421,45 @@ def read_settings(stream, settings):
 
     if gridCellHeight != 0:
         settings.grid_cell_height = gridCellHeight
+
+
+
+def read_patternRepeats(stream, numRepeats):
+    """ Read all patternRepeats from our output stream """
+
+    patternRepeats = []
+    for count in range(numRepeats):
+
+        # read all lines
+        lines = []
+        numPoints = stream.readInt32()
+        for pointCount in range(0, numPoints, 2):
+
+            point1 = QPointF()
+            stream >> point1
+            
+            point2 = QPointF()
+            stream >> point2
+            
+            lines.append(QLineF(point1, point2))
+                                
+            
+
+        # read width and color
+        position = QPointF()
+        stream >> position
+        width = stream.readInt32()
+        color = QColor()
+        stream >> color 
+        
+        newItem = { "lines"    : lines,
+                    "position" : position,
+                    "width"    : width,
+                    "color"    : color }
+ 
+        patternRepeats.append(newItem)
+
+    return patternRepeats
 
 
 
