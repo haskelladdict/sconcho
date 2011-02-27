@@ -382,6 +382,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.symbolCategoryChooser,
                      SIGNAL("currentIndexChanged(QString)"),
                      self.update_symbol_widget)
+
+        # this makes sure that the currently active symbol is unselected
+        # when the users chooses a new category
+        self.connect(self.symbolCategoryChooser,
+                     SIGNAL("currentIndexChanged(QString)"),
+                     partial(self.canvas.set_active_symbol, None))
         
 
 
@@ -778,9 +784,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             name = activeItem["name"]
         except:
             return
-
-        if name == "None":
-            self.emit(SIGNAL("unselect_active_symbol"))
 
         try:
             category = activeItem["category"]

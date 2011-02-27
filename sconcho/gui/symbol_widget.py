@@ -95,9 +95,7 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
     
 
 def add_symbols_to_widget(symbols, widget, synchronizer):
-    """
-    Adds all passed knitting symbols to the tab widget.
-    """
+    """ Adds all passed knitting symbols to the tab widget. """
 
     symbolsByCategory = sort_symbols_by_category(symbols)
     for (symbolCategory, symbols) in symbolsByCategory:
@@ -208,9 +206,7 @@ class SymbolSelectorItem(QFrame):
 
 
     def get_content(self):
-        """
-        Returns the symbol controled by this widget.
-        """
+        """ Returns the symbol controled by this widget. """
 
         return self._symbol
 
@@ -319,9 +315,9 @@ class SymbolSelectorLabel(QLabel):
 
 
     def mousePressEvent(self, event): 
-        """
-        Acts on mouse press events and uses the synchronizer
+        """ Acts on mouse press events and uses the synchronizer
         for selecting.
+        
         """
 
         self.emit(SIGNAL("label_clicked"))
