@@ -642,13 +642,13 @@ class PatternCanvas(QGraphicsScene):
                 ManageGridDialog(self._numRows, self._numColumns,
                                  row, col, self.parent())
             self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_rows"), 
-                         self.insert_grid_row)
+                         self.insert_grid_rows)
             self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_rows"), 
-                         self.delete_grid_row)
+                         self.delete_grid_rows)
             self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_columns"), 
-                         self.insert_grid_column)
+                         self.insert_grid_columns)
             self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_columns"), 
-                         self.delete_grid_column)
+                         self.delete_grid_columns)
         else:
             self.insertDeleteRowColDialog.set_row_col(row,col)
 
@@ -901,7 +901,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def insert_grid_row(self, num, mode, rowPivot):
+    def insert_grid_rows(self, num, mode, rowPivot):
         """ Deals with requests to insert a row. This operation might
         take some time so we switch to a wait cursor.
 
@@ -915,7 +915,7 @@ class PatternCanvas(QGraphicsScene):
 
         
 
-    def delete_grid_row(self, num, mode, rowPivot):
+    def delete_grid_rows(self, num, mode, rowPivot):
         """ Deals with requests to delete a specific row. """
        
         pivot = self.convert_canvas_row_to_internal(rowPivot)
@@ -942,7 +942,7 @@ class PatternCanvas(QGraphicsScene):
  
 
 
-    def insert_grid_column(self, num, mode, columnPivot):
+    def insert_grid_columns(self, num, mode, columnPivot):
         """ Deals with requests to insert a column. """
 
         pivot = self.convert_canvas_column_to_internal(columnPivot)
@@ -993,7 +993,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def delete_grid_column(self, num, mode, columnPivot):
+    def delete_grid_columns(self, num, mode, columnPivot):
         """ Deals with requests to delete a specific number of columns. """
 
         pivot = self.convert_canvas_column_to_internal(columnPivot)
@@ -1022,14 +1022,19 @@ class PatternCanvas(QGraphicsScene):
             colRange = range(pivot - num, pivot)
         else:
             colRange = range(pivot, pivot + num)
-            
-        selection = []
+
+        selectedItems = set()
         for rowID in range(0, self._numRows):
             for colID in colRange:
                 item = self._item_at_row_col(colID, rowID)
-                selection.append(PatternCanvasEntry(item.column, item.row, 
-                                                    item.width, item.color,
-                                                    item.symbol))
+                selectedItems.add(item)
+
+        selection = []
+        for item in selectedItems:
+            selection.append(PatternCanvasEntry(item.column, item.row, 
+                                                item.width, item.color,
+                                                item.symbol))
+
         (status, (colDim, rowDim)) = is_active_selection_rectangular(selection)
         
         if not status:
