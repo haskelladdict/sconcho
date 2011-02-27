@@ -272,7 +272,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         saveTimer = QTimer(self)
         self.connect(saveTimer, SIGNAL("timeout()"),
                      self._save_timed_recovery_file)
-        saveTimer.start(10000)
+        saveTimer.start(120000)
 
 
 

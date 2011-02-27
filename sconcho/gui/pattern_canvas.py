@@ -662,29 +662,35 @@ class PatternCanvas(QGraphicsScene):
         """ Adds a pattern repeat around the current selection. """
 
         edges = {}
-        for ID in self._selectedCells:
+        for entry in self._selectedCells.values():
 
-            (row, col) = get_row_col_from_id(ID)
-            edgeIDs = [get_edge_id((row, col), (row, col + 1)),
-                       get_edge_id((row, col), (row + 1, col)),
-                       get_edge_id((row, col + 1), (row + 1, col + 1)),
-                       get_edge_id((row + 1, col), (row + 1, col + 1))]
-            
-            for edgeID in edgeIDs:
-                if edgeID in edges:
-                    edges[edgeID] = 0
-                else:
-                    edges[edgeID] = 1
+            row = entry.row
+            col = entry.column
+            for shift in range(entry.width):
+                edgeIDs = [get_edge_id((col + shift, row),
+                                       (col + 1 + shift, row)),
+                           get_edge_id((col + shift, row),
+                                       (col + shift, row + 1)),
+                           get_edge_id((col + shift + 1, row),
+                                       (col + shift + 1, row + 1)),
+                           get_edge_id((col + shift, row + 1),
+                                       (col + shift + 1, row + 1))]
+
+                for edgeID in edgeIDs:
+                    if edgeID in edges:
+                        edges[edgeID] = 0
+                    else:
+                        edges[edgeID] = 1
                 
         lines = []
         cellWidth = self._unitCellDim.width()
         cellHeight = self._unitCellDim.height()
         for (edgeID, switch) in edges.items():
             if switch:
-                (row1, col1, row2, col2) = map(int, edgeID.split(":"))
+                (col1, row1, col2, row2) = map(int, edgeID.split(":"))
 
-                line = QLineF(row1 * cellWidth, col1 * cellHeight,
-                              row2 * cellWidth, col2 * cellHeight)
+                line = QLineF(col1 * cellWidth, row1 * cellHeight,
+                              col2 * cellWidth, row2 * cellHeight)
                 lines.append(line)
 
         patternRepeatCommand = AddPatternRepeat(self, lines)
@@ -2244,16 +2250,6 @@ def get_item_id(column, row):
 
 
 
-def get_row_col_from_id(id):
-    """ Given a row:col id return a tuple if ints with
-    the row and column id.
-
-    """
-
-    return map(int, id.split(":"))
-
-
-
 def get_edge_id(gridPoint1, gridPoint2):
     """ Given the column and row values of two grid points
     return an string ID.
@@ -2266,19 +2262,6 @@ def get_edge_id(gridPoint1, gridPoint2):
     """
 
     return ":".join(map(str, gridPoint1 + gridPoint2))
-
-
-
-def get_edge_from_id(edgeID):
-    """ From a given edge iD return the values of the two grid
-    point forming this edge.
-
-    Please see function get_edge_id for an explanation of
-    grid point IDs.
-
-    """
-
-    return map(int, edgeID.split(":"))
 
 
 
