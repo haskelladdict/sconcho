@@ -41,7 +41,7 @@ class PatternView(QGraphicsView):
 
     def __init__(self, parent = None):
 
-        super(PatternView, self).__init__()
+        super(PatternView, self).__init__(parent)
 
         self.setRenderHint(QPainter.Antialiasing)
         self.setRenderHint(QPainter.TextAntialiasing)

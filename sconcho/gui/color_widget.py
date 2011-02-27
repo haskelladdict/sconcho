@@ -37,19 +37,17 @@ from PyQt4.QtGui import (QFrame, QWidget, QColor, QPushButton,
 #########################################################
 class ColorWidget(QWidget):
 
-    def __init__(self, synchronizer, colors, parent = None):
+    def __init__(self, parent = None):
 
         super(ColorWidget, self).__init__(parent)
 
-        self._synchronizer = synchronizer
 
+    def initialize(self, synchronizer, colors):
+
+        self._synchronizer = synchronizer
+   
         # set up layout
         layout = QHBoxLayout()
-        colorButton = QPushButton("customize color")
-        QObject.connect(colorButton, SIGNAL("pressed()"),
-                        self.customized_color_button_pressed)
-        layout.addWidget(colorButton)
-        layout.addStretch()
 
         # we need to keep a list of all ColorSelectorItems so we can
         # parse them later for their colors when saving as spf
@@ -62,8 +60,13 @@ class ColorWidget(QWidget):
             if color == QColor(Qt.white):
                 synchronizer.select(newItem)
 
+        colorButton = QPushButton("customize color")
+        QObject.connect(colorButton, SIGNAL("pressed()"),
+                        self.customized_color_button_pressed)
+        layout.addWidget(colorButton)
+        layout.addStretch()
+        
         self.setLayout(layout)
-
 
 
     def customized_color_button_pressed(self):

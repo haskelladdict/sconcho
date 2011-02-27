@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1137</width>
-    <height>777</height>
+    <width>1006</width>
+    <height>757</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,59 +18,67 @@
     <normaloff>:/icons/sconcho_icon.png</normaloff>:/icons/sconcho_icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="PatternView" name="graphicsView">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>20</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="dragMode">
-         <enum>QGraphicsView::NoDrag</enum>
-        </property>
-       </widget>
+       <widget class="ActiveSymbolWidget" name="activeSymbolWidget" native="true"/>
       </item>
       <item>
-       <widget class="QScrollArea" name="scrollArea">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>1</verstretch>
-         </sizepolicy>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="minimumSize">
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>0</width>
-          <height>80</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="widgetResizable">
-         <bool>true</bool>
-        </property>
-        <widget class="QWidget" name="colorWidgetContainer">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>757</width>
-           <height>76</height>
-          </rect>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout"/>
-        </widget>
-       </widget>
+       </spacer>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="PatternView" name="graphicsView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="dragMode">
+       <enum>QGraphicsView::NoDrag</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>628</width>
+         <height>90</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="ColorWidget" name="colorWidget" native="true"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -79,7 +87,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1137</width>
+     <width>1006</width>
      <height>30</height>
     </rect>
    </property>
@@ -212,6 +220,17 @@
    <addaction name="separator"/>
    <addaction name="actionUnselect_All"/>
    <addaction name="actionCreate_Pattern_Repeat"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar_2">
+   <property name="windowTitle">
+    <string>toolBar_2</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
   <action name="actionAbout_sconcho">
    <property name="icon">
@@ -550,6 +569,18 @@
    <class>PatternView</class>
    <extends>QGraphicsView</extends>
    <header>pattern_view.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ActiveSymbolWidget</class>
+   <extends>QWidget</extends>
+   <header>active_symbol_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ColorWidget</class>
+   <extends>QWidget</extends>
+   <header>color_widget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

@@ -70,7 +70,6 @@ class PatternCanvas(QGraphicsScene):
         self._activeColorObject = None
         self._defaultColor = QColor(Qt.white)
         self._selectedCells = {}
-
         self._undoStack = QUndoStack(self)
 
         self._unitCellDim = QSizeF(self.settings.grid_cell_width,
