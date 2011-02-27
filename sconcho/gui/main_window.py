@@ -536,10 +536,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.set_project_save_file(saveFilePath)
 
-        # write recovery file
+        # write recovery file so we are up to date
         self._save_pattern(self._recoveryFilePath, markProjectClean = False)
 
-        # ready to save
+        # ready to save main project file
         return self._save_pattern(self._saveFilePath)
     
 
@@ -548,6 +548,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """ Main save routine.
 
         If there is no filepath we return (e.g. when called by the saveTimer).
+
+        NOTE: This function returns the SaveThread so callers have the
+        opportunity to call wait() to make sure that saving is all
+        done. 
         
         """
         
@@ -557,23 +561,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         saveFileName = QFileInfo(filePath).fileName()
         self.statusBar().showMessage("saving " + saveFileName)
 
-        (status, errMsg) = io.save_project(self.canvas, 
-                                           self.colorWidget.get_all_colors(),
-                                           self.activeSymbolWidget.get_symbol(),
-                                           self.settings, filePath)
+        saveThread = io.SaveThread(self.canvas, 
+                                   self.colorWidget.get_all_colors(),
+                                   self.activeSymbolWidget.get_symbol(),
+                                   self.settings, filePath,
+                                   markProjectClean)
+        self.connect(saveThread, SIGNAL("finished()"),
+                     saveThread, SLOT("deleteLater()"))
+        self.connect(saveThread, SIGNAL("saving_done"),
+                     self._save_pattern_epilog)
+        saveThread.start()
 
+        return saveThread
+
+
+
+    def _save_pattern_epilog(self, status, errorMessage, saveFileName,
+                             markProjectClean):
+        """ This method is called after the SaveThread is finished. """
+        
         if not status:
             QMessageBox.critical(self, msg.errorSavingProjectTitle,
-                                 errMsg, QMessageBox.Close)
-            return False
+                                 errorMsg, QMessageBox.Close)
+            return 
         
         self.statusBar().showMessage("successfully saved " + \
                                      saveFileName, 2000)
 
         if markProjectClean:
             self.mark_project_clean()
-            
-        return True
 
 
 
@@ -758,9 +774,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                           QMessageBox.Cancel)
 
             if answer == QMessageBox.Save:
-                savedOk = self.save_pattern_dialog("save")
-                if not savedOk:
-                    status = False
+                # we save and make sure that we wait until the
+                # thread is finished and the project was saved
+                saveThread = self.save_pattern_dialog("save")
+                saveThread.wait()
             elif answer == QMessageBox.Cancel:
                 status = False
 

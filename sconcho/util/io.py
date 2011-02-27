@@ -26,7 +26,8 @@ from __future__ import absolute_import
 
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
                           Qt, QRectF, QDataStream, QSize, QRect, 
-                          QFileInfo, QLineF, QPointF)
+                          QFileInfo, QLineF, QPointF, QThread,
+                          QReadWriteLock, QWriteLocker, SIGNAL)
 from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
                          QPrinter, QPrintDialog, QDialog, QFont)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
@@ -43,6 +44,50 @@ import sconcho.util.messages as msg
 # magic number to specify binary API
 MAGIC_NUMBER = 0xA3D1
 API_VERSION  = 1
+
+
+
+
+#############################################################################
+#
+# this is a simple wrapper around QThread to allow saving of projects
+# to take place in a separate thread
+#
+#############################################################################
+class SaveThread(QThread):
+
+    lock = QReadWriteLock()
+
+    def __init__(self, canvas, colors, activeSymbol, settings,
+                 saveFileName, markProjectClean, parent = None):
+
+        super(SaveThread, self).__init__(parent)
+
+        self.canvas = canvas
+        self.colors = colors
+        self.activeSymbol = activeSymbol
+        self.settings = settings
+        self.saveFileName = saveFileName
+        self.markProjectClean = markProjectClean
+
+
+    def start(self):
+        """ Main start routine of our SaveThread. Simply calls
+        save_project and emits a signal with the results when
+        done.
+
+        """
+
+        with QWriteLocker(SaveThread.lock):
+            (status, errorMsg) = save_project(self.canvas, self.colors,
+                                              self.activeSymbol,
+                                              self.settings,
+                                              self.saveFileName)
+
+            self.emit(SIGNAL("saving_done"), status, errorMsg,
+                      self.saveFileName, self.markProjectClean)
+           
+    
 
 
 #############################################################################
