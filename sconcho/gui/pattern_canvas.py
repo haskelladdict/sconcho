@@ -1720,6 +1720,8 @@ class PatternRepeatItem(QGraphicsItemGroup):
             lineElement = QGraphicsLineItem(line)
             self.lineElements.append(lineElement)
             self.addToGroup(lineElement)
+
+        self.setZValue(1)
            
         # default pen
         if width:
