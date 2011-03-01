@@ -460,6 +460,33 @@ class PatternCanvas(QGraphicsScene):
         paintCommand = PaintCells(self) 
         self._undoStack.push(paintCommand)
 
+
+
+    def mouseMoveEvent(self, event):
+        """ Here we intercept mouse move events on the canvas.
+
+        For now, we just transmit our current position in terms
+        of columns and rows.
+
+        """
+
+        (column, row) = convert_pos_to_col_row(event.scenePos(),
+                                              self._unitCellDim.width(),
+                                              self._unitCellDim.height())
+
+        if column >= 0 and column <= self._numColumns:
+            columnString = unicode(self._numColumns - column)
+        else:
+            columnString = "NA"
+        self.emit(SIGNAL("col_count_changed"), columnString)
+
+           
+        if row >= 0 and row <= self._numRows:
+            rowString = unicode(self._numRows - row)
+        else:
+            rowString = "NA"
+        self.emit(SIGNAL("row_count_changed"), rowString)
+
         
 
     def mousePressEvent(self, event):

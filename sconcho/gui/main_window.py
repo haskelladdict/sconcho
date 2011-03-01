@@ -91,6 +91,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                     self)
         self.initialize_symbol_widget(knittingSymbols)
         self.initialize_color_widget()
+        self.initialize_row_col_widget()
 
         # we set a manual scene rectangle for our view. we
         # should be a little smarter about this in the future
@@ -442,6 +443,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         Qt.magenta]]
         self.colorWidget.initialize(colorTracker, colorList)
         
+
+
+    def initialize_row_col_widget(self):
+        """ Initialize widget showing the current row col index. """
+
+        colLabel = QLabel("col:")
+        rowLabel = QLabel("row:")
+        
+        self.columnCounter = QLabel("NA")
+        self.connect(self.canvas, SIGNAL("col_count_changed"),
+                     (lambda x: self.columnCounter.setText(x)))
+
+        self.rowCounter = QLabel("NA")
+        self.connect(self.canvas, SIGNAL("row_count_changed"),
+                     (lambda x: self.rowCounter.setText(x)))
+        
+        layout = QHBoxLayout()
+        layout.addWidget(colLabel)
+        layout.addWidget(self.columnCounter)
+        layout.addWidget(rowLabel)
+        layout.addWidget(self.rowCounter)
+        rowColWidget = QWidget()
+        rowColWidget.setLayout(layout)
+
+        self.statusBar().addPermanentWidget(rowColWidget)
+
 
 
     def show_sconcho_manual(self):
