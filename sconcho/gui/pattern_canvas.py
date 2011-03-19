@@ -1197,7 +1197,7 @@ class PatternCanvas(QGraphicsScene):
             return status
         
 
-        # not that we have all canvas items, let's put them back in place
+        # now that we have all canvas items, let's put them back in place
         self._clear_canvas()
         for entry in allPatternGridItems:
             item = self.create_pattern_grid_item(*entry)

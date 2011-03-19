@@ -39,6 +39,7 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
     For each category, we create a symbolSelectorWidget, add
     the category to the selector, and store the widget in a dictionary
     with the category name as key.
+    
     The mainWindow then installs the proper widget based on the
     user selection.
     """

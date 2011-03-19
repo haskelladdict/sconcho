@@ -660,7 +660,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         set_up_colors(self.colorWidget, colors)
-        self.activate_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
+        self.select_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
+
+        # provide feedback in statusbar
         readFileName = QFileInfo(readFilePath).fileName()
         self.emit(SIGNAL("update_preferences"))
         self.statusBar().showMessage("successfully opened " + readFileName, 3000)
@@ -808,7 +810,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
  
 
 
-    def activate_symbolSelectorItem(self, symbolWidgets, activeItem):
+    def select_symbolSelectorItem(self, symbolWidgets, activeItem):
         """ Activate the requested item.
 
         If activeItem is None we inactivate whatever symbolSelectorWidget
@@ -829,6 +831,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         if (name, category) in symbolWidgets:
+
+            # select the proper category widget
+            index = self.symbolCategoryChooser.findText(category)
+            self.symbolCategoryChooser.setCurrentIndex(index)
+
+            # then select the proper item in the category
             symbolWidgets[(name, category)].click_me()
         
 
