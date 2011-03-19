@@ -68,7 +68,7 @@ class PatternView(QGraphicsView):
             self.rubberBand.setGeometry(QRect(self.rubberBandOrigin, QSize()))
             self.rubberBand.show()
         
-        QGraphicsView.mousePressEvent(self, event)
+        return QGraphicsView.mousePressEvent(self, event)
 
 
 
@@ -83,7 +83,7 @@ class PatternView(QGraphicsView):
             self.rubberBand.setGeometry(QRect(self.rubberBandOrigin,
                                               event.pos()).normalized())
 
-        QGraphicsView.mouseMoveEvent(self, event)
+        return QGraphicsView.mouseMoveEvent(self, event)
         
 
 
@@ -100,7 +100,7 @@ class PatternView(QGraphicsView):
             self.rubberBandOrigin = None
             self.rubberBand.hide()
         
-        QGraphicsView.mouseReleaseEvent(self, event)
+        return QGraphicsView.mouseReleaseEvent(self, event)
 
 
     

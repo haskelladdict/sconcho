@@ -275,7 +275,6 @@ class PatternCanvas(QGraphicsScene):
         itemLocation = QPointF(0, yMax + self._unitCellDim.height() + 10)
         item = PatternLegendItem(self._unitCellDim, width, height, symbol,
                                  color, 1)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setPos(itemLocation)
         self.addItem(item)
 
@@ -486,6 +485,8 @@ class PatternCanvas(QGraphicsScene):
         else:
             rowString = "NA"
         self.emit(SIGNAL("row_count_changed"), rowString)
+
+        return QGraphicsScene.mouseMoveEvent(self, event)
 
         
 
@@ -1538,6 +1539,7 @@ class PatternLegendItem(QGraphicsSvgItem):
         self.setCacheMode(QGraphicsItem.NoCache)
         
         self.setZValue(zValue)
+        self.setFlag(QGraphicsItem.ItemIsMovable, True)
 
         self.origin = QPointF(0.0, 0.0)
         self.unitDim = unitDim
@@ -1569,11 +1571,12 @@ class PatternLegendItem(QGraphicsSvgItem):
         
         if (event.modifiers() & Qt.ControlModifier):
             QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
-            QGraphicsSvgItem.mousePressEvent(self, event)
         else:
             event.ignore()
 
+        return QGraphicsSvgItem.mousePressEvent(self, event)
 
+    
 
     def mouseReleaseEvent(self, event):
         """ We reimplement this function to check if its position
@@ -1584,12 +1587,12 @@ class PatternLegendItem(QGraphicsSvgItem):
         """
         
         QApplication.restoreOverrideCursor()
-        QGraphicsSvgItem.mouseReleaseEvent(self, event)
         
         if self._position != self.pos():
            self.scene().canvas_item_position_changed(self, self._position,
-                                                     self.pos()) 
-
+                                                     self.pos())
+           
+        return QGraphicsSvgItem.mouseReleaseEvent(self, event)
 
 
 
@@ -1682,9 +1685,10 @@ class PatternLegendText(QGraphicsTextItem):
 
         if (event.modifiers() & Qt.ControlModifier):
             QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
-            QGraphicsTextItem.mousePressEvent(self, event)
         else:
             event.ignore()
+
+        return QGraphicsTextItem.mousePressEvent(self, event)
 
 
 
@@ -1697,12 +1701,12 @@ class PatternLegendText(QGraphicsTextItem):
         """
 
         QApplication.restoreOverrideCursor()
-        QGraphicsTextItem.mouseReleaseEvent(self, event)
 
         if self._position != self.pos():
            self.scene().canvas_item_position_changed(self, self._position,
                                                      self.pos()) 
 
+        return QGraphicsTextItem.mouseReleaseEvent(self, event)
 
 
 
@@ -1832,8 +1836,9 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
             self.unhighlight()
 
-        QGraphicsItemGroup.mouseDoubleClickEvent(self, event)
         QApplication.restoreOverrideCursor()
+        return QGraphicsItemGroup.mouseDoubleClickEvent(self, event)
+
 
 
     def mousePressEvent(self, event):
@@ -1852,10 +1857,11 @@ class PatternRepeatItem(QGraphicsItemGroup):
         self._position = self.pos()
         
         if (event.modifiers() & Qt.ControlModifier):
-            QGraphicsItemGroup.mousePressEvent(self, event)
             QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
         else:
             event.ignore()
+            
+        return QGraphicsItemGroup.mousePressEvent(self, event)
 
 
 
@@ -1870,8 +1876,8 @@ class PatternRepeatItem(QGraphicsItemGroup):
             self.scene().canvas_item_position_changed(self, self._position,
                                                       self.pos()) 
 
-        QGraphicsItemGroup.mouseReleaseEvent(self, event)
         QApplication.restoreOverrideCursor()
+        return QGraphicsItemGroup.mouseReleaseEvent(self, event)
 
 
 
