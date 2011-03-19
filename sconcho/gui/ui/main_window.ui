@@ -20,7 +20,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="infoLayout">
       <item>
        <widget class="ActiveSymbolWidget" name="activeSymbolWidget" native="true"/>
       </item>

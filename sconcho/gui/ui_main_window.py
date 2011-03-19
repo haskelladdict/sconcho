@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sun Feb 27 12:23:11 2011
+# Created: Sat Mar 19 11:59:12 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,14 +26,14 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.centralwidget)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.infoLayout = QtGui.QHBoxLayout()
+        self.infoLayout.setObjectName(_fromUtf8("infoLayout"))
         self.activeSymbolWidget = ActiveSymbolWidget(self.centralwidget)
         self.activeSymbolWidget.setObjectName(_fromUtf8("activeSymbolWidget"))
-        self.horizontalLayout.addWidget(self.activeSymbolWidget)
+        self.infoLayout.addWidget(self.activeSymbolWidget)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
-        self.verticalLayout_5.addLayout(self.horizontalLayout)
+        self.infoLayout.addItem(spacerItem)
+        self.verticalLayout_5.addLayout(self.infoLayout)
         self.graphicsView = PatternView(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)

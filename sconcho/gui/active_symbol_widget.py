@@ -55,7 +55,7 @@ class ActiveSymbolWidget(QWidget):
         
         self.widget = None
         self.label  = self.inactiveSymbolLabel
-        self.layout.addWidget(self.label,0,0)
+        self.layout.addWidget(self.label,0,0, Qt.AlignVCenter)
         self.setLayout(self.layout)
 
 
@@ -63,8 +63,7 @@ class ActiveSymbolWidget(QWidget):
     def get_symbol(self):
         """ Returns the current active symbol. """
 
-        return self.widget.get_symbol() if self.widget \
-               else None
+        return self.widget.get_symbol() if self.widget else None
         
 
 
@@ -88,13 +87,13 @@ class ActiveSymbolWidget(QWidget):
                 color = self.color
             
             self.widget = SymbolDisplayItem(symbol, color)
-            self.layout.addWidget(self.widget,0,1)
+            self.layout.addWidget(self.widget,0,1, Qt.AlignVCenter)
 
             if self.label is self.inactiveSymbolLabel:
                 self.layout.removeWidget(self.label)
                 self.label.setParent(None)
                 self.label = self.activeSymbolLabel
-                self.layout.addWidget(self.label,0,0)       
+                self.layout.addWidget(self.label,0,0, Qt.AlignVCenter)       
                 
         else:
             self.widget = None
@@ -103,7 +102,7 @@ class ActiveSymbolWidget(QWidget):
                 self.layout.removeWidget(self.label)
                 self.label.setParent(None)
                 self.label = self.inactiveSymbolLabel
-                self.layout.addWidget(self.label,0,0)       
+                self.layout.addWidget(self.label,0,0, Qt.AlignVCenter)       
             
 
 
@@ -148,10 +147,10 @@ class SymbolDisplayItem(QFrame):
         # add the symbol's svg
         svgWidget = QSvgWidget(symbol["svgPath"]) 
         svgWidth = symbol["width"].toInt()[0]
-        self.setMinimumWidth(svgWidth * 30)
-        self.setMaximumWidth(svgWidth * 30)
-        self.setMinimumHeight(30)
-        self.setMaximumHeight(30)
+        self.setMinimumWidth(svgWidth * 25)
+        self.setMaximumWidth(svgWidth * 25)
+        self.setMinimumHeight(25)
+        self.setMaximumHeight(25)
 
         layout.addWidget(svgWidget)
         self.setLayout(layout)

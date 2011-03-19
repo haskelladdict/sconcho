@@ -80,10 +80,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.clear_project_save_file()
 
-        # set up the statusBar
-        #self.activeSymbolWidget = ActiveSymbolWidget()
-        #self.statusBar().addPermanentWidget(self.activeSymbolWidget)
-
         self._topLevelPath = topLevelPath
         self._knittingSymbols = knittingSymbols
         self.canvas = PatternCanvas(self.settings, 
@@ -467,7 +463,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         rowColWidget = QWidget()
         rowColWidget.setLayout(layout)
 
-        self.statusBar().addPermanentWidget(rowColWidget)
+        self.infoLayout.addWidget(rowColWidget)
 
 
 
