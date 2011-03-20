@@ -26,7 +26,7 @@ printed to a printer of saved in PDF or PostScript format.
 Starting a new Project
 ~~~~~~~~~~~~~~~~~~~~~~
 
-After startup, sconcho by default presents a pattern grid with 10 rows and
+After start-up, sconcho by default presents a pattern grid with 10 rows and
 10 columns. This initial grid size can be changed by either
 
   * starting a new project (**File -> New**) and specifying the proper size in the *New Pattern Grid* dialog.
