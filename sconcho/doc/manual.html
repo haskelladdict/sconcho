@@ -313,6 +313,7 @@ ul.auto-toc {
 <div class="document" id="sconcho-manual">
 <h1 class="title">Sconcho Manual</h1>
 
+<p><em>Author: Markus Dittrich (last change 03/20/2011)</em></p>
 <p>Sconcho is a tool for creating knitting charts. Charts can be created by placing
 a variety of knitting symbols into a rectangular grids. Projects can be saved in
 a platform independent format as sconcho project files (spf) and can be edited
@@ -321,11 +322,13 @@ printed to a printer of saved in PDF or PostScript format.</p>
 <p><strong>Contents of this manual</strong>:</p>
 <ul class="simple">
 <li><a class="reference internal" href="#starting-a-new-project">Starting a new Project</a></li>
+<li><a class="reference internal" href="#interacting-with-sconcho">Interacting with Sconcho</a></li>
 <li><a class="reference internal" href="#adding-symbols-to-pattern-grid">Adding Symbols to Pattern Grid</a></li>
 <li><a class="reference internal" href="#copy-and-pasting-a-selection">Copy and Pasting a Selection</a></li>
 <li><a class="reference internal" href="#un-doing-re-doing-canvas-actions">Un-doing/Re-doing Canvas Actions</a></li>
 <li><a class="reference internal" href="#changing-a-symbol-s-background-color">Changing a Symbol's Background Color</a></li>
 <li><a class="reference internal" href="#changing-the-legend-layout">Changing the Legend Layout</a></li>
+<li><a class="reference internal" href="#adding-pattern-repeat-boxes">Adding Pattern Repeat Boxes</a></li>
 <li><a class="reference internal" href="#inserting-and-deleting-columns-and-rows-in-the-chart">Inserting and Deleting Columns and Rows in the Chart</a></li>
 <li><a class="reference internal" href="#saving-and-opening-sconcho-projects">Saving and Opening Sconcho Projects</a></li>
 <li><a class="reference internal" href="#exporting-and-printing-charts">Exporting and Printing Charts</a></li>
@@ -342,6 +345,29 @@ printed to a printer of saved in PDF or PostScript format.</p>
 <li>adding the proper number of rows with the <em>Insert/Delete Rows and Columns</em> dialog (<strong>Grid -&gt; Insert/Delete Rows and Columns</strong>).</li>
 </ul>
 </blockquote>
+</div>
+<div class="section" id="interacting-with-sconcho">
+<h1>Interacting with Sconcho</h1>
+<p>Most interactions with sconcho only require a simple mouse click. This is
+true for all selections, e.g. to choose the currently active knitting symbol
+or to place symbols into the existing pattern grid.</p>
+<p>There are a number of additional ways to select cells on the pattern grid and
+these all involve holding down the <strong>Shift key</strong> while using the mouse:</p>
+<ul class="simple">
+<li>Shift + mouse click and then dragging the mouse across the pattern grid will
+activate the <em>Rubberband Tool</em>. Upon releasing the mouse button all grid cells
+under the rubberband will either be selected or unselected based on their
+previous state. If there is a knitting symbol active it will be placed
+immediately if it fits into the selection area.</li>
+<li>Shift + right click on either a row or column label will again select or
+un-select the whole row or column based on its previous state. If there is an
+active knitting symbol it will be placed.</li>
+</ul>
+<p>Finally, several items on the canvas can be moved around. Movable items are:
+legend items (both symbols and text) and repeat boxes on the canvas. In order
+to move items, hold down the <strong>Control key</strong> then click on the item with the
+mouse button and start dragging. Releasing the mouse button causes the item
+to be placed at the location of the mouse cursor.</p>
 </div>
 <div class="section" id="adding-symbols-to-pattern-grid">
 <h1>Adding Symbols to Pattern Grid</h1>
@@ -361,7 +387,7 @@ selected the <em>Active Symbol Tool</em> displays <strong>No Active Symbol</stro
 </blockquote>
 <p>Without an active symbol (the <em>Active Symbol Tool</em>
 shows <strong>No Active Symbol</strong>) selecting grid cells will highlight
-them in a light grey color. As soon as a symbol is activated it
+them in a light gray color. As soon as a symbol is activated it
 will be inserted into the highlighted grid cells. If a
 symbol is already active while selecting grid cells, the symbol will be
 inserted into the highlighted cells immediately.</p>
@@ -414,6 +440,16 @@ and the text can be moved separately anywhere on the canvas and the
 default description for a symbol can be changed.</p>
 <p>If no legend is desired at all it can be turned off via un-checking
 <strong>View -&gt; Show Legend</strong>.</p>
+</div>
+<div class="section" id="adding-pattern-repeat-boxes">
+<h1>Adding Pattern Repeat Boxes</h1>
+<p>Pattern repeat boxes can be added to the pattern grid. Simply highlight
+all cells that should be inside the repeat box (i.e., the repeat box will
+be the outline of the selected cells) and then click on
+<strong>View -&gt; Create Pattern Repeat</strong> to create it. To change the color and
+line thickness of an existing repeat box or to delete a box hold down
+the <strong>Control key</strong> and double click within the area of the repeat box
+to make visible a dialog for changing the box's properties.</p>
 </div>
 <div class="section" id="inserting-and-deleting-columns-and-rows-in-the-chart">
 <h1>Inserting and Deleting Columns and Rows in the Chart</h1>

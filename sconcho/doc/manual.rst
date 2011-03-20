@@ -1,6 +1,8 @@
 Sconcho Manual
 --------------
 
+*Author: Markus Dittrich (last change 03/20/2011)*
+
 Sconcho is a tool for creating knitting charts. Charts can be created by placing
 a variety of knitting symbols into a rectangular grids. Projects can be saved in
 a platform independent format as sconcho project files (spf) and can be edited
@@ -11,11 +13,13 @@ printed to a printer of saved in PDF or PostScript format.
 **Contents of this manual**:
 
 * `Starting a new Project`_
+* `Interacting with Sconcho`_
 * `Adding Symbols to Pattern Grid`_
 * `Copy and Pasting a Selection`_
 * `Un-doing/Re-doing Canvas Actions`_
 * `Changing a Symbol's Background Color`_ 
 * `Changing the Legend Layout`_
+* `Adding Pattern Repeat Boxes`_
 * `Inserting and Deleting Columns and Rows in the Chart`_
 * `Saving and Opening Sconcho Projects`_
 * `Exporting and Printing Charts`_
@@ -33,6 +37,33 @@ After start-up, sconcho by default presents a pattern grid with 10 rows and
 
   * adding the proper number of rows with the *Insert/Delete Rows and Columns* dialog (**Grid -> Insert/Delete Rows and Columns**).
 
+
+
+Interacting with Sconcho
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Most interactions with sconcho only require a simple mouse click. This is
+true for all selections, e.g. to choose the currently active knitting symbol 
+or to place symbols into the existing pattern grid.
+
+There are a number of additional ways to select cells on the pattern grid and
+these all involve holding down the **Shift key** while using the mouse:
+
+* Shift + mouse click and then dragging the mouse across the pattern grid will 
+  activate the *Rubberband Tool*. Upon releasing the mouse button all grid cells 
+  under the rubberband will either be selected or unselected based on their 
+  previous state. If there is a knitting symbol active it will be placed 
+  immediately if it fits into the selection area.
+
+* Shift + right click on either a row or column label will again select or
+  un-select the whole row or column based on its previous state. If there is an
+  active knitting symbol it will be placed.
+
+Finally, several items on the canvas can be moved around. Movable items are: 
+legend items (both symbols and text) and repeat boxes on the canvas. In order
+to move items, hold down the **Control key** then click on the item with the
+mouse button and start dragging. Releasing the mouse button causes the item
+to be placed at the location of the mouse cursor.
 
 
 Adding Symbols to Pattern Grid
@@ -54,7 +85,7 @@ Grid cells can be selected in three ways:
 
 Without an active symbol (the *Active Symbol Tool*
 shows **No Active Symbol**) selecting grid cells will highlight
-them in a light grey color. As soon as a symbol is activated it
+them in a light gray color. As soon as a symbol is activated it
 will be inserted into the highlighted grid cells. If a 
 symbol is already active while selecting grid cells, the symbol will be 
 inserted into the highlighted cells immediately. 
@@ -120,6 +151,18 @@ default description for a symbol can be changed.
 
 If no legend is desired at all it can be turned off via un-checking
 **View -> Show Legend**.  
+
+
+Adding Pattern Repeat Boxes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pattern repeat boxes can be added to the pattern grid. Simply highlight
+all cells that should be inside the repeat box (i.e., the repeat box will
+be the outline of the selected cells) and then click on
+**View -> Create Pattern Repeat** to create it. To change the color and
+line thickness of an existing repeat box or to delete a box hold down
+the **Control key** and double click within the area of the repeat box
+to make visible a dialog for changing the box's properties.
 
 
 
