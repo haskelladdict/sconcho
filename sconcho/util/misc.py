@@ -27,6 +27,7 @@ from __future__ import absolute_import
 
 import functools
 import random
+import sys
 
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (QApplication, QCursor)
@@ -64,4 +65,36 @@ def get_random_knitting_quote():
     num = len(msg.knittingQuotes)
     return (msg.knittingQuotes[random.randint(0, num-1)])
 
+
+
+##############################################################################
+#
+# framework for logging errors
+#
+##############################################################################
+
+class SconchoError(object):
+    """ This class takes care of error logging. """
+
+
+    def __init__(self):
+
+        pass
+
+
+
+    def write(self, message, errorCode = None):
+        """ This member takes care of logging error messages. """
+
+        if errorCode:
+            print("sconcho: Error: %s with error code %d" %
+                  (message, errorCode), file = sys.stderr)
+        else:
+             print("sconcho: Error: %s" % message, file = sys.stderr)
+
+             
+# global error logging Object
+# NOTE: Is it a good idea to make this global? Seems ok for error
+#       logging purposes otherwise we have to pass it around a lot.
+errorLogger = SconchoError()
 

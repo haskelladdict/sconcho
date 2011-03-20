@@ -28,6 +28,8 @@ from PyQt4.QtCore import (QSettings, QString, QSize, QDir, QVariant,
                           QPoint)
 from PyQt4.QtGui import (QFont, QFontDatabase)
 
+from sconcho.util.misc import errorLogger
+
 
 
 class DefaultSettings(QSettings):
@@ -129,7 +131,8 @@ class DefaultSettings(QSettings):
                     self.value("session/cellWidth").toString().toInt()
 
         if not widthStatus:
-            print("Error: Failed to retrieve grid cell width from settings.")
+            errorLogger.write("DefaultSettings.grid_cell_width: Failed to "
+                              "retrieve grid cell width from settings.")
 
         return cellWidth
 
@@ -158,7 +161,8 @@ class DefaultSettings(QSettings):
                     self.value("session/cellHeight").toString().toInt()
 
         if not heightStatus:
-            print("Error: Failed to retrieve grid dimensions from settings.")
+           errorLogger.write("DefaultSettings.grid_cell_height: Failed to "
+                             "retrieve grid dimensions from settings.")
 
         return cellHeight
 
@@ -186,7 +190,8 @@ class DefaultSettings(QSettings):
         path = self.value("default/personalSymbolPath").toString()
 
         if not path:
-            print("Error: Failed to retrieve personal symbol path.")
+            errorLogger.write("DefaultSettings.personal_symbol_path: "
+                              "Failed to retrieve personal symbol path.")
             return("")
 
         return path
@@ -209,7 +214,8 @@ class DefaultSettings(QSettings):
 
         font = QFont()
         if not font.fromString(fontString):
-            print("Error: Failed to retrieve font from settings.")
+            errorLogger.write("DefaultSettings.text_font: Failed to "
+                              "retrieve font from settings.")
 
         return font
 
@@ -223,7 +229,8 @@ class DefaultSettings(QSettings):
 
         font = QFont()
         if not font.fromString(labelFontString):
-            print("Error: Failed to retrieve label font from settings.")
+            errorLogger.write("DefaultSettings.label_font: Failed to "
+                              "to retrieve label font from settings.")
 
         return font
 
@@ -256,7 +263,8 @@ class DefaultSettings(QSettings):
 
         font = QFont()
         if not font.fromString(legendFontString):
-            print("Error: Failed to retrieve legend font from settings.")
+            errorLogger.write("DefaultSettings.legend_font: Failed to "
+                              "retrieve legend font from settings.")
 
         return font
 

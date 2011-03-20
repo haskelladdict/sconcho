@@ -29,6 +29,7 @@ from PyQt4.QtCore import (QDir, QFile, QString, QStringList, QIODevice,
 from PyQt4.QtGui import QMessageBox
 from PyQt4.QtXml import QDomDocument
 
+from sconcho.util.misc import errorLogger
 import sconcho.util.messages as msg
 
 
@@ -53,7 +54,8 @@ def parse_all_symbols(symbolTopLevelPaths):
         # if there was a problem we simply skip
         # with a short warning
         if not symbolDesc:
-            print("Warning: Could not read symbol " + path)
+            errorLogger.write("parse_all_symbols: Could not read symbol "
+                              + path)
             continue
 
         # try to add symbol to symbol database
@@ -97,8 +99,11 @@ def parse_knitting_symbol(symbolPath):
     dom = QDomDocument()
     (status, msg, line, col) = dom.setContent(descriptionFile)
     if not status:
-        print("Warning: in file %s\n%s at line %d column %d" % \
-              (descriptionFile.fileName(), msg, line, col))
+        errorMessage = ("Failed reading pattern description in file %s -- "
+                        "%s at line %d column %d" % 
+                        (descriptionFile.fileName(), msg, line, col))
+        errorLogger.write(errorMessage)
+        return None
 
     # make sure we're reading a sconcho pattern description 
     root = dom.documentElement()

@@ -45,6 +45,7 @@ from sconcho.gui.manage_grid_dialog import ManageGridDialog
 from sconcho.util.misc import wait_cursor
 
 from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
+from sconcho.util.misc import errorLogger
 import sconcho.util.messages as msg
 
 
@@ -618,10 +619,11 @@ class PatternCanvas(QGraphicsScene):
         self.connect(rowAction, SIGNAL("triggered()"),
                      partial(self.insert_delete_rows_columns, col, row))
         gridMenu.addSeparator()
-        
+
+        scenePos = event.scenePos()
         colorAction = gridMenu.addAction("&Grab Color")
         self.connect(colorAction, SIGNAL("triggered()"),
-                     partial(self.grab_color_from_cell, event))
+                     partial(self.grab_color_from_cell, scenePos))
         gridMenu.addSeparator()
 
         outlineAction = gridMenu.addAction("&Add Pattern Repeat Around Selection")
@@ -733,17 +735,19 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def grab_color_from_cell(self, event):
+    def grab_color_from_cell(self, scenePosition):
         """ Extract the color from the selected cell
-        and add it to the currently active color selector.
+        (the one at scenePosition) and add it to the currently active
+        color selector.
         
         """
 
-        allItems = self.items(event.scenePos())
+        allItems = self.items(scenePosition)
         
         if len(allItems) != 1:
-            print("Error: Grab Color: expected 1 item, found %d" % \
-                  len(allItems))
+            errorString = "grab_color_from_cell: expected 1 item, found %d" % \
+                          len(allItems)
+            errorLogger.write(errorString)
             return
 
         color = allItems[0].color
@@ -1482,7 +1486,9 @@ class PatternGridItem(QGraphicsSvgItem):
         self.symbol = newSymbol
         svgPath = newSymbol["svgPath"]
         if not self.renderer().load(svgPath):
-            print("failed to load")
+            errorMessage = ("PatternGridItem._set_symbol: failed to load "
+                           "symbol %s" % svgPath)
+            errorLogger.write(errorMessage)
             return
 
         # apply color if present
@@ -1619,7 +1625,9 @@ class PatternLegendItem(QGraphicsSvgItem):
         self.symbol = newSymbol
         svgPath = newSymbol["svgPath"]
         if not self.renderer().load(svgPath):
-            print("failed to load")
+            errorMessage = ("PatternLegendItem._set_symbol: failed to load "
+                           "symbol %s" % svgPath)
+            errorLogger.write(errorMessage)
             return
 
         # apply color if present

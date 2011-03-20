@@ -46,8 +46,6 @@ MAGIC_NUMBER = 0xA3D1
 API_VERSION  = 1
 
 
-
-
 #############################################################################
 #
 # this is a simple wrapper around QThread to allow saving of projects
@@ -588,3 +586,5 @@ def print_scene(canvas):
         painter.setRenderHints(QPainter.TextAntialiasing)
         canvas.render(painter, QRectF(), theScene)
         painter.end()
+
+

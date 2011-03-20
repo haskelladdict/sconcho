@@ -36,6 +36,7 @@ from PyQt4.QtSvg import (QSvgWidget)
 from sconcho.gui.ui_manage_symbol_dialog import Ui_ManageKnittingSymbolDialog
 from sconcho.util.symbol_parser import (parse_all_symbols, create_new_symbol,
                                        remove_symbol, move_symbol, remove_directory)
+from sconcho.util.misc import errorLogger
 import sconcho.util.messages as msg
 import sconcho.gui.symbol_widget as symbolWidget
 
@@ -348,7 +349,9 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         categoryItems = self.availableSymbolsWidget.findItems(category, 
                                                 Qt.MatchExactly, 0)
         if len(categoryItems) != 1:
-            print("Error: There are duplicate categories.")
+            message = ("ManageSymbolDialog._delete_symbol_from_tree_widget: "
+                       "there are duplicate categories.")
+            return
         
         for categoryItem in categoryItems:
 
