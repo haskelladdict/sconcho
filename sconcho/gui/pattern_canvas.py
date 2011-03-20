@@ -137,7 +137,7 @@ class PatternCanvas(QGraphicsScene):
 
         # column labels
         yPos = self._unitCellDim.height() * self._numRows
-        for col in range(self._numColumns - 1, -1, -interval):
+        for col in range(self._numColumns - 1, -1, -1):
             labelText = QString(unicode(self._numColumns - col))
             textWidth = fm.width(labelText)
             item = PatternLabelItem(labelText)
