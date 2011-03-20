@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>353</width>
-    <height>242</height>
+    <width>419</width>
+    <height>204</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -88,7 +88,7 @@
      <item>
       <widget class="QPushButton" name="deleteButton">
        <property name="text">
-        <string>&amp;Delete Repeat</string>
+        <string>&amp;Delete</string>
        </property>
       </widget>
      </item>
@@ -108,7 +108,7 @@
      <item>
       <widget class="QPushButton" name="acceptButton">
        <property name="text">
-        <string>&amp;Accept</string>
+        <string>&amp;Accept Changes</string>
        </property>
       </widget>
      </item>

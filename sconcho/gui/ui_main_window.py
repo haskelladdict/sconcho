@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Mar 19 11:59:12 2011
+# Created: Sun Mar 20 12:43:54 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -189,7 +189,7 @@ class Ui_MainWindow(object):
         self.action_Manage_Knitting_Symbols.setObjectName(_fromUtf8("action_Manage_Knitting_Symbols"))
         self.actionUnselect_All = QtGui.QAction(MainWindow)
         icon11 = QtGui.QIcon()
-        icon11.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/select_all.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon11.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/gtk-remove.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionUnselect_All.setIcon(icon11)
         self.actionUnselect_All.setObjectName(_fromUtf8("actionUnselect_All"))
         self.action_Copy = QtGui.QAction(MainWindow)
@@ -329,7 +329,7 @@ class Ui_MainWindow(object):
         self.action_Insert_delete_rows_and_columns1.setText(QtGui.QApplication.translate("MainWindow", "&Manage Grid", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Manage_Knitting_Symbols.setText(QtGui.QApplication.translate("MainWindow", "&Manage Custom Knitting Symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.actionUnselect_All.setText(QtGui.QApplication.translate("MainWindow", "&Deselect All", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionUnselect_All.setToolTip(QtGui.QApplication.translate("MainWindow", "Deselect All: Deselects are currently selected cells on the Grid.", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUnselect_All.setToolTip(QtGui.QApplication.translate("MainWindow", "Deselect all currently highlighted cells on the grid.", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Copy.setText(QtGui.QApplication.translate("MainWindow", "&Copy", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Paste.setText(QtGui.QApplication.translate("MainWindow", "&Paste", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCheck_Pattern_Grid.setText(QtGui.QApplication.translate("MainWindow", "Check Pattern Grid", None, QtGui.QApplication.UnicodeUTF8))
@@ -341,7 +341,7 @@ class Ui_MainWindow(object):
         self.action_Redo.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+R", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_nostitch_symbols.setText(QtGui.QApplication.translate("MainWindow", "Show &Nostitch Symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCreate_Pattern_Repeat.setText(QtGui.QApplication.translate("MainWindow", "Create Pattern Repeat", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCreate_Pattern_Repeat.setToolTip(QtGui.QApplication.translate("MainWindow", "Create Pattern Repeat: Create a pattern repeat box around the currently hightlighted cells. <p>You can interact with an existing repeat box by Control clicking on it. ", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCreate_Pattern_Repeat.setToolTip(QtGui.QApplication.translate("MainWindow", "Create a pattern repeat box around the currently highlighted cells. <p>You can interact with an existing repeat box by pressing Control and double clicking on it. ", None, QtGui.QApplication.UnicodeUTF8))
 
 from active_symbol_widget import ActiveSymbolWidget
 from color_widget import ColorWidget

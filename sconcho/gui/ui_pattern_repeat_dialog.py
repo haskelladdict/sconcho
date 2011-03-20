@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/pattern_repeat_dialog.ui'
 #
-# Created: Sat Mar 19 11:59:12 2011
+# Created: Sun Mar 20 12:43:54 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_PatternRepeatDialog(object):
     def setupUi(self, PatternRepeatDialog):
         PatternRepeatDialog.setObjectName(_fromUtf8("PatternRepeatDialog"))
-        PatternRepeatDialog.resize(353, 242)
+        PatternRepeatDialog.resize(419, 204)
         self.verticalLayout_2 = QtGui.QVBoxLayout(PatternRepeatDialog)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.groupBox = QtGui.QGroupBox(PatternRepeatDialog)
@@ -73,7 +73,7 @@ class Ui_PatternRepeatDialog(object):
         self.groupBox.setTitle(QtGui.QApplication.translate("PatternRepeatDialog", "Line Properties", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Line &Width", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Line &Color", None, QtGui.QApplication.UnicodeUTF8))
-        self.deleteButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Delete Repeat", None, QtGui.QApplication.UnicodeUTF8))
-        self.acceptButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Accept", None, QtGui.QApplication.UnicodeUTF8))
+        self.deleteButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Delete", None, QtGui.QApplication.UnicodeUTF8))
+        self.acceptButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Accept Changes", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_3.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
 

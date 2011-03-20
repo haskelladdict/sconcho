@@ -488,13 +488,13 @@
   <action name="actionUnselect_All">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/select_all.png</normaloff>:/icons/select_all.png</iconset>
+     <normaloff>:/icons/gtk-remove.png</normaloff>:/icons/gtk-remove.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Deselect All</string>
    </property>
    <property name="toolTip">
-    <string>Deselect All: Deselects are currently selected cells on the Grid.</string>
+    <string>Deselect all currently highlighted cells on the grid.</string>
    </property>
   </action>
   <action name="action_Copy">
@@ -560,7 +560,7 @@
     <string>Create Pattern Repeat</string>
    </property>
    <property name="toolTip">
-    <string>Create Pattern Repeat: Create a pattern repeat box around the currently hightlighted cells. &lt;p&gt;You can interact with an existing repeat box by Control clicking on it. </string>
+    <string>Create a pattern repeat box around the currently highlighted cells. &lt;p&gt;You can interact with an existing repeat box by pressing Control and double clicking on it. </string>
    </property>
   </action>
  </widget>
