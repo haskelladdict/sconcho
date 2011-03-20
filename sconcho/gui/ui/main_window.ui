@@ -560,7 +560,7 @@
     <string>Create Pattern Repeat</string>
    </property>
    <property name="toolTip">
-    <string>Create a pattern repeat box around the currently highlighted cells. &lt;p&gt;You can interact with an existing repeat box by pressing Control and double clicking on it. </string>
+    <string>Create a pattern repeat box around the currently highlighted cells. &lt;p&gt;You can interact with an existing repeat box by holding down the Control key and double clicking on it. </string>
    </property>
   </action>
  </widget>

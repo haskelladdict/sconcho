@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sun Mar 20 14:43:29 2011
+# Created: Sun Mar 20 16:00:15 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -341,7 +341,7 @@ class Ui_MainWindow(object):
         self.action_Redo.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+R", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_nostitch_symbols.setText(QtGui.QApplication.translate("MainWindow", "Show &Nostitch Symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCreate_Pattern_Repeat.setText(QtGui.QApplication.translate("MainWindow", "Create Pattern Repeat", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCreate_Pattern_Repeat.setToolTip(QtGui.QApplication.translate("MainWindow", "Create a pattern repeat box around the currently highlighted cells. <p>You can interact with an existing repeat box by pressing Control and double clicking on it. ", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCreate_Pattern_Repeat.setToolTip(QtGui.QApplication.translate("MainWindow", "Create a pattern repeat box around the currently highlighted cells. <p>You can interact with an existing repeat box by holding down the Control key and double clicking on it. ", None, QtGui.QApplication.UnicodeUTF8))
 
 from active_symbol_widget import ActiveSymbolWidget
 from color_widget import ColorWidget
