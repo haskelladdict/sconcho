@@ -488,7 +488,7 @@
   <action name="actionUnselect_All">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/gtk-remove.png</normaloff>:/icons/gtk-remove.png</iconset>
+     <normaloff>:/icons/gtk-clear.png</normaloff>:/icons/gtk-clear.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Deselect All</string>

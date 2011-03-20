@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sun Mar 20 12:43:54 2011
+# Created: Sun Mar 20 14:43:29 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -189,7 +189,7 @@ class Ui_MainWindow(object):
         self.action_Manage_Knitting_Symbols.setObjectName(_fromUtf8("action_Manage_Knitting_Symbols"))
         self.actionUnselect_All = QtGui.QAction(MainWindow)
         icon11 = QtGui.QIcon()
-        icon11.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/gtk-remove.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon11.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/gtk-clear.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionUnselect_All.setIcon(icon11)
         self.actionUnselect_All.setObjectName(_fromUtf8("actionUnselect_All"))
         self.action_Copy = QtGui.QAction(MainWindow)
