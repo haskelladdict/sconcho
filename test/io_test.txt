@@ -12,6 +12,7 @@ work properly
 
 3) Export pattern using all supported formats as well
    as svg and check that exported images look proper.
+   Make sure hide nostitch option works properly.
 
 4) Print pattern as pdf and ps and make sure the resulting
    files look proper.
