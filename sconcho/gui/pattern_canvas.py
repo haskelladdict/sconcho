@@ -743,14 +743,14 @@ class PatternCanvas(QGraphicsScene):
         """
 
         allItems = self.items(scenePosition)
-        
-        if len(allItems) != 1:
+        patternGridItems = extract_patternGridItems(allItems)
+        if len(patternGridItems) != 1:
             errorString = "grab_color_from_cell: expected 1 item, found %d" % \
-                          len(allItems)
+                          len(patternGridItems)
             errorLogger.write(errorString)
             return
 
-        color = allItems[0].color
+        color = patternGridItems[0].color
         self.change_active_color(color)
 
 
@@ -792,10 +792,7 @@ class PatternCanvas(QGraphicsScene):
                                     self._unitCellDim.height() * 0.01)
 
         allItems = self.items(QRectF(upperLeftCorner, lowerRightCorner))
-        patternGridItems = []
-        for item in allItems:
-            if isinstance(item, PatternGridItem):
-                patternGridItems.append(item)
+        patternGridItems = extract_patternGridItems(allItems)
 
         return patternGridItems
 
@@ -869,11 +866,7 @@ class PatternCanvas(QGraphicsScene):
         """
 
         allItems = self.items()
-        patternGridItems = []
-        for item in allItems:
-            if isinstance(item, PatternGridItem):
-                patternGridItems.append(item)
-
+        patternGridItems = extract_patternGridItem(allItems)
 
         tracker = {}
         for item in patternGridItems:
@@ -923,12 +916,17 @@ class PatternCanvas(QGraphicsScene):
         # we really only expect one PatternCanvasItem to be present;
         # however there may in principle be others (legend items etc)
         # so we have to pick it out
-        items = self.items(pos)
-        for item in items:
-            if isinstance(item, PatternGridItem):
-                return item
-
-        return None
+        allItems = self.items(pos)
+        patternGridItems = extract_patternGridItems(allItems)
+        if len(patternGridItems) > 1:
+            errorString = "_item_at_row_col: expected <=1 item, found %d" % \
+                          len(patternGridItems)
+            errorLogger.write(errorString)
+            return None
+        elif len(patternGridItems) == 0:
+            return None
+        else:
+            return patternGridItems[0]
 
 
 
@@ -1868,7 +1866,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
             QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
         else:
             event.ignore()
-            
+
         return QGraphicsItemGroup.mousePressEvent(self, event)
 
 
@@ -2312,6 +2310,28 @@ def get_edge_id(gridPoint1, gridPoint2):
 
 
 
+
+def extract_patternGridItems(allItems):
+    """ From a list of QGraphicsItems extracts and returns
+    all PatternGridItems.
+
+    """
+
+    patternGridItems = []
+    for item in allItems:
+        if isinstance(item, PatternGridItem):
+            patternGridItems.append(item)
+
+    return patternGridItems
+
+
+
+
+############################################################################
+#
+# Helper Classes
+#
+############################################################################
 
 class PatternCanvasEntry(object):
     """ This is a small helper class for storing all relevant information
