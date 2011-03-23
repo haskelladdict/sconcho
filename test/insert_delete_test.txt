@@ -1,0 +1,45 @@
+These are some manual tests to ensure that 
+deleting and inserting and rows and columns works fine.
+
+A) ROWS
+-------
+
+1) Start up sconcho with file 
+
+   test_delete_insert_rows_columns.spf
+
+2) Delete and insert a number of rows. Make sure to delete
+   and insert more than just single rows. Also use both the
+   "below/above" and "at and below/above" toggles.
+
+3) Make sure the limits for max rows is correct in 
+   the "Manage Grid" GUI.
+
+3) Make sure that undo and redo 10 times work fine
+
+4) Make sure that there are no duplicate symbols on the
+   canvas (Ctrl-Alt-g)
+
+
+B) COLUMNS
+----------
+
+1) Close and start up another sconcho with
+
+   test_delete_insert_rows_columns.spf
+
+2) Delete and insert a number of columns. Make sure to delete
+   and insert more than just single columns. Also make sure
+   that sconcho properly rejects inserts or deletes that are
+   impossible due to current layout. Also use both the
+   "left of/right of" and "at/left of" toggles.
+
+3) Make sure the limits for max columns is correct in 
+   the "Manage Grid" GUI.
+
+4) Make sure that undo and redo 10 times work fine
+
+5) Make sure that there are no duplicate symbols on the
+   canvas (Ctrl-Alt-g)
+
+

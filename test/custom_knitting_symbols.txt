@@ -1,0 +1,20 @@
+These are some manual tests to ensure that adding
+of custom knitting symbols works properly.
+
+1) Add two custom knitting symbols of width 1 and 3
+   using test_files/test_1.svg and test_files/test_2.svg.
+
+2) Restart sconcho and make sure both new symbols are
+   available and work.
+
+3) Create a pattern including these symbols.
+
+4) Make sure undo/redo works 10 times.
+
+5) Check for duplicate symbols (Ctrl-Alt-g)
+
+6) Update both custom symbols and make sure the new changes take
+   effect properly.
+
+7) Delete both custom symbols and make sure they are removed
+   properly.

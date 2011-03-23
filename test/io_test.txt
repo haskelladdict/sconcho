@@ -1,0 +1,21 @@
+These are some manual tests to ensure that io
+work properly
+
+1) Make sure that file
+
+   test_files/test_delete_insert_rows_columns.spf
+
+   loads properly.
+
+2) Change pattern slightly and make sure that it can
+   be saved and re-loaded properly.
+
+3) Export pattern using all supported formats as well
+   as svg and check that exported images look proper.
+
+4) Print pattern as pdf and ps and make sure the resulting
+   files look proper.
+
+5) If possible make sure printing proper works.
+   
+

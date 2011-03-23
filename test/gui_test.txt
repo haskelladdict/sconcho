@@ -1,0 +1,6 @@
+These are some manual tests to ensure that the
+rest of the gui works properly.
+
+1) Make sure to go through all options of the
+   preferences menu (fonts, label intervals)
+
