@@ -1,37 +1,40 @@
 These are some manual tests to ensure that all
 symbols work and are displayed properly.
 
-1) Start up sconcho. 
+* Start up sconcho. 
 
-2) Create a new pattern grid with 12 rows and 15 columns
+* Create a new pattern grid with 12 rows and 15 columns
 
-3) Insert several symbols from each of the categories
-   (basic, 2,3,4,5,6 stitch cables, etc) by simple
-   selection. Make sure that for multi-cell symbols
-   these are placed properly. Also ensure the legend
-   tracks all new symbols (and removes old ones)
-   including their color.
+* Insert several symbols from each of the categories
+  (basic, 2,3,4,5,6 stitch cables, etc) by simple
+  selection. Make sure that for multi-cell symbols
+  these are placed properly. Also ensure the legend
+  tracks all new symbols (and removes old ones)
+  including their color.
 
-4) Same a 3) but also choose different colors.
+* Same a 3) but also choose different colors. Make
+  sure that grabbing colors works.
 
-5) Insert several symbols from each of the categories
-   (basic, 2,3,4,5,6 stitch cables, etc) by SHIFT-click
-   selections:
+* Make sure copy and pasting of stuff around works.
+
+* Insert several symbols from each of the categories
+  (basic, 2,3,4,5,6 stitch cables, etc) by SHIFT-click
+  selections:
  
-     - select complete rows and columns
-     - select with the rubber band
+    - select complete rows and columns
+    - select with the rubber band
 
-6) Redo and undo all that was done 10 times and make 
-   sure that we end up at the same state in the end.
+* Redo and undo all that was done 10 times and make 
+  sure that we end up at the same state in the end.
 
-7) Make sure there are no duplicate symbols on the
-   canvas (Ctrl-Alt-g)
+* Make sure there are no duplicate symbols on the
+  canvas (Ctrl-Alt-g)
 
-8) Add several pattern repeat boxes and change the
-   properties of each (line thickness and color)
+* Add several pattern repeat boxes and change the
+  properties of each (line thickness and color)
 
-9) Make sure legend items and pattern repeats can
-   be moved and the motions can be undone/redone
-   properly.
+* Make sure legend items and pattern repeats can
+  be moved and the motions can be undone/redone
+  properly.
 
-10) Make sure hiding legend, labels, canvas works properly.
+* Make sure hiding legend, labels, canvas works properly.
