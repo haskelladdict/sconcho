@@ -739,9 +739,9 @@ class PatternCanvas(QGraphicsScene):
 
     def delete_pattern_repeat(self, repeatItem):
         """ Delete the provided pattern repeat item from the canvas. """
-        
-        self.removeItem(repeatItem)
-        del repeatItem
+
+        patternRepeatCommand = DeletePatternRepeat(self, repeatItem)
+        self._undoStack.push(patternRepeatCommand)
 
 
 
@@ -754,10 +754,11 @@ class PatternCanvas(QGraphicsScene):
         status = dialog.exec_()
         if status > 0:
             patternRepeat.set_properties(dialog.color, dialog.width)
-            patternRepeat.unhighlight()
         elif status < 0:
             self.delete_pattern_repeat(patternRepeat)
             
+        patternRepeat.unhighlight()
+
 
 
     def grab_color_from_cell(self, scenePosition):
@@ -891,7 +892,7 @@ class PatternCanvas(QGraphicsScene):
         """
 
         allItems = self.items()
-        patternGridItems = extract_patternGridItem(allItems)
+        patternGridItems = extract_patternGridItems(allItems)
 
         tracker = {}
         for item in patternGridItems:
@@ -3489,4 +3490,32 @@ class AddPatternRepeat(QUndoCommand):
         self.canvas.removeItem(self.pathItem)
          
         
+
         
+class DeletePatternRepeat(QUndoCommand):
+    """ This class encapsulates the deletion of a pattern repeat
+    item on the canvas.
+
+    """
+
+    
+    def __init__(self, canvas, patternRepeat, parent = None):
+
+        super(DeletePatternRepeat, self).__init__(parent)
+
+        self.canvas = canvas
+        self.patternRepeat = patternRepeat
+
+
+    def redo(self):
+        """ The redo action. """
+
+        self.canvas.removeItem(self.patternRepeat)
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        self.canvas.addItem(self.patternRepeat)
+         
