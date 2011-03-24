@@ -626,11 +626,21 @@ class PatternCanvas(QGraphicsScene):
                      partial(self.grab_color_from_cell, scenePos))
         gridMenu.addSeparator()
 
-        outlineAction = gridMenu.addAction("&Add Pattern Repeat Around Selection")
-        self.connect(outlineAction, SIGNAL("triggered()"),
+        addRepeatAction = gridMenu.addAction("&Add Pattern Repeat Around Selection")
+        self.connect(addRepeatAction, SIGNAL("triggered()"),
                      self.add_pattern_repeat)
         if not can_outline_selection(self._selectedCells.values()):
-            outlineAction.setEnabled(False)
+            addRepeatAction.setEnabled(False)
+
+        # see if there are pattern repeats under mouse cursor and enable
+        # edit action if so
+        patternRepeats = extract_patternRepeatItems(self.items(event.scenePos()))
+        editRepeatAction = gridMenu.addAction("&Edit Pattern Repeat")
+        if len(patternRepeats) > 0:
+            self.connect(editRepeatAction, SIGNAL("triggered()"),
+                         partial(self.edit_pattern_repeat, patternRepeats[0]))
+        else:
+            editRepeatAction.setEnabled(False)
         gridMenu.addSeparator()
 
         copyAction = gridMenu.addAction("&Copy Selection")
@@ -733,6 +743,21 @@ class PatternCanvas(QGraphicsScene):
         self.removeItem(repeatItem)
         del repeatItem
 
+
+
+    def edit_pattern_repeat(self, patternRepeat):
+        """ Edit the provided pattern repeat item. """
+
+        patternRepeat.highlight()
+        dialog = PatternRepeatDialog(patternRepeat.line_width,
+                                     patternRepeat.line_color)
+        status = dialog.exec_()
+        if status > 0:
+            patternRepeat.set_properties(dialog.color, dialog.width)
+            patternRepeat.unhighlight()
+        elif status < 0:
+            self.delete_pattern_repeat(patternRepeat)
+            
 
 
     def grab_color_from_cell(self, scenePosition):
@@ -1814,38 +1839,37 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         self.paint_elements(Qt.NoBrush)
 
-         
 
-    def mouseDoubleClickEvent(self, event):
-        """ Double clicking on a PatternRepeatItem
-        fires up a dialog that allows customizing of
-        properties as well as deleting the item.
+
+    @property
+    def line_color(self):
+        """ Returns a the current line color. """
+
+        return self.color
+        
+
+
+    @property
+    def line_width(self):
+        """ Returns a the current line width. """
+
+        return self.width
+
+
+
+    def set_properties(self, color, width):
+        """ Sets the color and width to the requested values.
+
+        NOTE: the fact that we call paint_elements in addition to
+        updating the attributes is a bit dirty but hopefully ok.
 
         """
 
-        if not (event.modifiers() & Qt.ControlModifier):
-            event.ignore()
-        else:
-            self.highlight()
-            
-            dialog = PatternRepeatDialog(self.width, self.color)
-            status = dialog.exec_()
-            if status > 0:
-                self.color = dialog.color
-                self.width = dialog.width
-                self.paint_elements()
-            elif status < 0:
-                # NOTE: For some reason QGraphicsPathItem
-                # doesn't seem to inherit from QObject
-                # and thus signals and slots won't work
-                self.scene().delete_pattern_repeat(self)
+        self.color = color
+        self.width = width
+        self.paint_elements()
 
-            self.unhighlight()
-
-        QApplication.restoreOverrideCursor()
-        return QGraphicsItemGroup.mouseDoubleClickEvent(self, event)
-
-
+         
 
     def mousePressEvent(self, event):
         """ Deal with mouse press events on the area spanned
@@ -2310,7 +2334,6 @@ def get_edge_id(gridPoint1, gridPoint2):
 
 
 
-
 def extract_patternGridItems(allItems):
     """ From a list of QGraphicsItems extracts and returns
     all PatternGridItems.
@@ -2324,6 +2347,20 @@ def extract_patternGridItems(allItems):
 
     return patternGridItems
 
+
+
+def extract_patternRepeatItems(allItems):
+    """ From a list of QGraphicsItems extracts and returns
+    all PatternRepeatItems.
+
+    """
+
+    patternRepeatItems = []
+    for item in allItems:
+        if isinstance(item, PatternRepeatItem):
+            patternRepeatItems.append(item)
+
+    return patternRepeatItems
 
 
 
