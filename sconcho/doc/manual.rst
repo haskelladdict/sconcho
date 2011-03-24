@@ -160,8 +160,8 @@ Pattern repeat boxes can be added to the pattern grid. Simply highlight
 all cells that should be inside the repeat box (i.e., the repeat box will
 be the outline of the selected cells) and then click on
 **View -> Create Pattern Repeat** to create it. To change the color and
-line thickness of an existing repeat box or to delete a box hold down
-the **Control key** and double click within the area of the repeat box
+line thickness of an existing repeat box or to delete a box move the mouse
+over the pattern repeat box, right click and select **Edit Pattern Repeat**
 to make visible a dialog for changing the box's properties.
 
 
