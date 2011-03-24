@@ -92,7 +92,7 @@ class ColorWidget(QWidget):
         allColors = []
         for item in self.colorWidgets:
             state = 1 if item == activeWidget else 0
-            allColors.append((item.get_content(), state))
+            allColors.append((item.color, state))
 
         return allColors
             
@@ -111,7 +111,7 @@ class ColorSelectorItem(QFrame):
         super(ColorSelectorItem, self).__init__(parent)
 
         self._synchronizer = synchronizer
-        self.color = QColor(color)
+        self.itemColor = QColor(color)
 
         # define and set stylesheets
         self.define_stylesheets() 
@@ -124,18 +124,19 @@ class ColorSelectorItem(QFrame):
         self.setMaximumWidth(40)
 
         
-
-    def get_content(self):
+    @property
+    def color(self):
         """ Returns the color content controled by this widget. """
 
-        return self.color
+        return self.itemColor
 
 
 
-    def set_content(self, color):
+    @color.setter
+    def color(self, color):
         """ Sets the current color of the selector. """
 
-        self.color = color
+        self.itemColor = color
         self.define_stylesheets()
 
 
@@ -146,7 +147,7 @@ class ColorSelectorItem(QFrame):
         of this widget.
         """
 
-        buttonColor = QColor(self.color).name()
+        buttonColor = QColor(self.itemColor).name()
         self._selectedStyleSheet = "border-width: 2px;" \
                                     "margin: 0px;" \
                                     "padding: 6px;" \

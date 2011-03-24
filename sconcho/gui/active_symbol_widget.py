@@ -112,7 +112,7 @@ class ActiveSymbolWidget(QWidget):
         
         """
 
-        self.color = newColorObject.get_content()
+        self.color = newColorObject.color
         
         if self.widget and not self.widget.name == "nostitch":
             self.widget.set_backcolor(self.color)

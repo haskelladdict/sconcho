@@ -857,8 +857,8 @@ def set_up_colors(widget, colors):
     assert (len(widget.colorWidgets) >= len(colors))
 
     for (i, item) in enumerate(widget.colorWidgets):
-        (color, state) = colors[i]
-        item.set_content(color)
+        (aColor, state) = colors[i]
+        item.color = aColor
         if state == 1:
             widget._synchronizer.select(item)
             

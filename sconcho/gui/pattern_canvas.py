@@ -3191,13 +3191,13 @@ class ActivateColor(QUndoCommand):
         
         self.oldColorObject = canvas._activeColorObject
         if self.oldColorObject:
-            self.oldColor = canvas._activeColorObject.get_content()
+            self.oldColor = canvas._activeColorObject.color
             
         self.newColorObject = newColorObject
         if newColor:
             self.newColor = newColor
         else:
-            self.newColor = newColorObject.get_content()
+            self.newColor = newColorObject.color
 
 
 
@@ -3205,7 +3205,7 @@ class ActivateColor(QUndoCommand):
         """ The redo action. """
 
         self.canvas._activeColorObject = self.newColorObject
-        self.canvas._activeColorObject.set_content(self.newColor)
+        self.canvas._activeColorObject.color = self.newColor
         self.canvas.emit(SIGNAL("activate_color_selector"),
                          self.newColorObject)
 
@@ -3218,7 +3218,7 @@ class ActivateColor(QUndoCommand):
         # we need this check to make sure that we don't call
         # with a None color object before the stack unwinds
         if self.oldColorObject:
-            self.oldColorObject.set_content(self.oldColor)
+            self.oldColorObject.color = self.oldColor
             self.canvas._activeColorObject = self.oldColorObject
             self.canvas.emit(SIGNAL("activate_color_selector"),
                              self.oldColorObject)
@@ -3246,7 +3246,7 @@ class PaintCells(QUndoCommand):
         self.unselectedCells = unselectedCells 
 
         self.activeSymbol = canvas._activeSymbol
-        self.activeColor = canvas._activeColorObject.get_content()
+        self.activeColor = canvas._activeColorObject.color
         self.didInsertActiveSymbol = False
 
 
@@ -3282,10 +3282,7 @@ class PaintCells(QUndoCommand):
         if self.selectedCells:
             for item in self.selectedCells:
                 itemID = get_item_id(item.column, item.row)
-                self.canvas._selectedCells[itemID] = \
-                            PatternCanvasEntry(item.column, item.row, 
-                                               item.width, item.color,
-                                               item.symbol) 
+                self.canvas._selectedCells[itemID] = item
                 item = self.canvas._item_at_row_col(item.column, item.row)
                 item._select()
 
@@ -3297,8 +3294,13 @@ class PaintCells(QUndoCommand):
         # if we have inactivated cells, remove them
         if self.unselectedCells:
             for item in self.unselectedCells:
-                itemID = get_item_id(item.column, item.row) 
-                del self.canvas._selectedCells[itemID]
+                itemID = get_item_id(item.column, item.row)
+                if itemID in self.canvas._selectedCells:
+                    del self.canvas._selectedCells[itemID]
+                else:
+                    errorString = ("_redo_unselectedCells: trying to delete invalid "
+                                   "selected cell.")
+                    errorLogger.write(errorString)
 
                 item = self.canvas._item_at_row_col(item.column, item.row)
                 item._unselect()
@@ -3314,56 +3316,63 @@ class PaintCells(QUndoCommand):
         self.oldSelection = self.canvas._selectedCells.copy()
         self.activeSymbolContent = self.activeSymbol.get_content()
         self.width = int(self.activeSymbolContent["width"])
-        self.chunks = chunkify_cell_arrangement(self.width, self.oldSelection)
-        if self.chunks:
+
+        chunks = chunkify_cell_arrangement(self.width, self.oldSelection)
+        if chunks:
             self.didInsertActiveSymbol = True
 
-        # FIXME: This might require a bit more thinking
-        # If the symbol itself provides a color other than
-        # white it overrides the active color
-        if "backgroundColor" in self.activeSymbolContent:
-            itemColor = QColor(self.activeSymbolContent["backgroundColor"])
-        else:
-            itemColor = self.activeColor
+            # FIXME: This might require a bit more thinking
+            # If the symbol itself provides a color other than
+            # white it overrides the active color
+            if "backgroundColor" in self.activeSymbolContent:
+                itemColor = QColor(self.activeSymbolContent["backgroundColor"])
+            else:
+                itemColor = self.activeColor
 
-        for chunk in self.chunks:
-            totalWidth = 0
+            for chunk in chunks:
+                totalWidth = 0
 
-            # location of leftmost item in chunk
-            column = chunk[0].column
-            row = chunk[0].row
-            item = self.canvas._item_at_row_col(column, row)
-            origin = item.pos()
+                # location of leftmost item in chunk
+                column = chunk[0].column
+                row = chunk[0].row
+                item = self.canvas._item_at_row_col(column, row)
+                origin = item.pos()
 
-            # compute total width and remove old items
-            for entry in chunk:
-                totalWidth += entry.width
-                gridItem = self.canvas._item_at_row_col(entry.column, 
-                                                        entry.row)
-                self.canvas.removeItem(gridItem)
-                del gridItem
+                # compute total width and remove old items
+                for entry in chunk:
+                    totalWidth += entry.width
+                    gridItem = self.canvas._item_at_row_col(entry.column, 
+                                                            entry.row)
+                    if gridItem:
+                        self.canvas.removeItem(gridItem)
+                        del gridItem
+                    else:
+                        errorString = ("_redo_paintActiveSymbol: trying to delete "
+                                       "nonexistent item.")
+                        errorLogger.write(errorString)
+                        
 
-            # insert as many new items as we can fit
-            numNewItems = int(totalWidth/self.width)
-            for i in range(0, numNewItems):
-                item = self.canvas.create_pattern_grid_item(origin,
-                            self.canvas._unitCellDim, column, row, self.width,
-                            1, self.activeSymbolContent, itemColor)
-                self.canvas.addItem(item)
-                
-                itemID = get_item_id(column, row)
+                # insert as many new items as we can fit
+                numNewItems = int(totalWidth/self.width)
+                for i in range(0, numNewItems):
+                    item = self.canvas.create_pattern_grid_item(origin,
+                                self.canvas._unitCellDim, column, row, self.width,
+                                1, self.activeSymbolContent, itemColor)
+                    self.canvas.addItem(item)
 
-                self.newSelection[itemID] = \
-                        PatternCanvasEntry(column, row, self.width,
-                                           itemColor,
-                                           self.activeSymbolContent)
+                    itemID = get_item_id(column, row)
 
-                origin = QPointF(origin.x() + (self.width * \
-                                 self.canvas._unitCellDim.width()),
-                                 origin.y())
-                column = column + self.width
+                    self.newSelection[itemID] = \
+                            PatternCanvasEntry(column, row, self.width,
+                                               itemColor,
+                                               self.activeSymbolContent)
 
-            self.canvas._selectedCells.clear()
+                    origin = QPointF(origin.x() + (self.width * \
+                                     self.canvas._unitCellDim.width()),
+                                     origin.y())
+                    column = column + self.width
+
+                self.canvas._selectedCells.clear()
 
 
 
@@ -3373,8 +3382,13 @@ class PaintCells(QUndoCommand):
         # remove previously activated items
         if self.selectedCells:
             for item in self.selectedCells:
-                itemID = get_item_id(item.column, item.row) 
-                del self.canvas._selectedCells[itemID]
+                itemID = get_item_id(item.column, item.row)
+                if itemID in self.canvas._selectedCells:
+                    del self.canvas._selectedCells[itemID]
+                else:
+                    errorString = ("_undo_unselectedCells: trying to delete invalid "
+                                   "selected cell.")
+                    errorLogger.write(errorString)
 
                 item = self.canvas._item_at_row_col(item.column, item.row)
                 item._unselect()
@@ -3387,9 +3401,7 @@ class PaintCells(QUndoCommand):
         if self.unselectedCells:
             for item in self.unselectedCells:
                 itemID = get_item_id(item.column, item.row) 
-                self.canvas._selectedCells[itemID] = \
-                        PatternCanvasEntry(item.column, item.row, 
-                                           item.width, item.color, item.symbol) 
+                self.canvas._selectedCells[itemID] = item
                 item = self.canvas._item_at_row_col(item.column, item.row)
                 item._select()
 
@@ -3402,8 +3414,14 @@ class PaintCells(QUndoCommand):
         for entry in self.newSelection.values():
             gridItem = self.canvas._item_at_row_col(entry.column, 
                                                     entry.row)
-            self.canvas.removeItem(gridItem)
-            del gridItem
+            if gridItem:
+                self.canvas.removeItem(gridItem)
+                del gridItem
+            else:
+                errorString = ("_undo_paintActiveSymbol: trying to delete "
+                               "nonexistent item.")
+                errorLogger.write(errorString)
+
 
         # re-insert previous selection
         for entry in self.oldSelection.values():

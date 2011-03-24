@@ -87,10 +87,10 @@ class SconchoError(object):
         """ This member takes care of logging error messages. """
 
         if errorCode:
-            print("sconcho: Error: %s with error code %d" %
+            print("[sconcho] Error: %s with error code %d" %
                   (message, errorCode), file = sys.stderr)
         else:
-             print("sconcho: Error: %s" % message, file = sys.stderr)
+             print("[concho] Error: %s" % message, file = sys.stderr)
 
              
 # global error logging Object
