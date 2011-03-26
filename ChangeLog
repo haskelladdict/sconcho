@@ -1,3 +1,13 @@
+03-26-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Release of 0.1.0_a9
+	* many bugfixes
+	* gui changes
+	* IO is now multithreaded
+	* added ability to add pattern repeats
+	* added some initial manual tests
+
+
 02-14-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Release of 0.1.0_a8

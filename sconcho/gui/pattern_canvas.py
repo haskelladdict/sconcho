@@ -868,12 +868,25 @@ class PatternCanvas(QGraphicsScene):
             # check item at left and past (!) right edge of rectangle
             leftItem = self._item_at_row_col(column, rowCount)
 
+            if not leftItem:
+                errorString = ("_rectangle_self_contained: trying to access "
+                               "nonexistent leftItem.")
+                errorLogger.write(errorString)
+                return False
+
             if (leftItem.width > 1) and (leftItem.column < column):
                 return False
 
             # make sure we don't fall off at the right
             if (column + colDim < self._numColumns):
                 rightItem = self._item_at_row_col(column + colDim, rowCount)
+
+                if not rightItem:
+                    errorString = ("_rectangle_self_contained: trying to access "
+                                   "nonexistent rightItem.")
+                    errorLogger.write(errorString)
+                    return False
+                    
                 if (rightItem.width > 1) and \
                    (rightItem.column < column + colDim):
                     return False
@@ -1035,6 +1048,9 @@ class PatternCanvas(QGraphicsScene):
         if not isExternalColumn:
             for row in range(0, self._numRows):
                 item = self._item_at_row_col(pivot + shift, row)
+                if not item:
+                    return
+                
                 if isinstance(item, PatternGridItem):
                     if item.column != (pivot + shift):
                         QMessageBox.warning(None, msg.noColInsertLayoutTitle,
@@ -1082,7 +1098,8 @@ class PatternCanvas(QGraphicsScene):
         for rowID in range(0, self._numRows):
             for colID in colRange:
                 item = self._item_at_row_col(colID, rowID)
-                selectedItems.add(item)
+                if item:
+                    selectedItems.add(item)
 
         selection = []
         for item in selectedItems:
@@ -2534,7 +2551,9 @@ class InsertRow(QUndoCommand):
         shiftedItems = set()
         for colID in range(0, self.numColumns):
             for rowID in range(self.pivot, self.numRows):
-                shiftedItems.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    shiftedItems.add(item)
 
         for item in shiftedItems:
             shift_item_row_wise(item, self.rowShift, self.unitHeight)
@@ -2577,7 +2596,9 @@ class InsertRow(QUndoCommand):
         selection = set()
         for colID in range(0, self.numColumns):
             for rowID in range(self.pivot, self.pivot + self.rowShift):
-                selection.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    selection.add(item)
 
         for item in selection:
             self.canvas.removeItem(item)
@@ -2588,7 +2609,9 @@ class InsertRow(QUndoCommand):
         for colID in range(0, self.numColumns):
             for rowID in range(self.pivot + self.rowShift, 
                                self.numRows + self.rowShift):
-                selection.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    selection.add(item)
 
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
@@ -2692,8 +2715,9 @@ class DeleteRow(QUndoCommand):
         selection = set()
         for colID in range(0, self.numColumns):
             for rowID in deleteRange:
-                selection.add(self.canvas._item_at_row_col(colID, rowID))
-
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    selection.add(item)
 
         self.deletedCells = []
         for item in selection:
@@ -2731,7 +2755,9 @@ class DeleteRow(QUndoCommand):
         selection = set()
         for colID in range(0, self.numColumns):
             for rowID in shiftRange:
-                selection.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    selection.add(item)
 
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
@@ -2757,7 +2783,9 @@ class DeleteRow(QUndoCommand):
         shiftItems = set()
         for colID in range(0, self.numColumns):
             for rowID in shiftRange:
-                shiftItems.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    shiftItems.add(item)
 
         for item in shiftItems:
             shift_item_row_wise(item, self.rowShift, self.unitHeight)
@@ -2848,7 +2876,9 @@ class InsertColumn(QUndoCommand):
         shiftedItems = set()
         for rowID in range(0, self.numRows):
             for colID in range(self.pivot, self.numColumns):
-                shiftedItems.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    shiftedItems.add(item)
 
         for item in shiftedItems:
             shift_item_column_wise(item, self.columnShift, self.unitWidth)
@@ -2890,7 +2920,9 @@ class InsertColumn(QUndoCommand):
         selection = set()
         for rowID in range(0, self.numRows):
             for colID in range(self.pivot, self.pivot + self.columnShift):
-                selection.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    selection.add(item)
 
         for item in selection:
             self.canvas.removeItem(item)
@@ -2901,7 +2933,9 @@ class InsertColumn(QUndoCommand):
         for rowID in range(0, self.numRows):
             for colID in range(self.pivot + self.columnShift, 
                                self.numColumns + self.columnShift):
-                selection.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    selection.add(item)
 
         for item in selection:
             shift_item_column_wise(item, columnLeftShift, self.unitWidth)
@@ -3007,7 +3041,9 @@ class DeleteColumn(QUndoCommand):
         selection = set()
         for rowID in range(0, self.numRows):
             for colID in deleteRange:
-                selection.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    selection.add(item)
 
         self.deletedCells = []
         for item in selection:
@@ -3046,7 +3082,8 @@ class DeleteColumn(QUndoCommand):
         selection = set()
         for rowID in range(0, self.numRows):
             for colID in shiftRange:
-                selection.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                selection.add(item)
 
         for item in selection:
             shift_item_column_wise(item, columnLeftShift, self.unitWidth)
@@ -3074,7 +3111,9 @@ class DeleteColumn(QUndoCommand):
         shiftItems = set()
         for colID in shiftRange:
             for rowID in range(0, self.numRows):
-                shiftItems.add(self.canvas._item_at_row_col(colID, rowID))
+                item = self.canvas._item_at_row_col(colID, rowID)
+                if item:
+                    shiftItems.add(item)
 
         for item in shiftItems:
             shift_item_column_wise(item, self.columnShift, self.unitWidth)
@@ -3284,7 +3323,8 @@ class PaintCells(QUndoCommand):
                 itemID = get_item_id(item.column, item.row)
                 self.canvas._selectedCells[itemID] = item
                 item = self.canvas._item_at_row_col(item.column, item.row)
-                item._select()
+                if item:
+                    item._select()
 
 
 
@@ -3298,12 +3338,13 @@ class PaintCells(QUndoCommand):
                 if itemID in self.canvas._selectedCells:
                     del self.canvas._selectedCells[itemID]
                 else:
-                    errorString = ("_redo_unselectedCells: trying to delete invalid "
-                                   "selected cell.")
+                    errorString = ("_redo_unselectedCells: trying to delete "
+                                   "invalid selected cell.")
                     errorLogger.write(errorString)
 
                 item = self.canvas._item_at_row_col(item.column, item.row)
-                item._unselect()
+                if item:
+                    item._unselect()
 
 
 
@@ -3336,8 +3377,13 @@ class PaintCells(QUndoCommand):
                 column = chunk[0].column
                 row = chunk[0].row
                 item = self.canvas._item_at_row_col(column, row)
-                origin = item.pos()
-
+                if item:
+                    origin = item.pos()
+                else:
+                    errorString = ("_redo_paintActiveSymbol: trying to find "
+                                   "origin of nonexistent item.")
+                    errorLogger.write(errorString)
+                    
                 # compute total width and remove old items
                 for entry in chunk:
                     totalWidth += entry.width
@@ -3386,12 +3432,13 @@ class PaintCells(QUndoCommand):
                 if itemID in self.canvas._selectedCells:
                     del self.canvas._selectedCells[itemID]
                 else:
-                    errorString = ("_undo_unselectedCells: trying to delete invalid "
-                                   "selected cell.")
+                    errorString = ("_undo_unselectedCells: trying to delete "
+                                   "invalid selected cell.")
                     errorLogger.write(errorString)
 
                 item = self.canvas._item_at_row_col(item.column, item.row)
-                item._unselect()
+                if item:
+                    item._unselect()
 
 
 
@@ -3403,7 +3450,8 @@ class PaintCells(QUndoCommand):
                 itemID = get_item_id(item.column, item.row) 
                 self.canvas._selectedCells[itemID] = item
                 item = self.canvas._item_at_row_col(item.column, item.row)
-                item._select()
+                if item:
+                    item._select()
 
 
 
