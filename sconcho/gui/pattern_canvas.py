@@ -700,6 +700,10 @@ class PatternCanvas(QGraphicsScene):
     def add_pattern_repeat(self):
         """ Adds a pattern repeat around the current selection. """
 
+        # if noting is selected we are done
+        if not self._selectedCells:
+            return
+
         edges = {}
         for entry in self._selectedCells.values():
 
@@ -3541,6 +3545,8 @@ class AddPatternRepeat(QUndoCommand):
 
         self.canvas = canvas
         self.pathItem = PatternRepeatItem(lines, width, color)
+        self.unselectedCells = canvas._selectedCells.values()
+
 
 
     def redo(self):
@@ -3548,16 +3554,39 @@ class AddPatternRepeat(QUndoCommand):
 
         self.canvas.addItem(self.pathItem)
 
+        # unselect the currently selected cells
+        if self.unselectedCells:
+            for item in self.unselectedCells:
+                itemID = get_item_id(item.column, item.row)
+                if itemID in self.canvas._selectedCells:
+                    del self.canvas._selectedCells[itemID]
+                else:
+                    errorString = ("AddPatternRepeat.redo: trying to delete "
+                                   "invalid selected cell.")
+                    errorLogger.write(errorString)
+
+                item = self.canvas._item_at_row_col(item.column, item.row)
+                if item:
+                    item._unselect()
+
 
 
     def undo(self):
         """ The undo action. """
 
         self.canvas.removeItem(self.pathItem)
+
+        # reselect the previously unselected cells again
+        if self.unselectedCells:
+            for item in self.unselectedCells:
+                itemID = get_item_id(item.column, item.row) 
+                self.canvas._selectedCells[itemID] = item
+                item = self.canvas._item_at_row_col(item.column, item.row)
+                if item:
+                    item._select()
          
         
 
-        
 class DeletePatternRepeat(QUndoCommand):
     """ This class encapsulates the deletion of a pattern repeat
     item on the canvas.

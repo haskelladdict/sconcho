@@ -90,7 +90,7 @@ class SconchoError(object):
             print("[sconcho] Error: %s with error code %d" %
                   (message, errorCode), file = sys.stderr)
         else:
-             print("[concho] Error: %s" % message, file = sys.stderr)
+             print("[sconcho] Error: %s" % message, file = sys.stderr)
 
              
 # global error logging Object
