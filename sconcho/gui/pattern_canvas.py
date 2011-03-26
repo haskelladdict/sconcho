@@ -741,14 +741,6 @@ class PatternCanvas(QGraphicsScene):
         
 
 
-    def delete_pattern_repeat(self, repeatItem):
-        """ Delete the provided pattern repeat item from the canvas. """
-
-        patternRepeatCommand = DeletePatternRepeat(self, repeatItem)
-        self._undoStack.push(patternRepeatCommand)
-
-
-
     def edit_pattern_repeat(self, patternRepeat):
         """ Edit the provided pattern repeat item. """
 
@@ -757,9 +749,13 @@ class PatternCanvas(QGraphicsScene):
                                      patternRepeat.line_color)
         status = dialog.exec_()
         if status > 0:
-            patternRepeat.set_properties(dialog.color, dialog.width)
+            patternRepeatCommand = EditPatternRepeat(patternRepeat,
+                                                     dialog.color,
+                                                     dialog.width)
+            self._undoStack.push(patternRepeatCommand)
         elif status < 0:
-            self.delete_pattern_repeat(patternRepeat)
+            patternRepeatCommand = DeletePatternRepeat(self, repeatItem)
+            self._undoStack.push(patternRepeatCommand)
             
         patternRepeat.unhighlight()
 
@@ -3587,6 +3583,40 @@ class AddPatternRepeat(QUndoCommand):
          
         
 
+class EditPatternRepeat(QUndoCommand):
+    """ This class encapsulates the editing of a pattern repeat
+    item on the canvas.
+
+    """
+
+    
+    def __init__(self, patternRepeat, newColor, newWidth, parent = None):
+
+        super(EditPatternRepeat, self).__init__(parent)
+
+        self.patternRepeat = patternRepeat
+        self.oldColor = patternRepeat.color
+        self.oldWidth = patternRepeat.width
+        self.newColor = newColor
+        self.newWidth = newWidth
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        self.patternRepeat.set_properties(self.newColor, self.newWidth)
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        self.patternRepeat.set_properties(self.oldColor, self.oldWidth)
+
+
+
+        
 class DeletePatternRepeat(QUndoCommand):
     """ This class encapsulates the deletion of a pattern repeat
     item on the canvas.
