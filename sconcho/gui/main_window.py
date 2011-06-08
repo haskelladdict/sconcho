@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 
-__version__ = "0.1.0_a9"
+__version__ = "0.1.0_b1"
 
 
 import platform, os
@@ -209,6 +209,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.actionCreate_Pattern_Repeat, SIGNAL("triggered()"),
                      self.canvas.add_pattern_repeat)
+
+        self.connect(self.actionApply_Color_to_Selection, SIGNAL("triggered()"),
+                     self.canvas.apply_color_to_selection)
 
         self.connect(self.action_Undo, SIGNAL("triggered()"),
                      self.canvas.undo)

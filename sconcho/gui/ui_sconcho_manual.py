@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/sconcho_manual.ui'
 #
-# Created: Sun Mar 20 16:00:15 2011
-#      by: PyQt4 UI code generator 4.8.3
+# Created: Tue Jun  7 22:08:09 2011
+#      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
 

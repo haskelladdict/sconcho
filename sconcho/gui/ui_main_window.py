@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sun Mar 20 16:00:15 2011
-#      by: PyQt4 UI code generator 4.8.3
+# Created: Tue Jun  7 22:08:08 2011
+#      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -216,6 +216,11 @@ class Ui_MainWindow(object):
         icon13.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/patternRepeat.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionCreate_Pattern_Repeat.setIcon(icon13)
         self.actionCreate_Pattern_Repeat.setObjectName(_fromUtf8("actionCreate_Pattern_Repeat"))
+        self.actionApply_Color_to_Selection = QtGui.QAction(MainWindow)
+        icon14 = QtGui.QIcon()
+        icon14.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/red_rect.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionApply_Color_to_Selection.setIcon(icon14)
+        self.actionApply_Color_to_Selection.setObjectName(_fromUtf8("actionApply_Color_to_Selection"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -235,6 +240,7 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.action_Insert_delete_rows_and_columns)
         self.menuView.addAction(self.actionUnselect_All)
         self.menuView.addAction(self.actionCreate_Pattern_Repeat)
+        self.menuView.addAction(self.actionApply_Color_to_Selection)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionShow_pattern_grid)
         self.menuView.addAction(self.actionShow_grid_labels)
@@ -268,6 +274,7 @@ class Ui_MainWindow(object):
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionUnselect_All)
         self.toolBar.addAction(self.actionCreate_Pattern_Repeat)
+        self.toolBar_2.addAction(self.actionApply_Color_to_Selection)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -342,6 +349,8 @@ class Ui_MainWindow(object):
         self.actionShow_nostitch_symbols.setText(QtGui.QApplication.translate("MainWindow", "Show &Nostitch Symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCreate_Pattern_Repeat.setText(QtGui.QApplication.translate("MainWindow", "Create Pattern Repeat", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCreate_Pattern_Repeat.setToolTip(QtGui.QApplication.translate("MainWindow", "Create a pattern repeat box around the currently highlighted cells. <p>You can interact with an existing repeat box by holding down the Control key and double clicking on it. ", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionApply_Color_to_Selection.setText(QtGui.QApplication.translate("MainWindow", "Apply Color to Selection", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionApply_Color_to_Selection.setToolTip(QtGui.QApplication.translate("MainWindow", "Apply Color to Selection. Applies the currently selected color to all selected cells on the canvas.", None, QtGui.QApplication.UnicodeUTF8))
 
 from active_symbol_widget import ActiveSymbolWidget
 from color_widget import ColorWidget

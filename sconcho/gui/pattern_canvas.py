@@ -582,7 +582,7 @@ class PatternCanvas(QGraphicsScene):
 
         colItems = set()
         for row in range(0, self._numRows):
-            item = self._item_at_row_col(column, row)
+            item = self._item_at_row_col(row, column)
             if item:
                 colItems.add(item)
 
@@ -600,7 +600,7 @@ class PatternCanvas(QGraphicsScene):
 
         rowItems = set()
         for column in range(0, self._numColumns):
-            item = self._item_at_row_col(column, row)
+            item = self._item_at_row_col(row, column)
             if item:
                 rowItems.add(item)
            
@@ -693,6 +693,21 @@ class PatternCanvas(QGraphicsScene):
 
         self.insertDeleteRowColDialog.raise_()
         self.insertDeleteRowColDialog.show()
+
+
+
+    def apply_color_to_selection(self):
+        """ This slot changes the background color of all selected cells
+        to the currently active color.
+
+        """
+
+        if not self._selectedCells:
+            return
+
+        colorCommand = ColorSelectedCells(self)
+        self._undoStack.push(colorCommand)
+
 
 
 
@@ -866,7 +881,7 @@ class PatternCanvas(QGraphicsScene):
         for rowCount in range(row, row + rowDim):
 
             # check item at left and past (!) right edge of rectangle
-            leftItem = self._item_at_row_col(column, rowCount)
+            leftItem = self._item_at_row_col(rowCount, column)
 
             if not leftItem:
                 errorString = ("_rectangle_self_contained: trying to access "
@@ -879,7 +894,7 @@ class PatternCanvas(QGraphicsScene):
 
             # make sure we don't fall off at the right
             if (column + colDim < self._numColumns):
-                rightItem = self._item_at_row_col(column + colDim, rowCount)
+                rightItem = self._item_at_row_col(rowCount, column + colDim)
 
                 if not rightItem:
                     errorString = ("_rectangle_self_contained: trying to access "
@@ -943,7 +958,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def _item_at_row_col(self, column, row):
+    def _item_at_row_col(self, row, column):
         """ Returns the PatternGridItem at the given column and row
         or None if there isn't one.
 
@@ -1047,7 +1062,7 @@ class PatternCanvas(QGraphicsScene):
        
         if not isExternalColumn:
             for row in range(0, self._numRows):
-                item = self._item_at_row_col(pivot + shift, row)
+                item = self._item_at_row_col(row, pivot + shift)
                 if not item:
                     return
                 
@@ -1097,7 +1112,7 @@ class PatternCanvas(QGraphicsScene):
         selectedItems = set()
         for rowID in range(0, self._numRows):
             for colID in colRange:
-                item = self._item_at_row_col(colID, rowID)
+                item = self._item_at_row_col(rowID, colID)
                 if item:
                     selectedItems.add(item)
 
@@ -1494,6 +1509,16 @@ class PatternGridItem(QGraphicsSvgItem):
         self.size    = QSizeF(self.unitDim.width() * self.width,
                               self.unitDim.height() * self.height)
 
+
+
+    def change_color(self, newColor):
+        """ This slot changes the color of the items. """
+
+        self.color = newColor
+        self._backColor = self.color
+        self.update()
+
+        
 
     @property
     def name(self):
@@ -2459,7 +2484,7 @@ class PasteCells(QUndoCommand):
 
         # delete previous items
         for entry in self.deadSelection.values():
-            item = self.canvas._item_at_row_col(entry.column, entry.row)
+            item = self.canvas._item_at_row_col(entry.row, entry.column)
             if item:
                 self.canvas.removeItem(item)
                 del item
@@ -2490,7 +2515,7 @@ class PasteCells(QUndoCommand):
         for colID in range(self.column, self.column + self.numColumns):
             for rowID in range(self.row, self.row + self.numRows):
 
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     self.canvas.removeItem(item)
                     del item
@@ -2551,7 +2576,7 @@ class InsertRow(QUndoCommand):
         shiftedItems = set()
         for colID in range(0, self.numColumns):
             for rowID in range(self.pivot, self.numRows):
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     shiftedItems.add(item)
 
@@ -2596,7 +2621,7 @@ class InsertRow(QUndoCommand):
         selection = set()
         for colID in range(0, self.numColumns):
             for rowID in range(self.pivot, self.pivot + self.rowShift):
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     selection.add(item)
 
@@ -2609,7 +2634,7 @@ class InsertRow(QUndoCommand):
         for colID in range(0, self.numColumns):
             for rowID in range(self.pivot + self.rowShift, 
                                self.numRows + self.rowShift):
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     selection.add(item)
 
@@ -2715,7 +2740,7 @@ class DeleteRow(QUndoCommand):
         selection = set()
         for colID in range(0, self.numColumns):
             for rowID in deleteRange:
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     selection.add(item)
 
@@ -2755,7 +2780,7 @@ class DeleteRow(QUndoCommand):
         selection = set()
         for colID in range(0, self.numColumns):
             for rowID in shiftRange:
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     selection.add(item)
 
@@ -2783,7 +2808,7 @@ class DeleteRow(QUndoCommand):
         shiftItems = set()
         for colID in range(0, self.numColumns):
             for rowID in shiftRange:
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     shiftItems.add(item)
 
@@ -2876,7 +2901,7 @@ class InsertColumn(QUndoCommand):
         shiftedItems = set()
         for rowID in range(0, self.numRows):
             for colID in range(self.pivot, self.numColumns):
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     shiftedItems.add(item)
 
@@ -2920,7 +2945,7 @@ class InsertColumn(QUndoCommand):
         selection = set()
         for rowID in range(0, self.numRows):
             for colID in range(self.pivot, self.pivot + self.columnShift):
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     selection.add(item)
 
@@ -2933,7 +2958,7 @@ class InsertColumn(QUndoCommand):
         for rowID in range(0, self.numRows):
             for colID in range(self.pivot + self.columnShift, 
                                self.numColumns + self.columnShift):
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     selection.add(item)
 
@@ -3041,7 +3066,7 @@ class DeleteColumn(QUndoCommand):
         selection = set()
         for rowID in range(0, self.numRows):
             for colID in deleteRange:
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     selection.add(item)
 
@@ -3082,7 +3107,7 @@ class DeleteColumn(QUndoCommand):
         selection = set()
         for rowID in range(0, self.numRows):
             for colID in shiftRange:
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 selection.add(item)
 
         for item in selection:
@@ -3111,7 +3136,7 @@ class DeleteColumn(QUndoCommand):
         shiftItems = set()
         for colID in shiftRange:
             for rowID in range(0, self.numRows):
-                item = self.canvas._item_at_row_col(colID, rowID)
+                item = self.canvas._item_at_row_col(rowID, colID)
                 if item:
                     shiftItems.add(item)
 
@@ -3322,7 +3347,7 @@ class PaintCells(QUndoCommand):
             for item in self.selectedCells:
                 itemID = get_item_id(item.column, item.row)
                 self.canvas._selectedCells[itemID] = item
-                item = self.canvas._item_at_row_col(item.column, item.row)
+                item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:
                     item._select()
 
@@ -3342,7 +3367,7 @@ class PaintCells(QUndoCommand):
                                    "invalid selected cell.")
                     errorLogger.write(errorString)
 
-                item = self.canvas._item_at_row_col(item.column, item.row)
+                item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:
                     item._unselect()
 
@@ -3376,7 +3401,7 @@ class PaintCells(QUndoCommand):
                 # location of leftmost item in chunk
                 column = chunk[0].column
                 row = chunk[0].row
-                item = self.canvas._item_at_row_col(column, row)
+                item = self.canvas._item_at_row_col(row, column)
                 if item:
                     origin = item.pos()
                 else:
@@ -3387,8 +3412,8 @@ class PaintCells(QUndoCommand):
                 # compute total width and remove old items
                 for entry in chunk:
                     totalWidth += entry.width
-                    gridItem = self.canvas._item_at_row_col(entry.column, 
-                                                            entry.row)
+                    gridItem = self.canvas._item_at_row_col(entry.row,
+                                                            entry.column)
                     if gridItem:
                         self.canvas.removeItem(gridItem)
                         del gridItem
@@ -3436,7 +3461,7 @@ class PaintCells(QUndoCommand):
                                    "invalid selected cell.")
                     errorLogger.write(errorString)
 
-                item = self.canvas._item_at_row_col(item.column, item.row)
+                item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:
                     item._unselect()
 
@@ -3449,7 +3474,7 @@ class PaintCells(QUndoCommand):
             for item in self.unselectedCells:
                 itemID = get_item_id(item.column, item.row) 
                 self.canvas._selectedCells[itemID] = item
-                item = self.canvas._item_at_row_col(item.column, item.row)
+                item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:
                     item._select()
 
@@ -3460,8 +3485,8 @@ class PaintCells(QUndoCommand):
 
         # get rid of previous selection
         for entry in self.newSelection.values():
-            gridItem = self.canvas._item_at_row_col(entry.column, 
-                                                    entry.row)
+            gridItem = self.canvas._item_at_row_col(entry.row,
+                                                    entry.column)
             if gridItem:
                 self.canvas.removeItem(gridItem)
                 del gridItem
@@ -3561,7 +3586,7 @@ class AddPatternRepeat(QUndoCommand):
                                    "invalid selected cell.")
                     errorLogger.write(errorString)
 
-                item = self.canvas._item_at_row_col(item.column, item.row)
+                item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:
                     item._unselect()
 
@@ -3577,7 +3602,7 @@ class AddPatternRepeat(QUndoCommand):
             for item in self.unselectedCells:
                 itemID = get_item_id(item.column, item.row) 
                 self.canvas._selectedCells[itemID] = item
-                item = self.canvas._item_at_row_col(item.column, item.row)
+                item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:
                     item._select()
          
@@ -3644,3 +3669,68 @@ class DeletePatternRepeat(QUndoCommand):
 
         self.canvas.addItem(self.patternRepeat)
          
+
+
+
+class ColorSelectedCells(QUndoCommand):
+    """ This class encapsulates coloring of all currently
+    selected cells on the canvas.
+
+    """
+
+
+    def __init__(self, canvas, parent = None):
+        
+        super(ColorSelectedCells, self).__init__(parent)
+        
+        self.setText("color selected cells")
+        self.canvas = canvas
+
+        # this keeps a dictionary of cell colors
+        # of all selected items
+        self.previousColors = {}
+
+        self.selectedCells = canvas._selectedCells.copy()
+        self.activeColor = canvas._activeColorObject.color
+
+
+
+    def redo(self):
+        """ This is the redo action.
+        NOTE: Since we don't destroy/create items but just change
+        their color, we have to take charge of adding/removing them
+        from the legend.
+
+        """
+
+        for (id, item) in self.selectedCells.items():
+            self.canvas.remove_from_legend(item)
+            self.previousColors[id] = item.color
+            canvasItem = self.canvas._item_at_row_col(item.row, item.column)
+            canvasItem.change_color(self.activeColor)
+            item.color = self.activeColor
+            self.canvas.add_to_legend(item)
+
+        self.canvas._selectedCells.clear()
+
+
+
+    def undo(self):
+        """ This is the undo action. 
+        NOTE: Since we don't destroy/create items but just change
+        their color, we have to take charge of adding/removing them
+        from the legend.
+
+        """
+
+        for (id, item) in self.selectedCells.items():
+            previousColor = self.previousColors[id]
+            self.canvas.remove_from_legend(item)
+            
+            canvasItem = self.canvas._item_at_row_col(item.row, item.column)
+            canvasItem.change_color(previousColor)
+            item.color = previousColor
+            self.canvas.add_to_legend(item)
+
+        self.canvas._selectedCells = self.selectedCells.copy()
+        
