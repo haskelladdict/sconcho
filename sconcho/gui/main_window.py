@@ -734,6 +734,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          SIGNAL("grid_cell_dimensions_changed"),
                          self.set_project_dirty)
 
+            self.connect(self.preferencesDialog,
+                         SIGNAL("highlight_odd_rows_changed"),
+                         self.canvas.change_odd_row_highlighting)
+
             self.connect(self,
                          SIGNAL("update_preferences"),
                          self.preferencesDialog.populate_interface)

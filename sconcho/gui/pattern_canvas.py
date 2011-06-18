@@ -32,8 +32,8 @@ from PyQt4.QtCore import (Qt, QRectF, QSize, QPointF, QSizeF, QLineF,
                           SIGNAL, QObject, QString, QPoint, QRect)
 from PyQt4.QtGui import (QGraphicsScene, QGraphicsObject, QPen, QColor, 
                          QBrush, QGraphicsTextItem, QFontMetrics, QMenu, 
-                         QAction, QGraphicsItem, QMessageBox, 
-                         QGraphicsLineItem, QPainterPath, 
+                         QAction, QGraphicsItem, QGraphicsRectItem,
+                         QMessageBox, QGraphicsLineItem, QPainterPath, 
                          QUndoStack, QUndoCommand, QGraphicsItemGroup,
                          QApplication, QCursor)
 from PyQt4.QtSvg import (QGraphicsSvgItem, QSvgWidget, QSvgRenderer)
@@ -81,6 +81,8 @@ class PatternCanvas(QGraphicsScene):
         self._copySelection = {}
         self._copySelectionDim = None
 
+        self._highlightOddRows = True
+
         self._textLabels = []
 
         self.insertDeleteRowColDialog = None
@@ -90,6 +92,9 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_main_grid()
         self.set_up_labels()
 
+        self._highlightedRows = []
+        self.set_up_highlightOddRows()
+
 
 
     def set_up_main_grid(self):
@@ -97,6 +102,34 @@ class PatternCanvas(QGraphicsScene):
 
         for row in range(0, self._numRows):
             self._create_row(row)
+
+
+
+    def set_up_highlightOddRows(self):
+        """ If the user has selected to hightlight all even
+        rows in the pattern - this member does it.
+
+        """
+    
+        offset = 0
+        if self._numRows % 2 == 0:
+            offset = 1
+
+        visibility = self.settings.highlight_odd_rows
+        for row in range(0+offset, self._numRows, 2):
+            origin_x = 0
+            origin_y = row * self._unitCellDim.height()
+            height = self._unitCellDim.height()
+            width = self._numColumns * self._unitCellDim.width()
+
+            element = PatternHighlightItem(origin_x, origin_y,
+                                           width, height, 
+                                           QColor("gray"))
+            element.setZValue(1)
+            if visibility == 0:
+                element.hide()
+            self.addItem(element)
+            self._highlightedRows.append(element)
 
 
 
@@ -226,7 +259,22 @@ class PatternCanvas(QGraphicsScene):
                                    self.settings.grid_cell_height)
         self._redraw_canvas_after_grid_dimension_change()
 
-        
+       
+
+    def change_odd_row_highlighting(self):
+        """ This member function hides or makes visible the
+        odd row highlighting. 
+
+        """
+
+        status = self.settings.highlight_odd_rows;
+        if status == 0:
+            for item in self._highlightedRows:
+                item.hide()
+        else:
+            for item in self._highlightedRows:
+                item.show()
+
 
 
     def _redraw_canvas_after_grid_dimension_change(self):
@@ -967,7 +1015,7 @@ class PatternCanvas(QGraphicsScene):
         pos = convert_col_row_to_pos(column, row, self._unitCellDim.width(),
                                      self._unitCellDim.height())
 
-        # we really only expect one PatternCanvasItem to be present;
+        # we really only expect one PatternGridItem to be present;
         # however there may in principle be others (legend items etc)
         # so we have to pick it out
         allItems = self.items(pos)
@@ -1465,7 +1513,7 @@ class PatternGridItem(QGraphicsSvgItem):
         self.width = width
         self.height = height
         self.size = QSizeF(self.unitDim.width() * width,
-                              self.unitDim.height() * height)
+                           self.unitDim.height() * height)
 
         self._penSize = 1.0
         self._pen = QPen()
@@ -1951,6 +1999,35 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         QApplication.restoreOverrideCursor()
         return QGraphicsItemGroup.mouseReleaseEvent(self, event)
+
+
+
+#########################################################
+## 
+## class for managing a rectangular item for 
+## highlighting odd rows
+##
+#########################################################
+class PatternHighlightItem(QGraphicsRectItem):
+
+    Type = 70000 + 6
+
+   
+    def __init__(self, x, y, width, height, color, parent = None):
+
+        super(PatternHighlightItem, self).__init__(x, y, width, height, 
+                                                   parent)
+
+        # we don't want to show the outline so draw it
+        # in white
+        self._pen = QPen(QColor("black"), 0.5)
+        self.setPen(self._pen)
+
+        color.setAlphaF(0.2)
+        self._brush = QBrush(color, Qt.Dense4Pattern)
+        self.setBrush(self._brush)
+
+
 
 
 

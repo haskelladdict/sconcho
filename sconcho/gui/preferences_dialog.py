@@ -66,7 +66,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         self.set_up_font_selectors()
         self.set_up_label_interval_selector()
-        self.set_up_grid_dimension_selector()
+        self.set_up_grid_properties()
 
 
 
@@ -78,7 +78,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         self.set_up_font_selector_connections()
         self.set_up_label_interval_selector_connections()
-        self.set_up_grid_dimension_selector_connections()
+        self.set_up_grid_properties_connections()
 
 
         
@@ -154,9 +154,12 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         # set cell dimension
         cellWidth = self.gridCellWidthSpinner.value()
         cellHeight = self.gridCellHeightSpinner.value()
-
         self.settings.set_default_grid_cell_width(cellWidth)
         self.settings.set_default_grid_cell_height(cellHeight)
+
+        # set odd row highlighting
+        highlightStatus = self.oddRowHighlightCheck.checkState()
+        self.settings.set_default_highlight_odd_rows(highlightStatus)
 
 
 
@@ -381,19 +384,19 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
             self.customSymbolPathEdit.setText(customSymbolFilePath)
 
 
-    def set_up_grid_dimension_selector(self):
-        """ Initialize the selectors for grid cell height and width
-        with the current value.
+    def set_up_grid_properties(self):
+        """ Initialize the grid properties. """
         
-        """
-
         self.gridCellWidthSpinner.setValue(self.settings.grid_cell_width)
         self.gridCellHeightSpinner.setValue(self.settings.grid_cell_height)
 
+        checkState = self.settings.highlight_odd_rows
+        self.oddRowHighlightCheck.setCheckState(checkState)
+        
 
 
-    def set_up_grid_dimension_selector_connections(self):
-        """ Set up the connections for the grid dimension selectors. """
+    def set_up_grid_properties_connections(self):
+        """ Set up the connections for the grid properties tab. """
         
         self.connect(self.gridCellWidthSpinner,
                      SIGNAL("valueChanged(int)"),
@@ -403,6 +406,9 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      SIGNAL("valueChanged(int)"),
                      self.grid_cell_height_changed)
 
+        self.connect(self.oddRowHighlightCheck,
+                     SIGNAL("stateChanged(int)"),
+                     self.highlight_odd_rows_toggled)
 
 
 
@@ -421,4 +427,12 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.emit(SIGNAL("grid_cell_dimensions_changed"))
 
 
-    
+
+    def highlight_odd_rows_toggled(self, state):
+        """ This function propages checking/unchecking of the
+        highlight odd rows selector.
+
+        """
+      
+        self.settings.highlight_odd_rows = state
+        self.emit(SIGNAL("highlight_odd_rows_changed"))

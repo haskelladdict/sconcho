@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Tue Jun  7 22:08:09 2011
-#      by: PyQt4 UI code generator 4.8.4
+# Created: Thu Jun 16 22:26:01 2011
+#      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -146,6 +146,15 @@ class Ui_PreferencesDialog(object):
         self.verticalLayout_3.addLayout(self.gridLayout_2)
         spacerItem3 = QtGui.QSpacerItem(20, 128, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_3.addItem(spacerItem3)
+        self.horizontalLayout_4 = QtGui.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
+        self.oddRowHighlightCheck = QtGui.QCheckBox(self.tab_2)
+        self.oddRowHighlightCheck.setObjectName(_fromUtf8("oddRowHighlightCheck"))
+        self.horizontalLayout_4.addWidget(self.oddRowHighlightCheck)
+        self.oddRowHighlightColor = QtGui.QPushButton(self.tab_2)
+        self.oddRowHighlightColor.setObjectName(_fromUtf8("oddRowHighlightColor"))
+        self.horizontalLayout_4.addWidget(self.oddRowHighlightColor)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         self.tab = QtGui.QWidget()
         self.tab.setObjectName(_fromUtf8("tab"))
@@ -203,7 +212,9 @@ class Ui_PreferencesDialog(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.labelTab), QtGui.QApplication.translate("PreferencesDialog", "Labels", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("PreferencesDialog", "Grid Cell Width (pixels)", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("PreferencesDialog", "Grid Cell Height (pixels)", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("PreferencesDialog", "Cell Dimensions", None, QtGui.QApplication.UnicodeUTF8))
+        self.oddRowHighlightCheck.setText(QtGui.QApplication.translate("PreferencesDialog", "Highlight Odd Rows", None, QtGui.QApplication.UnicodeUTF8))
+        self.oddRowHighlightColor.setText(QtGui.QApplication.translate("PreferencesDialog", "Highlight Color", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("PreferencesDialog", "Grid Properties", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("PreferencesDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

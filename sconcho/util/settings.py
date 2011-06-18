@@ -51,6 +51,7 @@ class DefaultSettings(QSettings):
     DEFAULT_GRID_CELL_HEIGHT = "30"
     DEFAULT_FONT = "Arial,10,-1,5,50,0,0,0,0,0"
     DEFAULT_INTERVAL = "1"
+    HIGHLIGHT_ODD_ROWS = "2"     # 2 corresponds to selected
 
 
     def __init__(self, organization, application, parent = None):
@@ -101,6 +102,10 @@ class DefaultSettings(QSettings):
             defaultDir = QDir.convertSeparators(homePath + "/sconcho_symbols")
             self.setValue("default/personalSymbolPath", defaultDir)
 
+        highlightOddRows = self.value("default/highlightOddRows").toString()
+        if highlightOddRows.isEmpty():
+            self.setValue("default/highlightOddRows", 
+                          DefaultSettings.HIGHLIGHT_ODD_ROWS)
 
 
     def set_session_values(self):
@@ -109,7 +114,7 @@ class DefaultSettings(QSettings):
         labelFont = self.value("default/labelFont" ).toString()
         self.setValue("session/labelFont", labelFont)
 
-        legendFont = self.value( "default/legendFont" ).toString()
+        legendFont = self.value("default/legendFont" ).toString()
         self.setValue("session/legendFont", legendFont)
 
         labelInterval = self.value("default/labelInterval").toString()
@@ -120,6 +125,9 @@ class DefaultSettings(QSettings):
 
         cellHeight = self.value("default/cellHeight").toString()
         self.setValue("session/cellHeight", cellHeight)
+
+        highlightOddRows = self.value("default/highlightOddRows").toString()
+        self.setValue("session/highlightOddRows", highlightOddRows)
 
 
 
@@ -180,6 +188,36 @@ class DefaultSettings(QSettings):
         """ Store the default grid cell height. """
 
         self.setValue("default/cellHeight", QString(unicode(height)))
+
+
+    @property
+    def highlight_odd_rows(self):
+        """ Returns the status of odd row highlighting. """
+
+        (highlightOddRowValue, highlightStatus) = \
+                self.value("session/highlightOddRows").toString().toInt()
+
+        if not highlightStatus:
+            errorLogger.write("DefaultSettings.highlight_odd_rows: Failed"
+                              "to retrieve status from settings.")
+
+        return highlightOddRowValue
+
+
+
+    @highlight_odd_rows.setter
+    def highlight_odd_rows(self, value):
+        """ Store the current setting for highlighting odd rows. """
+
+        self.setValue("session/highlightOddRows", QString(unicode(value)))
+
+
+
+    def set_default_highlight_odd_rows(self, value):
+        """ Store the default setting for highlighting odd rows. """
+
+        self.setValue("default/highlightOddRows", 
+                      QString(unicode(value)))
 
 
 
