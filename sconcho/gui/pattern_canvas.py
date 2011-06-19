@@ -110,6 +110,14 @@ class PatternCanvas(QGraphicsScene):
         rows in the pattern - this member does it.
 
         """
+
+        # NOTE: We are a bit inefficient here. Instead of adjusting
+        # the geometry we just remove all boxes and then redraw
+        # them with the appropriate geometry. 
+        for item in self._highlightedRows:
+            self.removeItem(item)
+            del item
+        self._highlightedRows = []
     
         offset = 0
         if self._numRows % 2 == 0:
@@ -183,7 +191,19 @@ class PatternCanvas(QGraphicsScene):
             self.addItem(item)
             self._textLabels.append(item)
 
-            
+   
+
+    def finalize_grid_change(self):
+        """ This function is a wrapper encapsulating all changes
+        to elements on the canvas that need to be done after some
+        change to the grid (cell size, adding of rows/columns, etc.)
+
+        """
+
+        self.set_up_labels()
+        self.set_up_highlightOddRows()
+
+
 
     def set_active_symbol(self, activeKnittingSymbol):
         """ This function receives the currently active symbol
@@ -302,7 +322,7 @@ class PatternCanvas(QGraphicsScene):
 
 
         # fix labels
-        self.set_up_labels()
+        self.finalize_grid_change()
 
 
 
@@ -1275,7 +1295,7 @@ class PatternCanvas(QGraphicsScene):
         self._clear_canvas()
         self._textLabels = []
         self.set_up_main_grid()
-        self.set_up_labels()
+        self.finalize_grid_change()
 
         self.emit(SIGNAL("adjust_view"))
         
@@ -1322,7 +1342,7 @@ class PatternCanvas(QGraphicsScene):
         # need to clear our label cache, otherwise set_up_labels()
         # will try to remove non-existing items
         self._textLabels = []
-        self.set_up_labels()
+        self.finalize_grid_change()
         self.change_grid_cell_dimensions()
 
         self.emit(SIGNAL("adjust_view"))
@@ -2729,7 +2749,7 @@ class InsertRow(QUndoCommand):
 
         """
 
-        self.canvas.set_up_labels()
+        self.canvas.finalize_grid_change()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
         self.canvas.insertDeleteRowColDialog.set_upper_row_limit( \
@@ -2931,7 +2951,7 @@ class DeleteRow(QUndoCommand):
 
         """
 
-        self.canvas.set_up_labels()
+        self.canvas.finalize_grid_change()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
         self.canvas.insertDeleteRowColDialog.set_upper_row_limit( \
@@ -3053,7 +3073,7 @@ class InsertColumn(QUndoCommand):
 
         """
 
-        self.canvas.set_up_labels()
+        self.canvas.finalize_grid_change()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
         self.canvas.insertDeleteRowColDialog.set_upper_column_limit( \
@@ -3260,7 +3280,7 @@ class DeleteColumn(QUndoCommand):
 
         """
 
-        self.canvas.set_up_labels()
+        self.canvas.finalize_grid_change()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
         self.canvas.insertDeleteRowColDialog.set_upper_column_limit( \
