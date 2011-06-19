@@ -272,18 +272,35 @@
         </spacer>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
           <widget class="QCheckBox" name="oddRowHighlightCheck">
            <property name="text">
             <string>Highlight Odd Rows</string>
            </property>
           </widget>
          </item>
-         <item>
+         <item row="0" column="1">
           <widget class="QPushButton" name="oddRowHighlightColor">
            <property name="text">
             <string>Highlight Color</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>&amp;Opacity (%)</string>
+           </property>
+           <property name="buddy">
+            <cstring>oddRowHighlightOpacity</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="oddRowHighlightOpacity">
+           <property name="maximum">
+            <number>100</number>
            </property>
           </widget>
          </item>
@@ -396,8 +413,8 @@ p, li { white-space: pre-wrap; }
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>368</x>
-     <y>436</y>
+     <x>465</x>
+     <y>434</y>
     </hint>
     <hint type="destinationlabel">
      <x>175</x>

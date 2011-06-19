@@ -72,7 +72,7 @@ def set_up_symbol_paths(path, settings):
     be loaded from. """
 
     symbolPaths = [os.path.join(path, "symbols")]
-    customSymbolPath = settings.personal_symbol_path
+    customSymbolPath = settings.personalSymbolPath.value
     symbolPaths.append(customSymbolPath)
 
     # FIXME: For now this is a hardcoded path needed

@@ -85,13 +85,13 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def set_up_font_selectors(self):
         """ Load widget with the currently active font. """
 
-        legendFont = self.settings.legend_font
+        legendFont = self.settings.legendFont.value
         self.legendFontComboBox.setCurrentFont(legendFont)
         self.legendExampleText.setText(misc.get_random_knitting_quote())
         self.legendExampleText.setFont(legendFont)
         self.update_legend_font_display(legendFont)
 
-        labelFont = self.settings.label_font
+        labelFont = self.settings.labelFont.value
         self.labelFontComboBox.setCurrentFont(labelFont)
         self.labelExampleText.setText(misc.get_random_knitting_quote())
         self.labelExampleText.setFont(labelFont)
@@ -141,25 +141,29 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         # set legend font
         newLegendFont = self._get_legend_font_from_widget()
-        self.settings.set_default_legend_font(newLegendFont)
+        self.settings.legendFont.set_default_value(newLegendFont)
 
         # set label font
         newLabelsFont = self._get_label_font_from_widget()
-        self.settings.set_default_label_font(newLabelsFont)
+        self.settings.labelFont.set_default_value(newLabelsFont)
 
         # set label interval
         interval = self.labelIntervalSpinner.value()
-        self.settings.set_default_label_interval(interval)
+        self.settings.labelInterval.set_default_value(interval)
 
         # set cell dimension
         cellWidth = self.gridCellWidthSpinner.value()
         cellHeight = self.gridCellHeightSpinner.value()
-        self.settings.set_default_grid_cell_width(cellWidth)
-        self.settings.set_default_grid_cell_height(cellHeight)
+        self.settings.gridCellWidth.set_default_value(cellWidth)
+        self.settings.gridCellHeight.set_default_value(cellHeight)
 
         # set odd row highlighting
         highlightStatus = self.oddRowHighlightCheck.checkState()
-        self.settings.set_default_highlight_odd_rows(highlightStatus)
+        self.settings.highlightOddRows.set_default_value(highlightStatus)
+
+        # symbol path
+        personalSymbolPath = self.customSymbolPathEdit.text()
+        self.settings.personalSymbolPath.set_default_value(personalSymbolPath)
 
 
 
@@ -232,7 +236,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         """ This function updates the currently active legend font. """
 
         newLegendFont = self._get_legend_font_from_widget()
-        self.settings.legend_font = newLegendFont
+        self.settings.legendFont.value = newLegendFont
         self.legendExampleText.setFont(newLegendFont)
 
         self.emit(SIGNAL("legend_font_changed"))
@@ -310,7 +314,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
 
         newLabelFont = self._get_label_font_from_widget()
-        self.settings.label_font = newLabelFont
+        self.settings.labelFont.value = newLabelFont
         self.labelExampleText.setFont(newLabelFont)
 
         self.emit(SIGNAL("label_font_changed"))
@@ -320,7 +324,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def set_up_label_interval_selector(self):
         """ Sets up the label interval selector. """
        
-        interval = self.settings.label_interval
+        interval = self.settings.labelInterval.value
         self.labelIntervalSpinner.setValue(interval)
 
 
@@ -337,7 +341,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def change_label_interval(self, interval):
         """ Sets the new label interval and lets the canvas know. """
 
-        self.settings.label_interval = interval
+        self.settings.labelInterval.value = interval
         self.emit(SIGNAL("label_interval_changed"))
 
 
@@ -349,7 +353,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         
         """
 
-        symbolLocation = self.settings.personal_symbol_path
+        symbolLocation = self.settings.personalSymbolPath.value
         self.customSymbolPathEdit.setText(symbolLocation)
 
         self.connect(self.customSymbolPathEdit,
@@ -365,7 +369,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def update_personal_symbol_path(self, newPath):
         """ Update the path to a user's custom symbol location. """
 
-        self.settings.personal_symbol_path = newPath
+        self.settings.personalSymbolPath.value = newPath
 
 
 
@@ -376,21 +380,21 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         """
 
         customSymbolFilePath = QFileDialog.getExistingDirectory(self,
-                                            msg.customSymbolPathDirectoryTitle,
-                                            QDir.homePath())
+                                      msg.customSymbolPathDirectoryTitle,
+                                      QDir.homePath())
 
         if customSymbolFilePath:
-            self.settings.personal_symbol_path = customSymbolFilePath
+            self.settings.personalSymbolPath.value = customSymbolFilePath
             self.customSymbolPathEdit.setText(customSymbolFilePath)
 
 
     def set_up_grid_properties(self):
         """ Initialize the grid properties. """
         
-        self.gridCellWidthSpinner.setValue(self.settings.grid_cell_width)
-        self.gridCellHeightSpinner.setValue(self.settings.grid_cell_height)
+        self.gridCellWidthSpinner.setValue(self.settings.gridCellWidth.value)
+        self.gridCellHeightSpinner.setValue(self.settings.gridCellHeight.value)
 
-        checkState = self.settings.highlight_odd_rows
+        checkState = self.settings.highlightOddRows.value
         self.oddRowHighlightCheck.setCheckState(checkState)
         
 
@@ -415,7 +419,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def grid_cell_width_changed(self, newWidth):
         """ Slot taking care of changes to the width of grid cells. """
 
-        self.settings.grid_cell_width = newWidth
+        self.settings.gridCellWidth.value = newWidth
         self.emit(SIGNAL("grid_cell_dimensions_changed"))  
 
 
@@ -423,7 +427,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def grid_cell_height_changed(self, newHeight):
         """ Slot taking care of changes to the width of grid cells. """
 
-        self.settings.grid_cell_height = newHeight
+        self.settings.gridCellHeight.value = newHeight
         self.emit(SIGNAL("grid_cell_dimensions_changed"))
 
 
@@ -434,5 +438,5 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         """
       
-        self.settings.highlight_odd_rows = state
+        self.settings.highlightOddRows.value = state
         self.emit(SIGNAL("highlight_odd_rows_changed"))

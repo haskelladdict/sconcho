@@ -73,8 +73,8 @@ class PatternCanvas(QGraphicsScene):
         self._selectedCells = {}
         self._undoStack = QUndoStack(self)
 
-        self._unitCellDim = QSizeF(self.settings.grid_cell_width,
-                                   self.settings.grid_cell_height)
+        self._unitCellDim = QSizeF(self.settings.gridCellWidth.value,
+                                   self.settings.gridCellHeight.value)
         self._numRows = 10
         self._numColumns = 10
 
@@ -123,7 +123,7 @@ class PatternCanvas(QGraphicsScene):
         if self._numRows % 2 == 0:
             offset = 1
 
-        visibility = self.settings.highlight_odd_rows
+        visibility = self.settings.highlightOddRows.value
         for row in range(0+offset, self._numRows, 2):
             origin_x = 0
             origin_y = row * self._unitCellDim.height()
@@ -132,7 +132,7 @@ class PatternCanvas(QGraphicsScene):
 
             element = PatternHighlightItem(origin_x, origin_y,
                                            width, height, 
-                                           QColor("gray"))
+                                           QColor("gray"), 0.2)
             element.setZValue(1)
             if visibility == 0:
                 element.hide()
@@ -153,8 +153,8 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
-        interval = self.settings.label_interval
-        labelFont = self.settings.label_font
+        interval = self.settings.labelInterval.value
+        labelFont = self.settings.labelFont.value
 
         for label in self._textLabels:
             self.removeItem(label)
@@ -275,8 +275,8 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        self._unitCellDim = QSizeF(self.settings.grid_cell_width,
-                                   self.settings.grid_cell_height)
+        self._unitCellDim = QSizeF(self.settings.gridCellWidth.value,
+                                   self.settings.gridCellHeight.value)
         self._redraw_canvas_after_grid_dimension_change()
 
        
@@ -287,7 +287,7 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        status = self.settings.highlight_odd_rows;
+        status = self.settings.highlightOddRows.value;
         if status == 0:
             for item in self._highlightedRows:
                 item.hide()
@@ -352,7 +352,7 @@ class PatternCanvas(QGraphicsScene):
                                 yMax + self._unitCellDim.height() + 10)
         textItem = PatternLegendText(symbol["description"])
         textItem.setPos(textLocation)
-        textItem.setFont(self.settings.legend_font)
+        textItem.setFont(self.settings.legendFont.value)
         self.addItem(textItem)
 
         self.emit(SIGNAL("adjust_view"))
@@ -1452,7 +1452,7 @@ class PatternCanvas(QGraphicsScene):
         
         """
         
-        labelFont = self.settings.label_font
+        labelFont = self.settings.labelFont.value
         for item in self.items():
             if isinstance(item, PatternLabelItem):
                 item.setFont(labelFont)
@@ -1483,7 +1483,7 @@ class PatternCanvas(QGraphicsScene):
         
         """
         
-        legendFont = self.settings.legend_font
+        legendFont = self.settings.legendFont.value
         for item in self.gridLegend.values():
             legendItem_text(item).setFont(legendFont)
 
@@ -2033,7 +2033,8 @@ class PatternHighlightItem(QGraphicsRectItem):
     Type = 70000 + 6
 
    
-    def __init__(self, x, y, width, height, color, parent = None):
+    def __init__(self, x, y, width, height, color, alpha,
+                 parent = None):
 
         super(PatternHighlightItem, self).__init__(x, y, width, height, 
                                                    parent)
@@ -2043,7 +2044,7 @@ class PatternHighlightItem(QGraphicsRectItem):
         self._pen = QPen(QColor("black"), 0.5)
         self.setPen(self._pen)
 
-        color.setAlphaF(0.2)
+        color.setAlphaF(alpha)
         self._brush = QBrush(color, Qt.Dense4Pattern)
         self.setBrush(self._brush)
 

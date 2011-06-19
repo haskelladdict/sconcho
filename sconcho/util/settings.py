@@ -51,7 +51,9 @@ class DefaultSettings(QSettings):
     DEFAULT_GRID_CELL_HEIGHT = "30"
     DEFAULT_FONT = "Arial,10,-1,5,50,0,0,0,0,0"
     DEFAULT_INTERVAL = "1"
-    HIGHLIGHT_ODD_ROWS = "2"     # 2 corresponds to selected
+    DEFAULT_HIGHLIGHT_ODD_ROWS = "2"     # 2 corresponds to selected
+    DEFAULT_PERSONAL_SYMBOL_PATH = QDir.convertSeparators(
+            QDir.homePath() + "/sconcho_symbols")
 
 
     def __init__(self, organization, application, parent = None):
@@ -63,298 +65,34 @@ class DefaultSettings(QSettings):
         # remove old "global" namespace
         self.remove("global")
 
-        self.load_defaults()
-        self.set_session_values()
-
-
-
-    def load_defaults(self):
-        """ Initializes default settings if none exist. """
-
-        labelFont = self.value("default/labelFont" ).toString()
-        if labelFont.isEmpty():
-            self.setValue("default/labelFont",
-                          DefaultSettings.DEFAULT_FONT)
-
-        legendFont = self.value( "default/legendFont" ).toString()
-        if legendFont.isEmpty():
-            self.setValue("default/legendFont",
-                          DefaultSettings.DEFAULT_FONT)
-
-        labelInterval = self.value("default/labelInterval").toString()
-        if labelInterval.isEmpty():
-            self.setValue("default/labelInterval",
-                          DefaultSettings.DEFAULT_INTERVAL)
-
-        cellWidth = self.value("default/cellWidth").toString()
-        if cellWidth.isEmpty():
-            self.setValue("default/cellWidth",
-                          DefaultSettings.DEFAULT_GRID_CELL_WIDTH)
-
-        cellHeight = self.value("default/cellHeight").toString()
-        if cellHeight.isEmpty():
-            self.setValue("default/cellHeight", 
-                          DefaultSettings.DEFAULT_GRID_CELL_HEIGHT)
-
-        personalSymbolsPath = self.value("default/personalSymbolPath").toString()
-        if personalSymbolsPath.isEmpty():
-            homePath = QDir.homePath()
-            defaultDir = QDir.convertSeparators(homePath + "/sconcho_symbols")
-            self.setValue("default/personalSymbolPath", defaultDir)
-
-        highlightOddRows = self.value("default/highlightOddRows").toString()
-        if highlightOddRows.isEmpty():
-            self.setValue("default/highlightOddRows", 
-                          DefaultSettings.HIGHLIGHT_ODD_ROWS)
-
-
-    def set_session_values(self):
-        """ Sets values for current session. """
-
-        labelFont = self.value("default/labelFont" ).toString()
-        self.setValue("session/labelFont", labelFont)
-
-        legendFont = self.value("default/legendFont" ).toString()
-        self.setValue("session/legendFont", legendFont)
-
-        labelInterval = self.value("default/labelInterval").toString()
-        self.setValue("session/labelInterval", labelInterval)
-
-        cellWidth = self.value("default/cellWidth").toString()
-        self.setValue("session/cellWidth", cellWidth)
-
-        cellHeight = self.value("default/cellHeight").toString()
-        self.setValue("session/cellHeight", cellHeight)
-
-        highlightOddRows = self.value("default/highlightOddRows").toString()
-        self.setValue("session/highlightOddRows", highlightOddRows)
-
-
-
-    @property
-    def grid_cell_width(self):
-        """ Return the grid cell width. """
-
-        (cellWidth, widthStatus) = \
-                    self.value("session/cellWidth").toString().toInt()
-
-        if not widthStatus:
-            errorLogger.write("DefaultSettings.grid_cell_width: Failed to "
-                              "retrieve grid cell width from settings.")
-
-        return cellWidth
-
-
-
-    @grid_cell_width.setter
-    def grid_cell_width(self, width):
-        """ Store the width of grid cells. """
-
-        self.setValue("session/cellWidth", QString(unicode(width)))
-
-
-
-    def set_default_grid_cell_width(self, width):
-        """ Store the default width of grid cells. """
-
-        self.setValue("default/cellWidth", QString(unicode(width)))
-
-
-
-    @property
-    def grid_cell_height(self):
-        """ Return the grid cell height. """
-
-        (cellHeight, heightStatus) = \
-                    self.value("session/cellHeight").toString().toInt()
-
-        if not heightStatus:
-           errorLogger.write("DefaultSettings.grid_cell_height: Failed to "
-                             "retrieve grid dimensions from settings.")
-
-        return cellHeight
-
-
-
-    @grid_cell_height.setter
-    def grid_cell_height(self, height):
-        """ Store the grid cell height. """
-
-        self.setValue("session/cellHeight", QString(unicode(height)))
-
-
-        
-    def set_default_grid_cell_height(self, height):
-        """ Store the default grid cell height. """
-
-        self.setValue("default/cellHeight", QString(unicode(height)))
-
-
-    @property
-    def highlight_odd_rows(self):
-        """ Returns the status of odd row highlighting. """
-
-        (highlightOddRowValue, highlightStatus) = \
-                self.value("session/highlightOddRows").toString().toInt()
-
-        if not highlightStatus:
-            errorLogger.write("DefaultSettings.highlight_odd_rows: Failed"
-                              "to retrieve status from settings.")
-
-        return highlightOddRowValue
-
-
-
-    @highlight_odd_rows.setter
-    def highlight_odd_rows(self, value):
-        """ Store the current setting for highlighting odd rows. """
-
-        self.setValue("session/highlightOddRows", QString(unicode(value)))
-
-
-
-    def set_default_highlight_odd_rows(self, value):
-        """ Store the default setting for highlighting odd rows. """
-
-        self.setValue("default/highlightOddRows", 
-                      QString(unicode(value)))
-
-
-
-    @property
-    def personal_symbol_path(self):
-        """ Return path where custom symbols are located. """
-
-        path = self.value("default/personalSymbolPath").toString()
-
-        if not path:
-            errorLogger.write("DefaultSettings.personal_symbol_path: "
-                              "Failed to retrieve personal symbol path.")
-            return("")
-
-        return path
-
-
-    
-    @personal_symbol_path.setter
-    def personal_symbol_path(self, newPath):
-        """ Set the path where custom symbols are located. """
-
-        self.setValue("default/personalSymbolPath", newPath)
-
-
-
-    @property
-    def text_font(self):
-        """ Return the currently selected text font. """
-
-        fontString = self.value("session/font").toString()
-
-        font = QFont()
-        if not font.fromString(fontString):
-            errorLogger.write("DefaultSettings.text_font: Failed to "
-                              "retrieve font from settings.")
-
-        return font
-
-
-
-    @property
-    def label_font(self):
-        """ Return the current label font. """
-
-        labelFontString = self.value("session/labelFont").toString()
-
-        font = QFont()
-        if not font.fromString(labelFontString):
-            errorLogger.write("DefaultSettings.label_font: Failed to "
-                              "to retrieve label font from settings.")
-
-        return font
-
-
-
-    @label_font.setter
-    def label_font(self, newLabelFont):
-        """ Set the current label font. """
-
-        if fontDatabase_has_font(newLabelFont):
-            fontString = newLabelFont.toString()
-            self.setValue("session/labelFont", fontString)
-
-
-
-    def set_default_label_font(self, defaultLabelFont):
-        """ Set the default label font. """
-
-        if fontDatabase_has_font(defaultLabelFont):
-            fontString = defaultLabelFont.toString()
-            self.setValue("default/labelFont", fontString)
-
-
-
-    @property
-    def legend_font(self):
-        """ Return the current legend font. """
-
-        legendFontString = self.value("session/legendFont").toString()
-
-        font = QFont()
-        if not font.fromString(legendFontString):
-            errorLogger.write("DefaultSettings.legend_font: Failed to "
-                              "retrieve legend font from settings.")
-
-        return font
-
-
-
-    @legend_font.setter
-    def legend_font(self, newLegendFont):
-        """ Set the current legend font. """
-
-        if fontDatabase_has_font(newLegendFont):
-            fontString = newLegendFont.toString()
-            self.setValue("session/legendFont", fontString)
-
-
-
-    def set_default_legend_font(self, defaultLegendFont):
-        """ Set the default legend font. """
-
-        if fontDatabase_has_font(defaultLegendFont):
-            fontString = defaultLegendFont.toString()
-            self.setValue("default/legendFont", fontString)
-
-
-
-    @property
-    def label_interval(self):
-        """ Return the interval with which the labels are spaced. """
-
-        legendIntervalString = self.value("session/labelInterval").toString()
-        (legendInterval, status) = legendIntervalString.toInt()
-
-        if not status:
-            return 1
-
-        return legendInterval
-
-
-
-    @label_interval.setter
-    def label_interval(self, interval):
-        """ Store the current interval with which the labels are spaced. """
-
-        self.setValue("session/labelInterval", QString(unicode(interval)))
-
-
-
-    def set_default_label_interval(self, defaultInterval):
-        """ Store the default interval with which the labels are spaced. """
-
-        self.setValue("default/labelInterval",
-                      QString(unicode(defaultInterval)))
-
+        # create all settings objects we need
+        self.gridCellWidth = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_GRID_CELL_WIDTH,
+                "cellWidth", "Int")
+
+        self.gridCellHeight = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_GRID_CELL_HEIGHT,
+                "cellHeight", "Int")
+
+        self.labelInterval = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_INTERVAL,
+                "labelInterval", "Int")
+
+        self.labelFont = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_FONT,
+                "labelFont", "QFont")
+
+        self.legendFont = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_FONT,
+                "legendFont", "QFont")
+
+        self.personalSymbolPath = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_PERSONAL_SYMBOL_PATH,
+                "personalSymbolPath", "QString")
+
+        self.highlightOddRows = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_HIGHLIGHT_ODD_ROWS,
+                "highlightOddRows", "Int")
 
 
     @property
@@ -405,7 +143,90 @@ class DefaultSettings(QSettings):
 
         self.setValue("MainWindow/State", QVariant(state))
 
-    
+   
+
+
+####################################################################
+#
+# this class wraps individual settings and provides getters and
+# setters for session and default values.
+#
+####################################################################
+class PreferenceSetting(object):
+
+
+    def __init__(self, settings, defaultValue, name, 
+                 returnType = "String", errorMsg = ""):
+
+        self.sessionName = "session/" + name
+        self.defaultName = "default/" + name
+        self.returnType = returnType
+        self.errorMsg = errorMsg
+        self.settings = settings
+
+        # set defaults if necessary
+        value = self.settings.value(self.defaultName).toString()
+        if value.isEmpty():
+            self.settings.setValue(self.defaultName, defaultValue)
+
+        # set session values
+        defaultVal = self.settings.value(self.defaultName).toString()
+        self.settings.setValue(self.sessionName, defaultVal)
+
+
+        
+
+    @property
+    def value(self):
+        """ Return the property value. """
+
+        value = self.settings.value(self.sessionName).toString()
+
+        status = True
+        if self.returnType == "Int":
+            (value, status) = value.toInt()
+        elif self.returnType == "QFont":
+            newValue = QFont()
+            if not newValue.fromString(value):
+                status = False
+            value = newValue
+
+        if not status:
+            if not self.errorMsg:
+                self.errorMsg = "Settings Error: Failed to retrieve " \
+                                "default values for " ++ self.defaultType
+            errorLogger.write(self.errorMsg)
+
+        return value
+
+
+
+    @value.setter
+    def value(self, setting):
+        """ Store the value of property. """
+
+        self._main_setter(self.sessionName, setting)
+
+
+
+    def set_default_value(self, value):
+        """ Store the default value for property. """
+
+        self._main_setter(self.defaultName, value)
+
+
+
+    def _main_setter(self, name, value):
+        """ This function does the actual setting. """
+
+        # for font settings we check that they exist
+        if self.returnType == "QFont":
+            if fontDatabase_has_font(value):
+                fontString = value.toString()
+                self.settings.setValue(name, fontString)
+        else:
+            self.settings.setValue(name, QString(unicode(value)))
+
 
 
 
