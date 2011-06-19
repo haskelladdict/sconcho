@@ -75,5 +75,9 @@ def set_up_symbol_paths(path, settings):
     customSymbolPath = settings.personal_symbol_path
     symbolPaths.append(customSymbolPath)
 
+    # FIXME: For now this is a hardcoded path needed
+    # for the app bundle on MacOSX
+    symbolPaths.append("/Applications/Sconcho.app/Contents/Resources/symbols")
+
     return symbolPaths
 
