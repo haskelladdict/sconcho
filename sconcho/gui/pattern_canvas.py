@@ -1281,6 +1281,7 @@ class PatternCanvas(QGraphicsScene):
         self.clear()
         self.update()
 
+
         # clear all caches
         self.gridLegend.clear()
 
@@ -1342,8 +1343,9 @@ class PatternCanvas(QGraphicsScene):
             self._load_patternRepeatItem(entry)
         
 
-        # need to clear our label cache, otherwise set_up_labels()
-        # will try to remove non-existing items
+        # need to clear our caches, otherwise we'll try 
+        # to remove non-existing items
+        self._highlightedRows = []
         self._textLabels = []
         self.finalize_grid_change()
         self.change_grid_cell_dimensions()

@@ -880,9 +880,15 @@ def set_up_colors(widget, colors):
 def generate_recovery_filepath(filePath):
     """ Based on a filePath generate the name for the recovery File. """
 
+    # check if sconcho directory in user's home directory exists
+    sconchoDirName = QDir.homePath() + "/.sconcho"
+    sconchoDir = QDir(sconchoDirName)
+    if not sconchoDir.exists():
+        status = sconchoDir.mkdir(sconchoDirName)
+
     recoveryFileInfo = QFileInfo(filePath)
-    recoveryFilePath = recoveryFileInfo.path() + "/" + \
-                           recoveryFileInfo.fileName() + ".recovery"
+    recoveryFilePath = sconchoDirName + "/" + \
+            recoveryFileInfo.fileName() + ".recovery"
 
     return recoveryFilePath
 

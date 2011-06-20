@@ -217,11 +217,11 @@ def write_active_symbol(stream, activeSymbol):
 def write_settings(stream, settings):
     """ Write all settings such as fonts for labels and legend """
 
-    stream << settings.label_font
-    stream.writeInt32(settings.label_interval)
-    stream << settings.legend_font
-    stream.writeInt32(settings.grid_cell_width)
-    stream.writeInt32(settings.grid_cell_height)
+    stream << settings.labelFont.value
+    stream.writeInt32(settings.labelInterval.value)
+    stream << settings.legendFont.value
+    stream.writeInt32(settings.gridCellWidth.value)
+    stream.writeInt32(settings.gridCellHeight.value)
 
 
 
@@ -451,19 +451,19 @@ def read_settings(stream, settings):
     # make sure we parsed something sensible before 
     # touching the settings
     if labelFont.family():
-        settings.label_font = labelFont
+        settings.labelFont.value = labelFont
 
     if labelInterval != 0:
-        settings.label_interval = labelInterval
+        settings.labelInterval.value = labelInterval
 
     if legendFont.family():
-        settings.legend_font = legendFont
+        settings.legendFont.value = legendFont
 
     if gridCellWidth != 0:
-        settings.grid_cell_width = gridCellWidth
+        settings.gridCellWidth.value = gridCellWidth
 
     if gridCellHeight != 0:
-        settings.grid_cell_height = gridCellHeight
+        settings.gridCellHeight.value = gridCellHeight
 
 
 
