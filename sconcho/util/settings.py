@@ -52,6 +52,8 @@ class DefaultSettings(QSettings):
     DEFAULT_FONT = "Arial,10,-1,5,50,0,0,0,0,0"
     DEFAULT_INTERVAL = "1"
     DEFAULT_HIGHLIGHT_ODD_ROWS = "2"     # 2 corresponds to selected
+    DEFAULT_HIGHLIGHT_ODD_ROWS_COLOR = "gray"
+    DEFAULT_HIGHLIGHT_ODD_ROWS_OPACITY = "20"
     DEFAULT_PERSONAL_SYMBOL_PATH = QDir.convertSeparators(
             QDir.homePath() + "/sconcho_symbols")
 
@@ -93,6 +95,14 @@ class DefaultSettings(QSettings):
         self.highlightOddRows = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_HIGHLIGHT_ODD_ROWS,
                 "highlightOddRows", "Int")
+
+        self.highlightOddRowsColor = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_HIGHLIGHT_ODD_ROWS_COLOR,
+                "highlightOddRowsColor", "QString")
+
+        self.highlightOddRowsOpacity = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_HIGHLIGHT_ODD_ROWS_OPACITY,
+                "highlightOddRowsOpacity", "Int")
 
 
     @property
@@ -208,11 +218,12 @@ class PreferenceSetting(object):
         self._main_setter(self.sessionName, setting)
 
 
+    
+    def make_settings_default(self):
+        """ Make the current session settings the default. """
 
-    def set_default_value(self, value):
-        """ Store the default value for property. """
-
-        self._main_setter(self.defaultName, value)
+        value = self.settings.value(self.sessionName).toString()
+        self.settings.setValue(self.defaultName, value)
 
 
 

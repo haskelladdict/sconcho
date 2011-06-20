@@ -124,6 +124,9 @@ class PatternCanvas(QGraphicsScene):
             offset = 1
 
         visibility = self.settings.highlightOddRows.value
+        color = self.settings.highlightOddRowsColor.value
+        opacity = self.settings.highlightOddRowsOpacity.value/100.0
+
         for row in range(0+offset, self._numRows, 2):
             origin_x = 0
             origin_y = row * self._unitCellDim.height()
@@ -132,7 +135,7 @@ class PatternCanvas(QGraphicsScene):
 
             element = PatternHighlightItem(origin_x, origin_y,
                                            width, height, 
-                                           QColor("gray"), 0.2)
+                                           QColor(color), opacity)
             element.setZValue(1)
             if visibility == 0:
                 element.hide()

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Sun Jun 19 11:29:21 2011
+# Created: Sun Jun 19 22:38:55 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -151,16 +151,16 @@ class Ui_PreferencesDialog(object):
         self.oddRowHighlightCheck = QtGui.QCheckBox(self.tab_2)
         self.oddRowHighlightCheck.setObjectName(_fromUtf8("oddRowHighlightCheck"))
         self.gridLayout_4.addWidget(self.oddRowHighlightCheck, 0, 0, 1, 1)
-        self.oddRowHighlightColor = QtGui.QPushButton(self.tab_2)
-        self.oddRowHighlightColor.setObjectName(_fromUtf8("oddRowHighlightColor"))
-        self.gridLayout_4.addWidget(self.oddRowHighlightColor, 0, 1, 1, 1)
+        self.oddRowHighlightColorButton = QtGui.QPushButton(self.tab_2)
+        self.oddRowHighlightColorButton.setObjectName(_fromUtf8("oddRowHighlightColorButton"))
+        self.gridLayout_4.addWidget(self.oddRowHighlightColorButton, 0, 1, 1, 1)
         self.label_7 = QtGui.QLabel(self.tab_2)
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.gridLayout_4.addWidget(self.label_7, 1, 0, 1, 1)
-        self.oddRowHighlightOpacity = QtGui.QSpinBox(self.tab_2)
-        self.oddRowHighlightOpacity.setMaximum(100)
-        self.oddRowHighlightOpacity.setObjectName(_fromUtf8("oddRowHighlightOpacity"))
-        self.gridLayout_4.addWidget(self.oddRowHighlightOpacity, 1, 1, 1, 1)
+        self.oddRowHighlightOpacitySpinner = QtGui.QSpinBox(self.tab_2)
+        self.oddRowHighlightOpacitySpinner.setMaximum(100)
+        self.oddRowHighlightOpacitySpinner.setObjectName(_fromUtf8("oddRowHighlightOpacitySpinner"))
+        self.gridLayout_4.addWidget(self.oddRowHighlightOpacitySpinner, 1, 1, 1, 1)
         self.verticalLayout_3.addLayout(self.gridLayout_4)
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         self.tab = QtGui.QWidget()
@@ -197,7 +197,7 @@ class Ui_PreferencesDialog(object):
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.horizontalLayout.addWidget(self.pushButton)
         self.verticalLayout_8.addLayout(self.horizontalLayout)
-        self.label_7.setBuddy(self.oddRowHighlightOpacity)
+        self.label_7.setBuddy(self.oddRowHighlightOpacitySpinner)
 
         self.retranslateUi(PreferencesDialog)
         self.tabWidget.setCurrentIndex(0)
@@ -221,7 +221,7 @@ class Ui_PreferencesDialog(object):
         self.label_5.setText(QtGui.QApplication.translate("PreferencesDialog", "Grid Cell Width (pixels)", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("PreferencesDialog", "Grid Cell Height (pixels)", None, QtGui.QApplication.UnicodeUTF8))
         self.oddRowHighlightCheck.setText(QtGui.QApplication.translate("PreferencesDialog", "Highlight Odd Rows", None, QtGui.QApplication.UnicodeUTF8))
-        self.oddRowHighlightColor.setText(QtGui.QApplication.translate("PreferencesDialog", "Highlight Color", None, QtGui.QApplication.UnicodeUTF8))
+        self.oddRowHighlightColorButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Highlight Color", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("PreferencesDialog", "&Opacity (%)", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("PreferencesDialog", "Grid Properties", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("PreferencesDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"

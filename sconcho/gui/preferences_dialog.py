@@ -25,7 +25,8 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PyQt4.QtCore import (SIGNAL, QString, QDir)
-from PyQt4.QtGui import (QDialog, QFontDatabase, QFileDialog)
+from PyQt4.QtGui import (QDialog, QFontDatabase, QFileDialog,
+                         QColorDialog, QColor)
 
 import sconcho.util.misc as misc
 import sconcho.util.messages as msg
@@ -139,31 +140,15 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def make_settings_the_default(self):
         """ Stores the currently selected properties as the default. """
 
-        # set legend font
-        newLegendFont = self._get_legend_font_from_widget()
-        self.settings.legendFont.set_default_value(newLegendFont)
-
-        # set label font
-        newLabelsFont = self._get_label_font_from_widget()
-        self.settings.labelFont.set_default_value(newLabelsFont)
-
-        # set label interval
-        interval = self.labelIntervalSpinner.value()
-        self.settings.labelInterval.set_default_value(interval)
-
-        # set cell dimension
-        cellWidth = self.gridCellWidthSpinner.value()
-        cellHeight = self.gridCellHeightSpinner.value()
-        self.settings.gridCellWidth.set_default_value(cellWidth)
-        self.settings.gridCellHeight.set_default_value(cellHeight)
-
-        # set odd row highlighting
-        highlightStatus = self.oddRowHighlightCheck.checkState()
-        self.settings.highlightOddRows.set_default_value(highlightStatus)
-
-        # symbol path
-        personalSymbolPath = self.customSymbolPathEdit.text()
-        self.settings.personalSymbolPath.set_default_value(personalSymbolPath)
+        self.settings.legendFont.make_settings_default()
+        self.settings.labelFont.make_settings_default()
+        self.settings.labelInterval.make_settings_default()
+        self.settings.gridCellWidth.make_settings_default()
+        self.settings.gridCellHeight.make_settings_default()
+        self.settings.highlightOddRows.make_settings_default()
+        self.settings.highlightOddRowsColor.make_settings_default()
+        self.settings.highlightOddRowsOpacity.make_settings_default()
+        self.settings.personalSymbolPath.make_settings_default()
 
 
 
@@ -388,15 +373,60 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
             self.customSymbolPathEdit.setText(customSymbolFilePath)
 
 
+
     def set_up_grid_properties(self):
         """ Initialize the grid properties. """
         
         self.gridCellWidthSpinner.setValue(self.settings.gridCellWidth.value)
         self.gridCellHeightSpinner.setValue(self.settings.gridCellHeight.value)
 
+        # set up highlight checkbox
         checkState = self.settings.highlightOddRows.value
         self.oddRowHighlightCheck.setCheckState(checkState)
+
+        # set up opacity
+        opacity = self.settings.highlightOddRowsOpacity.value
+        self.oddRowHighlightOpacitySpinner.setValue(opacity)
+
+        self._update_highlight_button_color()
+
+
+
+    def change_odd_row_highlight_color(self):
+        """ Fire up a QColorDialog to change the color for
+        hightlighting odd rows.
+
+        """
         
+        color = self.settings.highlightOddRowsColor.value
+        newColor = QColorDialog.getColor(QColor(color), None,
+                              "Select Highlight Color for Odd Rows")
+        self.settings.highlightOddRowsColor.value = newColor.name()
+        self._update_highlight_button_color()
+        self.emit(SIGNAL("redraw_highlight_odd_rows"))
+
+
+    def _update_highlight_button_color(self):
+        """ Update the highlight button color with the currently
+        active color.
+
+        """
+
+        color = self.settings.highlightOddRowsColor.value
+        styleSheet = "background-color: " + color + ";"
+        self.oddRowHighlightColorButton.setStyleSheet(styleSheet)
+
+
+
+    def change_odd_row_highlight_opacity(self, newValue):
+        """ Store new opacity setting request redrawing of
+        chart.
+
+        """
+        
+        self.settings.highlightOddRowsOpacity.value = newValue
+        self.emit(SIGNAL("redraw_highlight_odd_rows"))
+
 
 
     def set_up_grid_properties_connections(self):
@@ -414,6 +444,13 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      SIGNAL("stateChanged(int)"),
                      self.highlight_odd_rows_toggled)
 
+        self.connect(self.oddRowHighlightColorButton,
+                     SIGNAL("pressed()"),
+                     self.change_odd_row_highlight_color)
+
+        self.connect(self.oddRowHighlightOpacitySpinner,
+                     SIGNAL("valueChanged(int)"),
+                     self.change_odd_row_highlight_opacity)
 
 
     def grid_cell_width_changed(self, newWidth):

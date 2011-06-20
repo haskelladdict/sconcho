@@ -738,6 +738,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          SIGNAL("highlight_odd_rows_changed"),
                          self.canvas.change_odd_row_highlighting)
 
+            self.connect(self.preferencesDialog,
+                         SIGNAL("redraw_highlight_odd_rows"),
+                         self.canvas.set_up_highlightOddRows)
+
             self.connect(self,
                          SIGNAL("update_preferences"),
                          self.preferencesDialog.populate_interface)
@@ -877,8 +881,8 @@ def generate_recovery_filepath(filePath):
     """ Based on a filePath generate the name for the recovery File. """
 
     recoveryFileInfo = QFileInfo(filePath)
-    recoveryFilePath = recoveryFileInfo.path() + "/." + \
-                           recoveryFileInfo.fileName() + ".swp"
+    recoveryFilePath = recoveryFileInfo.path() + "/" + \
+                           recoveryFileInfo.fileName() + ".recovery"
 
     return recoveryFilePath
 
