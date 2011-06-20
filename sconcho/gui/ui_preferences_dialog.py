@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Sun Jun 19 22:38:55 2011
+# Created: Mon Jun 20 17:48:45 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -152,6 +152,7 @@ class Ui_PreferencesDialog(object):
         self.oddRowHighlightCheck.setObjectName(_fromUtf8("oddRowHighlightCheck"))
         self.gridLayout_4.addWidget(self.oddRowHighlightCheck, 0, 0, 1, 1)
         self.oddRowHighlightColorButton = QtGui.QPushButton(self.tab_2)
+        self.oddRowHighlightColorButton.setAutoDefault(False)
         self.oddRowHighlightColorButton.setObjectName(_fromUtf8("oddRowHighlightColorButton"))
         self.gridLayout_4.addWidget(self.oddRowHighlightColorButton, 0, 1, 1, 1)
         self.label_7 = QtGui.QLabel(self.tab_2)
@@ -189,11 +190,13 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.makeDefaultButton = QtGui.QPushButton(PreferencesDialog)
+        self.makeDefaultButton.setAutoDefault(False)
         self.makeDefaultButton.setObjectName(_fromUtf8("makeDefaultButton"))
         self.horizontalLayout.addWidget(self.makeDefaultButton)
         spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem6)
         self.pushButton = QtGui.QPushButton(PreferencesDialog)
+        self.pushButton.setAutoDefault(False)
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.horizontalLayout.addWidget(self.pushButton)
         self.verticalLayout_8.addLayout(self.horizontalLayout)
@@ -231,6 +234,6 @@ class Ui_PreferencesDialog(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Location of Custom Knitting Symbols</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.customSymbolPathButton.setText(QtGui.QApplication.translate("PreferencesDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("PreferencesDialog", "Custom Symbol Location", None, QtGui.QApplication.UnicodeUTF8))
-        self.makeDefaultButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Make Default", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
+        self.makeDefaultButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Make &Default", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton.setText(QtGui.QApplication.translate("PreferencesDialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
 

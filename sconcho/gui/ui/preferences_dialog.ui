@@ -285,6 +285,9 @@
            <property name="text">
             <string>Highlight Color</string>
            </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
          <item row="1" column="0">
@@ -376,7 +379,10 @@ p, li { white-space: pre-wrap; }
      <item>
       <widget class="QPushButton" name="makeDefaultButton">
        <property name="text">
-        <string>Make Default</string>
+        <string>Make &amp;Default</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -396,7 +402,10 @@ p, li { white-space: pre-wrap; }
      <item>
       <widget class="QPushButton" name="pushButton">
        <property name="text">
-        <string>Close</string>
+        <string>&amp;Close</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
