@@ -24,6 +24,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+from functools import partial
+
 from PyQt4.QtCore import (SIGNAL, QString, QDir)
 from PyQt4.QtGui import (QDialog, QFontDatabase, QFileDialog,
                          QColorDialog, QColor)
@@ -66,7 +68,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         """
 
         self.set_up_font_selectors()
-        self.set_up_label_interval_selector()
+        self.set_up_row_label_interval_selector()
         self.set_up_grid_properties()
 
 
@@ -142,7 +144,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         self.settings.legendFont.make_settings_default()
         self.settings.labelFont.make_settings_default()
-        self.settings.labelInterval.make_settings_default()
+        self.settings.rowLabelInterval.make_settings_default()
         self.settings.gridCellWidth.make_settings_default()
         self.settings.gridCellHeight.make_settings_default()
         self.settings.highlightOddRows.make_settings_default()
@@ -306,29 +308,58 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
 
 
-    def set_up_label_interval_selector(self):
+    def set_up_row_label_interval_selector(self):
         """ Sets up the label interval selector. """
        
-        interval = self.settings.labelInterval.value
-        self.labelIntervalSpinner.setValue(interval)
+        intervalType = self.settings.rowLabelInterval.value
+        if intervalType == "LABEL_ALL_ROWS":
+            self.labelAllRowsButton.click()
+        elif intervalType == "LABEL_EVEN_ROWS":
+            self.labelEvenRowsButton.click()
+        elif intervalType == "LABEL_ODD_ROWS":
+            self.labelOddRowsButton.click()
+        elif intervalType == "SHOW_EVEN_ROWS":
+            self.showEvenRowsButton.click()
+        elif intervalType == "SHOW_ODD_ROWS":
+            self.showOddRowsButton.click()
 
 
 
     def set_up_label_interval_selector_connections(self):
         """ Set up connection for label interval selector. """
         
-        self.connect(self.labelIntervalSpinner,
-                     SIGNAL("valueChanged(int)"),
-                     self.change_label_interval)
+        self.connect(self.labelAllRowsButton,
+                     SIGNAL("clicked(bool)"),
+                     partial(self.change_row_label_interval, 
+                             "LABEL_ALL_ROWS"))
+
+        self.connect(self.labelEvenRowsButton,
+                     SIGNAL("clicked(bool)"),
+                     partial(self.change_row_label_interval, 
+                             "LABEL_EVEN_ROWS"))
+
+        self.connect(self.labelOddRowsButton,
+                     SIGNAL("clicked(bool)"),
+                     partial(self.change_row_label_interval, 
+                             "LABEL_ODD_ROWS"))
+
+        self.connect(self.showEvenRowsButton,
+                     SIGNAL("clicked(bool)"),
+                     partial(self.change_row_label_interval, 
+                             "SHOW_EVEN_ROWS"))
+
+        self.connect(self.showOddRowsButton,
+                     SIGNAL("clicked(bool)"),
+                     partial(self.change_row_label_interval, 
+                             "SHOW_ODD_ROWS"))
 
 
 
-    def change_label_interval(self, interval):
+    def change_row_label_interval(self, state, clicked):
         """ Sets the new label interval and lets the canvas know. """
 
-        self.settings.labelInterval.value = interval
-        self.emit(SIGNAL("label_interval_changed"))
-
+        self.settings.rowLabelInterval.value = state 
+        self.emit(SIGNAL("row_label_interval_changed"))
 
 
 

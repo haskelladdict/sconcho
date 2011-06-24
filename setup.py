@@ -37,7 +37,7 @@ def get_symbol_files():
         newRoot = string.replace(root,"sconcho/","") 
         for aFile in files:
             fileList.append(os.path.join(newRoot, aFile))
-    
+   
     return fileList
 
 

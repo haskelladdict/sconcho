@@ -50,7 +50,10 @@ class DefaultSettings(QSettings):
     DEFAULT_GRID_CELL_WIDTH  = "30"
     DEFAULT_GRID_CELL_HEIGHT = "30"
     DEFAULT_FONT = "Arial,10,-1,5,50,0,0,0,0,0"
-    DEFAULT_INTERVAL = "1"
+
+    # options are LABEL_ALL_ROWS, LABEL_ODD_ROWS, LABEL_EVEN_ROWS,
+    # SHOW_ODD_ROWS, SHOW_EVEN_ROWS
+    DEFAULT_ROW_LABEL_INTERVAL = "LABEL_ALL_ROWS"
     DEFAULT_HIGHLIGHT_ODD_ROWS = "2"     # 2 corresponds to selected
     DEFAULT_HIGHLIGHT_ODD_ROWS_COLOR = "gray"
     DEFAULT_HIGHLIGHT_ODD_ROWS_OPACITY = "20"
@@ -76,9 +79,9 @@ class DefaultSettings(QSettings):
                 DefaultSettings.DEFAULT_GRID_CELL_HEIGHT,
                 "cellHeight", "Int")
 
-        self.labelInterval = PreferenceSetting(self, 
-                DefaultSettings.DEFAULT_INTERVAL,
-                "labelInterval", "Int")
+        self.rowLabelInterval = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_ROW_LABEL_INTERVAL,
+                "rowLabelInterval", "QString")
 
         self.labelFont = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_FONT,

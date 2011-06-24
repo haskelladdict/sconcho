@@ -156,8 +156,25 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
-        interval = self.settings.labelInterval.value
+        labelIntervalState = self.settings.rowLabelInterval.value
         labelFont = self.settings.labelFont.value
+        
+        # figure out how to show the row labels
+        interval = 1
+        labelStart = self._numRows-1
+        counter_func = lambda x: (self._numRows-x)
+        if labelIntervalState == "LABEL_EVEN_ROWS":
+            interval = 2
+            labelStart = self._numRows-2
+        elif labelIntervalState == "LABEL_ODD_ROWS":
+            interval = 2
+            labelStart = self._numRows-1
+        elif labelIntervalState == "SHOW_EVEN_ROWS":
+            labelStart = self._numRows-1
+            counter_func = lambda x: 2*(self._numRows-x)
+        elif labelIntervalState == "SHOW_ODD_ROWS":
+            labelStart = self._numRows-1
+            counter_func = lambda x: 2*(self._numRows-x) - 1
 
         for label in self._textLabels:
             self.removeItem(label)
@@ -169,8 +186,8 @@ class PatternCanvas(QGraphicsScene):
         
         # row labels
         xPos = unitWidth * self._numColumns
-        for row in range(self._numRows - 1, -1, -interval):
-            item = PatternLabelItem(unicode(self._numRows - row))
+        for row in range(labelStart, -1, -interval):
+            item = PatternLabelItem(unicode(counter_func(row)))
 
             yPos = self._unitCellDim.height() * row
             item.setPos(xPos, yPos)
@@ -840,7 +857,7 @@ class PatternCanvas(QGraphicsScene):
                                                      dialog.width)
             self._undoStack.push(patternRepeatCommand)
         elif status < 0:
-            patternRepeatCommand = DeletePatternRepeat(self, repeatItem)
+            patternRepeatCommand = DeletePatternRepeat(self, patternRepeat)
             self._undoStack.push(patternRepeatCommand)
             
         patternRepeat.unhighlight()

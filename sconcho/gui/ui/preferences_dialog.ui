@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>478</width>
-    <height>447</height>
+    <width>480</width>
+    <height>514</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -101,7 +101,7 @@
       <attribute name="title">
        <string>Labels</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
@@ -162,37 +162,60 @@
          <property name="title">
           <string>Row Label Properties</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
+         <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLabel" name="label_13">
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="7" column="0">
+             <widget class="QRadioButton" name="showEvenRowsButton">
               <property name="text">
-               <string>Label Interval</string>
+               <string>Show Even Rows Labels Obly</string>
               </property>
+              <attribute name="buttonGroup">
+               <string>buttonGroup</string>
+              </attribute>
              </widget>
             </item>
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+            <item row="3" column="0">
+             <widget class="QRadioButton" name="labelOddRowsButton">
+              <property name="text">
+               <string>Label Odd Rows Only</string>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
+              <attribute name="buttonGroup">
+               <string>buttonGroup</string>
+              </attribute>
+             </widget>
             </item>
-            <item>
-             <widget class="QSpinBox" name="labelIntervalSpinner">
-              <property name="minimum">
-               <number>1</number>
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="labelAllRowsButton">
+              <property name="text">
+               <string>Label All Rows</string>
               </property>
-              <property name="maximum">
-               <number>10</number>
+              <property name="checked">
+               <bool>true</bool>
               </property>
+              <attribute name="buttonGroup">
+               <string>buttonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QRadioButton" name="labelEvenRowsButton">
+              <property name="text">
+               <string>Label Even Rows Only</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string>buttonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QRadioButton" name="showOddRowsButton">
+              <property name="text">
+               <string>Show Odd Row Labels Only</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string>buttonGroup</string>
+              </attribute>
              </widget>
             </item>
            </layout>
@@ -422,8 +445,8 @@ p, li { white-space: pre-wrap; }
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>465</x>
-     <y>434</y>
+     <x>268</x>
+     <y>491</y>
     </hint>
     <hint type="destinationlabel">
      <x>175</x>
@@ -432,4 +455,7 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>
