@@ -1,4 +1,5 @@
 #!/usr/bin/env python2.6
+#!/usr/bin/python
 
 import sys, os
 

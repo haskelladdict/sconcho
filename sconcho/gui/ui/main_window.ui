@@ -21,14 +21,16 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_5">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QHBoxLayout" name="infoLayout">
       <item>
-       <widget class="ActiveSymbolWidget" name="activeSymbolWidget" native="true"/>
+       <widget class="ActiveSymbolWidget" name="activeSymbolWidget" native="true">
+        <zorder>recentlyUsedSymbolWidget</zorder>
+       </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer">
+       <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -71,7 +73,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>671</width>
+         <width>589</width>
          <height>76</height>
         </rect>
        </property>
@@ -162,15 +164,15 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="symbolDockWidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
      <horstretch>0</horstretch>
      <verstretch>4</verstretch>
     </sizepolicy>
    </property>
    <property name="minimumSize">
     <size>
-     <width>350</width>
-     <height>154</height>
+     <width>0</width>
+     <height>0</height>
     </size>
    </property>
    <property name="features">
@@ -188,12 +190,65 @@
    <widget class="QWidget" name="dockWidgetContents_3">
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,1,0">
        <item>
         <widget class="QComboBox" name="symbolCategoryChooser"/>
        </item>
        <item>
         <layout class="QVBoxLayout" name="symbolSelectorLayout"/>
+       </item>
+       <item>
+        <widget class="QScrollArea" name="scrollArea_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100000</width>
+           <height>100000</height>
+          </size>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>34</width>
+            <height>76</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="RecentlyUsedSymbolWidget" name="recentlyUsedSymbolWidget" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </item>
       </layout>
      </item>
@@ -597,6 +652,12 @@
    <class>ColorWidget</class>
    <extends>QWidget</extends>
    <header>color_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RecentlyUsedSymbolWidget</class>
+   <extends>QWidget</extends>
+   <header>recently_used_symbol_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

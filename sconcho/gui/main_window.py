@@ -342,6 +342,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.activeSymbolWidget.active_symbol_changed)
         
         self.connect(self.canvas, 
+                     SIGNAL("activate_symbol"),
+                     self.recentlyUsedSymbolWidget.insert_new_symbol)
+ 
+        self.connect(self.canvas, 
                      SIGNAL("unactivate_symbol"),
                      partial(self.activeSymbolWidget.active_symbol_changed,
                              None))

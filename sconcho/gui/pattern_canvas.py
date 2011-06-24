@@ -1298,6 +1298,7 @@ class PatternCanvas(QGraphicsScene):
         
         self._clear_canvas()
         self._textLabels = []
+        self._highlightedRows = []
         self.set_up_main_grid()
         self.finalize_grid_change()
 
