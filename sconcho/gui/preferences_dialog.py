@@ -312,9 +312,8 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         """ Sets up the label interval selector. """
        
         intervalType = self.settings.rowLabelInterval.value
-        if intervalType == "LABEL_ALL_ROWS":
-            self.labelAllRowsButton.click()
-        elif intervalType == "LABEL_EVEN_ROWS":
+        self.labelAllRowsButton.click()
+        if intervalType == "LABEL_EVEN_ROWS":
             self.labelEvenRowsButton.click()
         elif intervalType == "LABEL_ODD_ROWS":
             self.labelOddRowsButton.click()

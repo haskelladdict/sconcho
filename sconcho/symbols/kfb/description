@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>kfb</svgName>
+    <category>increases</category>
+    <symbolName>kfb</symbolName>
+    <symbolDescription>knit front and back of same st</symbolDescription>
+    <symbolWidth>1</symbolWidth>
+  </knittingSymbol>
+</sconcho>
