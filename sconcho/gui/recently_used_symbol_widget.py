@@ -68,10 +68,21 @@ class RecentlyUsedSymbolWidget(QWidget):
 
 
 
-    def get_symbol(self):
-        """ Returns the current active symbol. """
+#    def get_symbol(self):
+#        """ Returns the current active symbol. """
+#
+#        return self.widget.get_symbol() if self.widget else None
 
-        return self.widget.get_symbol() if self.widget else None
+    def clear(self):
+        """ Removes all widgets and re-inializes the widget. """
+
+        for widget in self.recentSymbols:
+            self.layout.removeWidget(widget)
+            widget.setParent(None)
+        
+        self.recentSymbols = []
+        self.recentSymbolsDict = {}
+        self.widgetToSymbol = {}
 
 
 

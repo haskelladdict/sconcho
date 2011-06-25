@@ -524,6 +524,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # start new canvas
             self.clear_project_save_file()
             self.set_project_dirty()
+            self.recentlyUsedSymbolWidget.clear()
             self.canvas.create_new_canvas(newPattern.num_rows,
                                             newPattern.num_columns)
 
@@ -672,6 +673,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         set_up_colors(self.colorWidget, colors)
+        self.recentlyUsedSymbolWidget.clear()
         self.select_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
 
         # provide feedback in statusbar
