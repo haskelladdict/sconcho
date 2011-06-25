@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Thu Jun 23 23:24:04 2011
+# Created: Sat Jun 25 09:56:54 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -232,11 +232,11 @@ class Ui_PreferencesDialog(object):
         self.label_11.setText(QtGui.QApplication.translate("PreferencesDialog", "Style", None, QtGui.QApplication.UnicodeUTF8))
         self.label_12.setText(QtGui.QApplication.translate("PreferencesDialog", "Size", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Row Label Properties", None, QtGui.QApplication.UnicodeUTF8))
-        self.showEvenRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Show Even Rows Labels Obly", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelOddRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Label Odd Rows Only", None, QtGui.QApplication.UnicodeUTF8))
+        self.showEvenRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Even Row Labels Only", None, QtGui.QApplication.UnicodeUTF8))
+        self.labelOddRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Hide Even Row Labels", None, QtGui.QApplication.UnicodeUTF8))
         self.labelAllRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Label All Rows", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelEvenRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Label Even Rows Only", None, QtGui.QApplication.UnicodeUTF8))
-        self.showOddRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Show Odd Row Labels Only", None, QtGui.QApplication.UnicodeUTF8))
+        self.labelEvenRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Hide Odd Row Labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.showOddRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Odd Row Labels Only", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.labelTab), QtGui.QApplication.translate("PreferencesDialog", "Labels", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("PreferencesDialog", "Grid Cell Width (pixels)", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("PreferencesDialog", "Grid Cell Height (pixels)", None, QtGui.QApplication.UnicodeUTF8))

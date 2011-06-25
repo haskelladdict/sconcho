@@ -25,9 +25,7 @@
     <item>
      <layout class="QHBoxLayout" name="infoLayout">
       <item>
-       <widget class="ActiveSymbolWidget" name="activeSymbolWidget" native="true">
-        <zorder>recentlyUsedSymbolWidget</zorder>
-       </widget>
+       <widget class="ActiveSymbolWidget" name="activeSymbolWidget" native="true"/>
       </item>
       <item>
        <spacer name="horizontalSpacer_2">
@@ -73,7 +71,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>589</width>
+         <width>886</width>
          <height>76</height>
         </rect>
        </property>
@@ -171,8 +169,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>0</width>
-     <height>0</height>
+     <width>135</width>
+     <height>165</height>
     </size>
    </property>
    <property name="features">
@@ -200,7 +198,7 @@
        <item>
         <widget class="QScrollArea" name="scrollArea_2">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -214,7 +212,7 @@
          <property name="maximumSize">
           <size>
            <width>100000</width>
-           <height>100000</height>
+           <height>70</height>
           </size>
          </property>
          <property name="widgetResizable">
@@ -226,7 +224,7 @@
             <x>0</x>
             <y>0</y>
             <width>34</width>
-            <height>76</height>
+            <height>68</height>
            </rect>
           </property>
           <property name="sizePolicy">

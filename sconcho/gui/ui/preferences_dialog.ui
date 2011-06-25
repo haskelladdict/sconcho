@@ -168,7 +168,7 @@
             <item row="7" column="0">
              <widget class="QRadioButton" name="showEvenRowsButton">
               <property name="text">
-               <string>Show Even Rows Labels Obly</string>
+               <string>Even Row Labels Only</string>
               </property>
               <attribute name="buttonGroup">
                <string>buttonGroup</string>
@@ -178,7 +178,7 @@
             <item row="3" column="0">
              <widget class="QRadioButton" name="labelOddRowsButton">
               <property name="text">
-               <string>Label Odd Rows Only</string>
+               <string>Hide Even Row Labels</string>
               </property>
               <attribute name="buttonGroup">
                <string>buttonGroup</string>
@@ -201,7 +201,7 @@
             <item row="4" column="0">
              <widget class="QRadioButton" name="labelEvenRowsButton">
               <property name="text">
-               <string>Label Even Rows Only</string>
+               <string>Hide Odd Row Labels</string>
               </property>
               <attribute name="buttonGroup">
                <string>buttonGroup</string>
@@ -211,7 +211,7 @@
             <item row="6" column="0">
              <widget class="QRadioButton" name="showOddRowsButton">
               <property name="text">
-               <string>Show Odd Row Labels Only</string>
+               <string>Odd Row Labels Only</string>
               </property>
               <attribute name="buttonGroup">
                <string>buttonGroup</string>

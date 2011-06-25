@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Thu Jun 23 23:24:03 2011
+# Created: Sat Jun 25 09:56:53 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 589, 76))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 886, 76))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
@@ -82,7 +82,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(4)
         sizePolicy.setHeightForWidth(self.symbolDockWidget.sizePolicy().hasHeightForWidth())
         self.symbolDockWidget.setSizePolicy(sizePolicy)
-        self.symbolDockWidget.setMinimumSize(QtCore.QSize(0, 0))
+        self.symbolDockWidget.setMinimumSize(QtCore.QSize(135, 165))
         self.symbolDockWidget.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
         self.symbolDockWidget.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
         self.symbolDockWidget.setObjectName(_fromUtf8("symbolDockWidget"))
@@ -99,17 +99,17 @@ class Ui_MainWindow(object):
         self.symbolSelectorLayout.setObjectName(_fromUtf8("symbolSelectorLayout"))
         self.verticalLayout_2.addLayout(self.symbolSelectorLayout)
         self.scrollArea_2 = QtGui.QScrollArea(self.dockWidgetContents_3)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.scrollArea_2.sizePolicy().hasHeightForWidth())
         self.scrollArea_2.setSizePolicy(sizePolicy)
         self.scrollArea_2.setMinimumSize(QtCore.QSize(0, 0))
-        self.scrollArea_2.setMaximumSize(QtCore.QSize(100000, 100000))
+        self.scrollArea_2.setMaximumSize(QtCore.QSize(100000, 70))
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 34, 76))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 34, 68))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)

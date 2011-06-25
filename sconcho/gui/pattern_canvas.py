@@ -1101,7 +1101,7 @@ class PatternCanvas(QGraphicsScene):
                 return
 
         else:
-            if (pivot + num) >= self._numRows:
+            if (pivot + num) > self._numRows:
                 QMessageBox.warning(None, msg.canNotDeleteRowBelowTitle,
                                     msg.canNotDeleteRowBelowText,
                                     QMessageBox.Close)

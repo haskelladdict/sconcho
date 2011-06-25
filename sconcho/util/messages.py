@@ -106,8 +106,8 @@ canNotDeleteRowAboveText  = ("Cannot delete requested number of rows above "
 
 
 canNotDeleteRowBelowTitle = "sconcho: Cannot Delete Rows"
-canNotDeleteRowBelowText  = ("Cannot delete requested number of rows below "
-                             "and including selection.")
+canNotDeleteRowBelowText  = ("Cannot delete requested number of rows at "
+                             "or below selection.")
 
 
 canNotDeleteColumnLeftOfTitle = "sconcho: Cannot Delete Columns"
