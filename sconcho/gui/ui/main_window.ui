@@ -71,13 +71,15 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>886</width>
+         <width>801</width>
          <height>76</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="ColorWidget" name="colorWidget" native="true"/>
+         <widget class="ColorWidget" name="colorWidget" native="true">
+          <zorder>graphicsView</zorder>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -169,8 +171,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>135</width>
-     <height>165</height>
+     <width>220</width>
+     <height>212</height>
     </size>
    </property>
    <property name="features">
@@ -186,9 +188,9 @@
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
-    <layout class="QVBoxLayout" name="verticalLayout_3">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,1,0">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QComboBox" name="symbolCategoryChooser"/>
        </item>
@@ -196,56 +198,71 @@
         <layout class="QVBoxLayout" name="symbolSelectorLayout"/>
        </item>
        <item>
-        <widget class="QScrollArea" name="scrollArea_2">
+        <widget class="QGroupBox" name="groupBox">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
          <property name="maximumSize">
           <size>
-           <width>100000</width>
-           <height>70</height>
+           <width>16777215</width>
+           <height>130</height>
           </size>
          </property>
-         <property name="widgetResizable">
-          <bool>true</bool>
+         <property name="title">
+          <string>Recently Used Symbols</string>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_2">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>34</width>
-            <height>68</height>
-           </rect>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="RecentlyUsedSymbolWidget" name="recentlyUsedSymbolWidget" native="true">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QScrollArea" name="scrollArea_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents_2">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>158</width>
+               <height>79</height>
+              </rect>
+             </property>
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>120</height>
+              </size>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="RecentlyUsedSymbolWidget" name="recentlyUsedSymbolWidget" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
-           </item>
-          </layout>
-         </widget>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

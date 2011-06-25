@@ -340,6 +340,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.canvas, 
                      SIGNAL("activate_symbol"),
                      self.activeSymbolWidget.active_symbol_changed)
+ 
+        self.connect(self.canvas, 
+                     SIGNAL("unactivate_symbol"),
+                     partial(self.activeSymbolWidget.active_symbol_changed,
+                             None))
         
         self.connect(self.canvas, 
                      SIGNAL("activate_symbol"),
@@ -347,9 +352,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
  
         self.connect(self.canvas, 
                      SIGNAL("unactivate_symbol"),
-                     partial(self.activeSymbolWidget.active_symbol_changed,
-                             None))
-        
+                     partial(
+                       self.recentlyUsedSymbolWidget.insert_new_symbol,
+                       None))
+ 
         self.connect(self.canvas,
                      SIGNAL("activate_symbol"),
                      self.set_project_dirty)

@@ -133,8 +133,10 @@ errorMatchingLegendItemText = ("A legend item found in the opened project "
 
 errorLoadingGridTitle = "sconcho: Error Loading Pattern Grid"
 errorLoadingGridText = ("Could not load pattern grid from "
-                        "opened project file. This indicates that "
-                        "your file may be corrupted."
+                        "opened project file. Often this is caused "
+                        "by a missing symbol. Maybe you are trying "
+                        "to open a project file with a custom symbol "
+                        "which is not installed on your computer.\n"
                         "<p>sconcho encountered the following "
                         "error: KeyError: %s.")
 
