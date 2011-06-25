@@ -71,15 +71,13 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>801</width>
+         <width>778</width>
          <height>76</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="ColorWidget" name="colorWidget" native="true">
-          <zorder>graphicsView</zorder>
-         </widget>
+         <widget class="ColorWidget" name="colorWidget" native="true"/>
         </item>
        </layout>
       </widget>
@@ -171,7 +169,7 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>220</width>
+     <width>243</width>
      <height>212</height>
     </size>
    </property>
@@ -212,7 +210,7 @@
           </size>
          </property>
          <property name="title">
-          <string>Recently Used Symbols</string>
+          <string>Most Frequently Used Symbols</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
@@ -231,7 +229,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>158</width>
+               <width>181</width>
                <height>79</height>
               </rect>
              </property>
