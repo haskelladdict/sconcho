@@ -54,7 +54,6 @@ class DefaultSettings(QSettings):
     # options are LABEL_ALL_ROWS, LABEL_ODD_ROWS, LABEL_EVEN_ROWS,
     # SHOW_ODD_ROWS, SHOW_EVEN_ROWS
     DEFAULT_ROW_LABEL_INTERVAL = "LABEL_ALL_ROWS"
-    DEFAULT_LABEL_INTERVAL = 1
     DEFAULT_HIGHLIGHT_ODD_ROWS = "2"     # 2 corresponds to selected
     DEFAULT_HIGHLIGHT_ODD_ROWS_COLOR = "gray"
     DEFAULT_HIGHLIGHT_ODD_ROWS_OPACITY = "20"
@@ -80,12 +79,6 @@ class DefaultSettings(QSettings):
                 DefaultSettings.DEFAULT_GRID_CELL_HEIGHT,
                 "cellHeight", "Int")
 
-        # this is deprecated, but we need to keep it
-        # for consistency
-        self.labelInterval = PreferenceSetting(self, 
-                DefaultSettings.DEFAULT_LABEL_INTERVAL,
-                "rowLabelInterval", "Int")
-        
         self.rowLabelInterval = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_ROW_LABEL_INTERVAL,
                 "rowLabelInterval", "QString")
@@ -214,7 +207,7 @@ class PreferenceSetting(object):
         if not status:
             if not self.errorMsg:
                 self.errorMsg = "Settings Error: Failed to retrieve " \
-                                "default values for " ++ self.defaultType
+                                "default values for " + self.defaultName
             errorLogger.write(self.errorMsg)
 
         return value

@@ -218,7 +218,10 @@ def write_settings(stream, settings):
     """ Write all settings such as fonts for labels and legend """
 
     stream << settings.labelFont.value
-    stream.writeInt32(settings.labelInterval.value)
+    
+    intervalType = get_row_label_interval(settings.rowLabelInterval.value)
+    stream.writeInt32(intervalType) 
+
     stream << settings.legendFont.value
     stream.writeInt32(settings.gridCellWidth.value)
     stream.writeInt32(settings.gridCellHeight.value)
@@ -443,7 +446,10 @@ def read_settings(stream, settings):
     legendFont    = QFont()
 
     stream >> labelFont
+
     labelInterval = stream.readInt32()
+    labelState = get_row_label_identifier(labelInterval)
+
     stream >> legendFont
     gridCellWidth = stream.readInt32()
     gridCellHeight = stream.readInt32()
@@ -453,8 +459,8 @@ def read_settings(stream, settings):
     if labelFont.family():
         settings.labelFont.value = labelFont
 
-    if labelInterval != 0:
-        settings.labelInterval.value = labelInterval
+    if labelState:
+        settings.rowLabelInterval.value = labelState
 
     if legendFont.family():
         settings.legendFont.value = legendFont
@@ -562,11 +568,11 @@ def export_scene(canvas, width, height, hideNostitchSymbols,
 
 
 
-#############################################################################
+############################################################################
 #
 # routines for printing a project 
 #
-#############################################################################
+############################################################################
 def print_scene(canvas):
     """
     This function prints the content of the canvas.
@@ -586,5 +592,67 @@ def print_scene(canvas):
         painter.setRenderHints(QPainter.TextAntialiasing)
         canvas.render(painter, QRectF(), theScene)
         painter.end()
+
+
+
+############################################################################
+#
+# helper functions
+#
+############################################################################
+
+def get_row_label_identifier(intervalState):
+    """ This function is the inverse of get_row_label_interval.
+
+    It converts a stored integer into the the proper row
+    label state.
+ 
+    NOTE: Previously we used the labelInterval Int field to store 
+    a true interval. Since this option is gone we re-use the Int
+    to store the row label interval state. Since label
+    intervals previously had to be <= 100 we can reuse values
+    > 100 for this purpose. For folks who load an old spf file that
+    still has a true label interval field we map to the default
+    of LABEL_ALL_ROWS.
+
+    """
+
+    intervalIdentifier = "LABEL_ALL_ROWS"
+    if intervalState == 102:
+        intervalIdentifier = "LABEL_ODD_ROWS"   
+    elif intervalState == 103:
+        intervalIdentifier = "LABEL_EVEN_ROWS"    
+    elif intervalState == 104:
+        intervalIdentifier = "SHOW_ODD_ROWS"   
+    elif intervalState == 105:
+        intervalIdentifier = "SHOW_EVEN_ROWS"   
+
+    return intervalIdentifier
+
+
+
+def get_row_label_interval(labelType):
+    """ This function is the inverse of get_row_label_identifier.
+
+    It converts a row label state into an integer state stored
+    within the spf file.
+
+    This function is the inverse of get_row_label_indentifier.
+    See this function for more comments.
+    
+    """
+
+    intervalState = 101
+    if labelType == "LABEL_ODD_ROWS":
+        intervalState = 102
+    elif labelType == "LABEL_EVEN_ROWS":
+        intervalState = 103
+    elif labelType == "SHOW_ODD_ROWS":
+        intervalState = 104
+    elif labelType == "SHOW_EVEN_ROWS":
+        intervalState = 105
+
+    return intervalState
+
 
 

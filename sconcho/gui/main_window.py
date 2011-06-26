@@ -554,7 +554,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return False
 
             # check the extension; if none is present add .spf
-            extension = QFileInfo(saveFilePath).completeSuffix()
+            extension = QFileInfo(saveFilePath).suffix()
             if extension != "spf":
                 saveFilePath = saveFilePath + ".spf"
 
