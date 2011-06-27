@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Jun 25 15:55:43 2011
+# Created: Mon Jun 27 18:39:41 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -254,7 +254,7 @@ class Ui_MainWindow(object):
         self.actionShow_nostitch_symbols.setObjectName(_fromUtf8("actionShow_nostitch_symbols"))
         self.actionCreate_Pattern_Repeat = QtGui.QAction(MainWindow)
         icon13 = QtGui.QIcon()
-        icon13.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/patternRepeat.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon13.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/pattern_repeat.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionCreate_Pattern_Repeat.setIcon(icon13)
         self.actionCreate_Pattern_Repeat.setObjectName(_fromUtf8("actionCreate_Pattern_Repeat"))
         self.actionApply_Color_to_Selection = QtGui.QAction(MainWindow)

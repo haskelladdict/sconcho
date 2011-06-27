@@ -721,8 +721,11 @@ class PatternCanvas(QGraphicsScene):
             addRepeatAction.setEnabled(False)
 
         # see if there are pattern repeats under mouse cursor and enable
-        # edit action if so
-        patternRepeats = extract_patternRepeatItems(self.items(event.scenePos()))
+        # edit action if so; we'll search a slightly extended area
+        # otherwise searching is tricky
+        searchArea = QRectF(event.scenePos(), QSizeF(1, 1))
+        searchArea = searchArea.adjusted(-4.0, -4.0, 4.0, 4.0)
+        patternRepeats = extract_patternRepeatItems(self.items(searchArea))
         editRepeatAction = gridMenu.addAction("&Edit Pattern Repeat")
         if len(patternRepeats) > 0:
             self.connect(editRepeatAction, SIGNAL("triggered()"),

@@ -627,7 +627,7 @@
   <action name="actionCreate_Pattern_Repeat">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/patternRepeat.png</normaloff>:/icons/patternRepeat.png</iconset>
+     <normaloff>:/icons/pattern_repeat.png</normaloff>:/icons/pattern_repeat.png</iconset>
    </property>
    <property name="text">
     <string>Create Pattern Repeat</string>
