@@ -1,3 +1,11 @@
+06-30-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Release of 0.1.0_b1
+	* many bugfixes and streamlining of code
+	* added ability to control row labals
+	* added widget for most recently used symbols
+
+
 03-26-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Release of 0.1.0_a9
