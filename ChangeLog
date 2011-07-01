@@ -2,7 +2,8 @@
 
 	* Release of 0.1.0_b1
 	* many bugfixes and streamlining of code
-	* added ability to control row labals
+	* added ability to control row labels
+	* added ability to highlight rows
 	* added widget for most recently used symbols
 
 
