@@ -1,7 +1,7 @@
 Sconcho Manual
 --------------
 
-*Author: Markus Dittrich (last change 03/20/2011)*
+*Author: Markus Dittrich (last change 09/10/2011)*
 
 Sconcho is a tool for creating knitting charts. Charts can be created by placing
 a variety of knitting symbols into a rectangular grids. Projects can be saved in
