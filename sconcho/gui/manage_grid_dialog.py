@@ -156,6 +156,10 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
     def set_row_col(self, row, col):
         """ Set the current value of row/column entry to
         be changed.
+
+        NOTE: We don't check the row, col values at all
+        and rely on the widget to make sure the values
+        remain within the limits.
         
         """
 

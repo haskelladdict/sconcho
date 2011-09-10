@@ -588,11 +588,11 @@ class PatternCanvas(QGraphicsScene):
        
         if event.button() == Qt.RightButton:
 
-            if is_click_in_grid(col, row, self._numColumns, self._numRows):
-                self.handle_right_click_on_grid(event, row, col)
+            #if is_click_in_grid(col, row, self._numColumns, self._numRows):
+            self.handle_right_click_on_grid(event, row, col)
 
-                # don't propagate this event
-                return
+            # don't propagate this event
+            return
 
         elif (event.button() == Qt.LeftButton) and \
              (event.modifiers() & Qt.ShiftModifier):
@@ -700,7 +700,22 @@ class PatternCanvas(QGraphicsScene):
         """ Handles a right click on the pattern grid by
         displaying a QMenu with options.
 
+        If the click occured outside the pattern grid we show
+        the menu only if there is a pattern repeat item 
+        under the cursor. In this case all the other items are
+        disabled.
+
         """
+
+        # search for pattern repeats; we search a slightly extended 
+        # area otherwise clicking on them is tricky
+        clickInGrid = is_click_in_grid(col, row, self._numColumns,
+                                       self._numRows)
+        searchArea = QRectF(event.scenePos(), QSizeF(1, 1))
+        searchArea = searchArea.adjusted(-4.0, -4.0, 4.0, 4.0)
+        patternRepeats = extract_patternRepeatItems(self.items(searchArea))
+        if (not patternRepeats) and (not clickInGrid):
+            return
 
         gridMenu = QMenu()
         rowAction = gridMenu.addAction("Insert/Delete Rows and Columns")
@@ -714,22 +729,19 @@ class PatternCanvas(QGraphicsScene):
                      partial(self.grab_color_from_cell, scenePos))
         gridMenu.addSeparator()
 
-        addRepeatAction = gridMenu.addAction("&Add Pattern Repeat Around Selection")
+        addRepeatAction = gridMenu.addAction("&Add Pattern Repeat "
+                                             "Around Selection")
         self.connect(addRepeatAction, SIGNAL("triggered()"),
                      self.add_pattern_repeat)
         if not can_outline_selection(self._selectedCells.values()):
             addRepeatAction.setEnabled(False)
 
-        # see if there are pattern repeats under mouse cursor and enable
-        # edit action if so; we'll search a slightly extended area
-        # otherwise searching is tricky
-        searchArea = QRectF(event.scenePos(), QSizeF(1, 1))
-        searchArea = searchArea.adjusted(-4.0, -4.0, 4.0, 4.0)
-        patternRepeats = extract_patternRepeatItems(self.items(searchArea))
+        
         editRepeatAction = gridMenu.addAction("&Edit Pattern Repeat")
-        if len(patternRepeats) > 0:
+        if patternRepeats:
             self.connect(editRepeatAction, SIGNAL("triggered()"),
-                         partial(self.edit_pattern_repeat, patternRepeats[0]))
+                         partial(self.edit_pattern_repeat, 
+                                 patternRepeats[0]))
         else:
             editRepeatAction.setEnabled(False)
         gridMenu.addSeparator()
@@ -753,6 +765,11 @@ class PatternCanvas(QGraphicsScene):
                                               pasteRowDim):
                 pasteAction.setEnabled(True)
 
+        # if the click was outside the grid we can't past and grab colors
+        if not clickInGrid:
+            pasteAction.setEnabled(False)
+            colorAction.setEnabled(False)
+
         gridMenu.exec_(event.screenPos())
 
 
@@ -771,13 +788,17 @@ class PatternCanvas(QGraphicsScene):
             self.insertDeleteRowColDialog = \
                 ManageGridDialog(self._numRows, self._numColumns,
                                  row, col, self.parent())
-            self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_rows"), 
+            self.connect(self.insertDeleteRowColDialog, 
+                         SIGNAL("insert_rows"), 
                          self.insert_grid_rows)
-            self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_rows"), 
+            self.connect(self.insertDeleteRowColDialog, 
+                         SIGNAL("delete_rows"), 
                          self.delete_grid_rows)
-            self.connect(self.insertDeleteRowColDialog, SIGNAL("insert_columns"), 
+            self.connect(self.insertDeleteRowColDialog, 
+                         SIGNAL("insert_columns"), 
                          self.insert_grid_columns)
-            self.connect(self.insertDeleteRowColDialog, SIGNAL("delete_columns"), 
+            self.connect(self.insertDeleteRowColDialog, 
+                         SIGNAL("delete_columns"), 
                          self.delete_grid_columns)
         else:
             self.insertDeleteRowColDialog.set_row_col(row,col)
