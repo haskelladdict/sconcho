@@ -391,6 +391,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("currentIndexChanged(QString)"),
                      self.update_symbol_widget)
 
+
         # this makes sure that the currently active symbol is unselected
         # when the users chooses a new category
         self.connect(self.symbolCategoryChooser,
@@ -541,11 +542,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if (mode == "save as") or (not self._saveFilePath): 
             location = self._saveFilePath if self._saveFilePath \
-                       else QDir.homePath() + "/.spf"
+                       else QDir.homePath() + "/ "
+            print(location)
             saveFilePath = QFileDialog.getSaveFileName(self,
-                                                msg.saveSconchoProjectTitle,
-                                                location,
-                                                "sconcho pattern files (*.spf)")
+                                           msg.saveSconchoProjectTitle,
+                                           location,
+                                           "sconcho pattern files (*.spf)")
 
             # with "save as" we always want to save so
             self._projectIsDirty = True
@@ -639,7 +641,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
              QFileDialog.getOpenFileName(self,
                                          msg.openSconchoProjectTitle,
                                          QDir.homePath(),
-                                         "sconcho pattern files (*.spf)")
+                                         ("sconcho pattern files (*.spf);;"
+                                          "all files (*.*)"))
 
         if not readFilePath:
             return
