@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Mon Jun 27 18:39:41 2011
+# Created: Sat Sep 10 14:03:42 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -390,7 +390,7 @@ class Ui_MainWindow(object):
         self.action_Redo.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+R", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_nostitch_symbols.setText(QtGui.QApplication.translate("MainWindow", "Show &Nostitch Symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCreate_Pattern_Repeat.setText(QtGui.QApplication.translate("MainWindow", "Create Pattern Repeat", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCreate_Pattern_Repeat.setToolTip(QtGui.QApplication.translate("MainWindow", "Create a pattern repeat box around the currently highlighted cells. <p>You can interact with an existing repeat box by holding down the Control key and double clicking on it. ", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCreate_Pattern_Repeat.setToolTip(QtGui.QApplication.translate("MainWindow", "Create a pattern repeat box around the currently highlighted cells.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionApply_Color_to_Selection.setText(QtGui.QApplication.translate("MainWindow", "Apply Color to Selection", None, QtGui.QApplication.UnicodeUTF8))
         self.actionApply_Color_to_Selection.setToolTip(QtGui.QApplication.translate("MainWindow", "Apply Color to Selection. Applies the currently selected color to all selected cells on the canvas.", None, QtGui.QApplication.UnicodeUTF8))
 
