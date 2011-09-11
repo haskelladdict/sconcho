@@ -542,7 +542,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if (mode == "save as") or (not self._saveFilePath): 
             location = self._saveFilePath if self._saveFilePath \
-                       else QDir.homePath() + "/ "
+                       else QDir.homePath() + "/.spf"
             saveFilePath = QFileDialog.getSaveFileName(self,
                                            msg.saveSconchoProjectTitle,
                                            location,
