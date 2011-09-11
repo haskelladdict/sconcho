@@ -34,11 +34,13 @@ from PyQt4.QtCore import QString
 ########################################################################
 sconchoDescription = (
     "<b>sconcho</b> v. %s"
-    "<p>sconcho is a design software for producing print quality "
+    "<p>sconcho is a design software for creating print quality "
     " knitting charts."
     "<p>Copyright &copy; 2009-2011 Markus Dittrich"
     "<p>Many thanks to Susan Dittrich for continued testing, advice, "
     "support, and generation of the SVG knitting symbols."
+    "<p>Please help make sconcho better by reporting problems or "
+    "suggesting enhancements to the author. Thanks!"
     "<p>This program is free software: you can redistribute it and/or "
     "modify it under the terms of the GNU General Public License "
     "as published by the Free Software Foundation, either version 3 "
