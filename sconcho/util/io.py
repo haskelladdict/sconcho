@@ -43,7 +43,7 @@ import sconcho.util.messages as msg
 
 # magic number to specify binary API
 MAGIC_NUMBER = 0xA3D1
-API_VERSION  = 1
+API_VERSION  = 2
 
 
 #############################################################################
@@ -88,14 +88,19 @@ class SaveThread(QThread):
     
 
 
-#############################################################################
+###########################################################################
 #
 # routines for writing a project.
 #
-#############################################################################
+###########################################################################
 @wait_cursor
 def save_project(canvas, colors, activeSymbol, settings, saveFileName):
-    """ Toplevel writer routine. """
+    """ Toplevel writer routine. 
+
+    NOTE: Make sure that the settings are written last since 
+    they are the most volatile. That way, the API has the
+    largest chance of surviving as long as possible.
+    """
 
     # prepare data structures
     patternGridItems = get_patternGridItems(canvas)
@@ -131,8 +136,8 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         write_legendItems(stream, legendItems)
         write_colors(stream, colors)
         write_active_symbol(stream, activeSymbol)
-        write_settings(stream, settings)
         write_patternRepeats(stream, patternRepeats)
+        write_settings(stream, settings)
 
 
     except (IOError, OSError) as e:
@@ -221,10 +226,12 @@ def write_settings(stream, settings):
     
     intervalType = get_row_label_interval(settings.rowLabelInterval.value)
     stream.writeInt32(intervalType) 
-
+    
     stream << settings.legendFont.value
     stream.writeInt32(settings.gridCellWidth.value)
     stream.writeInt32(settings.gridCellHeight.value)
+
+    stream.writeInt32(settings.rowLabelStart.value)
 
 
 
@@ -295,16 +302,13 @@ def read_project(settings, openFileName):
             raise IOError, "unrecogized file Type"
 
         version = stream.readInt32()
-        if version != API_VERSION:
-            raise IOError, "unsupported API version"
-
         stream.setVersion(QDataStream.Qt_4_5)
 
         # start parsing
-        numGridItems   = stream.readInt32()
+        numGridItems = stream.readInt32()
         numLegendItems = stream.readInt32()
-        numColors      = stream.readInt32()
-        numRepeats     = stream.readInt32()
+        numColors = stream.readInt32()
+        numRepeats = stream.readInt32()
 
         # the next are 4 dummy entries we just skip
         for count in range(4):
@@ -312,12 +316,20 @@ def read_project(settings, openFileName):
 
         # write elements
         patternGridItems = read_patternGridItems(stream, numGridItems)
-        legendItems      = read_legendItems(stream, numLegendItems)
-        colors           = read_colors(stream, numColors)
-        activeSymbol     = read_active_symbol(stream)
-        read_settings(stream, settings)
-        patternRepeats   = read_patternRepeats(stream, numRepeats)
+        legendItems = read_legendItems(stream, numLegendItems)
+        colors = read_colors(stream, numColors)
+        activeSymbol = read_active_symbol(stream)
 
+        # with API_VERSION 2 the settings are always read last
+        if version == 1:
+            read_settings(stream, settings, version)
+            patternRepeats = read_patternRepeats(stream, numRepeats)
+        elif version == 2:
+            patternRepeats = read_patternRepeats(stream, numRepeats)
+            read_settings(stream, settings, version)
+        else:
+            raise IOError, "unsupported API version"
+            
 
     except (IOError, OSError) as e:
         status = "Failed to open %s: %s " % (openFileName, e)
@@ -436,7 +448,7 @@ def read_active_symbol(stream):
 
 
 
-def read_settings(stream, settings):
+def read_settings(stream, settings, version):
     """ Write all settings such as fonts for labels and legend.
     
     NOTE: This function doesn't return anything and changes
@@ -470,6 +482,13 @@ def read_settings(stream, settings):
 
     if gridCellHeight != 0:
         settings.gridCellHeight.value = gridCellHeight
+
+    # new stuff in API_VERSION 2 and onward
+    if version > 1:
+        labelStart = stream.readInt32()
+
+        if labelStart:
+            settings.rowLabelStart.value = labelStart
 
 
 
