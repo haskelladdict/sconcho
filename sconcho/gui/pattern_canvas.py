@@ -157,24 +157,25 @@ class PatternCanvas(QGraphicsScene):
         """
 
         labelIntervalState = self.settings.rowLabelInterval.value
+        labelOffset = self.settings.rowLabelStart.value - 1
         labelFont = self.settings.labelFont.value
         
         # figure out how to show the row labels
         interval = 1
-        labelStart = self._numRows-1
-        counter_func = lambda x: (self._numRows-x)
+        labelStart = self._numRows - 1
+        counter_func = lambda x: (self._numRows - x + labelOffset)
         if labelIntervalState == "LABEL_EVEN_ROWS":
             interval = 2
-            labelStart = self._numRows-2
+            labelStart -= (labelOffset+1) % 2
         elif labelIntervalState == "LABEL_ODD_ROWS":
             interval = 2
-            labelStart = self._numRows-1
+            labelStart -= labelOffset % 2
         elif labelIntervalState == "SHOW_EVEN_ROWS":
-            labelStart = self._numRows-1
-            counter_func = lambda x: 2*(self._numRows-x)
+            labelStart -= (labelOffset+1) % 2
+            counter_func = lambda x: 2*(self._numRows-x)-1+labelOffset 
         elif labelIntervalState == "SHOW_ODD_ROWS":
-            labelStart = self._numRows-1
-            counter_func = lambda x: 2*(self._numRows-x) - 1
+            labelStart -= labelOffset % 2
+            counter_func = lambda x: 2*(self._numRows-x)-1+labelOffset
 
         for label in self._textLabels:
             self.removeItem(label)

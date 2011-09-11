@@ -53,7 +53,8 @@ class DefaultSettings(QSettings):
 
     # options are LABEL_ALL_ROWS, LABEL_ODD_ROWS, LABEL_EVEN_ROWS,
     # SHOW_ODD_ROWS, SHOW_EVEN_ROWS
-    DEFAULT_ROW_LABEL_INTERVAL = "LABEL_ALL_ROWS"
+    DEFAULT_ROW_LABEL_MODE = "LABEL_ALL_ROWS"
+    DEFAULT_ROW_LABEL_START = "1"
     DEFAULT_HIGHLIGHT_ODD_ROWS = "2"     # 2 corresponds to selected
     DEFAULT_HIGHLIGHT_ODD_ROWS_COLOR = "gray"
     DEFAULT_HIGHLIGHT_ODD_ROWS_OPACITY = "20"
@@ -80,8 +81,12 @@ class DefaultSettings(QSettings):
                 "cellHeight", "Int")
 
         self.rowLabelInterval = PreferenceSetting(self, 
-                DefaultSettings.DEFAULT_ROW_LABEL_INTERVAL,
+                DefaultSettings.DEFAULT_ROW_LABEL_MODE,
                 "rowLabelInterval", "QString")
+
+        self.rowLabelStart = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_ROW_LABEL_START,
+                "rowLabelStart", "Int")
 
         self.labelFont = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_FONT,

@@ -543,7 +543,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if (mode == "save as") or (not self._saveFilePath): 
             location = self._saveFilePath if self._saveFilePath \
                        else QDir.homePath() + "/ "
-            print(location)
             saveFilePath = QFileDialog.getSaveFileName(self,
                                            msg.saveSconchoProjectTitle,
                                            location,
@@ -735,6 +734,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.connect(self.preferencesDialog, 
                          SIGNAL("row_label_interval_changed"),
+                         self.canvas.set_up_labels)
+
+            self.connect(self.preferencesDialog, 
+                         SIGNAL("row_label_start_changed"),
                          self.canvas.set_up_labels)
 
             self.connect(self.preferencesDialog, 

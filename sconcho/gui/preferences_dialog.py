@@ -68,7 +68,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         """
 
         self.set_up_font_selectors()
-        self.set_up_row_label_interval_selector()
+        self.set_up_row_label_selectors()
         self.set_up_grid_properties()
 
 
@@ -80,7 +80,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         """
 
         self.set_up_font_selector_connections()
-        self.set_up_label_interval_selector_connections()
+        self.set_up_row_label_selector_connections()
         self.set_up_grid_properties_connections()
 
 
@@ -145,6 +145,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings.legendFont.make_settings_default()
         self.settings.labelFont.make_settings_default()
         self.settings.rowLabelInterval.make_settings_default()
+        self.settings.rowLabelStart.make_settings_default()
         self.settings.gridCellWidth.make_settings_default()
         self.settings.gridCellHeight.make_settings_default()
         self.settings.highlightOddRows.make_settings_default()
@@ -308,8 +309,11 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
 
 
-    def set_up_row_label_interval_selector(self):
-        """ Sets up the label interval selector. """
+    def set_up_row_label_selectors(self):
+        """ Sets up the label interval selectors and 
+        start of the row labels 
+
+        """
        
         intervalType = self.settings.rowLabelInterval.value
         self.labelAllRowsButton.click()
@@ -322,9 +326,13 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         elif intervalType == "SHOW_ODD_ROWS":
             self.showOddRowsButton.click()
 
+        rowLabelStart = self.settings.rowLabelStart.value
+        self.rowLabelStartSpinner.setValue(rowLabelStart)
+        self._adjust_row_label_selectors(rowLabelStart)
 
 
-    def set_up_label_interval_selector_connections(self):
+
+    def set_up_row_label_selector_connections(self):
         """ Set up connection for label interval selector. """
         
         self.connect(self.labelAllRowsButton,
@@ -352,6 +360,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      partial(self.change_row_label_interval, 
                              "SHOW_ODD_ROWS"))
 
+        self.connect(self.rowLabelStartSpinner,
+                     SIGNAL("valueChanged(int)"),
+                     self.change_row_label_start) 
+
 
 
     def change_row_label_interval(self, state, clicked):
@@ -359,6 +371,41 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         self.settings.rowLabelInterval.value = state 
         self.emit(SIGNAL("row_label_interval_changed"))
+
+
+
+    def change_row_label_start(self, start):
+        """ Sets the new label interval and lets the canvas know. 
+
+        """
+
+        self._adjust_row_label_selectors(start)
+        self.settings.rowLabelStart.value = start
+        self.emit(SIGNAL("row_label_start_changed"))
+
+
+    
+    def _adjust_row_label_selectors(self, start):
+        """ Adjust the row label property selectors. 
+
+        If row labels start at an even number, the
+        "odd row labels only" selection is invalid and has to be
+        grayed out. If it was selected we unselect it and select
+        the "even row labels only". The converse holds for an odd
+        label start.
+
+        """
+       
+        if ((start % 2) == 0): 
+           self.showOddRowsButton.setEnabled(False)
+           self.showEvenRowsButton.setEnabled(True)
+           if (self.showOddRowsButton.isChecked()):
+               self.showEvenRowsButton.click()
+        elif ((start % 2) != 0):
+           self.showOddRowsButton.setEnabled(True)
+           self.showEvenRowsButton.setEnabled(False)
+           if (self.showEvenRowsButton.isChecked()):
+               self.showOddRowsButton.click()
 
 
 
