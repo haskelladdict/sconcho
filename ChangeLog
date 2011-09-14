@@ -1,3 +1,11 @@
+09-13-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Release of 0.1.0_b2
+	* many bugfixes and streamlining of code
+	* updated documentation and manual
+	* added ability to start row labels at arbitrary count
+
+
 06-30-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Release of 0.1.0_b1
