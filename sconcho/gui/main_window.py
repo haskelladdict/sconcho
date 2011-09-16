@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 
-__version__ = "0.1.0_b2"
+__version__ = "0.1.0_b3"
 
 
 import platform, os
@@ -779,7 +779,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         sortedSymbols = symbols_by_category(self._knittingSymbols)
         symbolCategories = sortedSymbols.keys()
-        personalSymbolPath = self.settings.personal_symbol_path
+        personalSymbolPath = self.settings.personalSymbolPath.value
         manager = ManageSymbolDialog(personalSymbolPath, 
                                              symbolCategories, self)
         manager.exec_()

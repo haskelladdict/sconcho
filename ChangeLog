@@ -1,3 +1,11 @@
+09-15-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Release of 0.1.0_b3
+	* Fixed a bug that caused the custom symbol widget
+	  to not work at all. Thanks much to DeborahKnits@ravelry
+	  for pointing this out.
+
+
 09-13-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Release of 0.1.0_b2
