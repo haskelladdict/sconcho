@@ -333,10 +333,10 @@
     <string>&amp;New...</string>
    </property>
    <property name="toolTip">
-    <string>New pattern</string>
+    <string>Start New Chart</string>
    </property>
    <property name="statusTip">
-    <string>New pattern</string>
+    <string>Start New Chart</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>

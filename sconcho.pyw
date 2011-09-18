@@ -13,7 +13,7 @@ def main():
     sconcho_gui_launcher().
     """
 
-    fileName = None
+    fileName = ""
     if len(sys.argv) > 1:
         fileName = sys.argv[1]
 

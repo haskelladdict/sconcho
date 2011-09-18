@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Sep 10 17:02:02 2011
+# Created: Sun Sep 18 14:22:04 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -334,8 +334,8 @@ class Ui_MainWindow(object):
         self.actionAbout_Qt4.setText(QtGui.QApplication.translate("MainWindow", "About Qt4", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPreferences.setText(QtGui.QApplication.translate("MainWindow", "Preferences", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew.setText(QtGui.QApplication.translate("MainWindow", "&New...", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionNew.setToolTip(QtGui.QApplication.translate("MainWindow", "New pattern", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionNew.setStatusTip(QtGui.QApplication.translate("MainWindow", "New pattern", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew.setToolTip(QtGui.QApplication.translate("MainWindow", "Start New Chart", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew.setStatusTip(QtGui.QApplication.translate("MainWindow", "Start New Chart", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+N", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen.setText(QtGui.QApplication.translate("MainWindow", "&Open...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen.setToolTip(QtGui.QApplication.translate("MainWindow", "Open saved project", None, QtGui.QApplication.UnicodeUTF8))
