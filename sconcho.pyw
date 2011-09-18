@@ -17,6 +17,12 @@ def main():
     if len(sys.argv) > 1:
         fileName = sys.argv[1]
 
+    # check that file exists; this is required since Sconcho.app
+    # on OS X seems to pass some bogus string that then causes
+    # issues
+    if not os.path.isfile(fileName):
+        fileName = None
+
     try:
         from sconcho.sconcho_gui import sconcho_gui_launcher
         sconcho_gui_launcher(fileName)

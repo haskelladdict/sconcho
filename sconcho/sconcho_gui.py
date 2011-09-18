@@ -63,6 +63,8 @@ def sconcho_gui_launcher(fileName = None):
     app.setApplicationName(APPLICATION)
     window = MainWindow(currPath, defaultSettings, knittingSymbols, fileName)
     window.show()
+    if sys.platform == "darwin":
+        window.raise_()
     app.exec_()
 
 
