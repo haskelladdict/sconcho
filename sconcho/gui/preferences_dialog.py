@@ -381,7 +381,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         self._adjust_row_label_selectors(start)
         self.settings.rowLabelStart.value = start
-        self.emit(SIGNAL("row_label_start_changed"))
+        self.emit(SIGNAL("row_label_start_changed"), start)
 
 
     

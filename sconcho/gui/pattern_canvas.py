@@ -76,6 +76,7 @@ class PatternCanvas(QGraphicsScene):
         self._unitCellDim = QSizeF(self.settings.gridCellWidth.value,
                                    self.settings.gridCellHeight.value)
         self._numRows = 10
+        self._rowLabelOffset = self.settings.rowLabelStart.value
         self._numColumns = 10
 
         self._copySelection = {}
@@ -106,8 +107,8 @@ class PatternCanvas(QGraphicsScene):
 
 
     def set_up_highlightOddRows(self):
-        """ If the user has selected to hightlight all even
-        rows in the pattern - this member does it.
+        """ If the user has selected to highlight all even
+        rows in the pattern - this function does it.
 
         """
 
@@ -775,9 +776,21 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def adjust_manage_grid_dialog_after_row_label_offset(self, offset):
+        """ Change limits in add/delete dialog after row label offset 
+        change.
+
+        """
+
+        self._rowLabelOffset = offset
+        if self.insertDeleteRowColDialog:
+            self.insertDeleteRowColDialog.set_row_limit(\
+                self._rowLabelOffset, self._numRows)
+
+
     def insert_delete_rows_columns(self, col, row):
-        """ This method manages the addition and deletion of rows and columns
-        via a widget.
+        """ This method manages the addition and deletion of rows and 
+        columns via a widget.
 
         NOTE: Make sure the signals are only connected *once* inside the
         if. Otherwise weird things are bound to happen (like multiple
@@ -787,8 +800,8 @@ class PatternCanvas(QGraphicsScene):
 
         if not self.insertDeleteRowColDialog:
             self.insertDeleteRowColDialog = \
-                ManageGridDialog(self._numRows, self._numColumns,
-                                 row, col, self.parent())
+                ManageGridDialog(self._rowLabelOffset, self._numRows, 
+                                 self._numColumns, row, col, self.parent())
             self.connect(self.insertDeleteRowColDialog, 
                          SIGNAL("insert_rows"), 
                          self.insert_grid_rows)
@@ -1126,7 +1139,7 @@ class PatternCanvas(QGraphicsScene):
                 return
 
         else:
-            if (pivot + num) > self._numRows:
+            if ((pivot + num) > self._numRows) or (num >= self._numRows):
                 QMessageBox.warning(None, msg.canNotDeleteRowBelowTitle,
                                     msg.canNotDeleteRowBelowText,
                                     QMessageBox.Close)
@@ -1207,7 +1220,7 @@ class PatternCanvas(QGraphicsScene):
                 return
 
         else:
-            if (pivot + num) > self._numColumns:
+            if ((pivot + num) > self._numColumns) or (num >= self._numColumns):
                 QMessageBox.warning(None, msg.canNotDeleteColumnRightOfTitle,
                                     msg.canNotDeleteColumnRightOfText,
                                     QMessageBox.Close)
@@ -1260,7 +1273,7 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        return self._numRows - row
+        return (self._numRows + self._rowLabelOffset - row - 1)
 
 
 
@@ -2696,6 +2709,7 @@ class InsertRow(QUndoCommand):
         self.canvas = canvas
         self.rowShift = rowShift
         self.numRows = canvas._numRows
+        self.rowLabelOffset = canvas._rowLabelOffset
         self.numColumns = canvas._numColumns
         self.unitHeight = self.canvas._unitCellDim.height()
         self.unitWidth = self.canvas._unitCellDim.width()
@@ -2801,8 +2815,11 @@ class InsertRow(QUndoCommand):
         self.canvas.finalize_grid_change()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
-        self.canvas.insertDeleteRowColDialog.set_upper_row_limit( \
-                self.canvas._numRows)
+
+        # NOTE: We need to propagate the canvas' values for
+        # numRows, rowLabelOffset
+        self.canvas.insertDeleteRowColDialog.set_row_limit( \
+                self.canvas._rowLabelOffset, self.canvas._numRows)
 
 
 
@@ -3003,10 +3020,11 @@ class DeleteRow(QUndoCommand):
         self.canvas.finalize_grid_change()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
-        self.canvas.insertDeleteRowColDialog.set_upper_row_limit( \
-                self.canvas._numRows)
 
-
+        # NOTE: We need to propagate the canvas' values for
+        # numRows, rowLabelOffset
+        self.canvas.insertDeleteRowColDialog.set_row_limit( \
+                self.canvas._rowLabelOffset, self.canvas._numRows)
 
 
 

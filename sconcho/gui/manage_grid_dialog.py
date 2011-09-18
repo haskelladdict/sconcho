@@ -39,14 +39,15 @@ import sconcho.util.messages as msg
 class ManageGridDialog(QDialog, Ui_ManageGridDialog):
 
 
-    def __init__(self, numRows, numCols, row, col, parent = None):
+    def __init__(self, rowOffset, numRows, numCols, row, col, 
+                 parent = None):
         """ Initialize this dialog. """
 
         super(ManageGridDialog, self).__init__(parent)
         self.setupUi(self)
 
         # set the maximum of the spinbox
-        self.set_upper_row_limit(numRows)
+        self.set_row_limit(rowOffset, numRows)
         self.set_upper_column_limit(numCols)
 
         # set the current values for row/column to be changed
@@ -75,9 +76,6 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
         pivot = self.insertRowPivot.value()
         insertMode = self.insertRowMode.currentText()
 
-        if pivot <= 0:
-            return
-
         self.emit(SIGNAL("insert_rows"), rowAdd, insertMode, pivot)
 
         
@@ -89,10 +87,8 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
         pivot = self.deleteRowPivot.value()
         deleteMode = self.deleteRowMode.currentText()
 
-        if pivot <= 0:
-            return
-
-        self.emit(SIGNAL("delete_rows"), numRowsToDelete, deleteMode, pivot)
+        self.emit(SIGNAL("delete_rows"), numRowsToDelete, deleteMode, 
+                  pivot)
 
 
 
@@ -103,10 +99,8 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
         pivot = self.insertColumnPivot.value()
         insertMode = self.insertColumnMode.currentText()
 
-        if pivot <= 0:
-            return
-
-        self.emit(SIGNAL("insert_columns"), numColumnsToAdd, insertMode, pivot)
+        self.emit(SIGNAL("insert_columns"), numColumnsToAdd, 
+                  insertMode, pivot)
 
 
 
@@ -117,25 +111,24 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
         pivot = self.deleteColumnPivot.value()
         deleteMode = self.deleteColumnMode.currentText()
 
-        if pivot <= 0:
-            return
-
-        self.emit(SIGNAL("delete_columns"), numColumnsToDelete, deleteMode, pivot)
+        self.emit(SIGNAL("delete_columns"), numColumnsToDelete, 
+                  deleteMode, pivot)
 
 
 
-    def set_upper_row_limit(self, numRows):
+    def set_row_limit(self, rowOffset, numRows):
         """ Sets the upper limit of the row selectors based
         on the number of available rows.
         
         """
 
-        self.insertRowPivot.setMinimum(1)
-        self.insertRowPivot.setMaximum(numRows)
+        self.insertRowPivot.setMinimum(rowOffset)
+        self.insertRowPivot.setMaximum(rowOffset + numRows - 1)
 
-        self.deleteRowPivot.setMinimum(1)
-        self.deleteRowPivot.setMaximum(numRows)
+        self.deleteRowPivot.setMinimum(rowOffset)
+        self.deleteRowPivot.setMaximum(rowOffset + numRows - 1)
         self._numRows = numRows
+        self._rowLabelOffset = rowOffset
         
 
 
@@ -163,8 +156,10 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
         
         """
 
-        self.insertRowPivot.setValue(self._numRows - row)
-        self.deleteRowPivot.setValue(self._numRows - row)
+        self.insertRowPivot.setValue(self._numRows + self._rowLabelOffset
+                                     - row - 1)
+        self.deleteRowPivot.setValue(self._numRows + self._rowLabelOffset
+                                     - row - 1)
         self.insertColumnPivot.setValue(self._numColumns - col)
         self.deleteColumnPivot.setValue(self._numColumns - col)
 

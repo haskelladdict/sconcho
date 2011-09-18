@@ -743,6 +743,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          self.canvas.set_up_labels)
 
             self.connect(self.preferencesDialog, 
+                         SIGNAL("row_label_start_changed"),
+                         self.canvas.adjust_manage_grid_dialog_after_row_label_offset)
+
+            self.connect(self.preferencesDialog, 
                          SIGNAL("label_interval_changed"),
                          self.set_project_dirty)
 
