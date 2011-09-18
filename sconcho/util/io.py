@@ -292,14 +292,17 @@ def read_project(settings, openFileName):
     try:
         handle = QFile(openFileName)
         if not handle.open(QIODevice.ReadOnly):
-            raise IOError, unicode(handle.errorString())
+            return (False, unicode(handle.errorString()), None, 
+                    None, None, None, None)
 
         stream = QDataStream(handle)
 
         # check header
         magic = stream.readInt32()
         if magic != MAGIC_NUMBER:
-            raise IOError, "unrecogized file Type"
+            errorString = ("Unrecognized file type - \n{0}\nis not "
+                           "a sconcho spf file!").format(openFileName)
+            return (False, errorString, None, None, None, None, None)
 
         version = stream.readInt32()
         stream.setVersion(QDataStream.Qt_4_5)
@@ -338,10 +341,10 @@ def read_project(settings, openFileName):
         if handle is not None:
             handle.close()
         if status is not None:
-            return (False, status, None, None, None, None)
+            return (False, status, None, None, None, None, None)
 
-    return (True, None, patternGridItems, legendItems, colors, activeSymbol,
-            patternRepeats)
+    return (True, None, patternGridItems, legendItems, colors, 
+            activeSymbol, patternRepeats)
 
 
 

@@ -658,10 +658,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         """
 
+
         (status, errMsg, patternGridItems, legendItems, colors,
          activeItem, patternRepeats) = io.read_project(self.settings,
                                                        readFilePath)
-           
+        
         if not status:
             QMessageBox.critical(self, msg.errorOpeningProjectTitle,
                                  errMsg, QMessageBox.Close)
@@ -676,7 +677,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         set_up_colors(self.colorWidget, colors)
         self.recentlyUsedSymbolWidget.clear()
-        self.select_symbolSelectorItem(self.symbolSelectorWidgets, activeItem)
+        self.select_symbolSelectorItem(self.symbolSelectorWidgets, 
+                                       activeItem)
 
         # provide feedback in statusbar
         readFileName = QFileInfo(readFilePath).fileName()
