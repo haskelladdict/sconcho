@@ -49,6 +49,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         super(ExportBitmapDialog, self).__init__(parent)
         self.setupUi(self)
         self.determine_image_formats()
+        self.add_image_formats_to_gui()
 
         self.hideNostitchSymbols = False
         self.width = math.floor(size.width())
@@ -103,6 +104,14 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
         # we support svg format as well
         self.formats.append("*.svg")
+
+
+
+    def add_image_formats_to_gui(self):
+        """ This function lists all available formats on the gui """
+
+        self.availableFormatsLabel.setText("available formats: " +
+                                           "; ".join(self.formats))
 
 
 
