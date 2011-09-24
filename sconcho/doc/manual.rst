@@ -150,14 +150,14 @@ and the text can be moved separately anywhere on the canvas and the
 default description for a symbol can be changed.
 
 To move a legend symbol or text item hold down the **Control Key**
-(the **Command Key** on Mac OSX) and **Right Mouse Click** on the
+(the **Command Key** on Mac OSX) and **Left Mouse Click** on the
 desired item. The cursor should change to a cross shape and
 the item can now be moved. 
 
 **Note**: To move a text item click on the perimeter not the center
 of the item.
 
-To change the text of a legend item **Right Mouse Click** on its 
+To change the text of a legend item **Left Mouse Click** on its 
 center and start editing.
 
 If no legend is desired at all it can be turned off via un-checking
@@ -176,7 +176,7 @@ over the pattern repeat box, right click and select **Edit Pattern Repeat**
 to make visible a dialog for changing the box's properties.
 
 To move a pattern repeat box hold down the **Control Key**
-(the **Command Key** on Mac OSX) and **Right Mouse Click** on the
+(the **Command Key** on Mac OSX) and **Left Mouse Click** on the
 desired item. The cursor should change to a cross shape and the
 repeat box can now be moved.
 
