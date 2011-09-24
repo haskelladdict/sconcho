@@ -1788,7 +1788,8 @@ class PatternLegendItem(QGraphicsSvgItem):
         """
         
         QApplication.restoreOverrideCursor()
-        
+
+        # this is needed for redo/undo
         if self._position != self.pos():
            self.scene().canvas_item_position_changed(self, self._position,
                                                      self.pos())
@@ -1872,7 +1873,7 @@ class PatternLegendText(QGraphicsTextItem):
 
         self.setZValue(1)
         self.setFlag(QGraphicsItem.ItemIsMovable)
-        self.setTextInteractionFlags(Qt.TextEditorInteraction);
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
 
         self._position = self.pos()
 
@@ -1888,6 +1889,7 @@ class PatternLegendText(QGraphicsTextItem):
 
         if (event.modifiers() & Qt.ControlModifier):
             QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
+            self.setTextInteractionFlags(Qt.NoTextInteraction)
         else:
             event.ignore()
 
@@ -1903,8 +1905,10 @@ class PatternLegendText(QGraphicsTextItem):
 
         """
 
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
         QApplication.restoreOverrideCursor()
 
+        # this is needed for undo/redo
         if self._position != self.pos():
            self.scene().canvas_item_position_changed(self, self._position,
                                                      self.pos()) 
