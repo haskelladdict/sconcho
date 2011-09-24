@@ -83,7 +83,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._topLevelPath = topLevelPath
         self._knittingSymbols = knittingSymbols
         self.canvas = PatternCanvas(self.settings, 
-                                    knittingSymbols[QString("knit")])
+                                    knittingSymbols[QString("knit")], self)
         self.initialize_symbol_widget(knittingSymbols)
         self.initialize_color_widget()
         self.initialize_row_col_widget()
