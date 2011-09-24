@@ -570,9 +570,9 @@ class PatternCanvas(QGraphicsScene):
             columnString = "NA"
         self.emit(SIGNAL("col_count_changed"), columnString)
 
-           
+        rowLabelOffset = self.settings.rowLabelStart.value - 1
         if row >= 0 and row <= self._numRows:
-            rowString = unicode(self._numRows - row)
+            rowString = unicode(self._numRows - row + rowLabelOffset)
         else:
             rowString = "NA"
         self.emit(SIGNAL("row_count_changed"), rowString)
