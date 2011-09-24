@@ -1604,8 +1604,8 @@ class PatternGridItem(QGraphicsSvgItem):
 
         self._selected = False
         self.color = defaultColor
-        self._backColor = self.color
-        self._highlightedColor = QColor(Qt.gray)
+        self._backBrush = QBrush(self.color)
+        self._highlightBrush = QBrush(QColor(Qt.darkGray), Qt.Dense2Pattern)
 
         self.symbol = None
         self._set_symbol(defaultSymbol)
@@ -1644,7 +1644,7 @@ class PatternGridItem(QGraphicsSvgItem):
         """ This slot changes the color of the items. """
 
         self.color = newColor
-        self._backColor = self.color
+        self._backBrush = QBrush(self.color)
         self.update()
 
         
@@ -1661,7 +1661,7 @@ class PatternGridItem(QGraphicsSvgItem):
         """ Unselects a given selected cell. """
 
         self._selected = False
-        self._backColor = self.color
+        self._backBrush = QBrush(self.color)
         self.update()
 
 
@@ -1670,7 +1670,7 @@ class PatternGridItem(QGraphicsSvgItem):
         """ Selects a given unselected cell. """
 
         self._selected = True
-        self._backColor = self._highlightedColor
+        self._backBrush = self._highlightBrush
         self.update()
 
 
@@ -1689,6 +1689,7 @@ class PatternGridItem(QGraphicsSvgItem):
         # apply color if present
         if "backgroundColor" in newSymbol:
             self._backColor = QColor(newSymbol["backgroundColor"])
+            self._backBrush = QBrush(QColor(newSymbol["backgroundColor"]))
 
         self.update()
 
@@ -1707,8 +1708,7 @@ class PatternGridItem(QGraphicsSvgItem):
         """ Paint ourselves. """
 
         painter.setPen(self._pen)
-        brush = QBrush(self._backColor)
-        painter.setBrush(brush)
+        painter.setBrush(self._backBrush)
         halfPen = self._penSize * 0.5
         scaledRect = QRectF(self.origin, self.size).adjusted(halfPen, halfPen, 
                                                              halfPen, halfPen)
