@@ -57,7 +57,7 @@ class DefaultSettings(QSettings):
     DEFAULT_ROW_LABEL_START = "1"
     DEFAULT_HIGHLIGHT_ODD_ROWS = "2"     # 2 corresponds to selected
     DEFAULT_HIGHLIGHT_ODD_ROWS_COLOR = "gray"
-    DEFAULT_HIGHLIGHT_ODD_ROWS_OPACITY = "20"
+    DEFAULT_HIGHLIGHT_ODD_ROWS_OPACITY = "10"
     DEFAULT_PERSONAL_SYMBOL_PATH = QDir.convertSeparators(
             QDir.homePath() + "/sconcho_symbols")
 
