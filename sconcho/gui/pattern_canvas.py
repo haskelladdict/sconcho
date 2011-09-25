@@ -2111,7 +2111,7 @@ class PatternHighlightItem(QGraphicsRectItem):
         self.setPen(self._pen)
 
         color.setAlphaF(alpha)
-        self._brush = QBrush(color, Qt.Dense4Pattern)
+        self._brush = QBrush(color) 
         self.setBrush(self._brush)
 
 
