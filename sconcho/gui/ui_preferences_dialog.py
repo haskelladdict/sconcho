@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Sun Sep 25 12:19:06 2011
+# Created: Sun Sep 25 14:29:42 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -202,7 +202,7 @@ class Ui_PreferencesDialog(object):
         self.gridLayout_4 = QtGui.QGridLayout()
         self.gridLayout_4.setObjectName(_fromUtf8("gridLayout_4"))
         self.oddRowHighlightCheck = QtGui.QCheckBox(self.tab_2)
-        self.oddRowHighlightCheck.setText(QtGui.QApplication.translate("PreferencesDialog", "Highlight Odd Rows", None, QtGui.QApplication.UnicodeUTF8))
+        self.oddRowHighlightCheck.setText(QtGui.QApplication.translate("PreferencesDialog", "Highlight Every Other Row", None, QtGui.QApplication.UnicodeUTF8))
         self.oddRowHighlightCheck.setObjectName(_fromUtf8("oddRowHighlightCheck"))
         self.gridLayout_4.addWidget(self.oddRowHighlightCheck, 0, 0, 1, 1)
         self.oddRowHighlightColorButton = QtGui.QPushButton(self.tab_2)

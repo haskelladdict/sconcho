@@ -353,7 +353,7 @@
          <item row="0" column="0">
           <widget class="QCheckBox" name="oddRowHighlightCheck">
            <property name="text">
-            <string>Highlight Odd Rows</string>
+            <string>Highlight Every Other Row</string>
            </property>
           </widget>
          </item>

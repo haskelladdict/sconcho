@@ -1,3 +1,11 @@
+??????2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Added ability to place even row labels on the left or 
+	  right of pattern grid. Thanks much to SoCaAnne@ravelry
+	  for suggesting this feature.
+	* Many bugfixes and improvements.
+
+
 09-15-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Release of 0.1.0_b3
