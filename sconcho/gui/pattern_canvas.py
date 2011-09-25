@@ -93,7 +93,6 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_main_grid()
         self.set_up_labels()
 
-        self._highlightedRows = []
         self.set_up_highlightOddRows()
 
 
@@ -110,38 +109,37 @@ class PatternCanvas(QGraphicsScene):
         """ If the user has selected to highlight all even
         rows in the pattern - this function does it.
 
-        """
+        NOTE: Right now this function is not super efficient.
+        In particular, we deleted and re-create all PatternHighlightItems
+        for every change, even just changing the color. On the other
+        hand, the user hopefully won't do these changes very often.
 
-        # NOTE: We are a bit inefficient here. Instead of adjusting
-        # the geometry we just remove all boxes and then redraw
-        # them with the appropriate geometry. 
-        for item in self._highlightedRows:
-            self.removeItem(item)
-            del item
-        self._highlightedRows = []
-    
-        offset = 0
-        if self._numRows % 2 == 0:
-            offset = 1
+        """
 
         visibility = self.settings.highlightOddRows.value
         color = self.settings.highlightOddRowsColor.value
         opacity = self.settings.highlightOddRowsOpacity.value/100.0
 
-        for row in range(0+offset, self._numRows, 2):
-            origin_x = 0
-            origin_y = row * self._unitCellDim.height()
-            height = self._unitCellDim.height()
-            width = self._numColumns * self._unitCellDim.width()
+        for graphicsItem in self.items():
+            if isinstance(graphicsItem, PatternHighlightItem):
+                self.removeItem(graphicsItem)
+                del graphicsItem
 
-            element = PatternHighlightItem(origin_x, origin_y,
-                                           width, height, 
-                                           QColor(color), opacity)
-            element.setZValue(1)
-            if visibility == 0:
-                element.hide()
-            self.addItem(element)
-            self._highlightedRows.append(element)
+        for graphicsItem in self.items():
+            if isinstance(graphicsItem, PatternGridItem) and \
+               (graphicsItem.name != "nostitch") and \
+               (graphicsItem.row % 2 != 0):
+                    
+                origin_x = graphicsItem.column * self._unitCellDim.width()
+                origin_y = graphicsItem.row * self._unitCellDim.height()
+                width = graphicsItem.width * self._unitCellDim.width()
+                height = self._unitCellDim.height()
+                element = PatternHighlightItem(origin_x, origin_y, width, 
+                                               height, QColor(color), opacity)
+                element.setZValue(1)
+                if visibility == 0:
+                    element.hide()
+                self.addItem(element)
 
 
 
@@ -321,12 +319,12 @@ class PatternCanvas(QGraphicsScene):
         """
 
         status = self.settings.highlightOddRows.value;
-        if status == 0:
-            for item in self._highlightedRows:
-                item.hide()
-        else:
-            for item in self._highlightedRows:
-                item.show()
+        for graphicsItem in self.items():
+            if isinstance(graphicsItem, PatternHighlightItem):
+                if status == 0:
+                    graphicsItem.hide()
+                else:
+                    graphicsItem.show()
 
 
 
@@ -443,6 +441,10 @@ class PatternCanvas(QGraphicsScene):
         completely.
 
         """
+        
+        # make sure to redraw the highlighted areas so highlighting
+        # underneath nostitch symbols is disabled
+        self.set_up_highlightOddRows()
 
         nostitchItem = None
         for item in self.items():
@@ -1364,7 +1366,6 @@ class PatternCanvas(QGraphicsScene):
         
         self._clear_canvas()
         self._textLabels = []
-        self._highlightedRows = []
         self.set_up_main_grid()
         self.finalize_grid_change()
 
@@ -1412,7 +1413,6 @@ class PatternCanvas(QGraphicsScene):
 
         # need to clear our caches, otherwise we'll try 
         # to remove non-existing items
-        self._highlightedRows = []
         self._textLabels = []
         self.finalize_grid_change()
         self.change_grid_cell_dimensions()
@@ -2118,7 +2118,7 @@ class PatternHighlightItem(QGraphicsRectItem):
 
         # we don't want to show the outline so draw it
         # in white
-        self._pen = QPen(QColor("black"), 0.5)
+        self._pen = QPen(QColor("black"), 0.1)
         self.setPen(self._pen)
 
         color.setAlphaF(alpha)
