@@ -186,13 +186,24 @@ class PatternCanvas(QGraphicsScene):
         fm = QFontMetrics(labelFont)
         unitWidth = self._unitCellDim.width()
         
-        # row labels
-        xPos = unitWidth * self._numColumns
+        # row labels (figure out if even row labels should be on left/right
+        evenRowLabelLocation = self.settings.evenRowLabelLocation.value
+        oddXPos = unitWidth * self._numColumns
+        if evenRowLabelLocation == "LEFT_OF":
+            evenXPos = -unitWidth
+        else:
+            evenXPos = oddXPos
+
         for row in range(labelStart, -1, -interval):
-            item = PatternLabelItem(unicode(counter_func(row)))
+            rowValue = counter_func(row)
+            item = PatternLabelItem(unicode(rowValue))
 
             yPos = self._unitCellDim.height() * row
-            item.setPos(xPos, yPos)
+            if rowValue % 2 == 0:
+                item.setPos(evenXPos, yPos)
+            else:
+                item.setPos(oddXPos, yPos)
+
             item.setFont(labelFont)
             item.setToolTip("Shift-Click to select whole row")
             self.addItem(item)

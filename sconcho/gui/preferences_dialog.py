@@ -146,6 +146,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings.labelFont.make_settings_default()
         self.settings.rowLabelInterval.make_settings_default()
         self.settings.rowLabelStart.make_settings_default()
+        self.settings.evenRowLabelLocation.make_settings_default()
         self.settings.gridCellWidth.make_settings_default()
         self.settings.gridCellHeight.make_settings_default()
         self.settings.highlightOddRows.make_settings_default()
@@ -330,6 +331,12 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.rowLabelStartSpinner.setValue(rowLabelStart)
         self._adjust_row_label_selectors(rowLabelStart)
 
+        evenRowLabelLocation = self.settings.evenRowLabelLocation.value
+        if evenRowLabelLocation == "RIGHT_OF":
+            self.evenRowLabelLocationComboBox.setCurrentIndex(0)
+        else:
+            self.evenRowLabelLocationComboBox.setCurrentIndex(1)
+    
 
 
     def set_up_row_label_selector_connections(self):
@@ -364,6 +371,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      SIGNAL("valueChanged(int)"),
                      self.change_row_label_start) 
 
+        self.connect(self.evenRowLabelLocationComboBox,
+                     SIGNAL("currentIndexChanged(int)"),
+                     self.change_even_row_label_location) 
+
 
 
     def change_row_label_interval(self, state, clicked):
@@ -375,9 +386,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
 
     def change_row_label_start(self, start):
-        """ Sets the new label interval and lets the canvas know. 
-
-        """
+        """ Sets the new label interval and lets the canvas know. """
 
         self._adjust_row_label_selectors(start)
         self.settings.rowLabelStart.value = start
@@ -406,6 +415,18 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
            self.showEvenRowsButton.setEnabled(False)
            if (self.showEvenRowsButton.isChecked()):
                self.showOddRowsButton.click()
+
+
+    
+    def change_even_row_label_location(self, value):
+        """ Sets the location of the even row labels. """
+
+        locationString = "RIGHT_OF"
+        if value != 0:
+            locationString = "LEFT_OF"
+
+        self.settings.evenRowLabelLocation.value = locationString
+        self.emit(SIGNAL("even_row_label_location_changed"), locationString)
 
 
 

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Sat Sep 24 13:25:43 2011
+# Created: Sun Sep 25 12:19:06 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -156,6 +156,17 @@ class Ui_PreferencesDialog(object):
         self.gridLayout_6.addWidget(self.rowLabelStartSpinner, 3, 2, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout_6.addItem(spacerItem1, 3, 1, 1, 1)
+        self.label_9 = QtGui.QLabel(self.groupBox_3)
+        self.label_9.setText(QtGui.QApplication.translate("PreferencesDialog", "even row label location", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_9.setObjectName(_fromUtf8("label_9"))
+        self.gridLayout_6.addWidget(self.label_9, 6, 2, 1, 1)
+        self.evenRowLabelLocationComboBox = QtGui.QComboBox(self.groupBox_3)
+        self.evenRowLabelLocationComboBox.setObjectName(_fromUtf8("evenRowLabelLocationComboBox"))
+        self.evenRowLabelLocationComboBox.addItem(_fromUtf8(""))
+        self.evenRowLabelLocationComboBox.setItemText(0, QtGui.QApplication.translate("PreferencesDialog", "right of pattern", None, QtGui.QApplication.UnicodeUTF8))
+        self.evenRowLabelLocationComboBox.addItem(_fromUtf8(""))
+        self.evenRowLabelLocationComboBox.setItemText(1, QtGui.QApplication.translate("PreferencesDialog", "left of pattern", None, QtGui.QApplication.UnicodeUTF8))
+        self.gridLayout_6.addWidget(self.evenRowLabelLocationComboBox, 7, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_6)
         self.verticalLayout_7.addWidget(self.groupBox_3)
         self.tabWidget.addTab(self.labelTab, _fromUtf8(""))

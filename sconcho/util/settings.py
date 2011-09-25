@@ -55,6 +55,7 @@ class DefaultSettings(QSettings):
     # SHOW_ODD_ROWS, SHOW_EVEN_ROWS
     DEFAULT_ROW_LABEL_MODE = "LABEL_ALL_ROWS"
     DEFAULT_ROW_LABEL_START = "1"
+    DEFAULT_EVEN_ROW_LABEL_LOCATION = "RIGHT_OF"
     DEFAULT_HIGHLIGHT_ODD_ROWS = "2"     # 2 corresponds to selected
     DEFAULT_HIGHLIGHT_ODD_ROWS_COLOR = "gray"
     DEFAULT_HIGHLIGHT_ODD_ROWS_OPACITY = "10"
@@ -87,6 +88,10 @@ class DefaultSettings(QSettings):
         self.rowLabelStart = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_ROW_LABEL_START,
                 "rowLabelStart", "Int")
+
+        self.evenRowLabelLocation = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_EVEN_ROW_LABEL_LOCATION,
+                "evenRowLabelLocation", "QString")
 
         self.labelFont = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_FONT,

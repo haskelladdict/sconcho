@@ -233,6 +233,10 @@ def write_settings(stream, settings):
 
     stream.writeInt32(settings.rowLabelStart.value)
 
+    evenRowLabelLocation = \
+        get_even_row_label_location(settings.evenRowLabelLocation.value)
+    stream.writeInt32(evenRowLabelLocation)
+
 
 
 def get_patternRepeats(canvas):
@@ -487,11 +491,17 @@ def read_settings(stream, settings, version):
         settings.gridCellHeight.value = gridCellHeight
 
     # new stuff in API_VERSION 2 and onward
+    # NOTE: To accomodate additional data written to spf files within the
+    # same API we rely on stream.readInt32 and friends to return 0 on EOF
     if version > 1:
         labelStart = stream.readInt32()
-
         if labelStart:
             settings.rowLabelStart.value = labelStart
+
+        evenRowLabelLocation = stream.readInt32()
+        if evenRowLabelLocation:
+            settings.evenRowLabelLocation.value = \
+                get_even_row_label_location_string(evenRowLabelLocation)
 
 
 
@@ -678,3 +688,27 @@ def get_row_label_interval(labelType):
 
 
 
+def get_even_row_label_location(evenRowLabelLocation):
+    """ Turn string with even row label location into integer identifier """
+
+    locationState = 10
+    if evenRowLabelLocation == "LEFT_OF":
+        locationState = 11
+
+    return locationState
+        
+
+
+
+def get_even_row_label_location_string(state):
+    """ Turn an even row label identifier into the corresponding string.
+
+    This function is the inverse of get_even_row_label_location.
+
+    """
+
+    locationString = "RIGHT_OF"
+    if state == 11:
+        locationString = "LEFT_OF"
+
+    return locationString

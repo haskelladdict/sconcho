@@ -251,6 +251,27 @@
               </property>
              </spacer>
             </item>
+            <item row="6" column="2">
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>even row label location</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="2">
+             <widget class="QComboBox" name="evenRowLabelLocationComboBox">
+              <item>
+               <property name="text">
+                <string>right of pattern</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>left of pattern</string>
+               </property>
+              </item>
+             </widget>
+            </item>
            </layout>
           </item>
          </layout>
