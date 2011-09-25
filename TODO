@@ -1,2 +1,2 @@
-- add ability for different colors of odd/even number rows.
-- add (per sessions) most frequently used symbol.
+- provide recently opened files
+- remember the most recently used filename in export bitmap dialog
