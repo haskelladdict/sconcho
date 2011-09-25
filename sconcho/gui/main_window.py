@@ -739,7 +739,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          self.canvas.set_up_labels)
 
             self.connect(self.preferencesDialog, 
-                         SIGNAL("label_interval_changed"),
+                         SIGNAL("row_label_interval_changed"),
                          self.set_project_dirty)
 
             self.connect(self.preferencesDialog, 
