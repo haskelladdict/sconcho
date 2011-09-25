@@ -56,9 +56,10 @@ class DefaultSettings(QSettings):
     DEFAULT_ROW_LABEL_MODE = "LABEL_ALL_ROWS"
     DEFAULT_ROW_LABEL_START = "1"
     DEFAULT_EVEN_ROW_LABEL_LOCATION = "RIGHT_OF"
-    DEFAULT_HIGHLIGHT_ODD_ROWS = "2"     # 2 corresponds to selected
-    DEFAULT_HIGHLIGHT_ODD_ROWS_COLOR = "gray"
-    DEFAULT_HIGHLIGHT_ODD_ROWS_OPACITY = "10"
+    DEFAULT_HIGHLIGHT_ROWS = "1"     # 1 corresponds to selected
+    DEFAULT_HIGHLIGHT_ROWS_COLOR = "gray"
+    DEFAULT_HIGHLIGHT_ROWS_OPACITY = "10"
+    DEFAULT_HIGHLIGHT_ROWS_START = "0" # 0 corresponds to bottom row
     DEFAULT_PERSONAL_SYMBOL_PATH = QDir.convertSeparators(
             QDir.homePath() + "/sconcho_symbols")
 
@@ -105,18 +106,21 @@ class DefaultSettings(QSettings):
                 DefaultSettings.DEFAULT_PERSONAL_SYMBOL_PATH,
                 "personalSymbolPath", "QString")
 
-        self.highlightOddRows = PreferenceSetting(self, 
-                DefaultSettings.DEFAULT_HIGHLIGHT_ODD_ROWS,
-                "highlightOddRows", "Int")
+        self.highlightRows = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_HIGHLIGHT_ROWS,
+                "highlightRows", "Int")
 
-        self.highlightOddRowsColor = PreferenceSetting(self, 
-                DefaultSettings.DEFAULT_HIGHLIGHT_ODD_ROWS_COLOR,
-                "highlightOddRowsColor", "QString")
+        self.highlightRowsColor = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_HIGHLIGHT_ROWS_COLOR,
+                "highlightRowsColor", "QString")
 
-        self.highlightOddRowsOpacity = PreferenceSetting(self, 
-                DefaultSettings.DEFAULT_HIGHLIGHT_ODD_ROWS_OPACITY,
-                "highlightOddRowsOpacity", "Int")
+        self.highlightRowsOpacity = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_HIGHLIGHT_ROWS_OPACITY,
+                "highlightRowsOpacity", "Int")
 
+        self.highlightRowsStart = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_HIGHLIGHT_ROWS_START,
+                "highlightRowsStart", "Int")
 
     @property
     def main_window_size(self):

@@ -149,9 +149,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings.evenRowLabelLocation.make_settings_default()
         self.settings.gridCellWidth.make_settings_default()
         self.settings.gridCellHeight.make_settings_default()
-        self.settings.highlightOddRows.make_settings_default()
-        self.settings.highlightOddRowsColor.make_settings_default()
-        self.settings.highlightOddRowsOpacity.make_settings_default()
+        self.settings.highlightRows.make_settings_default()
+        self.settings.highlightRowsColor.make_settings_default()
+        self.settings.highlightRowsOpacity.make_settings_default()
+        self.settings.highlightRowsStart.make_settings_default()
         self.settings.personalSymbolPath.make_settings_default()
 
 
@@ -479,29 +480,34 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.gridCellHeightSpinner.setValue(self.settings.gridCellHeight.value)
 
         # set up highlight checkbox
-        checkState = self.settings.highlightOddRows.value
-        self.oddRowHighlightCheck.setCheckState(checkState)
+        checkState = (False if self.settings.highlightRows.value == 0 \
+            else True)
+        self.rowHighlightChecker.setChecked(checkState)
+
+        # set up highlight start row
+        rowStart = self.settings.highlightRowsStart.value
+        self.highlightRowStartComboBox.setCurrentIndex(rowStart)
 
         # set up opacity
-        opacity = self.settings.highlightOddRowsOpacity.value
-        self.oddRowHighlightOpacitySpinner.setValue(opacity)
+        opacity = self.settings.highlightRowsOpacity.value
+        self.highlightRowOpacitySpinner.setValue(opacity)
 
         self._update_highlight_button_color()
 
 
 
-    def change_odd_row_highlight_color(self):
+    def change_row_highlight_color(self):
         """ Fire up a QColorDialog to change the color for
         hightlighting odd rows.
 
         """
         
-        color = self.settings.highlightOddRowsColor.value
+        color = self.settings.highlightRowsColor.value
         newColor = QColorDialog.getColor(QColor(color), None,
-                              "Select Highlight Color for Odd Rows")
-        self.settings.highlightOddRowsColor.value = newColor.name()
+                              "Select color for row highlighting")
+        self.settings.highlightRowsColor.value = newColor.name()
         self._update_highlight_button_color()
-        self.emit(SIGNAL("redraw_highlight_odd_rows"))
+        self.emit(SIGNAL("redraw_highlighted_rows"))
 
 
     def _update_highlight_button_color(self):
@@ -510,20 +516,43 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         """
 
-        color = self.settings.highlightOddRowsColor.value
+        color = self.settings.highlightRowsColor.value
         styleSheet = "background-color: " + color + ";"
-        self.oddRowHighlightColorButton.setStyleSheet(styleSheet)
+        self.highlightRowColorButton.setStyleSheet(styleSheet)
 
 
 
-    def change_odd_row_highlight_opacity(self, newValue):
+    def change_row_highlight_opacity(self, newValue):
         """ Store new opacity setting request redrawing of
         chart.
 
         """
         
-        self.settings.highlightOddRowsOpacity.value = newValue
-        self.emit(SIGNAL("redraw_highlight_odd_rows"))
+        self.settings.highlightRowsOpacity.value = newValue
+        self.emit(SIGNAL("redraw_highlighted_rows"))
+
+
+
+    def highlight_rows_toggled(self, state):
+        """ This function propages checking/unchecking of the
+        highlight odd rows selector.
+
+        """
+      
+        if state:
+            self.settings.highlightRows.value = 1
+        else:
+            self.settings.highlightRows.value = 0
+
+        self.emit(SIGNAL("highlighted_row_visibility_changed"))
+
+
+
+    def highlight_rows_start_toggled(self, state):
+        """ This function propages the start row for highlighting """
+      
+        self.settings.highlightRowsStart.value = state
+        self.emit(SIGNAL("redraw_highlighted_rows"))
 
 
 
@@ -538,17 +567,21 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      SIGNAL("valueChanged(int)"),
                      self.grid_cell_height_changed)
 
-        self.connect(self.oddRowHighlightCheck,
-                     SIGNAL("stateChanged(int)"),
-                     self.highlight_odd_rows_toggled)
+        self.connect(self.rowHighlightChecker,
+                     SIGNAL("clicked(bool)"),
+                     self.highlight_rows_toggled)
 
-        self.connect(self.oddRowHighlightColorButton,
+        self.connect(self.highlightRowStartComboBox,
+                     SIGNAL("currentIndexChanged(int)"),
+                     self.highlight_rows_start_toggled)
+
+        self.connect(self.highlightRowColorButton,
                      SIGNAL("pressed()"),
-                     self.change_odd_row_highlight_color)
+                     self.change_row_highlight_color)
 
-        self.connect(self.oddRowHighlightOpacitySpinner,
+        self.connect(self.highlightRowOpacitySpinner,
                      SIGNAL("valueChanged(int)"),
-                     self.change_odd_row_highlight_opacity)
+                     self.change_row_highlight_opacity)
 
 
     def grid_cell_width_changed(self, newWidth):
@@ -566,12 +599,3 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.emit(SIGNAL("grid_cell_dimensions_changed"))
 
 
-
-    def highlight_odd_rows_toggled(self, state):
-        """ This function propages checking/unchecking of the
-        highlight odd rows selector.
-
-        """
-      
-        self.settings.highlightOddRows.value = state
-        self.emit(SIGNAL("highlight_odd_rows_changed"))

@@ -82,8 +82,6 @@ class PatternCanvas(QGraphicsScene):
         self._copySelection = {}
         self._copySelectionDim = None
 
-        self._highlightOddRows = True
-
         self._textLabels = []
 
         self.insertDeleteRowColDialog = None
@@ -93,7 +91,7 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_main_grid()
         self.set_up_labels()
 
-        self.set_up_highlightOddRows()
+        self.set_up_highlighted_rows()
 
 
 
@@ -105,7 +103,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def set_up_highlightOddRows(self):
+    def set_up_highlighted_rows(self):
         """ If the user has selected to highlight all even
         rows in the pattern - this function does it.
 
@@ -116,9 +114,11 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        visibility = self.settings.highlightOddRows.value
-        color = self.settings.highlightOddRowsColor.value
-        opacity = self.settings.highlightOddRowsOpacity.value/100.0
+        visibility = self.settings.highlightRows.value
+        color = self.settings.highlightRowsColor.value
+        opacity = self.settings.highlightRowsOpacity.value/100.0
+        start = self.settings.highlightRowsStart.value
+        offset = self._numRows % 2
 
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternHighlightItem):
@@ -128,7 +128,7 @@ class PatternCanvas(QGraphicsScene):
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem) and \
                (graphicsItem.name != "nostitch") and \
-               (graphicsItem.row % 2 != 0):
+               ((graphicsItem.row + offset + start) % 2 != 0):
                     
                 origin_x = graphicsItem.column * self._unitCellDim.width()
                 origin_y = graphicsItem.row * self._unitCellDim.height()
@@ -232,7 +232,7 @@ class PatternCanvas(QGraphicsScene):
         """
 
         self.set_up_labels()
-        self.set_up_highlightOddRows()
+        self.set_up_highlighted_rows()
 
 
 
@@ -312,13 +312,13 @@ class PatternCanvas(QGraphicsScene):
 
        
 
-    def change_odd_row_highlighting(self):
+    def toggle_row_highlighting(self):
         """ This member function hides or makes visible the
         odd row highlighting. 
 
         """
 
-        status = self.settings.highlightOddRows.value;
+        status = self.settings.highlightRows.value;
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternHighlightItem):
                 if status == 0:
@@ -444,7 +444,7 @@ class PatternCanvas(QGraphicsScene):
         
         # make sure to redraw the highlighted areas so highlighting
         # underneath nostitch symbols is disabled
-        self.set_up_highlightOddRows()
+        self.set_up_highlighted_rows()
 
         nostitchItem = None
         for item in self.items():

@@ -762,12 +762,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          self.set_project_dirty)
 
             self.connect(self.preferencesDialog,
-                         SIGNAL("highlight_odd_rows_changed"),
-                         self.canvas.change_odd_row_highlighting)
+                         SIGNAL("highlighted_row_visibility_changed"),
+                         self.canvas.toggle_row_highlighting)
 
             self.connect(self.preferencesDialog,
-                         SIGNAL("redraw_highlight_odd_rows"),
-                         self.canvas.set_up_highlightOddRows)
+                         SIGNAL("redraw_highlighted_rows"),
+                         self.canvas.set_up_highlighted_rows)
 
             self.connect(self,
                          SIGNAL("update_preferences"),
