@@ -739,8 +739,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          self.canvas.set_up_labels)
 
             self.connect(self.preferencesDialog, 
+                         SIGNAL("label_interval_changed"),
+                         self.set_project_dirty)
+
+            self.connect(self.preferencesDialog, 
                          SIGNAL("row_label_start_changed"),
                          self.canvas.set_up_labels)
+
+            self.connect(self.preferencesDialog, 
+                         SIGNAL("row_label_start_changed"),
+                         self.set_project_dirty)
 
             self.connect(self.preferencesDialog, 
                          SIGNAL("row_label_start_changed"),
@@ -750,7 +758,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          self.canvas.set_up_labels)
 
             self.connect(self.preferencesDialog, 
-                         SIGNAL("label_interval_changed"),
+                         SIGNAL("even_row_label_location_changed"),
                          self.set_project_dirty)
 
             self.connect(self.preferencesDialog,
