@@ -544,7 +544,7 @@ def export_scene(canvas, width, height, hideNostitchSymbols,
                  exportFileName):
     """ This function exports the scene to a file. """
 
-    canvas.clear_all_selected_cells()
+    #canvas.clear_all_selected_cells()
 
     if hideNostitchSymbols:
         canvas.toggle_nostitch_symbol_visbility(False)
@@ -574,7 +574,7 @@ def export_scene(canvas, width, height, hideNostitchSymbols,
 
     painter = QPainter(generator)
     painter.setRenderHints(QPainter.SmoothPixmapTransform )
-    painter.setRenderHints(QPainter.Antialiasing )
+    painter.setRenderHints(QPainter.HighQualityAntialiasing )
     painter.setRenderHints(QPainter.TextAntialiasing )
     painter.setBackgroundMode(Qt.TransparentMode )
 

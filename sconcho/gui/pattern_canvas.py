@@ -1585,6 +1585,7 @@ class PatternGridItem(QGraphicsSvgItem):
       
         # NOTE: need this for >= Qt 4.7 otherwise
         # rendering of our scene is broken
+        #self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.setCacheMode(QGraphicsItem.NoCache)
 
         self.origin = QPointF(0.0, 0.0)
