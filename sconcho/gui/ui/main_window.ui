@@ -71,8 +71,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>778</width>
-         <height>76</height>
+         <width>753</width>
+         <height>90</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -91,7 +91,7 @@
      <x>0</x>
      <y>0</y>
      <width>1048</width>
-     <height>22</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -169,7 +169,7 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>243</width>
+     <width>267</width>
      <height>212</height>
     </size>
    </property>
@@ -229,8 +229,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>181</width>
-               <height>79</height>
+               <width>221</width>
+               <height>86</height>
               </rect>
              </property>
              <property name="sizePolicy">
@@ -645,7 +645,7 @@
     <string>Apply Color to Selection</string>
    </property>
    <property name="toolTip">
-    <string>Apply Color to Selection. Applies the currently selected color to all selected cells on the canvas.</string>
+    <string>Apply Color to Selection. Applies the currently selected color to all highlighted cells on the canvas.</string>
    </property>
   </action>
  </widget>

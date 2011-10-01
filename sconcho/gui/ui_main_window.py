@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sun Sep 25 17:26:48 2011
+# Created: Sat Oct  1 10:44:29 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 778, 76))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 753, 90))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
@@ -60,7 +60,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.scrollArea)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1048, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1048, 28))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
@@ -87,7 +87,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(4)
         sizePolicy.setHeightForWidth(self.symbolDockWidget.sizePolicy().hasHeightForWidth())
         self.symbolDockWidget.setSizePolicy(sizePolicy)
-        self.symbolDockWidget.setMinimumSize(QtCore.QSize(243, 212))
+        self.symbolDockWidget.setMinimumSize(QtCore.QSize(267, 212))
         self.symbolDockWidget.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
         self.symbolDockWidget.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
         self.symbolDockWidget.setWindowTitle(QtGui.QApplication.translate("MainWindow", "sconcho: available knitting symbols", None, QtGui.QApplication.UnicodeUTF8))
@@ -124,7 +124,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 181, 79))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 221, 86))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -332,7 +332,7 @@ class Ui_MainWindow(object):
         icon14.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/red_rect.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionApply_Color_to_Selection.setIcon(icon14)
         self.actionApply_Color_to_Selection.setText(QtGui.QApplication.translate("MainWindow", "Apply Color to Selection", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionApply_Color_to_Selection.setToolTip(QtGui.QApplication.translate("MainWindow", "Apply Color to Selection. Applies the currently selected color to all selected cells on the canvas.", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionApply_Color_to_Selection.setToolTip(QtGui.QApplication.translate("MainWindow", "Apply Color to Selection. Applies the currently selected color to all highlighted cells on the canvas.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionApply_Color_to_Selection.setObjectName(_fromUtf8("actionApply_Color_to_Selection"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
