@@ -2144,7 +2144,7 @@ class PatternHighlightItem(QGraphicsRectItem):
 
         # we don't want to show the outline so draw it
         # in white
-        self._pen = QPen(QColor("black"), 0.1)
+        self._pen = QPen(Qt.NoPen) 
         self.setPen(self._pen)
 
         color.setAlphaF(alpha)
