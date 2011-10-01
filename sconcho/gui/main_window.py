@@ -777,6 +777,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          SIGNAL("redraw_highlighted_rows"),
                          self.canvas.set_up_highlighted_rows)
 
+            self.connect(self.preferencesDialog,
+                         SIGNAL("redraw_highlighted_rows"),
+                         self.set_project_dirty)
+
             self.connect(self,
                          SIGNAL("update_preferences"),
                          self.preferencesDialog.populate_interface)

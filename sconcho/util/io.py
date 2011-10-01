@@ -231,11 +231,17 @@ def write_settings(stream, settings):
     stream.writeInt32(settings.gridCellWidth.value)
     stream.writeInt32(settings.gridCellHeight.value)
 
+    # row label info
     stream.writeInt32(settings.rowLabelStart.value)
-
     evenRowLabelLocation = \
         get_even_row_label_location(settings.evenRowLabelLocation.value)
     stream.writeInt32(evenRowLabelLocation)
+
+    # row highlighting info
+    stream.writeInt32(settings.highlightRows.value)
+    stream.writeInt32(settings.highlightRowsOpacity.value)
+    stream.writeInt32(settings.highlightRowsStart.value)
+    stream << QString(settings.highlightRowsColor.value)
 
 
 
@@ -502,6 +508,23 @@ def read_settings(stream, settings, version):
         if evenRowLabelLocation:
             settings.evenRowLabelLocation.value = \
                 get_even_row_label_location_string(evenRowLabelLocation)
+
+        highlightRows = stream.readInt32()
+        if highlightRows:
+            settings.highlightRows.value = highlightRows
+
+        highlightRowsOpacity = stream.readInt32()
+        if highlightRowsOpacity:
+            settings.highlightRowsOpacity.value = highlightRowsOpacity
+
+        highlightRowsStart = stream.readInt32()
+        if highlightRowsStart:
+            settings.highlightRowsStart.value = highlightRowsStart
+
+        highlightRowsColor = QString()
+        stream >> highlightRowsColor
+        if highlightRowsColor:
+            settings.highlightRowsColor.value = highlightRowsColor
 
 
 
