@@ -74,6 +74,10 @@ patternFileExistsTitle = "sconcho: Pattern File Exists"
 patternFileExistsText = ("The pattern file %s already exists.\n"
                         "Do you want to overwrite it?")
 
+imageFileExistsTitle = "sconcho: Image File Exists"
+imageFileExistsText = ("The image file %s already exists.\n"
+                        "Do you want to overwrite it?")
+
 noFilePathTitle = "sconcho: File Name Missing"
 noFilePathText = ("No filename was given. Please enter one.")
 

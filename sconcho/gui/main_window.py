@@ -566,7 +566,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # since we added the extension QFileDialog might not
                 # have detected a file collision
                 if QFile(saveFilePath).exists():
-                    saveFilePath = QFileInfo(saveFilePath).fileName()
+                    saveFileName = QFileInfo(saveFilePath).fileName()
                     messageBox = QMessageBox.question(self,
                                     msg.patternFileExistsTitle, 
                                     msg.patternFileExistsText % saveFileName,

@@ -26,7 +26,7 @@ from __future__ import absolute_import
 
 import math
 
-from PyQt4.QtCore import (Qt, SIGNAL, QString, QDir, QFileInfo)
+from PyQt4.QtCore import (Qt, SIGNAL, QString, QDir, QFileInfo, QFile)
 from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
                          QImageReader, QDialogButtonBox)
 
@@ -212,13 +212,25 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
             return
 
 
-        # check the extension; if none is present add .spf
+        # check the extension; if none is present fire up warnint
         extension = "*.%s" % QFileInfo(exportFilePath).completeSuffix()
         if extension not in self.formats:
             QMessageBox.warning(self, msg.unknownImageFormatTitle,
                                 msg.unknownImageFormatText,
                                 QMessageBox.Close)
             return
+
+
+        # if file exists issue a warning as well
+        if QFile(exportFilePath).exists():
+            saveFileName = QFileInfo(exportFilePath).fileName()
+            messageBox = QMessageBox.question(self,
+                                msg.imageFileExistsTitle, 
+                                msg.imageFileExistsText % saveFileName,
+                                QMessageBox.Ok | QMessageBox.Cancel)
+
+            if (messageBox == QMessageBox.Cancel):
+                return 
 
 
         self.filePath = exportFilePath
