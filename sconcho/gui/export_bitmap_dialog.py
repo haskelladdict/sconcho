@@ -43,21 +43,25 @@ import sconcho.util.messages as msg
 class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
-    def __init__(self, size, parent = None):
+    def __init__(self, size, filePath, hideNoStitch, parent = None):
         """ Initialize the dialog. """
 
         super(ExportBitmapDialog, self).__init__(parent)
         self.setupUi(self)
         self.determine_image_formats()
         self.add_image_formats_to_gui()
+        self.hideNostitchCheckBox.setChecked(hideNoStitch)
 
         self.hideNostitchSymbols = False
         self.width = math.floor(size.width())
         self.height = math.floor(size.height())
         self._originalWidth = self.width
         self.scaling = 100.0
-        self.fileName = None 
-        self.fileNameEdit.setText(QDir.homePath() + "/")
+        if filePath:
+            self.fileNameEdit.setText(filePath)
+        else:
+            self.fileNameEdit.setText(QDir.homePath() + "/")
+
         self._aspectRatio = size.width()/size.height()
         
         self.widthSpinner.setValue(self.width)

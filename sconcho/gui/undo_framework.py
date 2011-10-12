@@ -28,7 +28,7 @@ from PyQt4.QtCore import (Qt,
                           QPointF, 
                           SIGNAL, 
                           QString) 
-from PyQt4.QtGui import (QUndoCommand)
+from PyQt4.QtGui import (QUndoCommand, QColor)
                         
 from sconcho.util.canvas import (get_item_id, 
                                  chunkify_cell_arrangement,

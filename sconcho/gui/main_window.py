@@ -78,6 +78,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.preferencesDialog = None
         self.manualDialog = None
 
+        # settings for export bitmap dialog
+        self._exportBitmapFile = None
+        self._hideNoStitch = False
+
         self.clear_project_save_file()
 
         self._topLevelPath = topLevelPath
@@ -562,7 +566,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # since we added the extension QFileDialog might not
                 # have detected a file collision
                 if QFile(saveFilePath).exists():
-                    saveFileName = QFileInfo(saveFilePath).fileName()
+                    saveFilePath = QFileInfo(saveFilePath).fileName()
                     messageBox = QMessageBox.question(self,
                                     msg.patternFileExistsTitle, 
                                     msg.patternFileExistsText % saveFileName,
@@ -584,7 +588,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _save_pattern(self, filePath, markProjectClean = True):
         """ Main save routine.
 
-        If there is no filepath we return (e.g. when called by the saveTimer).
+        If there is no filepath we return (e.g. when called by the 
+        saveTimer).
 
         NOTE: This function returns the SaveThread so callers have the
         opportunity to call wait() to make sure that saving is all
@@ -683,7 +688,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # provide feedback in statusbar
         readFileName = QFileInfo(readFilePath).fileName()
         self.emit(SIGNAL("update_preferences"))
-        self.statusBar().showMessage("successfully opened " + readFileName, 3000)
+        self.statusBar().showMessage("successfully opened " + readFileName, 
+                                     3000)
 
 
 
@@ -691,7 +697,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """ This function opens and export pattern dialog. """
 
         canvasSize = self.canvas.itemsBoundingRect()
-        exportDialog = ExportBitmapDialog(canvasSize, self)
+        exportDialog = ExportBitmapDialog(canvasSize, 
+                                          self._exportBitmapFile,
+                                          self._hideNoStitch,
+                                          self)
         if exportDialog.exec_():
             io.export_scene(self.canvas,
                             exportDialog.width,
@@ -699,6 +708,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             exportDialog.hideNostitchSymbols,
                             exportDialog.filePath)
             exportFileName = QFileInfo(exportDialog.filePath).fileName()
+            self._exportBitmapFile = exportDialog.filePath
+            self._hideNoStitch = exportDialog.hideNostitchSymbols
             self.statusBar().showMessage("successfully exported " + 
                                          exportFileName, 3000)
 
@@ -822,7 +833,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def clear_project_save_file(self):
         """ Resets the save file name and window title. """
-
 
         self._saveFilePath = None
         self._recoveryFilePath = None
