@@ -513,3 +513,5 @@ class PatternCanvasEntry(object):
         self.color  = color
         self.symbol = symbol
 
+
+

@@ -29,10 +29,18 @@ from PyQt4.QtCore import (Qt,
                           SIGNAL, 
                           QString) 
 from PyQt4.QtGui import (QUndoCommand, QColor)
-                        
+
 from sconcho.util.canvas import (get_item_id, 
                                  chunkify_cell_arrangement,
-                                 PatternCanvasEntry) 
+                                 order_selection_by_rows,
+                                 order_selection_by_columns,
+                                 shift_item_row_wise,
+                                 shift_item_column_wise,
+                                 shift_legend_vertically,
+                                 shift_selection_vertically,
+                                 shift_legend_horizontally,
+                                 shift_selection_horizontally,
+                                 PatternCanvasEntry)
 
 
 
@@ -1169,15 +1177,13 @@ class AddPatternRepeat(QUndoCommand):
     item on the canvas.
 
     """
-
     
-    def __init__(self, canvas, lines, width = None, color = None,
-                 parent = None):
+    def __init__(self, canvas, pathItem, parent = None):
 
         super(AddPatternRepeat, self).__init__(parent)
 
         self.canvas = canvas
-        self.pathItem = PatternRepeatItem(lines, width, color)
+        self.pathItem = pathItem 
         self.unselectedCells = canvas._selectedCells.values()
 
 

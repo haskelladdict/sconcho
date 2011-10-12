@@ -916,7 +916,8 @@ class PatternCanvas(QGraphicsScene):
                               col2 * cellWidth, row2 * cellHeight)
                 lines.append(line)
 
-        patternRepeatCommand = AddPatternRepeat(self, lines)
+        repeatItem = PatternRepeatItem(lines)
+        patternRepeatCommand = AddPatternRepeat(self, repeatItem)
         self._undoStack.push(patternRepeatCommand)
         
 
@@ -1974,7 +1975,6 @@ class PatternLabelItem(QGraphicsTextItem):
 
 
 
-
 #########################################################
 ## 
 ## class for managing a single pattern grid label
@@ -1986,7 +1986,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
     Type = 70000 + 5
 
-    def __init__(self, lines, width, color, parent = None):
+    def __init__(self, lines, width = None, color = None, parent = None):
 
         super(PatternRepeatItem, self).__init__(parent)
 
