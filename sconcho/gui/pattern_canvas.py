@@ -1622,9 +1622,8 @@ class PatternGridItem(QGraphicsSvgItem):
         super(PatternGridItem, self).__init__(parent)
       
         # NOTE: need this for >= Qt 4.7 otherwise
-        # rendering of our scene is broken
-        #self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-        self.setCacheMode(QGraphicsItem.NoCache)
+        # rendering of our scene is broken on Windows
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
         self.origin = QPointF(0.0, 0.0)
         self.unitDim = unitDim
@@ -1775,9 +1774,10 @@ class PatternLegendItem(QGraphicsSvgItem):
         super(PatternLegendItem, self).__init__(parent)
 
         # NOTE: need this for >= Qt 4.7 otherwise
-        # rendering of our scene is broken
-        self.setCacheMode(QGraphicsItem.NoCache)
-        
+        # rendering of our scene is broken on Windows
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+
+       
         self.setZValue(zValue)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
 
@@ -1910,6 +1910,10 @@ class PatternLegendText(QGraphicsTextItem):
 
         super(PatternLegendText, self).__init__(text, parent)
 
+        # NOTE: need this for >= Qt 4.7 otherwise
+        # rendering of our scene is broken on Windows
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+
         self.setZValue(1)
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
@@ -1972,6 +1976,9 @@ class PatternLabelItem(QGraphicsTextItem):
 
         super(PatternLabelItem, self).__init__(text, parent)
 
+        # NOTE: need this for >= Qt 4.7 otherwise
+        # rendering of our scene is broken on Windows
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
 
 
