@@ -577,7 +577,9 @@ def export_scene(canvas, width, height, hideNostitchSymbols,
                  exportFileName):
     """ This function exports the scene to a file. """
 
-    #canvas.clear_all_selected_cells()
+    # need this to make sure we take away focus from
+    # any currently selected legend items
+    canvas.clearFocus()
 
     if hideNostitchSymbols:
         canvas.toggle_nostitch_symbol_visbility(False)
@@ -635,6 +637,10 @@ def print_scene(canvas):
 
     aPrinter = QPrinter(QPrinter.HighResolution)
     printDialog = QPrintDialog(aPrinter)
+
+    # need this to make sure we take away focus from
+    # any currently selected legend items
+    canvas.clearFocus()
     
     if printDialog.exec_() == QDialog.Accepted:
         
