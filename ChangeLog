@@ -1,3 +1,9 @@
+10-14-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Fixed printing issues on Windows
+	* Fixed persistent selected legend labels issue on Windows
+
+
 10-12-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Added ability to place even row labels on the left or 
