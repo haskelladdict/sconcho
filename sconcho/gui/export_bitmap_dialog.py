@@ -190,7 +190,9 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         exportFilePath = QFileDialog.getSaveFileName(self,
                                         msg.exportPatternTitle,
                                         QDir.homePath(),
-                                        "Image files (%s)" % formatsString) 
+                                        "Image files (%s)" % formatsString,
+                                        None,
+                                        QFileDialog.DontConfirmOverwrite) 
 
         if exportFilePath:
             self.fileNameEdit.setText(exportFilePath)
