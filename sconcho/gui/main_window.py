@@ -33,7 +33,7 @@ from functools import partial
 
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           QString, Qt, QSize, QFile, QTimer, QVariant,
-                          QPoint, PYQT_VERSION_STR, QT_VERSION_STR,
+                          QPoint, PYQT_VERSION_STR, qVersion,
                           QObject)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
@@ -500,7 +500,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QMessageBox.about(self, QApplication.applicationName(),
                           msg.sconchoDescription % (__version__,
                                                     platform.python_version(),
-                                                    QT_VERSION_STR,
+                                                    qVersion(),
                                                     PYQT_VERSION_STR,
                                                     platform.system()))
 
