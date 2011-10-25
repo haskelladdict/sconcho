@@ -7,6 +7,7 @@ all:
 	pyuic4 -o ui_preferences_dialog.py ui/preferences_dialog.ui
 	pyuic4 -o ui_manage_symbol_dialog.py ui/manage_symbol_dialog.ui
 	pyuic4 -o ui_pattern_repeat_dialog.py ui/pattern_repeat_dialog.ui
+	pyuic4 -o ui_update_dialog.py ui/update_dialog.ui
 	pyrcc4 -o icons_rc.py icons.qrc
 
 

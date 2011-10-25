@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Oct  1 11:08:22 2011
+# Created: Mon Oct 24 22:13:54 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 753, 90))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 742, 71))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
@@ -60,7 +60,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.scrollArea)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1048, 28))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1048, 26))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
@@ -87,7 +87,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(4)
         sizePolicy.setHeightForWidth(self.symbolDockWidget.sizePolicy().hasHeightForWidth())
         self.symbolDockWidget.setSizePolicy(sizePolicy)
-        self.symbolDockWidget.setMinimumSize(QtCore.QSize(267, 212))
+        self.symbolDockWidget.setMinimumSize(QtCore.QSize(278, 212))
         self.symbolDockWidget.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
         self.symbolDockWidget.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
         self.symbolDockWidget.setWindowTitle(QtGui.QApplication.translate("MainWindow", "sconcho: available knitting symbols", None, QtGui.QApplication.UnicodeUTF8))
@@ -124,7 +124,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 221, 86))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 232, 86))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -334,6 +334,9 @@ class Ui_MainWindow(object):
         self.actionApply_Color_to_Selection.setText(QtGui.QApplication.translate("MainWindow", "Apply Color to Selection", None, QtGui.QApplication.UnicodeUTF8))
         self.actionApply_Color_to_Selection.setToolTip(QtGui.QApplication.translate("MainWindow", "Apply Color to Selection. Applies the currently selected color to all highlighted cells on the canvas.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionApply_Color_to_Selection.setObjectName(_fromUtf8("actionApply_Color_to_Selection"))
+        self.actionCheck_for_updates = QtGui.QAction(MainWindow)
+        self.actionCheck_for_updates.setText(QtGui.QApplication.translate("MainWindow", "Check for updates", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCheck_for_updates.setObjectName(_fromUtf8("actionCheck_for_updates"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -360,6 +363,7 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.actionShow_legend)
         self.menuHelp.addAction(self.actionSconcho_Manual)
         self.menuHelp.addSeparator()
+        self.menuHelp.addAction(self.actionCheck_for_updates)
         self.menuHelp.addAction(self.actionAbout_sconcho)
         self.menuHelp.addAction(self.actionAbout_Qt4)
         self.menuGrid.addSeparator()

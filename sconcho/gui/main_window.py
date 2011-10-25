@@ -54,6 +54,7 @@ from sconcho.gui.export_bitmap_dialog import ExportBitmapDialog
 from sconcho.gui.new_pattern_dialog import NewPatternDialog
 from sconcho.gui.preferences_dialog import PreferencesDialog
 from sconcho.gui.sconcho_manual import SconchoManual
+from sconcho.gui.update_dialog import UpdateDialog
 from sconcho.gui.manage_symbol_dialog import ManageSymbolDialog
 from sconcho.util.exceptions import PatternReadError
 
@@ -148,6 +149,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.actionAbout_sconcho, SIGNAL("triggered()"),
                      self.show_about_sconcho)
+
+        self.connect(self.actionCheck_for_updates, SIGNAL("triggered()"),
+                     self.show_update_check)
 
         self.connect(self.actionAbout_Qt4, SIGNAL("triggered()"),
                      self.show_about_qt4)
@@ -491,6 +495,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.manualDialog = SconchoManual(manualPath)
         self.manualDialog.setAttribute(Qt.WA_DeleteOnClose)
         self.manualDialog.open()
+
+
+
+    def show_update_check(self):
+        """ Show dialog that checks and displays any updates 
+        for sconcho.
+        """
+
+        updater = UpdateDialog()
+        updater.exec_()
 
 
 

@@ -71,8 +71,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>753</width>
-         <height>90</height>
+         <width>742</width>
+         <height>71</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -91,7 +91,7 @@
      <x>0</x>
      <y>0</y>
      <width>1048</width>
-     <height>28</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -139,6 +139,7 @@
     </property>
     <addaction name="actionSconcho_Manual"/>
     <addaction name="separator"/>
+    <addaction name="actionCheck_for_updates"/>
     <addaction name="actionAbout_sconcho"/>
     <addaction name="actionAbout_Qt4"/>
    </widget>
@@ -169,7 +170,7 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>267</width>
+     <width>278</width>
      <height>212</height>
     </size>
    </property>
@@ -229,7 +230,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>221</width>
+               <width>232</width>
                <height>86</height>
               </rect>
              </property>
@@ -646,6 +647,11 @@
    </property>
    <property name="toolTip">
     <string>Apply Color to Selection. Applies the currently selected color to all highlighted cells on the canvas.</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_updates">
+   <property name="text">
+    <string>Check for updates</string>
    </property>
   </action>
  </widget>
