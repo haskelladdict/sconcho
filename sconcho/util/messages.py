@@ -208,7 +208,7 @@ recoveryFilePresentText = ("A recovery file for pattern <b>{0}</b> has "
 # messages for update checking dialog
 #
 ########################################################################
-currentVersionText = ("<b>Current Version:</b> sconcho-%s"
+currentVersionText = ("<b>Installed Version:</b> sconcho-%s"
                       "<p><i>... Checking for updates ...</i></p>")
 
 
