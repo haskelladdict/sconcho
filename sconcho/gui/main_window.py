@@ -25,7 +25,9 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 
+# version and release date of current sconcho
 __version__ = "0.1.0_b5"
+__releaseDate__ = "2011-10-14"
 
 
 import platform, os
@@ -503,7 +505,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for sconcho.
         """
 
-        updater = UpdateDialog()
+        updater = UpdateDialog(__version__, __releaseDate__)
         updater.exec_()
 
 

@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import urllib2
+import re
 
 from PyQt4.QtCore import (qVersion, SIGNAL, QThread)
 from PyQt4.QtGui import (QDialog) 
@@ -45,11 +46,14 @@ LATEST_VERSION_URL = ("http://sourceforge.net/projects/sconcho/files/" +
 class UpdateDialog(QDialog, Ui_UpdateDialog):
 
 
-    def __init__(self, parent = None):
+    def __init__(self, version, date, parent = None):
         """ Initialize the dialog. """
 
         super(UpdateDialog, self).__init__(parent)
         self.setupUi(self)
+
+        self.version = version
+        self.date = date
 
         self.updateTextEdit.setReadOnly(True)
 
@@ -66,9 +70,7 @@ class UpdateDialog(QDialog, Ui_UpdateDialog):
     def add_current_version(self):
         """ Add a string with the current version to the interface """
 
-        self.updateTextEdit.setText("<b>Current Version:</b> Qt-" +
-                                    qVersion() +
-                                    "<p>Checking for updates ....</p>")
+        self.updateTextEdit.setText(msg.currentVersionText % self.version)
 
         
 
@@ -78,7 +80,21 @@ class UpdateDialog(QDialog, Ui_UpdateDialog):
 
         """
 
-        print(status, result)
+        if status:
+            newVersion = result.split()[0]
+            newDate = result.split()[1]
+            # do some basic checks to make sure we actually received
+            # a date string
+            if not re.match("^(\d+)-(\d+)-(\d+)$", newDate):
+                self.updateTextEdit.append(msg.versionFailureText)
+            else:
+                if self.date < newDate:
+                    self.updateTextEdit.append(msg.notUpToDate %
+                                               newVersion)
+                else:
+                    self.updateTextEdit.append(msg.upToDate)
+        else:
+            self.updateTextEdit.append(msg.versionFailureText)
 
     
 

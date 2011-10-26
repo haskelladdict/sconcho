@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>357</width>
-    <height>154</height>
+    <width>507</width>
+    <height>165</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,11 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTextEdit" name="updateTextEdit"/>
+    <widget class="QTextEdit" name="updateTextEdit">
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

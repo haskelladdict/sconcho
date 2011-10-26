@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/update_dialog.ui'
 #
-# Created: Mon Oct 24 22:13:55 2011
+# Created: Tue Oct 25 22:24:51 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,12 +17,13 @@ except AttributeError:
 class Ui_UpdateDialog(object):
     def setupUi(self, UpdateDialog):
         UpdateDialog.setObjectName(_fromUtf8("UpdateDialog"))
-        UpdateDialog.resize(357, 154)
+        UpdateDialog.resize(507, 165)
         UpdateDialog.setWindowTitle(QtGui.QApplication.translate("UpdateDialog", "Check For Updates", None, QtGui.QApplication.UnicodeUTF8))
         UpdateDialog.setModal(True)
         self.verticalLayout = QtGui.QVBoxLayout(UpdateDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.updateTextEdit = QtGui.QTextEdit(UpdateDialog)
+        self.updateTextEdit.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByKeyboard|QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextBrowserInteraction|QtCore.Qt.TextSelectableByKeyboard|QtCore.Qt.TextSelectableByMouse)
         self.updateTextEdit.setObjectName(_fromUtf8("updateTextEdit"))
         self.verticalLayout.addWidget(self.updateTextEdit)
         self.horizontalLayout = QtGui.QHBoxLayout()

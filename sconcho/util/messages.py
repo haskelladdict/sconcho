@@ -83,8 +83,8 @@ noFilePathText = ("No filename was given. Please enter one.")
 
 wantToSavePatternTitle = "sconcho: Pattern File Not Saved"
 wantToSavePatternText = ("Your pattern has unsaved changes. Please save or "
-                         "discard these changes or press cancel to continue "
-                         "with editing your pattern.")
+                         "discard these changes or press cancel to "
+                         "continue with editing your pattern.")
 
 numRowTooSmallTitle = "sconcho: Row Delete Error"
 numRowTooSmallText = ("There has to be at least one row remaining.\n"
@@ -122,8 +122,9 @@ canNotDeleteColumnLeftOfText  = ("Cannot delete requested number of columns "
 
 
 canNotDeleteColumnRightOfTitle = "sconcho: Cannot Delete Columns"
-canNotDeleteColumnRightOfText  = ("Cannot delete requested number of columns "
-                                  "right of and including selection.")
+canNotDeleteColumnRightOfText  = ("Cannot delete requested number of "
+                                  "columns right of and including "
+                                  "selection.")
 
 
 errorSavingProjectTitle = "sconcho: Error Saving Project"
@@ -155,12 +156,12 @@ errorLoadingLegendText = ("Could not load legend from "
 
 errorOpeningKnittingSymbols = ("sconcho: Failed to open knitting symbol "
                                "database.\n"
-                               "Please check that you have valid symbols at\n"
-                               "%s.\nExiting ....")
+                               "Please check that you have valid symbols "
+                               "at\n%s.\nExiting ....")
 
 
-customSymbolPathDirectoryTitle = ("sconcho: Enter Location of Custom Symbol "
-                                  "database.")
+customSymbolPathDirectoryTitle = ("sconcho: Enter Location of Custom "
+                                  "Symbol database.")
 
 
 ########################################################################
@@ -183,8 +184,8 @@ failedToCopySvgText  = ("Error: Failed to copy SVG image %s into sconcho "
                         "database." )
 
 failedToCreateDescriptionFileTitle = "sconcho: Add Symbol Error"
-failedToCreateDescriptionFileText  = ("Error: Failed to create the description "
-        "file to the symbol with category %s and name %s.")
+failedToCreateDescriptionFileText  = ("Error: Failed to create the "
+        "description file to the symbol with category %s and name %s.")
 
 noNameErrorTitle     = "sconcho: Add Symbol Error"
 noNameErrorText      = "Error: Please enter a name for your symbol."
@@ -193,11 +194,33 @@ deleteSymbolTitle    = "sconcho: Delete Symbol"
 deleteSymbolText     = "Are you sure you would like to delete symbol %s?"
 
 recoveryFilePresentTitle = "sconcho: Pattern File Recovery"
-recoveryFilePresentText = ("A recovery file for pattern <b>{0}</b> has been "
-                           "detected.<p>This could have been caused by a system "
-                           "crash. Would you like to recover this file now? " 
-                           "Selecting Cancel will deleted the recovery file and "
-                           "continue with loading {0}.")
+recoveryFilePresentText = ("A recovery file for pattern <b>{0}</b> has "
+                           "been detected.<p>"
+                           "This could have been caused by a system crash."
+                           "Would you like to recover this file now? " 
+                           "Selecting Cancel will deleted the recovery "
+                           "file and continue with loading {0}.")
+
+
+
+########################################################################
+# 
+# messages for update checking dialog
+#
+########################################################################
+currentVersionText = ("<b>Current Version:</b> sconcho-%s"
+                      "<p><i>... Checking for updates ...</i></p>")
+
+
+versionFailureText = ("<font color=\"red\">ERROR: Failed to retrieve "
+                      "version information.<\font>")
+
+
+upToDate = ("<b>Congratulations!</b> You are up to date.")
+notUpToDate = ("Your version of sconcho is <b>out of date</b>. "
+               "sconcho-%s is available. Please go to the "
+               "sconcho download site and update to the most "
+               "recent version.")
 
 
 
@@ -249,3 +272,5 @@ patternColorParseErrorTitle = "sconcho: Failed to parse color information"
 patternColorParseErrorText  = ("Failed to read project colors from "
                                "project file. The file may be damaged "
                                "and can not be read.")
+
+
