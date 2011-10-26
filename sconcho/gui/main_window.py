@@ -870,7 +870,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             answer = QMessageBox.question(self, msg.wantToSavePatternTitle,
                                           msg.wantToSavePatternText,
                                           QMessageBox.Save |
-                                          QMessageBox.Discard |
+                                          QMessageBox.Ignore |
                                           QMessageBox.Cancel)
 
             if answer == QMessageBox.Save:

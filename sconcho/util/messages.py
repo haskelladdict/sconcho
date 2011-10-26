@@ -82,8 +82,8 @@ noFilePathTitle = "sconcho: File Name Missing"
 noFilePathText = ("No filename was given. Please enter one.")
 
 wantToSavePatternTitle = "sconcho: Pattern File Not Saved"
-wantToSavePatternText = ("Your pattern has unsaved changes. Please save or "
-                         "discard these changes or press cancel to "
+wantToSavePatternText = ("Your pattern has unsaved changes. You can either "
+                         "save or ignore these changes or press cancel to "
                          "continue with editing your pattern.")
 
 numRowTooSmallTitle = "sconcho: Row Delete Error"
