@@ -39,7 +39,8 @@ from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo,
                           QObject)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
-                         QFrame, QColor, QApplication)
+                         QFrame, QColor, QApplication, QDialog,
+                         QPrinter, QPrintDialog, QPrintPreviewDialog,)
 from PyQt4.QtSvg import QSvgWidget
 
 from sconcho.gui.ui_main_window import Ui_MainWindow
@@ -181,6 +182,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.actionPrint, SIGNAL("triggered()"),
                      self.open_print_dialog)
+
+        self.connect(self.actionPrint_Preview, SIGNAL("triggered()"),
+                     self.open_print_preview_dialog)
 
         self.connect(self.action_Manage_Knitting_Symbols,
                      SIGNAL("triggered()"),
@@ -734,8 +738,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def open_print_dialog(self):
         """ This member function calls print routine. """
 
-        io.print_scene(self.canvas)
-        
+        aPrinter = QPrinter(QPrinter.HighResolution)
+        printDialog = QPrintDialog(aPrinter)
+
+        # need this to make sure we take away focus from
+        # any currently selected legend items
+        self.canvas.clearFocus()
+    
+        if printDialog.exec_() == QDialog.Accepted:
+            io.printer(self.canvas, aPrinter)
+
+
+
+    def open_print_preview_dialog(self):
+        """ This member function calls print preview routine. """
+
+        aPrinter = QPrinter(QPrinter.HighResolution)
+        printPrevDialog = QPrintPreviewDialog(aPrinter)
+        self.connect(printPrevDialog, SIGNAL("paintRequested(QPrinter*)"),
+                     partial(io.printer, self.canvas))
+
+        # need this to make sure we take away focus from
+        # any currently selected legend items
+        self.canvas.clearFocus()
+
+        printPrevDialog.exec_()
+
 
 
     def open_preferences_dialog(self):

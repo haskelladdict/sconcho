@@ -105,6 +105,7 @@
     <addaction name="actionSave_as"/>
     <addaction name="actionExport"/>
     <addaction name="separator"/>
+    <addaction name="actionPrint_Preview"/>
     <addaction name="actionPrint"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -652,6 +653,11 @@
   <action name="actionCheck_for_updates">
    <property name="text">
     <string>Check for updates</string>
+   </property>
+  </action>
+  <action name="actionPrint_Preview">
+   <property name="text">
+    <string>Print Preview...</string>
    </property>
   </action>
  </widget>

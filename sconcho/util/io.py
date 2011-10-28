@@ -24,12 +24,14 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+from functools import partial
+
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
                           Qt, QRectF, QDataStream, QSize, QRect, 
                           QFileInfo, QLineF, QPointF, QThread,
                           QReadWriteLock, QWriteLocker, SIGNAL)
 from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
-                         QPrinter, QPrintDialog, QDialog, QFont)
+                         QFont)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from PyQt4.QtSvg import QSvgGenerator
 
@@ -630,29 +632,18 @@ def export_scene(canvas, width, height, hideNostitchSymbols,
 # routines for printing a project 
 #
 ############################################################################
-def print_scene(canvas):
-    """
-    This function prints the content of the canvas.
-    """
+def printer(canvas, printer):
+    """ The main print routine. """
 
-    aPrinter = QPrinter(QPrinter.HighResolution)
-    printDialog = QPrintDialog(aPrinter)
+    theScene = canvas.itemsBoundingRect()
+    theScene.adjust(-10, -10, 10, 10)
 
-    # need this to make sure we take away focus from
-    # any currently selected legend items
-    canvas.clearFocus()
-    
-    if printDialog.exec_() == QDialog.Accepted:
-        
-        theScene = canvas.itemsBoundingRect()
-        theScene.adjust(-10, -10, 10, 10)
-
-        painter = QPainter(aPrinter)
-        painter.setRenderHints(QPainter.SmoothPixmapTransform)
-        painter.setRenderHints(QPainter.HighQualityAntialiasing)
-        painter.setRenderHints(QPainter.TextAntialiasing)
-        canvas.render(painter, QRectF(), theScene)
-        painter.end()
+    painter = QPainter(printer)
+    painter.setRenderHints(QPainter.SmoothPixmapTransform)
+    painter.setRenderHints(QPainter.HighQualityAntialiasing)
+    painter.setRenderHints(QPainter.TextAntialiasing)
+    canvas.render(painter, QRectF(), theScene)
+    painter.end()
 
 
 

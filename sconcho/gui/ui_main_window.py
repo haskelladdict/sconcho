@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Tue Oct 25 22:24:50 2011
+# Created: Thu Oct 27 21:49:08 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -337,6 +337,9 @@ class Ui_MainWindow(object):
         self.actionCheck_for_updates = QtGui.QAction(MainWindow)
         self.actionCheck_for_updates.setText(QtGui.QApplication.translate("MainWindow", "Check for updates", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCheck_for_updates.setObjectName(_fromUtf8("actionCheck_for_updates"))
+        self.actionPrint_Preview = QtGui.QAction(MainWindow)
+        self.actionPrint_Preview.setText(QtGui.QApplication.translate("MainWindow", "Print Preview...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPrint_Preview.setObjectName(_fromUtf8("actionPrint_Preview"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addSeparator()
@@ -344,6 +347,7 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionSave_as)
         self.menuFile.addAction(self.actionExport)
         self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionPrint_Preview)
         self.menuFile.addAction(self.actionPrint)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
