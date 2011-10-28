@@ -1,2 +1,4 @@
 - provide recently opened files
-- remember the most recently used filename in export bitmap dialog
+- snapping to grid
+- more sophisticated print dialog
+- shifting of legends to the right
