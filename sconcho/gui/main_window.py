@@ -601,7 +601,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._save_pattern(self._recoveryFilePath, markProjectClean = False)
 
         # ready to save main project file
-        return self._save_pattern(self._saveFilePath)
+        self._save_pattern(self._saveFilePath).wait()
+
+        return True
     
 
 
@@ -898,14 +900,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             answer = QMessageBox.question(self, msg.wantToSavePatternTitle,
                                           msg.wantToSavePatternText,
                                           QMessageBox.Save |
-                                          QMessageBox.Ignore |
+                                          QMessageBox.Discard |
                                           QMessageBox.Cancel)
 
             if answer == QMessageBox.Save:
                 # we save and make sure that we wait until the
                 # thread is finished and the project was saved
-                saveThread = self.save_pattern_dialog("save")
-                saveThread.wait()
+                status = self.save_pattern_dialog("save")
             elif answer == QMessageBox.Cancel:
                 status = False
 

@@ -2141,6 +2141,12 @@ class PatternRepeatItem(QGraphicsItemGroup):
                                                       self.pos()) 
 
         QApplication.restoreOverrideCursor()
+
+        # snap to grid
+        bound = self.scenePos()
+        print(bound.x(), bound.y())
+
+
         return QGraphicsItemGroup.mouseReleaseEvent(self, event)
 
 
