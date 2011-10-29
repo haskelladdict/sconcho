@@ -423,7 +423,7 @@ def read_legendItems(stream, numItems):
                     "labelYPos"   : labelYPos, 
                     "color"       : color,
                     "description" : description}
- 
+
         legendItems.append(newItem)
 
     return legendItems

@@ -265,8 +265,6 @@ def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos,
 
     """
 
-    #if legendID[1] == QString("#6a6a6a"):
-    #    legendID = (QString('nostitch'), QString('#808080'))
     if legendID in legendItems:
         
         legendItem = legendItems[legendID]
@@ -277,7 +275,6 @@ def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos,
         legendTextItem.setPlainText(description)
 
     else:
-    #    print(legendID)
         QMessageBox.critical(None, msg.errorMatchingLegendItemTitle,   
                              msg.errorMatchingLegendItemText,
                              QMessageBox.Close)
