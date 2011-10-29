@@ -69,13 +69,13 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.scalingSpinner.setValue(self.scaling)
 
         # synchronize spin boxes
-        self.connect(self.widthSpinner, SIGNAL("editingFinished()"),
+        self.connect(self.widthSpinner, SIGNAL("valueChanged(int)"),
                      self.width_update)
 
-        self.connect(self.heightSpinner, SIGNAL("editingFinished()"),
+        self.connect(self.heightSpinner, SIGNAL("valueChanged(int)"),
                      self.height_update)
 
-        self.connect(self.scalingSpinner, SIGNAL("editingFinished()"),
+        self.connect(self.scalingSpinner, SIGNAL("valueChanged(int)"),
                      self.scaling_update)
 
         self.connect(self.hideNostitchCheckBox, SIGNAL("stateChanged(int)"),
@@ -119,58 +119,64 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
 
-    def width_update(self):
+    def width_update(self, newWidth):
         """ Update height spinner after width change.
 
         Update according to the correct aspect ratio.
         
         """
 
-        newWidth = self.widthSpinner.value()
-
         self.width = newWidth
         self.height = self.width/self._aspectRatio
         self.scaling = self.width/self._originalWidth * 100.0
 
-        self.heightSpinner.setValue(self.height)
-        self.scalingSpinner.setValue(self.scaling)
+        self._set_blocking_value(self.heightSpinner, self.height)
+        self._set_blocking_value(self.scalingSpinner, self.scaling)
 
 
 
-    def height_update(self):
+    def height_update(self, newHeight):
         """ Update width spinner after height change.
 
         Update according to the correct aspect ratio.
         
         """
 
-        newHeight = self.heightSpinner.value()
-        
         self.width = newHeight * self._aspectRatio
         self.height = newHeight
         self.scaling = self.width/self._originalWidth * 100.0
 
-        self.widthSpinner.setValue(self.width)
-        self.scalingSpinner.setValue(self.scaling)
+        self._set_blocking_value(self.widthSpinner, self.width)
+        self._set_blocking_value(self.scalingSpinner, self.scaling)
 
 
 
-    def scaling_update(self):
+    def scaling_update(self, newScale):
         """ Update scaling spinner after height change.
 
         Update according to the correct aspect ratio.
         
         """
 
-        newScale = self.scalingSpinner.value()
-
         self.scaling = newScale
         self.width = self._originalWidth * self.scaling / 100.0
         self.height = self.width/self._aspectRatio
 
-        self.widthSpinner.setValue(self.width)
-        self.heightSpinner.setValue(self.height)
+        self._set_blocking_value(self.widthSpinner, self.width)
+        self._set_blocking_value(self.heightSpinner, self.height)
 
+
+
+    def _set_blocking_value(self, theObject, value):
+        """ Helper function for setting selector values.
+
+        Blocks signals to avoid infinite loop.
+
+        """
+
+        theObject.blockSignals(True)
+        theObject.setValue(value)
+        theObject.blockSignals(False)
 
 
     def hide_nostitch_update(self, state):
