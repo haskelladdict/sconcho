@@ -4,6 +4,8 @@ XXXXXXXXXX: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 	* Fixed rendering issues on Qt-4.7.2 and older
 	* Added ability to snap pattern repeats to grid (controllable
 	  via on/off switch in preferences)
+	* Fixed bug in "Apply Color To Selection Option". Thanks
+	  to fingertips@ravelry.
 
 10-14-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
