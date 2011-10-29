@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Oct 29 13:14:51 2011
+# Created: Sat Oct 29 18:02:51 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 742, 71))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 742, 90))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
@@ -60,11 +60,14 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.scrollArea)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1048, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1048, 28))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
+        self.menuRecent_Files = QtGui.QMenu(self.menuFile)
+        self.menuRecent_Files.setTitle(QtGui.QApplication.translate("MainWindow", "Recent Files", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuRecent_Files.setObjectName(_fromUtf8("menuRecent_Files"))
         self.menuView = QtGui.QMenu(self.menubar)
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuView.setObjectName(_fromUtf8("menuView"))
@@ -340,8 +343,13 @@ class Ui_MainWindow(object):
         self.actionPrint_Preview = QtGui.QAction(MainWindow)
         self.actionPrint_Preview.setText(QtGui.QApplication.translate("MainWindow", "Print Preview...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint_Preview.setObjectName(_fromUtf8("actionPrint_Preview"))
+        self.actionClear = QtGui.QAction(MainWindow)
+        self.actionClear.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClear.setObjectName(_fromUtf8("actionClear"))
+        self.menuRecent_Files.addSeparator()
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
+        self.menuFile.addAction(self.menuRecent_Files.menuAction())
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionSave_as)

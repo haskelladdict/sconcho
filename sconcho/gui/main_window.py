@@ -49,8 +49,9 @@ import sconcho.util.settings as settings
 import sconcho.util.misc as misc
 import sconcho.util.io as io
 import sconcho.util.symbol_parser as parser
-from sconcho.gui.symbol_widget import (generate_symbolWidgets, SymbolSynchronizer,
-                                      symbols_by_category)
+from sconcho.gui.symbol_widget import (generate_symbolWidgets, 
+                                       SymbolSynchronizer,
+                                       symbols_by_category)
 from sconcho.gui.color_widget import (ColorWidget, ColorSynchronizer)
 from sconcho.gui.pattern_canvas import PatternCanvas
 from sconcho.gui.export_bitmap_dialog import ExportBitmapDialog
@@ -115,6 +116,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             (was_recovered, readFileName) = check_for_recovery_file(fileName)
             self._read_project(readFileName)
             self.set_project_save_file(fileName)
+            self.menuRecent_Files.addAction(fileName)
             self.canvas.clear_undo_stack()
             if not was_recovered:
                 self.mark_project_clean()
@@ -176,6 +178,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.connect(self.actionOpen, SIGNAL("triggered()"),
                      self.read_project_dialog)
+
+        self.connect(self.menuRecent_Files, SIGNAL("triggered(QAction*)"),
+                     self.open_recent_file)
 
         self.connect(self.actionExport, SIGNAL("triggered()"),
                      self.export_pattern_dialog)
@@ -657,6 +662,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if markProjectClean:
             self.mark_project_clean()
 
+            
+    def open_recent_file(self, action):
+
+        readFilePath = action.text()
+        
+        if not self._ok_to_continue_without_saving():
+            return
+
+        self._read_project(readFilePath)
+        self.set_project_save_file(readFilePath)
+        self.mark_project_clean()
+
 
 
     def read_project_dialog(self):
@@ -677,6 +694,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self._read_project(readFilePath)
         self.set_project_save_file(readFilePath)
+        self.menuRecent_Files.addAction(readFilePath)
         self.mark_project_clean()
 
         
