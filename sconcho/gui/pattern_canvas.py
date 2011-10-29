@@ -162,7 +162,8 @@ class PatternCanvas(QGraphicsScene):
                 width = graphicsItem.width * self._unitCellDim.width()
                 height = self._unitCellDim.height()
                 element = PatternHighlightItem(origin_x, origin_y, width, 
-                                               height, QColor(color), opacity)
+                                               height, QColor(color), 
+                                               opacity)
                 element.setZValue(1)
                 if visibility == 0:
                     element.hide()
@@ -289,7 +290,8 @@ class PatternCanvas(QGraphicsScene):
 
     def change_active_color(self, newColor):
 
-        selectCommand = ActivateColor(self, self._activeColorObject, newColor)
+        selectCommand = ActivateColor(self, self._activeColorObject, 
+                                      newColor)
         self._undoStack.push(selectCommand)
             
 
@@ -517,14 +519,16 @@ class PatternCanvas(QGraphicsScene):
         """
 
 
-        inactivatedItem = PatternCanvasEntry(item.column, item.row, item.width, 
-                                             item.color, item.symbol) 
+        inactivatedItem = PatternCanvasEntry(item.column, item.row, 
+                                             item.width, item.color, 
+                                             item.symbol) 
         paintCommand = PaintCells(self, None, [inactivatedItem])
         self._undoStack.push(paintCommand)
 
 
 
-    def canvas_item_position_changed(self, canvasItem, oldPosition, newPosition):
+    def canvas_item_position_changed(self, canvasItem, oldPosition, 
+                                     newPosition):
         """ A canvas item calls this function if its position on the
         canvas has changed via a user action.
 
@@ -556,7 +560,8 @@ class PatternCanvas(QGraphicsScene):
 
     def addItem(self, item):
         """ This overload of addItem makes sure that we perform
-        QGraphicsItem specific task such as updating the legend for svg items.
+        QGraphicsItem specific task such as updating the legend for 
+        svg items.
         
         """
 
@@ -1752,8 +1757,9 @@ class PatternGridItem(QGraphicsSvgItem):
         painter.setPen(self._pen)
         painter.setBrush(self._backBrush)
         halfPen = self._penSize * 0.5
-        scaledRect = QRectF(self.origin, self.size).adjusted(halfPen, halfPen, 
-                                                             halfPen, halfPen)
+        scaledRect = \
+            QRectF(self.origin, self.size).adjusted(halfPen, halfPen, 
+                                                    halfPen, halfPen)
         painter.drawRect(scaledRect)
         self.renderer().render(painter, scaledRect)
 
@@ -2003,6 +2009,13 @@ class PatternLabelItem(QGraphicsTextItem):
 ##
 #########################################################
 class PatternRepeatItem(QGraphicsItemGroup):
+    """ NOTE: For some reason QGraphicsItemGroup's scenePos()
+    does not seem to return the scene coordinate but rather
+    the item coordinates. Thus, we have to compute the canvas
+    coordinate by means of initially computing the uper left
+    corner of the group.
+
+    """
 
     Type = 70000 + 5
 
@@ -2010,14 +2023,28 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         super(PatternRepeatItem, self).__init__(parent)
 
+        self.setFlag(QGraphicsItem.ItemIsMovable, True)
+        self.setZValue(1)
+
         # set up group
         self.lineElements = []
+        points = []
         for line in lines:
+            points.append(line.p1())
+            points.append(line.p2())
             lineElement = QGraphicsLineItem(line)
             self.lineElements.append(lineElement)
             self.addToGroup(lineElement)
 
-        self.setZValue(1)
+        # extract right and top bounds 
+        if points:
+            self.leftBound = points[0]
+            self.topBound = points[0]
+            for point in points[1:]:
+                if point.x() < self.leftBound.x():
+                    self.leftBound = point
+                if point.y() < self.topBound.y():
+                    self.topBound = point
            
         # default pen
         if width:
@@ -2031,8 +2058,6 @@ class PatternRepeatItem(QGraphicsItemGroup):
             self.color = QColor(Qt.red)
             
         self.paint_elements()
-
-        self.setFlag(QGraphicsItem.ItemIsMovable, True)
 
 
 
@@ -2127,6 +2152,42 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         return QGraphicsItemGroup.mousePressEvent(self, event)
 
+    
+    def _snap_to_grid(self):
+        """ Snap to nearest grid point. 
+
+        TODO: Currently we only use the left and top edge for this. A 
+        more sophisticated algorithm would probably also use the right and
+        bottom edget.
+
+        """
+        
+        numRows = self.scene()._numRows
+        numCols = self.scene()._numColumns
+        cellXDim = self.scene()._unitCellDim.width()
+        cellYDim = self.scene()._unitCellDim.height()
+        bound = self.scenePos()
+  
+        curX = self.leftBound.x()+bound.x()
+        curY = self.topBound.y()+bound.y()       
+        withinGrid = (curX > -(0.5*cellXDim) \
+                      and curX < (numCols+0.5)*cellXDim \
+                      and curY > -(0.5*cellYDim) \
+                      and curY < (numRows+0.5)*cellYDim)
+
+        if withinGrid:
+            # snap in X
+            if curX % cellXDim < 0.5*cellXDim:
+                self.moveBy(-(curX % cellXDim), 0)
+            else:
+                self.moveBy(cellXDim - curX % cellXDim, 0)
+
+            # snap in Y
+            if curY % cellYDim < 0.5*cellYDim:
+                self.moveBy(0, -(curY % cellYDim))
+            else:
+                self.moveBy(0, cellYDim - curY % cellYDim)
+            
 
 
     def mouseReleaseEvent(self, event):
@@ -2136,18 +2197,18 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         """
 
+        self._snap_to_grid()
+
         if self._position != self.pos():
             self.scene().canvas_item_position_changed(self, self._position,
                                                       self.pos()) 
 
         QApplication.restoreOverrideCursor()
 
-        # snap to grid
-        bound = self.scenePos()
-        print(bound.x(), bound.y())
-
-
+       
         return QGraphicsItemGroup.mouseReleaseEvent(self, event)
+
+
 
 
 

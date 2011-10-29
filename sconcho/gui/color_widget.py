@@ -259,7 +259,8 @@ class ColorSynchronizer(QObject):
         
 
     def get_active_widget(self):
-        """ Simply returns the active widget to anybody who cares to know. """
+        """ Simply returns the active widget to anybody who cares 
+        to know. """
 
         return self._activeWidget
 
