@@ -42,14 +42,14 @@ from sconcho.util.canvas import (get_item_id,
                                  shift_selection_horizontally,
                                  PatternCanvasEntry)
 
+from sconcho.util.misc import (errorLogger)
 
 
-#############################################################################
+###########################################################################
 #
 # the following classes encapsulate actions for the Undo/Redo framework
 #
-#############################################################################
-
+###########################################################################
 class PasteCells(QUndoCommand):
     """ This class encapsulates the paste action. I.e. all
     items in our copySelection are pasted into the dead Selection.
@@ -1322,14 +1322,15 @@ class ColorSelectedCells(QUndoCommand):
         """
 
         for (id, item) in self.selectedCells.items():
-            self.canvas.remove_from_legend(item)
             self.previousColors[id] = item.color
             canvasItem = self.canvas._item_at_row_col(item.row, item.column)
-            canvasItem.change_color(self.activeColor)
-            item.color = self.activeColor
-            self.canvas.add_to_legend(item)
-
-        self.canvas._selectedCells.clear()
+            if item.symbol["name"] == "nostitch":
+                canvasItem.change_color(item.color)
+            else:
+                self.canvas.remove_from_legend(item)
+                canvasItem.change_color(self.activeColor)
+                item.color = self.activeColor
+                self.canvas.add_to_legend(item)
 
 
 
@@ -1343,12 +1344,9 @@ class ColorSelectedCells(QUndoCommand):
 
         for (id, item) in self.selectedCells.items():
             previousColor = self.previousColors[id]
-            self.canvas.remove_from_legend(item)
-            
             canvasItem = self.canvas._item_at_row_col(item.row, item.column)
             canvasItem.change_color(previousColor)
-            item.color = previousColor
-            self.canvas.add_to_legend(item)
-
-        self.canvas._selectedCells = self.selectedCells.copy()
-        
+            if item.symbol["name"] != "nostitch":
+                self.canvas.remove_from_legend(item)
+                item.color = previousColor
+                self.canvas.add_to_legend(item)

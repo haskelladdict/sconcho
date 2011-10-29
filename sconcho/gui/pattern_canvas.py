@@ -319,6 +319,10 @@ class PatternCanvas(QGraphicsScene):
         if self._undoStack.canUndo():
             self._undoStack.undo()
 
+        # probably inefficient but otherwise there are caching
+        # artifacts
+        self.invalidate()
+
 
 
     def redo(self):
@@ -326,6 +330,10 @@ class PatternCanvas(QGraphicsScene):
 
         if self._undoStack.canRedo():
             self._undoStack.redo()
+
+        # probably inefficient but otherwise there are caching
+        # artifacts
+        self.invalidate()
 
 
 
@@ -505,8 +513,9 @@ class PatternCanvas(QGraphicsScene):
         
         """
        
-        activatedItem = PatternCanvasEntry(item.column, item.row, item.width, 
-                                           item.color, item.symbol) 
+        activatedItem = PatternCanvasEntry(item.column, item.row, 
+                                           item.width, item.color, 
+                                           item.symbol) 
         paintCommand = PaintCells(self, [activatedItem])
         self._undoStack.push(paintCommand)
 
@@ -878,8 +887,7 @@ class PatternCanvas(QGraphicsScene):
 
         colorCommand = ColorSelectedCells(self)
         self._undoStack.push(colorCommand)
-
-
+        self.clear_all_selected_cells()
 
 
 
@@ -1026,8 +1034,11 @@ class PatternCanvas(QGraphicsScene):
         deadSelection = {}
         for item in deadItems:
             itemID = get_item_id(item.column, item.row) 
-            deadSelection[itemID] = PatternCanvasEntry(item.column, item.row, 
-                                        item.width, item.color, item.symbol)
+            deadSelection[itemID] = PatternCanvasEntry(item.column, 
+                                                       item.row, 
+                                                       item.width, 
+                                                       item.color, 
+                                                       item.symbol)
 
         if self._copySelection and deadSelection:
             pasteCommand = PasteCells(self, self._copySelection,
@@ -1692,7 +1703,6 @@ class PatternGridItem(QGraphicsSvgItem):
 
         self.color = newColor
         self._backBrush = QBrush(self.color)
-        self.update()
 
         
 
