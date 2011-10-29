@@ -60,6 +60,7 @@ class DefaultSettings(QSettings):
     DEFAULT_HIGHLIGHT_ROWS_COLOR = "gray"
     DEFAULT_HIGHLIGHT_ROWS_OPACITY = "10"
     DEFAULT_HIGHLIGHT_ROWS_START = "0" # 0 corresponds to bottom row
+    DEFAULT_SNAP_PATTERN_REPEAT_TO_GRID = "2"
     DEFAULT_PERSONAL_SYMBOL_PATH = QDir.convertSeparators(
             QDir.homePath() + "/sconcho_symbols")
 
@@ -121,6 +122,11 @@ class DefaultSettings(QSettings):
         self.highlightRowsStart = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_HIGHLIGHT_ROWS_START,
                 "highlightRowsStart", "Int")
+
+        self.snapPatternRepeatToGrid = PreferenceSetting(self,
+                DefaultSettings.DEFAULT_SNAP_PATTERN_REPEAT_TO_GRID,
+                "snapPatternRepeatToGrid", "Int")
+
 
     @property
     def main_window_size(self):

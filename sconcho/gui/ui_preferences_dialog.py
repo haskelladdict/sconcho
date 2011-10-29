@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Thu Oct 27 21:49:09 2011
+# Created: Sat Oct 29 13:14:52 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -231,6 +231,11 @@ class Ui_PreferencesDialog(object):
         self.verticalLayout_8.addWidget(self.rowHighlightChecker)
         spacerItem4 = QtGui.QSpacerItem(20, 29, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_8.addItem(spacerItem4)
+        self.snapPatternRepeatChecker = QtGui.QCheckBox(self.tab_2)
+        self.snapPatternRepeatChecker.setText(QtGui.QApplication.translate("PreferencesDialog", "snap pattern repeats to grid", None, QtGui.QApplication.UnicodeUTF8))
+        self.snapPatternRepeatChecker.setChecked(True)
+        self.snapPatternRepeatChecker.setObjectName(_fromUtf8("snapPatternRepeatChecker"))
+        self.verticalLayout_8.addWidget(self.snapPatternRepeatChecker)
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         self.tab = QtGui.QWidget()
         self.tab.setObjectName(_fromUtf8("tab"))

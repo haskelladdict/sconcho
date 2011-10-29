@@ -418,6 +418,16 @@
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QCheckBox" name="snapPatternRepeatChecker">
+         <property name="text">
+          <string>snap pattern repeats to grid</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab">

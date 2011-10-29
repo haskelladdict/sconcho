@@ -153,6 +153,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings.highlightRowsColor.make_settings_default()
         self.settings.highlightRowsOpacity.make_settings_default()
         self.settings.highlightRowsStart.make_settings_default()
+        self.settings.snapPatternRepeatToGrid.make_settings_default()
         self.settings.personalSymbolPath.make_settings_default()
 
 
@@ -494,6 +495,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         self._update_highlight_button_color()
 
+        # set up snap pattern repeat to grid
+        snapValue = self.settings.snapPatternRepeatToGrid.value
+        self.snapPatternRepeatChecker.setCheckState(snapValue)
+
 
 
     def change_row_highlight_color(self):
@@ -556,6 +561,13 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
 
 
+    def change_snap_pattern_repeat_to_grid_state(self, newState):
+        """ Set the new snap to grid value (on/off) """
+
+        self.settings.snapPatternRepeatToGrid.value = newState
+
+
+
     def set_up_grid_properties_connections(self):
         """ Set up the connections for the grid properties tab. """
         
@@ -582,6 +594,11 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.connect(self.highlightRowOpacitySpinner,
                      SIGNAL("valueChanged(int)"),
                      self.change_row_highlight_opacity)
+
+        self.connect(self.snapPatternRepeatChecker,
+                     SIGNAL("stateChanged(int)"),
+                     self.change_snap_pattern_repeat_to_grid_state)
+
 
 
     def grid_cell_width_changed(self, newWidth):

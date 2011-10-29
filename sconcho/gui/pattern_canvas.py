@@ -2197,7 +2197,8 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         """
 
-        self._snap_to_grid()
+        if self.scene().settings.snapPatternRepeatToGrid.value == Qt.Checked:
+            self._snap_to_grid()
 
         if self._position != self.pos():
             self.scene().canvas_item_position_changed(self, self._position,

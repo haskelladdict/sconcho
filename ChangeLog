@@ -2,6 +2,8 @@ XXXXXXXXXX: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Added print preview dialog
 	* Fixed rendering issues on Qt-4.7.2 and older
+	* Added ability to snap pattern repeats to grid (controllable
+	  via on/off switch in preferences)
 
 10-14-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
