@@ -663,7 +663,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mark_project_clean()
 
             
+
     def open_recent_file(self, action):
+        """ This function opens a recently opened pattern."""
 
         readFilePath = action.text()
         
