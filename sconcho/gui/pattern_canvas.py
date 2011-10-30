@@ -1378,10 +1378,11 @@ class PatternCanvas(QGraphicsScene):
         for row in range(0, self._numRows):
             location = QPointF(columnID * self._unitCellDim.width(),
                                 row * self._unitCellDim.height())
-            item = self.create_pattern_grid_item(location, self._unitCellDim,
-                                                    columnID, row, 1, 1,
-                                                    self._defaultSymbol,
-                                                    self._defaultColor)
+            item = self.create_pattern_grid_item(location, 
+                                                 self._unitCellDim,
+                                                 columnID, row, 1, 1,
+                                                 self._defaultSymbol,
+                                                 self._defaultColor)
             self.addItem(item)
 
 
@@ -1396,6 +1397,8 @@ class PatternCanvas(QGraphicsScene):
 
         # clear all caches
         self.gridLegend.clear()
+        self._selectedCells = {}                                          
+        self._undoStack.clear()
 
 
 

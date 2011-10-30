@@ -609,6 +609,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if status:
             thread.wait()
 
+        # update recent files
+        self.menuRecent_Files.addAction(saveFilePath)
+
         return True
     
 
