@@ -605,7 +605,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._save_pattern(self._recoveryFilePath, markProjectClean = False)
 
         # ready to save main project file
-        self._save_pattern(self._saveFilePath).wait()
+        (status, thread) = self._save_pattern(self._saveFilePath)
+        if status:
+            thread.wait()
 
         return True
     
@@ -624,7 +626,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         
         if not filePath or not self._projectIsDirty:
-            return False
+            return (False, None)
 
         saveFileName = QFileInfo(filePath).fileName()
         self.statusBar().showMessage("saving " + saveFileName)
@@ -640,7 +642,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self._save_pattern_epilog)
         saveThread.start()
 
-        return saveThread
+        return (True, saveThread)
 
 
 
