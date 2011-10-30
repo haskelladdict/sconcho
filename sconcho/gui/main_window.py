@@ -610,7 +610,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             thread.wait()
 
         # update recent files
-        self.menuRecent_Files.addAction(saveFilePath)
+        add_to_recent_files(self.menuRecent_Files, self._saveFilePath)
+        #self.menuRecent_Files.addAction(self._saveFilePath)
 
         return True
     
@@ -966,7 +967,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 ## Helper functions
 ##
 ################################################################
-
 def set_up_colors(widget, colors):
     """ Sets the colors of ColorSelectorItems in the widget to
     the requested colors. Also activates the previously
@@ -1024,3 +1024,19 @@ def check_for_recovery_file(filePath):
             returnPath = (True, recoveryFilePath)
 
     return returnPath
+
+
+
+def add_to_recent_files(menu, filePath):
+    """ Add filePath to menu if it isn't already present.
+    Also, if we have more than 10 entries already pop off
+    the oldest entry.
+
+    """
+
+    actions = menu.actions()
+    for action in actions:
+        if action.text() == filePath:
+            return
+
+    menu.addAction(filePath)

@@ -53,21 +53,27 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         super(ExportBitmapDialog, self).__init__(parent)
         self.setupUi(self)
 
+        # NOTE: This has to come first since we rely on them
+        # to syncronize the widgets
+        self._set_up_connections()
+
         self.canvas = canvas
+        self.currentUnit = 0
+        self.unitSelector.setCurrentIndex(self.currentUnit)
+        self.defaultDPI = 90
 
         self._determine_image_formats()
         self._add_image_formats_to_gui()
         self._update_dimensions()
+        self.dpiSpinner.setValue(self.defaultDPI)
 
         self.hideNostitchSymbols = False
 
-        self.currentUnit = 0
-        self.unitSelector.setCurrentIndex(self.currentUnit)
-        self.defaultDPI = 90
-        self.dpi = self.defaultDPI
-        self.dpiSpinner.setValue(self.dpi)
-
         self.fileNameEdit.setText(QDir.homePath() + "/")
+
+
+    def _set_up_connections(self):
+        """ Set up all the widget connections. """
 
         # synchronize spin boxes
         self.connect(self.imageWidthSpinner, SIGNAL("valueChanged(double)"),
@@ -120,16 +126,11 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         
         size = self.canvas.itemsBoundingRect()
 
-        self.width = math.floor(size.width())
-        self.height = math.floor(size.height())
-        self.imageWidth = self.width
-        self.imageHeight = self.height
-
+        self.imageWidth = math.floor(size.width())
+        self.imageHeight = math.floor(size.height())
         self._aspectRatio = size.width()/size.height()
-        self.imageWidthSpinner.setValue(self.imageWidth)
-        self.imageHeightSpinner.setValue(self.imageHeight)
-        self.widthSpinner.setValue(self.width)
-        self.heightSpinner.setValue(self.height)
+        self.imageWidthSpinner.setValue(
+            self._convert_pixels_to_length(self.imageWidth))
 
 
     
@@ -166,12 +167,13 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.imageWidth = self._convert_length_to_pixels(newWidth)
         self.imageHeight = self.imageWidth/self._aspectRatio
         height = self._convert_pixels_to_length(self.imageHeight)
+        dpi = self.dpiSpinner.value()
         
         self._set_blocking_value(self.imageHeightSpinner, height)
         self._set_blocking_value(self.widthSpinner, 
-                                 self.imageWidth * self.dpi/self.defaultDPI)
+                                 self.imageWidth * dpi/self.defaultDPI)
         self._set_blocking_value(self.heightSpinner, 
-                                 self.imageHeight * self.dpi/self.defaultDPI)
+                                 self.imageHeight * dpi/self.defaultDPI)
 
 
 
@@ -219,33 +221,31 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
     def width_update(self, newWidth):
         """ Update after width change. """
 
-        self.width = newWidth
-        self.height = self.width/self._aspectRatio
-        self.dpi = self.width/self.imageWidth * self.defaultDPI
-        self._set_blocking_value(self.heightSpinner, self.height)
-        self._set_blocking_value(self.dpiSpinner, self.dpi)
+        height = newWidth/self._aspectRatio
+        dpi = newWidth/self.imageWidth * self.defaultDPI
+        self._set_blocking_value(self.heightSpinner, height)
+        self._set_blocking_value(self.dpiSpinner, dpi)
 
 
 
     def height_update(self, newHeight):
         """ Update after height change. """
 
-        self.width = newHeight * self._aspectRatio
-        self.height = newHeight
-        self.dpi = self.width/self.imageWidth * self.defaultDPI
-        self._set_blocking_value(self.widthSpinner, self.width)
-        self._set_blocking_value(self.dpiSpinner, self.dpi)
+        width = newHeight * self._aspectRatio
+        dpi = width/self.imageWidth * self.defaultDPI
+        self._set_blocking_value(self.widthSpinner, width)
+        self._set_blocking_value(self.dpiSpinner, dpi)
 
 
     
     def dpi_update(self, newDPI):
         """ Update after dpi change. """
 
-        self.dpi = newDPI
-        self.width = self.dpi/self.defaultDPI * self.imageWidth
-        self.height = self.width/self._aspectRatio
-        self._set_blocking_value(self.heightSpinner, self.height)
-        self._set_blocking_value(self.widthSpinner, self.width)
+        width = newDPI/self.defaultDPI * self.imageWidth
+        height = width/self._aspectRatio
+        self._set_blocking_value(self.heightSpinner, height)
+        self._set_blocking_value(self.widthSpinner, width)
+
 
 
     def unit_update(self, newUnit):
@@ -350,8 +350,11 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
         # provide the io subroutines with the relevant info
-        self.emit(SIGNAL("export_pattern"), self.width, self.height,
-                  self.dpi, self.hideNostitchSymbols, exportFilePath)
+        width = self.widthSpinner.value()
+        height = self.heightSpinner.value()
+        dpi = self.dpiSpinner.value()
+        self.emit(SIGNAL("export_pattern"), width, height, dpi,
+                  self.hideNostitchSymbols, exportFilePath)
 
         QDialog.accept(self)
 

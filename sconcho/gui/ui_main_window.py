@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Oct 29 23:03:40 2011
+# Created: Sun Oct 30 13:37:25 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -346,6 +346,10 @@ class Ui_MainWindow(object):
         self.actionClear = QtGui.QAction(MainWindow)
         self.actionClear.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.actionClear.setObjectName(_fromUtf8("actionClear"))
+        self.action = QtGui.QAction(MainWindow)
+        self.action.setText(QtGui.QApplication.translate("MainWindow", "Clear List", None, QtGui.QApplication.UnicodeUTF8))
+        self.action.setObjectName(_fromUtf8("action"))
+        self.menuRecent_Files.addSeparator()
         self.menuRecent_Files.addSeparator()
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
