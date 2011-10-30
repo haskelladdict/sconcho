@@ -81,11 +81,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings = settings
         self._restore_window_settings()
         self.preferencesDialog = None
+        self.exportBitmapDialog = None
         self.manualDialog = None
-
-        # settings for export bitmap dialog
-        self._exportBitmapFile = None
-        self._hideNoStitch = False
 
         self.clear_project_save_file()
 
@@ -740,22 +737,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def export_pattern_dialog(self):
         """ This function opens and export pattern dialog. """
 
-        canvasSize = self.canvas.itemsBoundingRect()
-        exportDialog = ExportBitmapDialog(canvasSize, 
-                                          self._exportBitmapFile,
-                                          self._hideNoStitch,
-                                          self)
-        if exportDialog.exec_():
-            io.export_scene(self.canvas,
-                            exportDialog.width,
-                            exportDialog.height,
-                            exportDialog.hideNostitchSymbols,
-                            exportDialog.filePath)
-            exportFileName = QFileInfo(exportDialog.filePath).fileName()
-            self._exportBitmapFile = exportDialog.filePath
-            self._hideNoStitch = exportDialog.hideNostitchSymbols
-            self.statusBar().showMessage("successfully exported " + 
-                                         exportFileName, 3000)
+        if not self.exportBitmapDialog:
+            self.exportBitmapDialog = ExportBitmapDialog(self.canvas, self)
+
+            self.connect(self.exportBitmapDialog, SIGNAL("export_pattern"),
+                         partial(io.export_scene, self.canvas))
+
+        self.exportBitmapDialog.raise_()
+        self.exportBitmapDialog.show()
 
 
 
@@ -793,7 +782,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def open_preferences_dialog(self):
         """ Open the preferences dialog. """
 
-        
         if not self.preferencesDialog:
             self.preferencesDialog = PreferencesDialog(self.settings, self)
             

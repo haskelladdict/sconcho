@@ -34,6 +34,10 @@ from sconcho.gui.ui_export_bitmap_dialog import Ui_ExportBitmapDialog
 import sconcho.util.messages as msg
 
 
+# global conversion
+inToCm = 1/0.393700787
+
+
 ##########################################################################
 #
 # This widget allows users to adjust to control exporting of the
@@ -43,43 +47,50 @@ import sconcho.util.messages as msg
 class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
-    def __init__(self, size, filePath, hideNoStitch, parent = None):
+    def __init__(self, canvas, parent = None):
         """ Initialize the dialog. """
 
         super(ExportBitmapDialog, self).__init__(parent)
         self.setupUi(self)
-        self.determine_image_formats()
-        self.add_image_formats_to_gui()
-        self.hideNostitchCheckBox.setChecked(hideNoStitch)
+
+        self.canvas = canvas
+
+        self._determine_image_formats()
+        self._add_image_formats_to_gui()
+        self._update_dimensions()
 
         self.hideNostitchSymbols = False
-        self.width = math.floor(size.width())
-        self.height = math.floor(size.height())
-        self._originalWidth = self.width
-        self.scaling = 100.0
-        if filePath:
-            self.fileNameEdit.setText(filePath)
-        else:
-            self.fileNameEdit.setText(QDir.homePath() + "/")
 
-        self._aspectRatio = size.width()/size.height()
-        
-        self.widthSpinner.setValue(self.width)
-        self.heightSpinner.setValue(self.height)
-        self.scalingSpinner.setValue(self.scaling)
+        self.currentUnit = 0
+        self.unitSelector.setCurrentIndex(self.currentUnit)
+        self.defaultDPI = 90
+        self.dpi = self.defaultDPI
+        self.dpiSpinner.setValue(self.dpi)
+
+        self.fileNameEdit.setText(QDir.homePath() + "/")
 
         # synchronize spin boxes
+        self.connect(self.imageWidthSpinner, SIGNAL("valueChanged(double)"),
+                     self.imageWidth_update)
+
+        self.connect(self.imageHeightSpinner, 
+                     SIGNAL("valueChanged(double)"),
+                     self.imageHeight_update)
+
         self.connect(self.widthSpinner, SIGNAL("valueChanged(int)"),
                      self.width_update)
 
         self.connect(self.heightSpinner, SIGNAL("valueChanged(int)"),
                      self.height_update)
 
-        self.connect(self.scalingSpinner, SIGNAL("valueChanged(int)"),
-                     self.scaling_update)
+        self.connect(self.dpiSpinner, SIGNAL("valueChanged(int)"),
+                     self.dpi_update)
 
         self.connect(self.hideNostitchCheckBox, SIGNAL("stateChanged(int)"),
                      self.hide_nostitch_update)
+
+        self.connect(self.unitSelector, SIGNAL("currentIndexChanged(int)"),
+                     self.unit_update)
         
         self.connect(self.browseButton, SIGNAL("pressed()"),
                      self.open_file_selector)
@@ -91,8 +102,38 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
                      self.accept)
 
 
+
+    def showEvent(self, event):
+        """ We derive showEvent so we can make update
+        the current canvas dimensions.
+
+        """
+
+        self._update_dimensions()
+        return QDialog.showEvent(self, event)
+
+
+
+    def _update_dimensions(self):
+        """ Update values with the current canvas dimensions """
+
+        
+        size = self.canvas.itemsBoundingRect()
+
+        self.width = math.floor(size.width())
+        self.height = math.floor(size.height())
+        self.imageWidth = self.width
+        self.imageHeight = self.height
+
+        self._aspectRatio = size.width()/size.height()
+        self.imageWidthSpinner.setValue(self.imageWidth)
+        self.imageHeightSpinner.setValue(self.imageHeight)
+        self.widthSpinner.setValue(self.width)
+        self.heightSpinner.setValue(self.height)
+
+
     
-    def determine_image_formats(self):
+    def _determine_image_formats(self):
         """ Determine and store all image formats we can
         support. 
 
@@ -111,7 +152,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
 
-    def add_image_formats_to_gui(self):
+    def _add_image_formats_to_gui(self):
         """ This function lists all available formats on the gui """
 
         self.availableFormatsLabel.setText("available formats: " +
@@ -119,51 +160,117 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
 
-    def width_update(self, newWidth):
-        """ Update height spinner after width change.
+    def imageWidth_update(self, newWidth):
+        """ Update after image width change. """
 
-        Update according to the correct aspect ratio.
+        self.imageWidth = self._convert_length_to_pixels(newWidth)
+        self.imageHeight = self.imageWidth/self._aspectRatio
+        height = self._convert_pixels_to_length(self.imageHeight)
         
-        """
+        self._set_blocking_value(self.imageHeightSpinner, height)
+        self._set_blocking_value(self.widthSpinner, 
+                                 self.imageWidth * self.dpi/self.defaultDPI)
+        self._set_blocking_value(self.heightSpinner, 
+                                 self.imageHeight * self.dpi/self.defaultDPI)
+
+
+
+    def imageHeight_update(self, newHeight):
+        """ Update after image width change. """
+
+        self.imageHeight = self._convert_length_to_pixels(newHeight)
+        self.imageWidth = self.imageHeight * self._aspectRatio
+        width = self._convert_pixels_to_length(self.imageWidth)
+
+        self._set_blocking_value(self.imageWidthSpinner, width)
+        self._set_blocking_value(self.widthSpinner, 
+                                 self.imageWidth * self.dpi/self.defaultDPI)
+        self._set_blocking_value(self.heightSpinner, 
+                                 self.imageHeight * self.dpi/self.defaultDPI)
+
+
+
+    def _convert_length_to_pixels(self, length):
+        """ Converts a length value in currentUnit to pixels """
+
+        # pixels
+        if self.currentUnit == 1:
+            length *= self.defaultDPI
+        elif self.currentUnit == 2:
+            length = length/inToCm * self.defaultDPI
+
+        return length
+
+
+
+    def _convert_pixels_to_length(self, length):
+        """ Converts a pixel value to length in currentUnit """
+
+        # pixels
+        if self.currentUnit == 1:
+            length /= self.defaultDPI
+        elif self.currentUnit == 2:
+            length = length/self.defaultDPI * inToCm
+
+        return length
+
+
+
+    def width_update(self, newWidth):
+        """ Update after width change. """
 
         self.width = newWidth
         self.height = self.width/self._aspectRatio
-        self.scaling = self.width/self._originalWidth * 100.0
-
+        self.dpi = self.width/self.imageWidth * self.defaultDPI
         self._set_blocking_value(self.heightSpinner, self.height)
-        self._set_blocking_value(self.scalingSpinner, self.scaling)
+        self._set_blocking_value(self.dpiSpinner, self.dpi)
 
 
 
     def height_update(self, newHeight):
-        """ Update width spinner after height change.
-
-        Update according to the correct aspect ratio.
-        
-        """
+        """ Update after height change. """
 
         self.width = newHeight * self._aspectRatio
         self.height = newHeight
-        self.scaling = self.width/self._originalWidth * 100.0
-
+        self.dpi = self.width/self.imageWidth * self.defaultDPI
         self._set_blocking_value(self.widthSpinner, self.width)
-        self._set_blocking_value(self.scalingSpinner, self.scaling)
+        self._set_blocking_value(self.dpiSpinner, self.dpi)
 
 
+    
+    def dpi_update(self, newDPI):
+        """ Update after dpi change. """
 
-    def scaling_update(self, newScale):
-        """ Update scaling spinner after height change.
-
-        Update according to the correct aspect ratio.
-        
-        """
-
-        self.scaling = newScale
-        self.width = self._originalWidth * self.scaling / 100.0
+        self.dpi = newDPI
+        self.width = self.dpi/self.defaultDPI * self.imageWidth
         self.height = self.width/self._aspectRatio
-
-        self._set_blocking_value(self.widthSpinner, self.width)
         self._set_blocking_value(self.heightSpinner, self.height)
+        self._set_blocking_value(self.widthSpinner, self.width)
+
+
+    def unit_update(self, newUnit):
+        """ Update after unit change. """
+
+        self.currentUnit = newUnit
+        
+        # pixels
+        if newUnit == 0:    
+            self._set_blocking_value(self.imageWidthSpinner, 
+                                     self.imageWidth)
+            self._set_blocking_value(self.imageHeightSpinner, 
+                                     self.imageHeight)
+        # inches
+        elif newUnit == 1:
+            self._set_blocking_value(self.imageWidthSpinner, 
+                                     self.imageWidth/self.defaultDPI)
+            self._set_blocking_value(self.imageHeightSpinner, 
+                                     self.imageHeight/self.defaultDPI)
+        # cm
+        elif newUnit == 2:
+            self._set_blocking_value(self.imageWidthSpinner, 
+                                     self.imageWidth/self.defaultDPI*inToCm)
+            self._set_blocking_value(self.imageHeightSpinner, 
+                                     self.imageHeight/self.defaultDPI*inToCm)
 
 
 
@@ -177,6 +284,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         theObject.blockSignals(True)
         theObject.setValue(value)
         theObject.blockSignals(False)
+
 
 
     def hide_nostitch_update(self, state):
@@ -241,7 +349,9 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
                 return 
 
 
-        self.filePath = exportFilePath
+        # provide the io subroutines with the relevant info
+        self.emit(SIGNAL("export_pattern"), self.width, self.height,
+                  self.dpi, self.hideNostitchSymbols, exportFilePath)
 
         QDialog.accept(self)
 

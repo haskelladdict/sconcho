@@ -48,12 +48,12 @@ MAGIC_NUMBER = 0xA3D1
 API_VERSION  = 2
 
 
-#############################################################################
+###########################################################################
 #
 # this is a simple wrapper around QThread to allow saving of projects
 # to take place in a separate thread
 #
-#############################################################################
+###########################################################################
 class SaveThread(QThread):
 
     lock = QReadWriteLock()
@@ -569,13 +569,13 @@ def read_patternRepeats(stream, numRepeats):
 
 
 
-#############################################################################
+###########################################################################
 #
 # routines for exporting a project to an image file
 #
-#############################################################################
+###########################################################################
 @wait_cursor
-def export_scene(canvas, width, height, hideNostitchSymbols,
+def export_scene(canvas, width, height, dpi, hideNostitchSymbols,
                  exportFileName):
     """ This function exports the scene to a file. """
 
@@ -608,6 +608,11 @@ def export_scene(canvas, width, height, hideNostitchSymbols,
         generator = QImage(width+2*margin, height+2*margin, 
                            QImage.Format_ARGB32_Premultiplied)
         generator.fill(1)
+
+        inchesToMeter = 39.3700787
+        generator.setDotsPerMeterX(dpi*inchesToMeter)
+        generator.setDotsPerMeterY(dpi*inchesToMeter)
+
 
     painter = QPainter(generator)
     painter.setRenderHints(QPainter.SmoothPixmapTransform )
