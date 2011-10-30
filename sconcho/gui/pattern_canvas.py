@@ -1399,6 +1399,7 @@ class PatternCanvas(QGraphicsScene):
         self.gridLegend.clear()
         self._selectedCells = {}                                          
         self._undoStack.clear()
+        self._copySelection = {}
 
 
 
