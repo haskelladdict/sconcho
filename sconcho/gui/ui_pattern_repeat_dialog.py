@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/pattern_repeat_dialog.ui'
 #
-# Created: Sun Oct 30 13:37:26 2011
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Tue Nov  1 17:56:34 2011
+#      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
 

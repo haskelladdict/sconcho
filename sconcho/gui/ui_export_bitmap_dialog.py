@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/export_bitmap_dialog.ui'
 #
-# Created: Sun Oct 30 13:37:26 2011
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Tue Nov  1 17:56:33 2011
+#      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -62,11 +62,11 @@ class Ui_ExportBitmapDialog(object):
         spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout_2.addItem(spacerItem3, 2, 4, 1, 1)
         self.imageWidthSpinner = QtGui.QDoubleSpinBox(ExportBitmapDialog)
-        self.imageWidthSpinner.setMaximum(1000.0)
+        self.imageWidthSpinner.setMaximum(10000.0)
         self.imageWidthSpinner.setObjectName(_fromUtf8("imageWidthSpinner"))
         self.gridLayout_2.addWidget(self.imageWidthSpinner, 0, 1, 1, 1)
         self.imageHeightSpinner = QtGui.QDoubleSpinBox(ExportBitmapDialog)
-        self.imageHeightSpinner.setMaximum(1000.0)
+        self.imageHeightSpinner.setMaximum(10000.0)
         self.imageHeightSpinner.setObjectName(_fromUtf8("imageHeightSpinner"))
         self.gridLayout_2.addWidget(self.imageHeightSpinner, 1, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_2)
@@ -87,7 +87,7 @@ class Ui_ExportBitmapDialog(object):
         self.label.setObjectName(_fromUtf8("label"))
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.widthSpinner = QtGui.QSpinBox(ExportBitmapDialog)
-        self.widthSpinner.setMaximum(10000)
+        self.widthSpinner.setMaximum(50000)
         self.widthSpinner.setObjectName(_fromUtf8("widthSpinner"))
         self.gridLayout.addWidget(self.widthSpinner, 0, 1, 1, 1)
         self.label_6 = QtGui.QLabel(ExportBitmapDialog)
@@ -95,7 +95,7 @@ class Ui_ExportBitmapDialog(object):
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.gridLayout.addWidget(self.label_6, 0, 2, 1, 1)
         self.dpiSpinner = QtGui.QSpinBox(ExportBitmapDialog)
-        self.dpiSpinner.setMaximum(1000)
+        self.dpiSpinner.setMaximum(1200)
         self.dpiSpinner.setObjectName(_fromUtf8("dpiSpinner"))
         self.gridLayout.addWidget(self.dpiSpinner, 0, 3, 1, 1)
         self.label_9 = QtGui.QLabel(ExportBitmapDialog)
@@ -109,7 +109,7 @@ class Ui_ExportBitmapDialog(object):
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
         self.heightSpinner = QtGui.QSpinBox(ExportBitmapDialog)
-        self.heightSpinner.setMaximum(10000)
+        self.heightSpinner.setMaximum(50000)
         self.heightSpinner.setObjectName(_fromUtf8("heightSpinner"))
         self.gridLayout.addWidget(self.heightSpinner, 1, 1, 1, 1)
         self.label_4 = QtGui.QLabel(ExportBitmapDialog)

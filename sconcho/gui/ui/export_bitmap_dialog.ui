@@ -131,14 +131,14 @@ p, li { white-space: pre-wrap; }
      <item row="0" column="1">
       <widget class="QDoubleSpinBox" name="imageWidthSpinner">
        <property name="maximum">
-        <double>1000.000000000000000</double>
+        <double>10000.000000000000000</double>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
       <widget class="QDoubleSpinBox" name="imageHeightSpinner">
        <property name="maximum">
-        <double>1000.000000000000000</double>
+        <double>10000.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -183,7 +183,7 @@ p, li { white-space: pre-wrap; }
      <item row="0" column="1">
       <widget class="QSpinBox" name="widthSpinner">
        <property name="maximum">
-        <number>10000</number>
+        <number>50000</number>
        </property>
       </widget>
      </item>
@@ -197,7 +197,7 @@ p, li { white-space: pre-wrap; }
      <item row="0" column="3">
       <widget class="QSpinBox" name="dpiSpinner">
        <property name="maximum">
-        <number>1000</number>
+        <number>1200</number>
        </property>
       </widget>
      </item>
@@ -234,7 +234,7 @@ p, li { white-space: pre-wrap; }
      <item row="1" column="1">
       <widget class="QSpinBox" name="heightSpinner">
        <property name="maximum">
-        <number>10000</number>
+        <number>50000</number>
        </property>
       </widget>
      </item>
