@@ -26,8 +26,8 @@ from __future__ import absolute_import
 
 
 # version and release date of current sconcho
-__version__ = "0.1.0_b5"
-__releaseDate__ = "2011-10-14"
+__version__ = "0.1.0_b6"
+__releaseDate__ = "2011-11-01"
 
 
 import platform, os
@@ -747,7 +747,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.exportBitmapDialog = ExportBitmapDialog(self.canvas, self)
 
             self.connect(self.exportBitmapDialog, SIGNAL("export_pattern"),
-                         partial(io.export_scene, self.canvas))
+                         partial(io.export_scene, self.canvas),
+                         Qt.QueuedConnection)
 
         self.exportBitmapDialog.raise_()
         self.exportBitmapDialog.show()

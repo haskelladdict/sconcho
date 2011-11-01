@@ -1,4 +1,4 @@
-XXXXXXXXXX: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+11-01-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Added print preview dialog
 	* Fixed rendering issues on Qt-4.7.2 and older
@@ -6,6 +6,9 @@ XXXXXXXXXX: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 	  via on/off switch in preferences)
 	* Fixed bug in "Apply Color To Selection Option". Thanks
 	  to fingertips@ravelry.
+	* Added recently used files menu
+	* Many bugfixes
+
 
 10-14-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
