@@ -780,9 +780,16 @@ class PatternCanvas(QGraphicsScene):
         gridMenu.addSeparator()
 
         scenePos = event.scenePos()
-        colorAction = gridMenu.addAction("&Grab Color")
+        colorAction = gridMenu.addAction("&Grab Color and Insert Into "
+                                         "Color Selector")
         self.connect(colorAction, SIGNAL("triggered()"),
-                     partial(self.grab_color_from_cell, scenePos))
+                     partial(self.grab_color_from_cell_add_to_widget, 
+                             scenePos))
+        colorAction = gridMenu.addAction("&Grab Color and Apply To All "
+                                         "Selected Cells")
+        self.connect(colorAction, SIGNAL("triggered()"),
+                     partial(self.grab_color_from_cell_add_to_selection, 
+                             scenePos))
         gridMenu.addSeparator()
 
         addRepeatAction = gridMenu.addAction("&Add Pattern Repeat "
@@ -876,7 +883,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def apply_color_to_selection(self):
+    def apply_color_to_selection(self, color = None):
         """ This slot changes the background color of all selected cells
         to the currently active color.
 
@@ -885,7 +892,7 @@ class PatternCanvas(QGraphicsScene):
         if not self._selectedCells:
             return
 
-        colorCommand = ColorSelectedCells(self)
+        colorCommand = ColorSelectedCells(self, color)
         self._undoStack.push(colorCommand)
         self.clear_all_selected_cells()
 
@@ -958,8 +965,7 @@ class PatternCanvas(QGraphicsScene):
 
     def grab_color_from_cell(self, scenePosition):
         """ Extract the color from the selected cell
-        (the one at scenePosition) and add it to the currently active
-        color selector.
+        (the one at scenePosition) 
         
         """
 
@@ -972,7 +978,29 @@ class PatternCanvas(QGraphicsScene):
             return
 
         color = patternGridItems[0].color
-        self.change_active_color(color)
+        return color
+
+
+
+    def grab_color_from_cell_add_to_widget(self, scenePosition):
+        """ Apply the color of the selected cell to the active
+        color selector.
+        
+        """
+
+        selectedColor = self.grab_color_from_cell(scenePosition)
+        self.change_active_color(selectedColor)
+
+
+
+    def grab_color_from_cell_add_to_selection(self, scenePosition):
+        """ Apply the color of the selected cell to the active
+        color selector.
+        
+        """
+
+        selectedColor = self.grab_color_from_cell(scenePosition)
+        self.apply_color_to_selection(selectedColor)
 
 
 

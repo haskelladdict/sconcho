@@ -1297,7 +1297,7 @@ class ColorSelectedCells(QUndoCommand):
     """
 
 
-    def __init__(self, canvas, parent = None):
+    def __init__(self, canvas, color = None, parent = None):
         
         super(ColorSelectedCells, self).__init__(parent)
         
@@ -1309,7 +1309,11 @@ class ColorSelectedCells(QUndoCommand):
         self.previousColors = {}
 
         self.selectedCells = canvas._selectedCells.copy()
-        self.activeColor = canvas._activeColorObject.color
+        
+        if color:
+            self.activeColor = color
+        else:
+            self.activeColor = canvas._activeColorObject.color
 
 
 
