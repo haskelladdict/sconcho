@@ -1,4 +1,4 @@
-11-01-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+11-03-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Added print preview dialog
 	* Fixed rendering issues on Qt-4.7.2 and older

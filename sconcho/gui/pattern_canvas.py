@@ -802,7 +802,7 @@ class PatternCanvas(QGraphicsScene):
             editRepeatAction.setEnabled(False)
         gridMenu.addSeparator()
 
-        copyAction = gridMenu.addAction("&Copy Selection")
+        copyAction = gridMenu.addAction("&Copy Rectangular Selection")
         (status, (colDim, rowDim)) = \
                 is_active_selection_rectangular(self._selectedCells.values())
         self.connect(copyAction, SIGNAL("triggered()"),
@@ -810,7 +810,7 @@ class PatternCanvas(QGraphicsScene):
         if not status:
             copyAction.setEnabled(False)
 
-        pasteAction = gridMenu.addAction("&Paste Selection")
+        pasteAction = gridMenu.addAction("&Paste Rectangular Selection")
         self.connect(pasteAction, SIGNAL("triggered()"),
                      partial(self.paste_selection, col, row))
         pasteAction.setEnabled(False)

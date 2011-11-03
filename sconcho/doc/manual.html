@@ -317,12 +317,15 @@ ul.auto-toc {
 <div class="document" id="sconcho-manual">
 <h1 class="title">Sconcho Manual</h1>
 
-<p><em>Author: Markus Dittrich (last change 09/10/2011)</em></p>
-<p>Sconcho is a tool for creating knitting charts. Charts can be created by placing
-a variety of knitting symbols into a rectangular grids. Projects can be saved in
-a platform independent format as sconcho project files (spf) and can be edited
-at a later time. Charts can be exported in a variety of image formats and also
-printed to a printer of saved in PDF or PostScript format.</p>
+<p><em>Author: Markus Dittrich (last change 11/03/2011)</em></p>
+<p>Sconcho is a tool for creating knitting charts. Charts can be created by
+placing stitch patterns into a rectangular grid. Sconcho has a large
+number of predefined knitting symbols and you can also define and import
+your own. Knitting charts can be saved in a platform independent format
+as sconcho project files (spf) and can be edited at a later time. Charts
+can be exported in a variety of image formats (jpg, png, etc.) and also
+printed to a printer of saved in PDF or PostScript format (on Linux and
+Mac OSX).</p>
 <p><strong>Contents of this manual</strong>:</p>
 <ul class="simple">
 <li><a class="reference internal" href="#starting-a-new-project">Starting a new Project</a></li>
@@ -342,87 +345,97 @@ printed to a printer of saved in PDF or PostScript format.</p>
 <div class="section" id="starting-a-new-project">
 <h1>Starting a new Project</h1>
 <p>After start-up, sconcho by default presents a pattern grid with 10 rows and
-10 columns. This initial grid size can be changed by either</p>
+10 columns. This initial grid size can be changed by</p>
 <blockquote>
 <ul class="simple">
-<li>starting a new project (<strong>File -&gt; New</strong>) and specifying the proper size in the <em>New Pattern Grid</em> dialog.</li>
+<li>starting a new project (<strong>File -&gt; New</strong>) and specifying the intended size in the <em>New Pattern Grid</em> dialog.</li>
 <li>adding the proper number of rows with the <em>Insert/Delete Rows and Columns</em> dialog (<strong>Grid -&gt; Insert/Delete Rows and Columns</strong>).</li>
 </ul>
 </blockquote>
 </div>
 <div class="section" id="interacting-with-sconcho">
 <h1>Interacting with Sconcho</h1>
-<p>Most interactions with sconcho only require a simple mouse click. This is
-true for all selections, e.g. to choose the currently active knitting symbol
-or to place symbols into the existing pattern grid.</p>
-<p>There are a number of additional ways to select cells on the pattern grid and
-these all involve holding down the <strong>Shift key</strong> while using the mouse:</p>
+<p>Most interactions with sconcho only require a simple mouse click. One of
+the most fundamental interaction is the selection of any number of grid
+cells. Selected grid cells can then be filled with knitting symbols,
+a color, or both (see <a class="reference internal" href="#adding-symbols-to-pattern-grid">Adding Symbols To Pattern Grid</a>).</p>
+<p>There are a number of additional ways to select cells on the pattern grid
+all of which involve holding down the <strong>Shift key</strong> while clicking:</p>
 <ul class="simple">
-<li>Shift + mouse click and then dragging the mouse across the pattern grid will
-activate the <em>Rubberband Tool</em>. Upon releasing the mouse button all grid cells
-under the rubberband will either be selected or unselected based on their
-previous state. If there is a knitting symbol active it will be placed
-immediately if it fits into the selection area.</li>
+<li>Shift + mouse click and then dragging the mouse across the pattern grid
+will activate the <em>Rubberband Tool</em>. Upon releasing the mouse button all
+grid cells under the rubberband will either be selected or un-selected
+based on their previous state. If there is a knitting symbol active it
+will be placed immediately if it fits into the selection area.</li>
 <li>Shift + right click on either a row or column label will again select or
-un-select the whole row or column based on its previous state. If there is an
-active knitting symbol it will be placed.</li>
+un-select the whole row or column based on its previous state. If there
+is an active knitting symbol it will be placed into .</li>
 </ul>
-<p>Finally, several items on the canvas can be moved around. Movable items are:
-legend items (both symbols and text) and repeat boxes on the canvas. In order
-to move items, hold down the <strong>Control key</strong> then click on the item with the
-mouse button and start dragging. Releasing the mouse button causes the item
-to be placed at the location of the mouse cursor.</p>
+<p>Finally, several items on the knitting chart can be moved around. Movable
+items are: legend items (both symbols and text) and repeat boxes on the
+canvas. In order to move items, hold down the <strong>Control key</strong> then click
+on the item with the right mouse button and start dragging. Releasing the
+mouse button will cause the item to be placed at the current
+mouse pointer location.</p>
 </div>
 <div class="section" id="adding-symbols-to-pattern-grid">
 <h1>Adding Symbols to Pattern Grid</h1>
-<p>Symbols are added to the pattern grid via selecting grid cells. These
-cells will then be filled with the currently active knitting symbol from
-the list of available knitting symbols.</p>
+<p>You can add symbols to the pattern grid via selecting grid cells. Selected
+cells will turn gray if there is no knitting symbol active. Clicking on
+selected cells once more will un-select them again. If a knitting symbol
+is currently active, sconcho will try to immediately place it into the
+selected cell if possible (e.g., sconcho can not place a three stitch
+cable into a single selected cell. In order to place it at a multiple of
+three adjacent cells has to be selected). If you first select a number
+of cells without an active symbol, sconcho will try to place the active
+knitting symbol as soon as you select one.</p>
 <p>The presently active symbol (including its background color) is indicated
 in the <em>Active Symbol Tool</em> in the lower right hand corner. If no symbol is
 selected the <em>Active Symbol Tool</em> displays <strong>No Active Symbol</strong>.</p>
-<p>Grid cells can be selected in three ways:</p>
+<p>As previously mentioned in <a class="reference internal" href="#interacting-with-sconcho">Interacting with Sconcho</a> Grid cells can be
+selected in three ways:</p>
 <blockquote>
-<ol class="arabic simple">
-<li>individual grid cells can be selected by using the right mouse button to click on them</li>
-<li>complete rows or columns can be selected by holding down the <strong>Control</strong> key and clicking on the row or column labels. If the label spacing is larger than one, Control-clicking in empty row/column label positions will also select whole rows/columns.</li>
-<li>a rectangular area can be selected with the <em>Rubberband Tool</em> by holding down the <strong>Shift</strong> key and the right mouse button and then dragging the mouse.</li>
-</ol>
-</blockquote>
-<p>Without an active symbol (the <em>Active Symbol Tool</em>
-shows <strong>No Active Symbol</strong>) selecting grid cells will highlight
-them in a light gray color. As soon as a symbol is activated it
-will be inserted into the highlighted grid cells. If a
-symbol is already active while selecting grid cells, the symbol will be
-inserted into the highlighted cells immediately.</p>
+1) individual grid cells can be selected by using the right mouse button
+to click on them
+2) complete rows or columns can be selected by holding down the
+<strong>Shift</strong> key and clicking on the row or column labels. If the label
+spacing is larger than 1, Control-clicking in empty row/column label
+positions will also select whole rows/columns.
+3) a rectangular area can be selected with the <em>Rubberband Tool</em> by
+holding down the <strong>Shift</strong> key and the right mouse button and then
+dragging the mouse.</blockquote>
 <p><strong>Note:</strong> If a symbol is active which spans more than a single
 cell - a 3 stitch cable for example -- it will only
 be inserted if the selected grid cells can fit the symbols
-exactly (there could be more than one if the <em>Rubberband Tool</em> is
-used).</p>
+exactly.</p>
 </div>
 <div class="section" id="copy-and-pasting-a-selection">
 <h1>Copy and Pasting a Selection</h1>
-<p>The currently selected cells can be copied via
+<p>You can copy and paste any rectangular collection of cells by selecting
+them first and then copying them via
 <strong>Right Mouse Click -&gt; Copy Selection</strong>. The cells copied in this fashion
-can then then be pasted via <strong>Right Mouse Click -&gt; Paste Selection</strong> as
-often as needed.
-Pasting will insert the most recently copied rectangular selection such
-that the grid cell under the mouse pointer ends up at the upper left
+can then be pasted via <strong>Right Mouse Click -&gt; Paste Selection</strong> as
+often as needed.</p>
+<p><strong>Note:</strong> Before selecting cells for copying make sure no knitting
+symbol is currently active. Otherwise, sconcho will insert it into
+the selection. In any case, if this happens to you, you can always undo
+this action.</p>
+<p>Pasting will insert the most recently copied rectangular selection such
+that the grid cell under the mouse pointer will be at the upper left
 hand corner. When pasting, the target area has to fit the copied selection
 exactly, i.e., pasting can not leave cells half filled. If pasting is not
-possible at the requested location, the <em>Paste Selection</em> option is grayed out.
-This can only happen when attempting to paste into areas with symbols wider
-than a single cell (e.g. 2, 3, 4, 5, or 6 stitch cables).</p>
+possible at the requested location, the <em>Paste Selection</em> option is grayed
+out.</p>
 <p><strong>Note:</strong> Presently, only rectangular selections can be copied and pasted.
-If the current selection is not rectangular or consists of multiple disconnected
-pieces it can not be copied and the <em>Copy Selection</em> option is grayed out.</p>
+If the current selection is not rectangular or consists of multiple
+disconnected pieces it can not be copied and the <em>Copy Selection</em> option
+is grayed out.</p>
 </div>
 <div class="section" id="un-doing-re-doing-canvas-actions">
 <h1>Un-doing/Re-doing Canvas Actions</h1>
 <p>Sconcho allows unlimited undo and redo of all canvas actions,
-including adding symbols, copy &amp; paste, deleting/inserting rows and columns,
-changing colors, and moving and editing legend items.</p>
+including adding symbols, copy &amp; paste, deleting/inserting rows and
+columns, changing colors, and moving and editing legend items.</p>
 </div>
 <div class="section" id="changing-a-symbol-s-background-color">
 <h1>Changing a Symbol's Background Color</h1>
@@ -430,15 +443,15 @@ changing colors, and moving and editing legend items.</p>
 all symbols is <em>white</em>. The color of the active symbol can be changed
 by choosing one of the predefined colors in the <em>Color Selector Tool</em>.
 The currently selected color is indicated in the <em>Active Symbol Tool</em>.
-The color in each of the predefined color selectors can be customized by
-clicking on the <em>Customize Color</em> button and changing the color.
+You can customize the color in each of the predefined color selectors by
+clicking on the <em>Customize Color</em> button and selecting a color.
 In addition, one can also load a color from any grid cell into the
 currently active color selector by grabbing the color via
 <strong>Right Mouse Click -&gt; Grab Color</strong>.</p>
 </div>
 <div class="section" id="changing-the-legend-layout">
 <h1>Changing the Legend Layout</h1>
-<p>For each new symbol and color used, sconcho places a legend entry
+<p>For each new colored symbol used, sconcho places a legend entry
 consisting of a symbol and its description on the canvas. Both the symbol
 and the text can be moved separately anywhere on the canvas and the
 default description for a symbol can be changed.</p>
@@ -472,36 +485,36 @@ repeat box can now be moved.</p>
 <p>Additional rows and columns can be inserted into and deleted from an
 already existing chart using the <em>Insert/Delete Rows and Columns</em> dialog
 (<strong>Grid -&gt; Insert/Delete Rows and Columns</strong>). Here, it is important to keep
-in mind that while it is always possible to add and remove rows, columns can
-be added only if the new row does not appear within an already existing
-multi-cell symbol. Similarly, a column can be removed only if it is not
-part of a multi-cell symbol.</p>
+in mind that while it is always possible to add and remove rows, columns
+can be added only if the new column does not appear within an already
+existing multi-cell symbol. Similarly, a column can be removed only if
+it is not part of a multi-cell symbol.</p>
 </div>
 <div class="section" id="saving-and-opening-sconcho-projects">
 <h1>Saving and Opening Sconcho Projects</h1>
 <p>Sconcho projects can be saved in a platform independent binary
-format called <em>sconcho project format (SPF)</em>. SPF files typically end
-with the extension .spf. SPF files can then be re-opened in sconcho.</p>
+format called <em>sconcho project format (spf)</em>. spf files typically end
+with the extension .spf. spf files can then be re-opened in sconcho.</p>
 </div>
 <div class="section" id="exporting-and-printing-charts">
 <h1>Exporting and Printing Charts</h1>
 <p>You can either print your sconcho project on a printer (or print
 to a PDF file on some platforms), export it as a bitmapped image
 file, or save it as an svg image. The available image file formats
-depend on the operating system. Click on the <em>Browse</em> button to
-see all available formats. Exported images can also be scaled.</p>
+depend on the operating system and are listed at the bottom of
+the <em>Export As Bitmap or Svg</em> dialog.</p>
 <p>To enable the generation of non-rectangular image files, sconcho can
 hide all <em>nostitch</em> symbols in the exported image of your pattern.
-Check <em>Hide Nostitch Symbols</em> in the export dialog to select this.</p>
+Check <em>Hide Nostitch Symbols</em> in the export dialog to enable this.</p>
 </div>
 <div class="section" id="changing-the-label-and-legend-properties">
 <h1>Changing the Label and Legend Properties</h1>
-<p>The font and size of the labels or the legend can be changed independently in
-the preferences dialog (<strong>File -&gt; Preferences</strong>). Furthermore the preferences
-dialog allows one to select the <em>interval i</em> with which the labels are displayed.
-By default, <em>i</em> is set to 1. Both the label and legend font, size as well as label
-interval are saved in sconcho project files and will be restored upon loading a
-previously saved project.</p>
+<p>The font and size of the labels or the legend can be changed independently
+in the preferences dialog (<strong>File -&gt; Preferences</strong>). Furthermore the
+preferences dialog allows one to select the <em>interval i</em> with which the
+labels are displayed. By default, <em>i</em> is set to 1. Both the label and
+legend font, size as well as label interval are saved in sconcho project
+files and will be restored upon loading a previously saved project.</p>
 </div>
 <div class="section" id="creating-your-own-custom-symbols">
 <h1>Creating your own Custom Symbols</h1>
