@@ -289,6 +289,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def change_active_color(self, newColor):
+        """ Change the currently active color """
 
         selectCommand = ActivateColor(self, self._activeColorObject, 
                                       newColor)
@@ -308,7 +309,8 @@ class PatternCanvas(QGraphicsScene):
             new_entry = change_count(entry, 1)
             self.gridLegend[legendID] = new_entry
         else:
-            (item, textItem) = self._add_legend_item(item.symbol, item.color)
+            (item, textItem) = self._add_legend_item(item.symbol, 
+                                                     item.color)
             self.gridLegend[legendID] = [1, item, textItem]
 
 
@@ -463,8 +465,7 @@ class PatternCanvas(QGraphicsScene):
     def clear_all_selected_cells(self):
         """ Unselects all currently selected cells. """
 
-        paintCommand = PaintCells(self, None, self._selectedCells.values())
-        self._undoStack.push(paintCommand)
+        self._paint_cells(None, self._selectedCells.values())
 
 
 
@@ -516,8 +517,7 @@ class PatternCanvas(QGraphicsScene):
         activatedItem = PatternCanvasEntry(item.column, item.row, 
                                            item.width, item.color, 
                                            item.symbol) 
-        paintCommand = PaintCells(self, [activatedItem])
-        self._undoStack.push(paintCommand)
+        self._paint_cells([activatedItem])
 
 
 
@@ -531,8 +531,7 @@ class PatternCanvas(QGraphicsScene):
         inactivatedItem = PatternCanvasEntry(item.column, item.row, 
                                              item.width, item.color, 
                                              item.symbol) 
-        paintCommand = PaintCells(self, None, [inactivatedItem])
-        self._undoStack.push(paintCommand)
+        self._paint_cells(None, [inactivatedItem])
 
 
 
@@ -601,8 +600,7 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
-        paintCommand = PaintCells(self) 
-        self._undoStack.push(paintCommand)
+        self._paint_cells(None)
 
 
 
@@ -684,8 +682,7 @@ class PatternCanvas(QGraphicsScene):
                 else:
                     selection.add(entry)
 
-        paintCommand = PaintCells(self, selection, unselection)
-        self._undoStack.push(paintCommand)
+        self._paint_cells(selection, unselection)
 
 
 
@@ -716,8 +713,7 @@ class PatternCanvas(QGraphicsScene):
             else:
                 selection.add(entry)
 
-        paintCommand = PaintCells(self, selection, unselection)
-        self._undoStack.push(paintCommand)
+        self._paint_cells(selection, unselection)
 
 
 
@@ -785,10 +781,15 @@ class PatternCanvas(QGraphicsScene):
         self.connect(colorAction, SIGNAL("triggered()"),
                      partial(self.grab_color_from_cell_add_to_widget, 
                              scenePos))
-        colorAction = gridMenu.addAction("&Grab Color and Apply To All "
-                                         "Selected Cells")
+        colorAction = gridMenu.addAction("&Select All Cells With Same "
+                                         "Color")
         self.connect(colorAction, SIGNAL("triggered()"),
-                     partial(self.grab_color_from_cell_add_to_selection, 
+                     partial(self.select_all_cells_with_same_color, 
+                             scenePos))
+        colorAction = gridMenu.addAction("&Select All Cells With Same "
+                                         "Symbol")
+        self.connect(colorAction, SIGNAL("triggered()"),
+                     partial(self.select_all_cells_with_same_symbol, 
                              scenePos))
         gridMenu.addSeparator()
 
@@ -993,14 +994,71 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def grab_color_from_cell_add_to_selection(self, scenePosition):
-        """ Apply the color of the selected cell to the active
-        color selector.
+    def select_all_cells_with_same_color(self, scenePosition):
+        """ Select all cells with the same color as the selected
+        cells.
         
         """
 
         selectedColor = self.grab_color_from_cell(scenePosition)
-        self.apply_color_to_selection(selectedColor)
+
+        selection = set()
+        for item in self.items():
+            if isinstance(item, PatternGridItem):
+                if item.color == selectedColor:
+                    entry = PatternCanvasEntry(item.column, item.row, 
+                                               item.width, item.color,
+                                               item.symbol)
+                    selection.add(entry)
+
+        if selection:
+            self._paint_cells(selection, self._selectedCells.values())
+
+
+
+    def select_all_cells_with_same_symbol(self, scenePosition):
+        """ Select all cells with the same symbol as the selected
+        cells.
+        
+        """
+
+        items = self.items(scenePosition)
+        patternGridItems = extract_patternGridItems(items)
+       
+        if patternGridItems:
+            if len(patternGridItems) > 1:
+                errorString = ("_item_at_row_col: expected <=1 item, "
+                               "found %d" % len(patternGridItems))
+                errorLogger.write(errorString)
+                return 
+            
+            selectedItem = patternGridItems[0]
+        
+            selection = set()
+            for item in self.items():
+                if isinstance(item, PatternGridItem):
+                    if item.name == selectedItem.name:
+                        entry = PatternCanvasEntry(item.column, item.row, 
+                                                   item.width, item.color,
+                                                   item.symbol)
+                        selection.add(entry)
+
+            if selection:
+                self._paint_cells(selection, self._selectedCells.values())
+
+
+
+    def _paint_cells(self, selection, unselection = None):
+        """ This function selects all grid cells in selection
+        and un-selects all cells in unselection.
+
+        selection and unselection should be a collection
+        (set, list) of PatternCanvasEntries.
+
+        """
+
+        paintCommand = PaintCells(self, selection, unselection)
+        self._undoStack.push(paintCommand)
 
 
 
@@ -1095,8 +1153,8 @@ class PatternCanvas(QGraphicsScene):
             leftItem = self._item_at_row_col(rowCount, column)
 
             if not leftItem:
-                errorString = ("_rectangle_self_contained: trying to access "
-                               "nonexistent leftItem.")
+                errorString = ("_rectangle_self_contained: trying to "
+                               "access nonexistent leftItem.")
                 errorLogger.write(errorString)
                 return False
 
@@ -1108,8 +1166,8 @@ class PatternCanvas(QGraphicsScene):
                 rightItem = self._item_at_row_col(rowCount, column + colDim)
 
                 if not rightItem:
-                    errorString = ("_rectangle_self_contained: trying to access "
-                                   "nonexistent rightItem.")
+                    errorString = ("_rectangle_self_contained: trying to "
+                                   "access nonexistent rightItem.")
                     errorLogger.write(errorString)
                     return False
                     

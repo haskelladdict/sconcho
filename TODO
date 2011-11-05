@@ -1,2 +1,5 @@
 - more sophisticated print dialog
 - shifting of legends to the right (don't we have this already?)
+- improve clicking on row labels if labels are not present or
+  on the opposite site
+- make recent files persistent between sessions
