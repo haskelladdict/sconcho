@@ -35,11 +35,11 @@ from functools import partial
 
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           QString, Qt, QSize, QFile, QTimer, QVariant,
-                          QPoint, PYQT_VERSION_STR, qVersion,
-                          QObject)
+                          QPoint, PYQT_VERSION_STR, qVersion, 
+                          QStringList, QObject, QFileInfo)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
-                         QFrame, QColor, QApplication, QDialog,
+                         QFrame, QColor, QApplication, QDialog, QAction,
                          QPrinter, QPrintDialog, QPrintPreviewDialog,)
 from PyQt4.QtSvg import QSvgWidget
 
@@ -101,6 +101,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.graphicsView.adjust_scene)
         self.graphicsView.adjust_scene()
 
+        self._readFileDialogPath = QDir.homePath()
+        self._set_up_recently_used_files_menu()
+
         # set up all the connections
         self._set_up_connections()
 
@@ -113,7 +116,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             (was_recovered, readFileName) = check_for_recovery_file(fileName)
             self._read_project(readFileName)
             self.set_project_save_file(fileName)
-            self.menuRecent_Files.addAction(fileName)
+            self.update_recently_used_files(fileName)
             self.canvas.clear_undo_stack()
             if not was_recovered:
                 self.mark_project_clean()
@@ -140,6 +143,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings.main_window_size = self.size()
         self.settings.main_window_position = self.pos()
         self.settings.main_window_state = self.saveState()
+
+
+
+    def _set_up_recently_used_files_menu(self):
+        """ Set up the recently used files menu """
+
+        # load stored previously used files
+        self.update_recently_used_files()
+
+        self.connect(self.action_Clear_Recently_Used_Files,
+                     SIGNAL("triggered(bool)"),
+                     self.clear_recently_used_files_list)
 
 
 
@@ -610,11 +625,73 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             thread.wait()
 
         # update recent files
-        add_to_recent_files(self.menuRecent_Files, self._saveFilePath)
-        #self.menuRecent_Files.addAction(self._saveFilePath)
+        self.update_recently_used_files(self._saveFilePath)
 
         return True
     
+
+    
+    def update_recently_used_files(self, path = None):
+        """ Update the list of recently used files.
+
+        We update both the menu as well as the stored
+        value in settings.
+
+        """
+
+        fileString = self.settings.recently_used_files
+
+        # need this check to avoid interpreting a nonexisting entry
+        # as an empty filename
+        if len(fileString) == 0:
+            files = QStringList()
+        else:
+            files = fileString.split(":")
+
+        # whithout a path we simply update the menu without
+        # adding any filename
+        if path:
+            if path in files:
+                return
+            else:
+                files.append(path)
+                while len(files) > 10:
+                    files.takeFirst()
+
+        self.settings.recently_used_files = files.join(":")
+        self.clear_recently_used_files_menu()
+
+        # the actual path is stored as data since the text
+        # of the Action also provides numbering and accelerators
+        for (index, path) in enumerate(files):
+            newPath = QAction(QString("&%d.  %s" % (index+1, path)),
+                              self.menuRecent_Files)
+            newPath.setData(QVariant(path))
+            self.menuRecent_Files.addAction(newPath)
+
+
+
+    def clear_recently_used_files_menu(self):
+        """ Clear the list of files in QMenu.
+
+        NOTE: We can't just call clear, otherwise we'd
+        nuke the Clear action and separator as well.
+        """
+
+        allPaths = self.menuRecent_Files.actions()
+        for path in allPaths:
+            dontKeep = path.data().toString()
+            if dontKeep:
+                self.menuRecent_Files.removeAction(path)
+
+
+
+    def clear_recently_used_files_list(self):
+        """ Clear the list of recently used files. """
+
+        self.settings.recently_used_files = QString("")
+        self.clear_recently_used_files_menu()
+
 
 
     def _save_pattern(self, filePath, markProjectClean = True):
@@ -670,7 +747,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def open_recent_file(self, action):
         """ This function opens a recently opened pattern."""
 
-        readFilePath = action.text()
+        # make sure we ignore menu clicks on non-filename
+        # items (like the clear button)
+        isFile = action.data().toString()
+        if not isFile:
+            return
+
+        # the actual filename is in the data *not* the
+        # text of the item
+        readFilePath = action.data().toString()
         
         if not self._ok_to_continue_without_saving():
             return
@@ -690,16 +775,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         readFilePath = \
              QFileDialog.getOpenFileName(self,
                                          msg.openSconchoProjectTitle,
-                                         QDir.homePath(),
+                                         self._readFileDialogPath,
                                          ("sconcho pattern files (*.spf);;"
                                           "all files (*.*)"))
 
         if not readFilePath:
             return
 
+        self._readFileDialogPath = QFileInfo(readFilePath).absoluteFilePath()
         self._read_project(readFilePath)
         self.set_project_save_file(readFilePath)
-        self.menuRecent_Files.addAction(readFilePath)
+        self.update_recently_used_files(readFilePath)
         self.mark_project_clean()
 
         
@@ -1026,18 +1112,3 @@ def check_for_recovery_file(filePath):
 
     return returnPath
 
-
-
-def add_to_recent_files(menu, filePath):
-    """ Add filePath to menu if it isn't already present.
-    Also, if we have more than 10 entries already pop off
-    the oldest entry.
-
-    """
-
-    actions = menu.actions()
-    for action in actions:
-        if action.text() == filePath:
-            return
-
-    menu.addAction(filePath)

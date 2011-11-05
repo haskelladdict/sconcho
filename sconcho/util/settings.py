@@ -176,7 +176,23 @@ class DefaultSettings(QSettings):
 
         self.setValue("MainWindow/State", QVariant(state))
 
+
+
+    @property
+    def recently_used_files(self):
+        """ Return the list of recently used files. """
+        
+        return self.value("RecentlyUsedFiles/List").toString()
+
+
+
+    @recently_used_files.setter
+    def recently_used_files(self, values):
+        """ Set the list of recently used files. """
+
+        self.setValue("RecentlyUsedFiles/List", QVariant(values))
    
+
 
 
 ####################################################################

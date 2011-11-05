@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Tue Nov  1 17:56:33 2011
+# Created: Sat Nov  5 12:39:16 2011
 #      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -349,12 +349,16 @@ class Ui_MainWindow(object):
         self.action = QtGui.QAction(MainWindow)
         self.action.setText(QtGui.QApplication.translate("MainWindow", "Clear List", None, QtGui.QApplication.UnicodeUTF8))
         self.action.setObjectName(_fromUtf8("action"))
-        self.menuRecent_Files.addSeparator()
+        self.action_Clear_Recently_Used_Files = QtGui.QAction(MainWindow)
+        self.action_Clear_Recently_Used_Files.setText(QtGui.QApplication.translate("MainWindow", "&Clear", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Clear_Recently_Used_Files.setStatusTip(QtGui.QApplication.translate("MainWindow", "Clear the list of recent items.", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Clear_Recently_Used_Files.setObjectName(_fromUtf8("action_Clear_Recently_Used_Files"))
+        self.menuRecent_Files.addAction(self.action_Clear_Recently_Used_Files)
         self.menuRecent_Files.addSeparator()
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
-        self.menuFile.addAction(self.menuRecent_Files.menuAction())
         self.menuFile.addSeparator()
+        self.menuFile.addAction(self.menuRecent_Files.menuAction())
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionSave_as)
         self.menuFile.addAction(self.actionExport)
