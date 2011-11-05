@@ -3,6 +3,9 @@ XXXXXXXXXX: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 	* Properly implemented recently used file capability
 	* Fixed and improved routines for shifting legends when
 	  inserting/deleting rows/columns
+	* Generalize selection of whole rows/columns.
+	  These can now be selected by clicking anywhere on the
+	  left/right/top/bottom edge.
 	
 
 11-03-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
