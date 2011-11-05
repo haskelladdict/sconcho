@@ -781,12 +781,12 @@ class PatternCanvas(QGraphicsScene):
                      partial(self.grab_color_from_cell_add_to_widget, 
                              scenePos))
         colorAction = gridMenu.addAction("&Select All Grid Cells With Same "
-                                         "Color")
+                                         "Color As Cell")
         self.connect(colorAction, SIGNAL("triggered()"),
                      partial(self.select_all_cells_with_same_color, 
                              scenePos))
         colorAction = gridMenu.addAction("&Select All Grid Cells With Same "
-                                         "Symbol")
+                                         "Symbol As Cell")
         self.connect(colorAction, SIGNAL("triggered()"),
                      partial(self.select_all_cells_with_same_symbol, 
                              scenePos))
