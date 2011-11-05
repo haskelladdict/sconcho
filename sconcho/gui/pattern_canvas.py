@@ -1337,7 +1337,8 @@ class PatternCanvas(QGraphicsScene):
                 
                 if isinstance(item, PatternGridItem):
                     if item.column != (pivot + shift):
-                        QMessageBox.warning(None, msg.noColInsertLayoutTitle,
+                        QMessageBox.warning(None, 
+                                            msg.noColInsertLayoutTitle,
                                             msg.noColInsertLayoutText,
                                             QMessageBox.Close)
                         return

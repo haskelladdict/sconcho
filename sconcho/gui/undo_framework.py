@@ -203,11 +203,12 @@ class InsertRow(QUndoCommand):
             self.canvas._create_row(self.pivot + row)
 
         shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
-                                self.unitHeight, self.numColumns, self.unitWidth)
+                                self.unitHeight, self.numColumns, 
+                                self.unitWidth)
 
         self.canvas._selectedCells = \
-                shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
-                                           self.rowShift)
+                shift_selection_vertically(self.canvas._selectedCells, 
+                                           self.pivot, self.rowShift)
         
         self.canvas._numRows += self.rowShift
         self._finalize()
@@ -228,10 +229,11 @@ class InsertRow(QUndoCommand):
 
         # shift first then remove
         shift_legend_vertically(self.canvas.gridLegend, rowUpShift, 
-                                self.unitHeight, self.numColumns, self.unitWidth)
+                                self.unitHeight, self.numColumns, 
+                                self.unitWidth)
         self.canvas._selectedCells = \
-                shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
-                                           rowUpShift)
+                shift_selection_vertically(self.canvas._selectedCells, 
+                                           self.pivot, rowUpShift)
 
         # remove all previously inserted rows
         selection = set()
@@ -407,10 +409,11 @@ class DeleteRow(QUndoCommand):
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
 
         shift_legend_vertically(self.canvas.gridLegend, rowUpShift, 
-                                self.unitHeight, self.numColumns, self.unitWidth)
+                                self.unitHeight, self.numColumns, 
+                                self.unitWidth)
         self.canvas._selectedCells = \
-                shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
-                                           rowUpShift)
+                shift_selection_vertically(self.canvas._selectedCells, 
+                                           self.pivot, rowUpShift)
 
 
 
@@ -419,10 +422,11 @@ class DeleteRow(QUndoCommand):
 
         # make sure to shift legend and selection first
         shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
-                                self.unitHeight, self.numColumns, self.unitWidth)
+                                self.unitHeight, self.numColumns, 
+                                self.unitWidth)
         self.canvas._selectedCells = \
-                shift_selection_vertically(self.canvas._selectedCells, self.pivot, 
-                                           self.rowShift)
+                shift_selection_vertically(self.canvas._selectedCells, 
+                                           self.pivot, self.rowShift)
 
         shiftItems = set()
         for colID in range(0, self.numColumns):
@@ -532,9 +536,11 @@ class InsertColumn(QUndoCommand):
             self.canvas._create_column(self.pivot + column)
 
         shift_legend_horizontally(self.canvas.gridLegend, self.columnShift, 
-                                  self.unitWidth, self.numColumns, self.unitHeight)
+                                  self.unitWidth, self.numRows, 
+                                  self.unitHeight)
         self.canvas._selectedCells = \
-                shift_selection_horizontally(self.canvas._selectedCells, self.pivot, 
+                shift_selection_horizontally(self.canvas._selectedCells, 
+                                             self.pivot, 
                                              self.columnShift)
         
         self.canvas._numColumns += self.columnShift
@@ -556,7 +562,8 @@ class InsertColumn(QUndoCommand):
 
         # shift first then remove
         shift_legend_horizontally(self.canvas.gridLegend, columnLeftShift, 
-                                  self.unitWidth, self.numRows, self.unitHeight)
+                                  self.unitWidth, self.numRows, 
+                                  self.unitHeight)
         self.canvas._selectedCells = \
                 shift_selection_horizontally(self.canvas._selectedCells, 
                                              self.pivot, columnLeftShift)
@@ -734,7 +741,8 @@ class DeleteColumn(QUndoCommand):
             shift_item_column_wise(item, columnLeftShift, self.unitWidth)
 
         shift_legend_horizontally(self.canvas.gridLegend, columnLeftShift, 
-                                  self.unitWidth, self.numRows, self.unitHeight)
+                                  self.unitWidth, self.numRows, 
+                                  self.unitHeight)
         self.canvas._selectedCells = \
                 shift_selection_horizontally(self.canvas._selectedCells,
                                              self.pivot, columnLeftShift)

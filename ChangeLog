@@ -1,3 +1,10 @@
+XXXXXXXXXX: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Properly implemented recently used file capability
+	* Fixed and improved routines for shifting legends when
+	  inserting/deleting rows/columns
+	
+
 11-03-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Added print preview dialog

@@ -101,8 +101,8 @@ def shift_item_column_wise(item, num, unitCellWidth):
 
 
 
-def shift_legend_vertically(legendList, rowShift, unitCellHeight, numColumns, 
-                            unitWidth):
+def shift_legend_vertically(legendList, rowShift, unitCellHeight, 
+                            numColumns, unitWidth):
     """ Shift all legend items below the grid down by rowShift. """
 
     yShift = rowShift * unitCellHeight
@@ -118,6 +118,10 @@ def shift_legend_vertically(legendList, rowShift, unitCellHeight, numColumns,
             symbol.prepareGeometryChange()
             symbol.setPos(symbol.pos() + QPointF(0.0, yShift))
             
+        
+        if (text.scenePos().y() >= 0) and \
+           (text.scenePos().x() <= numColumns * unitWidth):
+
             text.prepareGeometryChange()
             text.setPos(text.pos() + QPointF(0.0, yShift)) 
 
@@ -164,6 +168,11 @@ def shift_legend_horizontally(legendList, columnShift, unitCellWidth,
             symbol.prepareGeometryChange()
             symbol.setPos(symbol.pos() + QPointF(xShift, 0.0))
             
+
+        if (text.scenePos().x() >= 0) and \
+           (text.scenePos().y() >= 0) and \
+           (text.scenePos().y() <= numRows * unitHeight):
+
             text.prepareGeometryChange()
             text.setPos(text.pos() + QPointF(xShift, 0.0))
 
