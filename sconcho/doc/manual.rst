@@ -52,15 +52,17 @@ a color, or both (see `Adding Symbols To Pattern Grid`_).
 There are a number of additional ways to select cells on the pattern grid 
 all of which involve holding down the **Shift key** while clicking:
 
-* Shift + mouse click and then dragging the mouse across the pattern grid 
-  will activate the *Rubberband Tool*. Upon releasing the mouse button all 
+* Shift + right mouse clicking and then dragging the mouse across the 
+  pattern grid will activate the *Rubberband Tool*. 
+  Upon releasing the mouse button all 
   grid cells under the rubberband will either be selected or un-selected 
   based on their previous state. If there is a knitting symbol active it 
   will be placed immediately if it fits into the selection area.
 
-* Shift + right click on either a row or column label will again select or
-  un-select the whole row or column based on its previous state. If there 
-  is an active knitting symbol it will be placed into .
+* Shift + right mouse clicking adjacent to the left/right or top/bottom 
+  edge of the pattern grid will select/unselect the neighboring complete 
+  row or column based on its previous state. If there 
+  is an active knitting symbol it will be placed into the selection.
 
 Finally, several items on the knitting chart can be moved around. Movable 
 items are: legend items (both symbols and text) and repeat boxes on the 

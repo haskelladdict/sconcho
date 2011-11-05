@@ -72,9 +72,14 @@ def is_click_in_grid(col, row, numCols, numRows):
     
 
 def is_click_on_labels(col, row, numCols, numRows):
-    """ Returns true if col and row is inside the grid labels. """
+    """ Returns true if col and row is within the grid labels. 
 
-    if (col == numCols) or (row == numRows):
+    NOTE: We accept both clicks on the right/left or top/bottom
+    of the grid.
+    """
+
+    if (((col == numCols or col == -1) and (row >= 0 and row < numRows)) or 
+        ((row == -1 or row == numRows) and (col >= 0 and col < numCols))):
         return True
     else:
         return False

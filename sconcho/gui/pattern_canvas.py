@@ -641,8 +641,6 @@ class PatternCanvas(QGraphicsScene):
                                             self._unitCellDim.height())
        
         if event.button() == Qt.RightButton:
-
-            #if is_click_in_grid(col, row, self._numColumns, self._numRows):
             self.handle_right_click_on_grid(event, row, col)
 
             # don't propagate this event
@@ -652,7 +650,7 @@ class PatternCanvas(QGraphicsScene):
              (event.modifiers() & Qt.ShiftModifier):
 
             if is_click_on_labels(col, row, self._numColumns, self._numRows):
-                 self.handle_right_click_on_labels(col, row)
+                 self.handle_left_click_on_labels(col, row)
 
         # tell our main window that something changed
         self.emit(SIGNAL("scene_changed"))
@@ -686,7 +684,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def handle_right_click_on_labels(self, col, row):
+    def handle_left_click_on_labels(self, col, row):
         """ Deal with user clicks on the grid labels. 
 
         These select whole rows or columns depending on
@@ -694,9 +692,10 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        assert (row == self._numRows) or (col == self._numColumns)
+        assert ((row == self._numRows) or (col == self._numColumns) or
+                (row == -1) or (col == -1))
 
-        if row == self._numRows:
+        if (row == -1) or (row == self._numRows):
             selectedItems = self.get_column_items(col)
         else:
             selectedItems = self.get_row_items(row)
