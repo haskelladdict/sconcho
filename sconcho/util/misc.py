@@ -67,11 +67,11 @@ def get_random_knitting_quote():
 
 
 
-#############################################################################
+############################################################################
 #
 # framework for logging errors
 #
-#############################################################################
+############################################################################
 class SconchoError(object):
     """ This class takes care of error logging. """
 
@@ -86,10 +86,10 @@ class SconchoError(object):
         """ This member takes care of logging error messages. """
 
         if errorCode:
-            print("[sconcho] Error: %s with error code %d" %
+            print("[sconcho] ERROR: %s with error code %d" %
                   (message, errorCode), file = sys.stderr)
         else:
-             print("[sconcho] Error: %s" % message, file = sys.stderr)
+             print("[sconcho] ERROR: %s" % message, file = sys.stderr)
 
              
 # global error logging Object
@@ -97,3 +97,33 @@ class SconchoError(object):
 #       logging purposes otherwise we have to pass it around a lot.
 errorLogger = SconchoError()
 
+
+
+############################################################################
+#
+# framework for logging warnings
+#
+############################################################################
+class SconchoWarning(object):
+    """ This class takes care of warnings logging. """
+
+
+    def __init__(self):
+
+        pass
+
+
+    def write(self, message, warningCode = None):
+        """ This member takes care of logging warning messages. """
+
+        if warningCode:
+            print("[sconcho] WARNING: %s with warning code %d" %
+                  (message, warningCode), file = sys.stderr)
+        else:
+             print("[sconcho] WARNING: %s" % message, file = sys.stdout)
+
+             
+# global warning logging Object
+# NOTE: Is it a good idea to make this global? Seems ok for warning
+#       logging purposes otherwise we have to pass it around a lot.
+warningLogger = SconchoWarning()

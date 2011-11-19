@@ -183,9 +183,9 @@ failedToCopySvgTitle = "sconcho: Add Symbol Error"
 failedToCopySvgText  = ("Error: Failed to copy SVG image %s into sconcho "
                         "database." )
 
-failedToCreateDescriptionFileTitle = "sconcho: Add Symbol Error"
-failedToCreateDescriptionFileText  = ("Error: Failed to create the "
-        "description file to the symbol with category %s and name %s.")
+failedCreateDescriptionFileTitle = "sconcho: Add Symbol Error"
+failedCreateDescriptionFileText  = ("Error: Failed to create the "
+        "description file for the symbol %s in category %s.")
 
 noNameErrorTitle     = "sconcho: Add Symbol Error"
 noNameErrorText      = "Error: Please enter a name for your symbol."

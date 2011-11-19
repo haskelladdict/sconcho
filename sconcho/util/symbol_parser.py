@@ -24,12 +24,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+from tempfile import mkdtemp
+from os import path
+from shutil import (rmtree, move)
+
 from PyQt4.QtCore import (QDir, QFile, QString, QStringList, QIODevice,
                           QTextStream, QTemporaryFile, Qt)
 from PyQt4.QtGui import QMessageBox
 from PyQt4.QtXml import QDomDocument
 
-from sconcho.util.misc import errorLogger
+from sconcho.util.misc import (warningLogger, errorLogger)
 import sconcho.util.messages as msg
 
 
@@ -54,8 +58,10 @@ def parse_all_symbols(symbolTopLevelPaths):
         # if there was a problem we simply skip
         # with a short warning
         if not symbolDesc:
-            errorLogger.write("parse_all_symbols: Could not read symbol "
-                              + path)
+            message = ("parse_all_symbols: Could not read symbol " + path +
+                       "\nRemove the directory " + path + " to get rid of "
+                       "this warning")
+            warningLogger.write(message)
             continue
 
         # try to add symbol to symbol database
@@ -175,8 +181,7 @@ def parse_symbol_description(node):
 
 
 
-def create_new_symbol(symbolPath, svgPath, svgName, category, name, 
-                      description, width):
+def create_new_symbol(symbolPath, data): 
     """ This function creates a new knitting symbol as specified by
     the user. 
     """
@@ -187,17 +192,19 @@ def create_new_symbol(symbolPath, svgPath, svgName, category, name,
     if not symbolTopDir.exists():
         if not symbolTopDir.mkdir(symbolPath):
             QMessageBox.critical(None, msg.failedToCreateDirectoryTitle,
-                                 msg.failedToCreateDirectoryText % symbolPath,
+                                 msg.failedToCreateDirectoryText % 
+                                 symbolPath,
                                  QMessageBox.Close)
             return False
 
     # this should never happen since the manageKnittingSymbolDialog is
     # supposed to check. We'll check anyways.
-    symbolDirPath = symbolPath + "/" + svgName
+    symbolDirPath = symbolPath + "/" + data["svgName"]
     symbolDir = QDir(symbolDirPath)
     if symbolDir.exists():
         QMessageBox.critical(None, msg.symbolExistsTitle,
-                             msg.symbolExistsText % (category, name),
+                             msg.symbolExistsText % (data["category"], 
+                                                     data["name"]),
                              QMessageBox.Close)
         return False
 
@@ -211,45 +218,47 @@ def create_new_symbol(symbolPath, svgPath, svgName, category, name,
     try:
         
         # copy the svg file
-        symbolTargetFilePath = symbolDirPath + "/" + svgName + ".svg"
-        if not QFile(svgPath).copy(symbolTargetFilePath):
+        symbolTargetSvgPath = symbolDirPath + "/" + data["svgName"] + ".svg"
+        if not QFile(data["svgPath"]).copy(symbolTargetSvgPath):
             QMessageBox.critical(None, msg.failedToCopySvgTitle,
-                                msg.failedToCopySvgText % symbolTargetFilePath,
+                                msg.failedToCopySvgText % 
+                                symbolTargetSvgPath,
                                 QMessageBox.Close)
            
             raise IOError
 
         # write the description file
-        descriptionFileHandle = QFile(symbolDirPath + "/" + "description")
+        descriptionFilePath = symbolDirPath + "/" + "description"
+        descriptionFileHandle = QFile(descriptionFilePath)
         if not descriptionFileHandle.open(QIODevice.WriteOnly):
-            QMessageBox.critical(None, msg.failedToCreateDescriptionFIleTitle,
-                                msg.failedToCreateDescriptionFileText % (category,
-                                name), QMessageBox.Close)
+            QMessageBox.critical(None, msg.failedCreateDescriptionFileTitle,
+                                msg.failedCreateDescriptionFileText % 
+                                (data["name"], data["category"]), 
+                                QMessageBox.Close)
             raise IOError
 
         # finally try to write the content of the file
         try:
-            write_description_content(descriptionFileHandle, svgName, category, 
-                                      name, description, width)
+            write_description_content(descriptionFileHandle, data) 
         except:
             raise IOError
 
+    # this does some cleanup in case writing fails for some reason
     except IOError:
-        if descriptionFileHandle:
-            symbolDir.remove(descriptionFileHandle)
+        if descriptionFilePath:
+            symbolDir.remove(descriptionFilePath)
 
-        if symbolTargetFilePath:
-            symbolDir.remove(symbolTargetFilePath)
+        if symbolTargetSvgPath:
+            symbolDir.remove(symbolTargetSvgPath)
 
-        symbolDir.remove(symbolDirPath)
+        symbolDir.rmdir(symbolDirPath)
         return False
 
     return True
 
 
 
-def write_description_content(handle, svgName, category, name, description,
-                              width):
+def write_description_content(handle, data): 
     """ This function generates the xml content of the description 
     file.
     """
@@ -266,28 +275,34 @@ def write_description_content(handle, svgName, category, name, description,
                "    <symbolWidth>%d</symbolWidth>\n"
                "  </knittingSymbol>\n"
                "</sconcho>\n"
-               % (Qt.escape(svgName), Qt.escape(category), Qt.escape(name), 
-                  Qt.escape(description), width))
+               % (Qt.escape(data["svgName"]), 
+                  Qt.escape(data["category"]), 
+                  Qt.escape(data["name"]), 
+                  Qt.escape(data["description"]), 
+                  data["width"]))
 
 
 
 def remove_symbol(symbolTopPath, name):
     """ This function removes the symbol named name from the
     database located at symbolPath.
+
+    NOTE: I purposefully don't use rmtree here to avoid that users
+    accidentally or maliciously delete other data.
     """
 
     symbolPath = symbolTopPath + "/" + name
     symbolPathDir = QDir(symbolPath)
     if not symbolPathDir.exists():
-       return False
+        return False
 
     descriptionFile = symbolPath + "/description"
     svgFile         = symbolPath + "/" + name + ".svg"
 
-    if symbolPathDir.remove(descriptionFile):
-        if symbolPathDir.remove(svgFile):
-            if symbolPathDir.rmdir(symbolPath):
-                return True
+    if (symbolPathDir.remove(descriptionFile) 
+        and symbolPathDir.remove(svgFile) 
+        and symbolPathDir.rmdir(symbolPath)):
+        return True
 
     return False
 
@@ -302,14 +317,38 @@ def move_symbol(oldPath, newPath):
     symNewDir = QDir(newPath)
     if symOldDir.exists():
         if not symNewDir.exists():
-            return symNewDir.rename(oldPath, newPath)
+            move(oldPath, newPath)
+            return True
 
     return False
 
 
 
-def remove_directory(path):
-    """ Removes the directory at path. """
+class SymbolTempDir(object):
+    """ Context manager for seamless creation and removal of
+    temporary directories.
 
-    deadDir = QDir(path)
-    return deadDir.rmdir(path)
+    """
+
+    def __init__(self, topDir):
+
+        self.topDir = topDir
+
+
+    def __enter__(self):
+        """ Create the temporary directory. """
+
+        self.tempDir = mkdtemp(dir=unicode(self.topDir + "/"))
+        return self.tempDir
+
+
+    def __exit__(self, exc_class, exc_instance, traceback):
+        """ Remove temporary directory and everything underneath. 
+
+        NOTE: rmtree is dangerous. However, since we're creating
+        the temporary directory ourselves it should probably be
+        safe to do here.
+        """
+
+        if path.isdir(self.tempDir):
+            rmtree(self.tempDir)

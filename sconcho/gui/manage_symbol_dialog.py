@@ -34,9 +34,10 @@ from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog,
 from PyQt4.QtSvg import (QSvgWidget)
 
 from sconcho.gui.ui_manage_symbol_dialog import Ui_ManageKnittingSymbolDialog
-from sconcho.util.symbol_parser import (parse_all_symbols, create_new_symbol,
-                                       remove_symbol, move_symbol, remove_directory)
-from sconcho.util.misc import errorLogger
+from sconcho.util.symbol_parser import (parse_all_symbols, 
+                                        create_new_symbol,
+                                        remove_symbol, move_symbol, 
+                                        SymbolTempDir)
 import sconcho.util.messages as msg
 import sconcho.gui.symbol_widget as symbolWidget
 
@@ -349,37 +350,42 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         categoryItems = self.availableSymbolsWidget.findItems(category, 
                                                 Qt.MatchExactly, 0)
         if len(categoryItems) != 1:
-            message = ("ManageSymbolDialog._delete_symbol_from_tree_widget: "
-                       "there are duplicate categories.")
+            message = ("ManageSymbolDialog._delete_symbol_from_tree_widget:"
+                       " there are duplicate categories.")
+            errorLogger.write(message)
             return
         
-        for categoryItem in categoryItems:
+        item = categoryItems[0]
 
-            # prune symbol itself
-            name = symbol["name"]
-        
-            numChildren = categoryItem.childCount()
-            for count in range(0, numChildren):
-                child = categoryItem.child(count)
+        # prune symbol itself
+        name = symbol["name"]
 
-                if child.text(0) == name:
-                    categoryItem.removeChild(child)
-                    break
-            
-            if numChildren == 1:
-                self.availableSymbolsWidget.removeItemWidget(categoryItem, 0)
-                
+        numChildren = item.childCount()
+        for count in range(0, numChildren):
+            child = item.child(count)
+
+            if child.text(0) == name:
+                item.removeChild(child)
+                break
+
+        if numChildren == 1:
+            index = self.availableSymbolsWidget.indexOfTopLevelItem(item)
+            self.availableSymbolsWidget.takeTopLevelItem(index)
+
 
 
     def update_symbol(self):
-        """ This slot is implemented via delete and then add.
-        When deleting we first check that we have valid data,
-        then delete, then add.
+        """ Updated the information for a custom symbol.
+
+        For robustnes, this slot is implemented via creating
+        a completely new symbol definition directory that is
+        then replacing the original one.
         
         """
 
         if not self._selectedSymbol:
             return
+
         oldSymbol = self._selectedSymbol
         oldName = self._selectedSymbol["svgName"]
 
@@ -391,26 +397,15 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                                        self.symbolWidthSpinner)
 
         if data:
-            tempDir = mkdtemp(dir=unicode(self._symbolPath + "/"))
-            createOk = create_new_symbol(tempDir, 
-                                         data["svgPath"],
-                                         data["svgName"], 
-                                         data["category"], 
-                                         data["name"], 
-                                         data["description"], 
-                                         data["width"])
-     
-            # if creation of the new symbol succeeded we remove the old
-            # data, otherwise we move it back in place
-            if createOk:
-                if remove_symbol(self._symbolPath, oldName):
-                    if move_symbol(tempDir + "/" + data["svgName"], 
-                                   self._symbolPath + "/" + data["svgName"]):
-                        self._update_dict(data)
-                        self._update_tree_widget(oldSymbol, data)
-                        self._update_frame_data(data)
-                        
-            remove_directory(tempDir)
+            with SymbolTempDir(self._symbolPath) as tempDir:
+                if (create_new_symbol(tempDir, data) 
+                    and remove_symbol(self._symbolPath, oldName)
+                    and move_symbol(tempDir + "/" + data["svgName"], 
+                                    self._symbolPath + "/" 
+                                    + data["svgName"])):
+                    self._update_dict(data)
+                    self._update_tree_widget(oldSymbol, data)
+                    self._update_frame_data(data)
 
         self.done_with_input()
 
@@ -469,7 +464,8 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
         data = self._get_data_from_interface(svgPathName, nameWidget, 
-                                             categoryWidget, descriptionWidget, 
+                                             categoryWidget, 
+                                             descriptionWidget, 
                                              widthWidget)
 
         if not data:
@@ -483,17 +479,9 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             return 
 
         if data:
-            createdOk = create_new_symbol(self._symbolPath, 
-                                          data["svgPath"], 
-                                          data["svgName"], 
-                                          data["category"], 
-                                          data["name"], 
-                                          data["description"], 
-                                          data["width"])
-            if createdOk:
+            if create_new_symbol(self._symbolPath, data):
                 self._update_dict(data)
                 self._add_symbol_to_tree_widget(data)
-
 
         self.done_with_input()
 
@@ -532,10 +520,11 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
 
-    def _get_data_from_interface(self, svgPathName, nameWidget, categoryWidget,
-                                 descriptionWidget, widthWidget):
+    def _get_data_from_interface(self, svgPathName, nameWidget, 
+                                 categoryWidget, descriptionWidget, 
+                                 widthWidget):
         """ This function extracts the data from the interface and checks
-        that all is wel and present.
+        that all is well and present.
         
         """
 
