@@ -389,13 +389,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         oldSymbol = self._selectedSymbol
         oldName = self._selectedSymbol["svgName"]
 
-        svgImagePath = self.svgPathEdit.text()
-        data = self._get_data_from_interface(svgImagePath,
-                                       self.symbolNameEntry,
-                                       self.categoryChooser,
-                                       self.symbolDescriptionEntry,
-                                       self.symbolWidthSpinner)
-
+        data = self._get_data_from_interface()
         if data:
             with SymbolTempDir(self._symbolPath) as tempDir:
                 if (create_new_symbol(tempDir, data) 
@@ -463,11 +457,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         """
 
 
-        data = self._get_data_from_interface(svgPathName, nameWidget, 
-                                             categoryWidget, 
-                                             descriptionWidget, 
-                                             widthWidget)
-
+        data = self._get_data_from_interface()
         if not data:
             return
 
@@ -520,15 +510,15 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
 
-    def _get_data_from_interface(self, svgPathName, nameWidget, 
-                                 categoryWidget, descriptionWidget, 
-                                 widthWidget):
+    def _get_data_from_interface(self): 
         """ This function extracts the data from the interface and checks
         that all is well and present.
         
         """
 
         data = {}
+
+        svgPathName = self.svgPathEdit.text()
         if not svgPathName:
             QMessageBox.critical(None, msg.noSvgFileErrorTitle,
                                  msg.noSvgFileErrorText,
@@ -537,8 +527,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         else:
             data["svgPath"] = svgPathName
 
-
-        name = nameWidget.text()
+        name = self.symbolNameEntry.text()
         if not name:
             QMessageBox.critical(None, msg.noNameErrorTitle,
                                  msg.noNameErrorText,
@@ -551,7 +540,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             data["svgName"] = sanitize_name(QString(name))
        
 
-        category = categoryWidget.currentText()
+        category = self.categoryChooser.currentText()
         if not category:
             QMessageBox.critical(None, msg.noCategoryErrorTitle,
                                  msg.noCategoryErrorText,
@@ -561,8 +550,8 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             data["category"] = category
 
 
-        data["description"]  = descriptionWidget.toPlainText()
-        data["width"]        = widthWidget.value()
+        data["description"]  = self.symbolDescriptionEntry.toPlainText()
+        data["width"]        = self.symbolWidthSpinner.value()
         data["category_pos"] = QString("100000")
 
         return data

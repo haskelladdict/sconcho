@@ -212,7 +212,7 @@ def create_new_symbol(symbolPath, data):
 
     # the following try/except suite attempts to return things back
     # to the initial state if writing fails for some reason
-    descriptionFileHandle = None
+    descriptionFilePath = None
     symbolTargetFilePath  = None
 
     try:
