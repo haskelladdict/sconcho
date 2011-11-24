@@ -60,7 +60,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.canvas = canvas
         self.currentUnit = 0
         self.unitSelector.setCurrentIndex(self.currentUnit)
-        self.defaultDPI = 90
+        self.defaultDPI = 300
 
         self._determine_image_formats()
         self._add_image_formats_to_gui()

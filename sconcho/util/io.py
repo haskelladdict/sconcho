@@ -37,7 +37,8 @@ from PyQt4.QtSvg import QSvgGenerator
 
 from sconcho.gui.pattern_canvas import (PatternGridItem, PatternLegendItem,
                                         legendItem_symbol, legendItem_text,
-                                        PatternRepeatItem)
+                                        PatternRepeatItem, 
+                                        NostitchVisualizer)
 from sconcho.util.misc import wait_cursor
 from sconcho.util.exceptions import PatternReadError
 import sconcho.util.messages as msg
@@ -583,52 +584,48 @@ def export_scene(canvas, width, height, dpi, hideNostitchSymbols,
     # any currently selected legend items
     canvas.clearFocus()
 
-    if hideNostitchSymbols:
-        canvas.toggle_nostitch_symbol_visbility(False)
 
-    # NOTE: We seem to need the 1px buffer region to avoid
-    # the image being cut off
-    margin = 10
-    theScene = canvas.itemsBoundingRect()
-    theScene.adjust(-margin, -margin, margin, margin)
+    with NostitchVisualizer(canvas, hideNostitchSymbols):
 
-    # check if user requested an svg file
-    svg = True if QFileInfo(exportFileName).completeSuffix() == "svg" \
-            else False
+        # NOTE: We seem to need the 1px buffer region to avoid
+        # the image being cut off
+        margin = 10
+        theScene = canvas.itemsBoundingRect()
+        theScene.adjust(-margin, -margin, margin, margin)
 
-    if svg:
-        generator = QSvgGenerator()
-        generator.setFileName(exportFileName)
-        generator.setSize(QSize(width, height))
-        generator.setViewBox(QRect(0, 0, width, height))
-        generator.setTitle("sconcho generated SVG image")
-        generator.setDescription("this svg image was exported from"
-                                 "a sconcho project")
-    else:
-        generator = QImage(width+2*margin, height+2*margin, 
-                           QImage.Format_ARGB32_Premultiplied)
-        generator.fill(1)
+        # check if user requested an svg file
+        svg = True if QFileInfo(exportFileName).completeSuffix() == "svg" \
+                else False
 
-        inchesToMeter = 39.3700787
-        generator.setDotsPerMeterX(dpi*inchesToMeter)
-        generator.setDotsPerMeterY(dpi*inchesToMeter)
+        if svg:
+            generator = QSvgGenerator()
+            generator.setFileName(exportFileName)
+            generator.setSize(QSize(width, height))
+            generator.setViewBox(QRect(0, 0, width, height))
+            generator.setTitle("sconcho generated SVG image")
+            generator.setDescription("this svg image was exported from"
+                                     "a sconcho project")
+        else:
+            generator = QImage(width+2*margin, height+2*margin, 
+                               QImage.Format_ARGB32_Premultiplied)
+            generator.fill(1)
+
+            inchesToMeter = 39.3700787
+            generator.setDotsPerMeterX(dpi*inchesToMeter)
+            generator.setDotsPerMeterY(dpi*inchesToMeter)
 
 
-    painter = QPainter(generator)
-    painter.setRenderHints(QPainter.SmoothPixmapTransform )
-    painter.setRenderHints(QPainter.HighQualityAntialiasing )
-    painter.setRenderHints(QPainter.TextAntialiasing )
-    painter.setBackgroundMode(Qt.TransparentMode )
+        painter = QPainter(generator)
+        painter.setRenderHints(QPainter.SmoothPixmapTransform )
+        painter.setRenderHints(QPainter.HighQualityAntialiasing )
+        painter.setRenderHints(QPainter.TextAntialiasing )
+        painter.setBackgroundMode(Qt.TransparentMode )
 
-    canvas.render(painter, QRectF(), theScene )
-    painter.end()
+        canvas.render(painter, QRectF(), theScene )
+        painter.end()
 
-    if not svg:
-        generator.save(exportFileName)
-
-    if hideNostitchSymbols:
-        canvas.toggle_nostitch_symbol_visbility(True)
-
+        if not svg:
+            generator.save(exportFileName)
 
 
 

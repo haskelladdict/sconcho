@@ -152,9 +152,9 @@ class PatternCanvas(QGraphicsScene):
                 self.removeItem(graphicsItem)
                 del graphicsItem
 
+# (graphicsItem.name != "nostitch") and \
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem) and \
-               (graphicsItem.name != "nostitch") and \
                ((graphicsItem.row + offset + start) % 2 != 0):
                     
                 origin_x = graphicsItem.column * self._unitCellDim.width()
@@ -469,44 +469,6 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def toggle_nostitch_symbol_visbility(self, status):
-        """ Toggles the visibility of all nostitch symbols to on
-        or off via show() and hide().
-
-        WARNING: This should only be done temporary while no user
-        interaction with the canvas is possible, e.g. during
-        exporting. Otherwise it will screw up the undo/redo framwork
-        completely.
-
-        """
-        
-        # make sure to redraw the highlighted areas so highlighting
-        # underneath nostitch symbols is disabled
-        self.set_up_highlighted_rows()
-
-        nostitchItem = None
-        for item in self.items():
-            if isinstance(item, PatternGridItem):
-                if item.name == "nostitch":
-                    nostitchItem = item
-                    if status:
-                        item.show()
-                    else:
-                        item.hide()
-                        
-        if nostitchItem:
-            legendID = generate_legend_id(nostitchItem.symbol,
-                                          nostitchItem.color)
-            (dummy, legendItem, legendTextItem) = self.gridLegend[legendID]
-            if status:
-                legendItem.show()
-                legendTextItem.show()
-            else:
-                legendItem.hide()
-                legendTextItem.hide()
-
-            
-
     def grid_cell_activated(self, item):
         """ If a grid cell notifies it has been activated add it
         to the collection of selected cells and try to paint
@@ -764,7 +726,8 @@ class PatternCanvas(QGraphicsScene):
                                        self._numRows)
         searchArea = QRectF(event.scenePos(), QSizeF(1, 1))
         searchArea = searchArea.adjusted(-4.0, -4.0, 4.0, 4.0)
-        patternRepeats = extract_patternRepeatItems(self.items(searchArea))
+        patternRepeats = extract_patternItems(self.items(searchArea),
+                                              PatternRepeatItem)
         if (not patternRepeats) and (not clickInGrid):
             return
 
@@ -970,7 +933,7 @@ class PatternCanvas(QGraphicsScene):
         """
 
         allItems = self.items(scenePosition)
-        patternGridItems = extract_patternGridItems(allItems)
+        patternGridItems = extract_patternItems(allItems, PatternGridItem)
         if len(patternGridItems) != 1:
             errorString = "grab_color_from_cell: expected 1 item, found %d" % \
                           len(patternGridItems)
@@ -1022,7 +985,7 @@ class PatternCanvas(QGraphicsScene):
         """
 
         items = self.items(scenePosition)
-        patternGridItems = extract_patternGridItems(items)
+        patternGridItems = extract_patternItems(items, PatternGridItem)
        
         if patternGridItems:
             if len(patternGridItems) > 1:
@@ -1098,7 +1061,7 @@ class PatternCanvas(QGraphicsScene):
                                     self._unitCellDim.height() * 0.01)
 
         allItems = self.items(QRectF(upperLeftCorner, lowerRightCorner))
-        patternGridItems = extract_patternGridItems(allItems)
+        patternGridItems = extract_patternItems(allItems, PatternGridItem)
 
         return patternGridItems
 
@@ -1188,7 +1151,7 @@ class PatternCanvas(QGraphicsScene):
         """
 
         allItems = self.items()
-        patternGridItems = extract_patternGridItems(allItems)
+        patternGridItems = extract_patternItems(allItems, PatternGridItem)
 
         tracker = {}
         for item in patternGridItems:
@@ -1226,29 +1189,33 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def _item_at_row_col(self, row, column):
-        """ Returns the PatternGridItem at the given column and row
+    def _item_at_row_col(self, row, column, patternType = None):
+        """ Returns the PatternCanvasItem at the given column and row
         or None if there isn't one.
 
         """
 
+        # no type is provided we default to PatternGridItems
+        if not patternType:
+            patternType = PatternGridItem
+
         pos = convert_col_row_to_pos(column, row, self._unitCellDim.width(),
                                      self._unitCellDim.height())
 
-        # we really only expect one PatternGridItem to be present;
+        # we really only expect one PatternItem of given type to be present;
         # however there may in principle be others (legend items etc)
         # so we have to pick it out
         allItems = self.items(pos)
-        patternGridItems = extract_patternGridItems(allItems)
-        if len(patternGridItems) > 1:
-            errorString = "_item_at_row_col: expected <=1 item, found %d" % \
-                          len(patternGridItems)
+        patternItems = extract_patternItems(allItems, patternType)
+        if len(patternItems) > 1:
+            errorString = "_item_at_row_col: expected <=1 item, found %d" %\
+                          len(patternItems)
             errorLogger.write(errorString)
             return None
-        elif len(patternGridItems) == 0:
+        elif len(patternItems) == 0:
             return None
         else:
-            return patternGridItems[0]
+            return patternItems[0]
 
 
 
@@ -2347,35 +2314,93 @@ class PatternHighlightItem(QGraphicsRectItem):
 # Helper Functions
 #
 ############################################################################
-def extract_patternGridItems(allItems):
+def extract_patternItems(allItems, patternType):
     """ From a list of QGraphicsItems extracts and returns
     all PatternGridItems.
 
     """
 
-    patternGridItems = []
+    patternItems = []
     for item in allItems:
-        if isinstance(item, PatternGridItem):
-            patternGridItems.append(item)
+        if isinstance(item, patternType):
+            patternItems.append(item)
 
-    return patternGridItems
-
-
-
-def extract_patternRepeatItems(allItems):
-    """ From a list of QGraphicsItems extracts and returns
-    all PatternRepeatItems.
-
-    """
-
-    patternRepeatItems = []
-    for item in allItems:
-        if isinstance(item, PatternRepeatItem):
-            patternRepeatItems.append(item)
-
-    return patternRepeatItems
+    return patternItems
 
 
 
+######################################################################
+# 
+# context manager taking care of hiding nostitch symbols and
+# underlying PatternHighlightItems if present
+#
+######################################################################
+class NostitchVisualizer(object):
+ 
+    def __init__(self, canvas, active):
+        """ Toggles the visibility of all nostitch symbols to on
+        or off via show() and hide().
+
+        WARNING: This should only be done temporary while no user
+        interaction with the canvas is possible, e.g. during
+        exporting. Otherwise it will screw up the undo/redo framwork
+        completely.
+
+        """
+
+        self.isActive = active
+        if self.isActive:
+            self.highlightItems = []
+            self.nostitchItems = []
+            for item in canvas.items():
+                if isinstance(item, PatternGridItem):
+                    if item.name == "nostitch":
+                        self.nostitchItems.append(item)
+                        
+                        highlightItem = \
+                            canvas._item_at_row_col(item.row,
+                                                    item.column,
+                                                    PatternHighlightItem)
+                        if highlightItem:
+                            self.highlightItems.append(highlightItem)
+
+            if self.nostitchItems:
+                legendID = generate_legend_id(self.nostitchItems[0].symbol,
+                                              self.nostitchItems[0].color)
+                (_, self.item, self.textItem) = canvas.gridLegend[legendID]
+
+
+
+    def __enter__(self):
+        """ Entry method of NostitchVisualizer context manager. """
+
+        if self.isActive:
+             for item in self.nostitchItems:
+                item.hide()
+
+             for item in self.highlightItems:
+                 item.hide()
+
+             if self.nostitchItems:
+                 self.item.hide()
+                 self.textItem.hide()
+
+        return self
+     
+
+
+    def __exit__(self, exc_class, exc_instance, traceback):
+        """ Exit method of NostitchVisualizer context manager. """
+
+        if self.isActive:
+             for item in self.nostitchItems:
+                 item.show()
+
+             for item in self.highlightItems:
+                 item.show()
+
+             if self.nostitchItems:
+                 self.item.show()
+                 self.textItem.show()
 
 
