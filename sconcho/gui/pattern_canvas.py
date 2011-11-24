@@ -1558,6 +1558,9 @@ class PatternCanvas(QGraphicsScene):
                                     rowID * self._unitCellDim.height())
                 symbol   = knittingSymbols[name]
 
+                #if name == "nostitch":
+                #    color = QColor("#6a6a6a")
+                
                 allPatternGridItems.append((location, self._unitCellDim, 
                                             colID, rowID, width, 
                                             height, symbol, color))
@@ -1565,6 +1568,7 @@ class PatternCanvas(QGraphicsScene):
                 # update trackers
                 maxCol = max(maxCol, colID)
                 maxRow = max(maxRow, rowID)
+
 
         except KeyError as e:
             QMessageBox.critical(None, msg.errorLoadingGridTitle,
