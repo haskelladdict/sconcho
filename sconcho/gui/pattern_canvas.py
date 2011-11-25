@@ -115,6 +115,7 @@ class PatternCanvas(QGraphicsScene):
 
         self.gridLegend = {}
 
+        self.set_up_row_label_tracker()
         self.set_up_main_grid()
         self.set_up_labels()
 
@@ -152,7 +153,6 @@ class PatternCanvas(QGraphicsScene):
                 self.removeItem(graphicsItem)
                 del graphicsItem
 
-# (graphicsItem.name != "nostitch") and \
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem) and \
                ((graphicsItem.row + offset + start) % 2 != 0):
@@ -171,6 +171,18 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def set_up_row_label_tracker(self):
+        """ Generate the row label tracker. """
+
+        labelIntervalState = self.settings.rowLabelInterval.value
+        labelOffset = self.settings.rowLabelStart.value - 1
+        self.rowLabelTracker = RowLabelTracker(self._numRows, 
+                                               labelIntervalState,
+                                               labelOffset)
+        self.rowLabelTracker.add_row_repeat(range(2,5), 3)
+
+
+
     def set_up_labels(self):
         """ Add labels to the main grid.
         
@@ -183,32 +195,12 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
-        labelIntervalState = self.settings.rowLabelInterval.value
-        labelOffset = self.settings.rowLabelStart.value - 1
-        labelFont = self.settings.labelFont.value
-        
-        # figure out how to show the row labels
-        interval = 1
-        labelStart = self._numRows - 1
-        counter_func = lambda x: (self._numRows - x + labelOffset)
-        if labelIntervalState == "LABEL_EVEN_ROWS":
-            interval = 2
-            labelStart -= (labelOffset+1) % 2
-        elif labelIntervalState == "LABEL_ODD_ROWS":
-            interval = 2
-            labelStart -= labelOffset % 2
-        elif labelIntervalState == "SHOW_EVEN_ROWS":
-            labelStart -= (labelOffset+1) % 2
-            counter_func = lambda x: 2*(self._numRows-x)-1+labelOffset 
-        elif labelIntervalState == "SHOW_ODD_ROWS":
-            labelStart -= labelOffset % 2
-            counter_func = lambda x: 2*(self._numRows-x)-1+labelOffset
-
         for label in self._textLabels:
             self.removeItem(label)
             del label
         self._textLabels = []
-           
+
+        labelFont = self.settings.labelFont.value
         fm = QFontMetrics(labelFont)
         unitWidth = self._unitCellDim.width()
         
@@ -220,12 +212,20 @@ class PatternCanvas(QGraphicsScene):
         else:
             evenXPos = oddXPos
 
-        for row in range(labelStart, -1, -interval):
-            rowValue = counter_func(row)
-            item = PatternLabelItem(unicode(rowValue))
 
-            yPos = self._unitCellDim.height() * row
-            if rowValue % 2 == 0:
+        rowLabelList = self.rowLabelTracker.get_labels()
+        
+        for (row, rowLabels) in enumerate(rowLabelList):
+            if not rowLabels:
+                continue
+
+            labelText = unicode(rowLabels[0])
+            for label in rowLabels[1:]:
+                labelText += ", " + unicode(label)
+            
+            item = PatternLabelItem(labelText)
+            yPos = self._unitCellDim.height() * (self._numRows - row - 1)
+            if row % 2 == 0:
                 item.setPos(evenXPos, yPos)
             else:
                 item.setPos(oddXPos, yPos)
@@ -2406,5 +2406,80 @@ class NostitchVisualizer(object):
              if self.nostitchItems:
                  self.item.show()
                  self.textItem.show()
+
+
+
+
+####################################################################
+#
+# helper class for creating the proper row labels
+#
+####################################################################
+class RowLabelTracker(object):
+
+    def __init__(self, numRows, labelIntervalState, labelOffset):
+
+        self.numRows = numRows
+        self.rangeMap = {}
+
+        self.skipEven = None
+        self.skipOdd = None
+        self.counter_func = lambda x: (x + labelOffset)
+        self.rowShift = 1
+        if labelIntervalState == "LABEL_EVEN_ROWS":
+            self.skipOdd = True
+        elif labelIntervalState == "LABEL_ODD_ROWS":
+            self.skipEven = True
+        elif labelIntervalState == "SHOW_EVEN_ROWS":
+            self.counter_func = lambda x: 2*x-1+labelOffset 
+            self.rowShift = 2
+        elif labelIntervalState == "SHOW_ODD_ROWS":
+            self.counter_func = lambda x: 2*x-1+labelOffset
+            self.rowShift = 2
+
+
+
+    def add_row_repeat(self, aRange, multiplicity):
+        """ Add a row repeat range to row label tracker. """
+
+        for i in aRange:
+            self.rangeMap[i] = (multiplicity, len(aRange))
+
+
+
+    def remove_range(self, aRange, multiplicity):
+        """ Remove a row repeat from row label tracker. """
+        
+        for i in aRange:
+            del self.rangeMap[i]
+
+
+    
+    def get_labels(self):
+
+        labels = []
+        nextCount = 0
+        for row in range(1, self.numRows + 1):
+            rowEntry = self.counter_func(row)
+            if row in self.rangeMap:
+                (mult, length) = self.rangeMap[row]
+                nextCount += (mult - 1) * self.rowShift;
+                
+                rowLabel = []
+                for i in range(0, mult):
+                    rowLabel.append(rowEntry + i*length*self.rowShift)
+
+                labels.append(rowLabel)
+            else:
+                if self.skipEven and (rowEntry % 2 == 0):
+                    print("are here ", self.skipEven)
+                    labels.append(None)
+                elif self.skipOdd and (rowEntry % 2 != 0):
+                    labels.append(None)
+                else:
+                    labels.append([rowEntry + nextCount])
+
+        return labels
+
 
 
