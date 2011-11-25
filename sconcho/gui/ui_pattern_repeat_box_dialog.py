@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/pattern_repeat_dialog.ui'
+# Form implementation generated from reading ui file 'ui/pattern_repeat_box_dialog.ui'
 #
-# Created: Sat Nov  5 12:39:17 2011
+# Created: Fri Nov 25 14:15:15 2011
 #      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
