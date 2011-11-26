@@ -2470,18 +2470,19 @@ class RowLabelTracker(object):
         
 
 
-    def add_row_repeat(self, aRange, multiplicity):
+    def add_row_repeat(self, start, end, multiplicity):
         """ Add a row repeat range to row label tracker. """
 
-        for i in aRange:
-            self.rangeMap[i] = (multiplicity, len(aRange))
+        print("are here")
+        for i in range(start, end+1):
+            self.rangeMap[i] = (multiplicity, end-start+1)
 
 
 
-    def remove_range(self, aRange, multiplicity):
+    def delete_row_repeat(self, start, end):
         """ Remove a row repeat from row label tracker. """
         
-        for i in aRange:
+        for i in range(start, end+1):
             del self.rangeMap[i]
 
 

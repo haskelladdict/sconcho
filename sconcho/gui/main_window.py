@@ -251,6 +251,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("triggered()"),
                      self.canvas.apply_color_to_selection)
 
+
         self.connect(self.action_Undo, SIGNAL("triggered()"),
                      self.canvas.undo)
 
@@ -884,6 +885,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.patternRowRepeatEditorDialog = \
                 PatternRowRepeatEditorDialog()
 
+            self.connect(self.patternRowRepeatEditorDialog,
+                         SIGNAL("added_row_repeat"),
+                         self.canvas.rowLabelTracker.add_row_repeat)
+            self.connect(self.patternRowRepeatEditorDialog,
+                         SIGNAL("added_row_repeat"),
+                         self.canvas.set_up_labels)
+            self.connect(self.patternRowRepeatEditorDialog,
+                         SIGNAL("deleted_row_repeat"),
+                         self.canvas.rowLabelTracker.delete_row_repeat)
+            self.connect(self.patternRowRepeatEditorDialog,
+                         SIGNAL("deleted_row_repeat"),
+                         self.canvas.set_up_labels)
 
         self.patternRowRepeatEditorDialog.raise_()
         self.patternRowRepeatEditorDialog.show()

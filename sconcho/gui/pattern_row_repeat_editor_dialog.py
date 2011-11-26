@@ -142,6 +142,7 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
             
         self.entryGrouper.setVisible(False)
         self.controlGrouper.setEnabled(True)
+        self.emit(SIGNAL("added_row_repeat"), startRow, endRow, numRepeat)
 
 
 
@@ -216,6 +217,16 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
         selectionList = self.repeatWidget.selectedRanges()
         for selection in selectionList:
             for row in range(selection.bottomRow(), selection.topRow() + 1):
+                (prevStart, status1) = \
+                    self.repeatWidget.item(row, 0).text().toInt()
+
+                (prevEnd, status2) = \
+                    self.repeatWidget.item(row, 1).text().toInt()
+
+                if not status1 or not status2:
+                    continue
+
+                self.emit(SIGNAL("deleted_row_repeat"), prevStart, prevEnd)
                 self.repeatWidget.removeRow(row)
 
 
