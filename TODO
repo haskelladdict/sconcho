@@ -1,3 +1,5 @@
-- more sophisticated print dialog
 - colors in color widget don't update right away when
   loading a new sconcho project.
+- allow odd row numbers on the left
+- allow adding of legend entry for repeat boxes
+- allow to only include odd numbers for rows
