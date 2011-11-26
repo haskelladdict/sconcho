@@ -212,7 +212,11 @@ class PatternCanvas(QGraphicsScene):
         else:
             evenXPos = oddXPos
 
-
+        labelIntervalState = self.settings.rowLabelInterval.value
+        labelOffset = self.settings.rowLabelStart.value - 1
+        self.rowLabelTracker.update(self._numRows, 
+                                    labelIntervalState,
+                                    labelOffset)
         rowLabelList = self.rowLabelTracker.get_labels()
         
         for (row, rowLabels) in enumerate(rowLabelList):
@@ -225,7 +229,7 @@ class PatternCanvas(QGraphicsScene):
             
             item = PatternLabelItem(labelText)
             yPos = self._unitCellDim.height() * (self._numRows - row - 1)
-            if row % 2 == 0:
+            if rowLabels[0] % 2 == 0:
                 item.setPos(evenXPos, yPos)
             else:
                 item.setPos(oddXPos, yPos)
@@ -2419,9 +2423,14 @@ class RowLabelTracker(object):
 
     def __init__(self, numRows, labelIntervalState, labelOffset):
 
-        self.numRows = numRows
         self.rangeMap = {}
+        self.update(numRows, labelIntervalState, labelOffset)
 
+
+
+    def update(self, numRows, labelIntervalState, labelOffset):
+
+        self.numRows = numRows
         self.skipEven = None
         self.skipOdd = None
         self.counter_func = lambda x: (x + labelOffset)
@@ -2431,12 +2440,13 @@ class RowLabelTracker(object):
         elif labelIntervalState == "LABEL_ODD_ROWS":
             self.skipEven = True
         elif labelIntervalState == "SHOW_EVEN_ROWS":
-            self.counter_func = lambda x: 2*x-1+labelOffset 
+            self.counter_func = lambda x: 2*x - 1 + labelOffset 
             self.rowShift = 2
         elif labelIntervalState == "SHOW_ODD_ROWS":
-            self.counter_func = lambda x: 2*x-1+labelOffset
+            self.counter_func = lambda x: 2*x - 1 + labelOffset
             self.rowShift = 2
 
+        
 
 
     def add_row_repeat(self, aRange, multiplicity):
@@ -2472,7 +2482,6 @@ class RowLabelTracker(object):
                 labels.append(rowLabel)
             else:
                 if self.skipEven and (rowEntry % 2 == 0):
-                    print("are here ", self.skipEven)
                     labels.append(None)
                 elif self.skipOdd and (rowEntry % 2 != 0):
                     labels.append(None)
