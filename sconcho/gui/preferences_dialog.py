@@ -147,6 +147,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings.rowLabelInterval.make_settings_default()
         self.settings.rowLabelStart.make_settings_default()
         self.settings.evenRowLabelLocation.make_settings_default()
+        self.settings.oddRowLabelLocation.make_settings_default()
         self.settings.gridCellWidth.make_settings_default()
         self.settings.gridCellHeight.make_settings_default()
         self.settings.highlightRows.make_settings_default()
@@ -339,6 +340,12 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         else:
             self.evenRowLabelLocationComboBox.setCurrentIndex(1)
     
+        oddRowLabelLocation = self.settings.oddRowLabelLocation.value
+        if evenRowLabelLocation == "RIGHT_OF":
+            self.oddRowLabelLocationComboBox.setCurrentIndex(0)
+        else:
+            self.oddRowLabelLocationComboBox.setCurrentIndex(1)
+    
 
 
     def set_up_row_label_selector_connections(self):
@@ -376,6 +383,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.connect(self.evenRowLabelLocationComboBox,
                      SIGNAL("currentIndexChanged(int)"),
                      self.change_even_row_label_location) 
+
+        self.connect(self.oddRowLabelLocationComboBox,
+                     SIGNAL("currentIndexChanged(int)"),
+                     self.change_odd_row_label_location) 
 
 
 
@@ -428,7 +439,19 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
             locationString = "LEFT_OF"
 
         self.settings.evenRowLabelLocation.value = locationString
-        self.emit(SIGNAL("even_row_label_location_changed"), locationString)
+        self.emit(SIGNAL("row_label_location_changed"))
+
+
+
+    def change_odd_row_label_location(self, value):
+        """ Sets the location of the odd row labels. """
+
+        locationString = "RIGHT_OF"
+        if value != 0:
+            locationString = "LEFT_OF"
+
+        self.settings.oddRowLabelLocation.value = locationString
+        self.emit(SIGNAL("row_label_location_changed"))
 
 
 

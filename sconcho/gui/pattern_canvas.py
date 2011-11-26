@@ -179,7 +179,7 @@ class PatternCanvas(QGraphicsScene):
         self.rowLabelTracker = RowLabelTracker(self._numRows, 
                                                labelIntervalState,
                                                labelOffset)
-        self.rowLabelTracker.add_row_repeat(range(2,5), 3)
+#        self.rowLabelTracker.add_row_repeat(range(2,5), 3)
 
 
 
@@ -190,27 +190,41 @@ class PatternCanvas(QGraphicsScene):
         of just shifting around existing ones. The latter should
         probably be more efficient.
 
-        NOTE: The ranges below are somewhat weird because we count
-        backward.
-        
         """
 
+        # clear all previous labels
         for label in self._textLabels:
             self.removeItem(label)
             del label
         self._textLabels = []
-
+        
         labelFont = self.settings.labelFont.value
         fm = QFontMetrics(labelFont)
+        
+        self._set_up_row_labels(labelFont)
+        self._set_up_column_labels(labelFont, fm)
+
+
+
+    def _set_up_row_labels(self, labelFont):
+        """ Set up row labels. """
+
         unitWidth = self._unitCellDim.width()
         
-        # row labels (figure out if even row labels should be on left/right
+        rightXPos = unitWidth * self._numColumns
+        leftXPos = -unitWidth
+
         evenRowLabelLocation = self.settings.evenRowLabelLocation.value
-        oddXPos = unitWidth * self._numColumns
         if evenRowLabelLocation == "LEFT_OF":
-            evenXPos = -unitWidth
+            evenXPos = leftXPos
         else:
-            evenXPos = oddXPos
+            evenXPos = rightXPos
+
+        oddRowLabelLocation = self.settings.oddRowLabelLocation.value
+        if oddRowLabelLocation == "LEFT_OF":
+            oddXPos = leftXPos
+        else:
+            oddXPos = rightXPos
 
         labelIntervalState = self.settings.rowLabelInterval.value
         labelOffset = self.settings.rowLabelStart.value - 1
@@ -239,11 +253,16 @@ class PatternCanvas(QGraphicsScene):
             self.addItem(item)
             self._textLabels.append(item)
 
-        # column labels
+
+    
+    def _set_up_column_labels(self, labelFont, fontMetric):
+        """ Set up column labels. """
+
+        unitWidth = self._unitCellDim.width()
         yPos = self._unitCellDim.height() * self._numRows
         for col in range(self._numColumns - 1, -1, -1):
             labelText = QString(unicode(self._numColumns - col))
-            textWidth = fm.width(labelText)
+            textWidth = fontMetric.width(labelText)
             item = PatternLabelItem(labelText)
             
             xPos = unitWidth * col + (unitWidth * 0.6 -textWidth)
