@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Fri Nov 25 22:36:46 2011
+# Created: Sat Nov 26 13:59:48 2011
 #      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -327,7 +327,7 @@ class Ui_MainWindow(object):
         icon13 = QtGui.QIcon()
         icon13.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/pattern_repeat.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionCreate_Pattern_Repeat.setIcon(icon13)
-        self.actionCreate_Pattern_Repeat.setText(QtGui.QApplication.translate("MainWindow", "Create Pattern Repeat", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCreate_Pattern_Repeat.setText(QtGui.QApplication.translate("MainWindow", "&Create Pattern Repeat", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCreate_Pattern_Repeat.setToolTip(QtGui.QApplication.translate("MainWindow", "Create a pattern repeat box around the currently highlighted cells.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCreate_Pattern_Repeat.setObjectName(_fromUtf8("actionCreate_Pattern_Repeat"))
         self.actionApply_Color_to_Selection = QtGui.QAction(MainWindow)
@@ -353,6 +353,9 @@ class Ui_MainWindow(object):
         self.action_Clear_Recently_Used_Files.setText(QtGui.QApplication.translate("MainWindow", "&Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Clear_Recently_Used_Files.setStatusTip(QtGui.QApplication.translate("MainWindow", "Clear the list of recent items.", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Clear_Recently_Used_Files.setObjectName(_fromUtf8("action_Clear_Recently_Used_Files"))
+        self.actionAdd_Row_Repeat = QtGui.QAction(MainWindow)
+        self.actionAdd_Row_Repeat.setText(QtGui.QApplication.translate("MainWindow", "&Add Row Repeat", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAdd_Row_Repeat.setObjectName(_fromUtf8("actionAdd_Row_Repeat"))
         self.menuRecent_Files.addAction(self.action_Clear_Recently_Used_Files)
         self.menuRecent_Files.addSeparator()
         self.menuFile.addAction(self.actionNew)
@@ -376,6 +379,7 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.action_Insert_delete_rows_and_columns)
         self.menuView.addAction(self.actionUnselect_All)
         self.menuView.addAction(self.actionCreate_Pattern_Repeat)
+        self.menuView.addAction(self.actionAdd_Row_Repeat)
         self.menuView.addAction(self.actionApply_Color_to_Selection)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionShow_pattern_grid)

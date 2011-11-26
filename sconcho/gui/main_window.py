@@ -56,6 +56,7 @@ from sconcho.gui.color_widget import (ColorWidget, ColorSynchronizer)
 from sconcho.gui.pattern_canvas import PatternCanvas
 from sconcho.gui.export_bitmap_dialog import ExportBitmapDialog
 from sconcho.gui.new_pattern_dialog import NewPatternDialog
+from sconcho.gui.pattern_row_repeat_editor_dialog import PatternRowRepeatEditorDialog
 from sconcho.gui.preferences_dialog import PreferencesDialog
 from sconcho.gui.sconcho_manual import SconchoManual
 from sconcho.gui.update_dialog import UpdateDialog
@@ -81,6 +82,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings = settings
         self._restore_window_settings()
         self.preferencesDialog = None
+        self.patternRowRepeatEditorDialog = None
         self.exportBitmapDialog = None
         self.manualDialog = None
 
@@ -181,6 +183,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.actionPrefs, SIGNAL("triggered()"),
                      self.open_preferences_dialog)
+
+        self.connect(self.actionAdd_Row_Repeat, SIGNAL("triggered()"),
+                     self.open_row_repeat_dialog)
 
         self.connect(self.actionSave, SIGNAL("triggered()"),
                      partial(self.save_pattern_dialog, "save"))
@@ -869,6 +874,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.canvas.clearFocus()
 
         printPrevDialog.exec_()
+
+
+
+    def open_row_repeat_dialog(self):
+        """ Open the dialog for adding/deleting row repeats. """
+
+        if not self.patternRowRepeatEditorDialog:
+            self.patternRowRepeatEditorDialog = \
+                PatternRowRepeatEditorDialog()
+
+
+        self.patternRowRepeatEditorDialog.raise_()
+        self.patternRowRepeatEditorDialog.show()
 
 
 

@@ -136,6 +136,7 @@
     <addaction name="action_Insert_delete_rows_and_columns"/>
     <addaction name="actionUnselect_All"/>
     <addaction name="actionCreate_Pattern_Repeat"/>
+    <addaction name="actionAdd_Row_Repeat"/>
     <addaction name="actionApply_Color_to_Selection"/>
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>
@@ -640,7 +641,7 @@
      <normaloff>:/icons/pattern_repeat.png</normaloff>:/icons/pattern_repeat.png</iconset>
    </property>
    <property name="text">
-    <string>Create Pattern Repeat</string>
+    <string>&amp;Create Pattern Repeat</string>
    </property>
    <property name="toolTip">
     <string>Create a pattern repeat box around the currently highlighted cells.</string>
@@ -684,6 +685,11 @@
    </property>
    <property name="statusTip">
     <string>Clear the list of recent items.</string>
+   </property>
+  </action>
+  <action name="actionAdd_Row_Repeat">
+   <property name="text">
+    <string>&amp;Add Row Repeat</string>
    </property>
   </action>
  </widget>

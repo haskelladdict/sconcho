@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/manage_grid_dialog.ui'
 #
-# Created: Fri Nov 25 22:36:46 2011
+# Created: Sat Nov 26 13:59:48 2011
 #      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!

@@ -202,6 +202,17 @@ recoveryFilePresentText = ("A recovery file for pattern <b>{0}</b> has "
                            "file and continue with loading {0}.")
 
 
+########################################################################
+#
+# messages for patternRepeatRowEditor dialog 
+#
+########################################################################
+badRepeatRowRangeTitle = "sconcho: Range Error"
+badRepeatRowRangeText = ("Error: The range of your new pattern row repeat "
+                         "overlaps with an already existing one. "
+                         "Please change!")
+
+
 
 ########################################################################
 # 

@@ -29,7 +29,7 @@ from functools import partial
 from PyQt4.QtCore import (SIGNAL, QString, QDir)
 from PyQt4.QtGui import (QDialog, QColorDialog)
 
-from sconcho.gui.ui_pattern_repeat_dialog import Ui_PatternRepeatDialog
+from sconcho.gui.ui_pattern_repeat_box_dialog import Ui_PatternRepeatDialog
 
 
 
