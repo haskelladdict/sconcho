@@ -201,18 +201,20 @@ class PatternCanvas(QGraphicsScene):
         labelFont = self.settings.labelFont.value
         fm = QFontMetrics(labelFont)
         
-        self._set_up_row_labels(labelFont)
+        self._set_up_row_labels(labelFont, fm)
         self._set_up_column_labels(labelFont, fm)
 
 
 
-    def _set_up_row_labels(self, labelFont):
+    def _set_up_row_labels(self, labelFont, fontMetric):
         """ Set up row labels. """
 
         unitWidth = self._unitCellDim.width()
         
-        rightXPos = unitWidth * self._numColumns
-        leftXPos = -unitWidth
+        # we use lamda function so we can control positioning 
+        # based on the actual labeltext
+        rightXPos = lambda x: unitWidth * self._numColumns
+        leftXPos = lambda x: - 0.5*unitWidth - fontMetric.width(x) 
 
         evenRowLabelLocation = self.settings.evenRowLabelLocation.value
         if evenRowLabelLocation == "LEFT_OF":
@@ -244,9 +246,9 @@ class PatternCanvas(QGraphicsScene):
             item = PatternLabelItem(labelText)
             yPos = self._unitCellDim.height() * (self._numRows - row - 1)
             if rowLabels[0] % 2 == 0:
-                item.setPos(evenXPos, yPos)
+                item.setPos(evenXPos(labelText), yPos)
             else:
-                item.setPos(oddXPos, yPos)
+                item.setPos(oddXPos(labelText), yPos)
 
             item.setFont(labelFont)
             item.setToolTip("Shift-Click to select whole row")
