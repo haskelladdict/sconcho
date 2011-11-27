@@ -2446,10 +2446,16 @@ class RowLabelTracker(object):
 
         self.rangeMap = {}
         self.update(numRows, labelIntervalState, labelOffset)
+        self.labels = []
+        self.labelsDirty = True
 
 
 
     def update(self, numRows, labelIntervalState, labelOffset):
+        """ Update the current properties used to compute
+        the row labels.
+
+        """
 
         self.numRows = numRows
         self.skipEven = None
@@ -2467,15 +2473,17 @@ class RowLabelTracker(object):
             self.counter_func = lambda x: 2*x - 1 + labelOffset
             self.rowShift = 2
 
+        self.labelsDirty = True
+
         
 
 
     def add_row_repeat(self, start, end, multiplicity):
         """ Add a row repeat range to row label tracker. """
 
-        print("are here")
         for i in range(start, end+1):
             self.rangeMap[i] = (multiplicity, end-start+1)
+        self.labelsDirty = True
 
 
 
@@ -2484,33 +2492,39 @@ class RowLabelTracker(object):
         
         for i in range(start, end+1):
             del self.rangeMap[i]
-
+        self.labelsDirty = True
 
     
+
     def get_labels(self):
+        """ Main routine computing the current set of labels. """
 
-        labels = []
-        nextCount = 0
-        for row in range(1, self.numRows + 1):
-            rowEntry = self.counter_func(row)
-            if row in self.rangeMap:
-                (mult, length) = self.rangeMap[row]
-                nextCount += (mult - 1) * self.rowShift;
-                
-                rowLabel = []
-                for i in range(0, mult):
-                    rowLabel.append(rowEntry + i*length*self.rowShift)
+        if self.labelsDirty:
+            self.labels = []
+            nextCount = 0
+            repeatShift = 0
+            for row in range(1, self.numRows + 1):
+                rowEntry = self.counter_func(row)
+                if row in self.rangeMap:
+                    (mult, length) = self.rangeMap[row]
 
-                labels.append(rowLabel)
-            else:
-                if self.skipEven and (rowEntry % 2 == 0):
-                    labels.append(None)
-                elif self.skipOdd and (rowEntry % 2 != 0):
-                    labels.append(None)
+                    rowLabel = []
+                    for i in range(0, mult):
+                        rowLabel.append(rowEntry + repeatShift 
+                                        + i*length*self.rowShift)
+
+                    nextCount += (mult - 1) * self.rowShift;
+                    self.labels.append(rowLabel)
                 else:
-                    labels.append([rowEntry + nextCount])
+                    if self.skipEven and (rowEntry % 2 == 0):
+                        self.labels.append(None)
+                    elif self.skipOdd and (rowEntry % 2 != 0):
+                        self.labels.append(None)
+                    else:
+                        repeatShift = nextCount
+                        self.labels.append([rowEntry + repeatShift])
 
-        return labels
+        return self.labels
 
 
 
