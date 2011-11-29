@@ -144,7 +144,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         self.settings.legendFont.make_settings_default()
         self.settings.labelFont.make_settings_default()
-        self.settings.rowLabelInterval.make_settings_default()
+        self.settings.showRowLabels.make_settings_default()
+        self.settings.rowLabelsShowInterval.make_settings_default()
+        self.settings.rowLabelsShowIntervalStart.make_settings_default()
+        self.settings.rowLabelMode.make_settings_default()
         self.settings.rowLabelStart.make_settings_default()
         self.settings.evenRowLabelLocation.make_settings_default()
         self.settings.oddRowLabelLocation.make_settings_default()
@@ -310,6 +313,23 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.labelExampleText.setFont(newLabelFont)
 
         self.emit(SIGNAL("label_font_changed"))
+    
+
+
+    def allow_all_label_options(self, status):
+        """ Toggle status of allowing all row label options """
+
+        self.showRowsWithIntervalButton.setEnabled(status)
+
+        # since these are mutually exclusive we have to be 
+        # a bit more careful here
+        if status == False:
+            self.showOddRowsButton.setEnabled(status)
+            self.showEvenRowsButton.setEnabled(status)
+            self.labelAllRowsButton.click()
+        else:
+            rowLabelStart = self.settings.rowLabelStart.value
+            self._adjust_row_label_selectors(rowLabelStart)
 
 
 
@@ -319,13 +339,9 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         """
        
-        intervalType = self.settings.rowLabelInterval.value
+        intervalType = self.settings.rowLabelMode.value
         self.labelAllRowsButton.click()
-        if intervalType == "LABEL_EVEN_ROWS":
-            self.labelEvenRowsButton.click()
-        elif intervalType == "LABEL_ODD_ROWS":
-            self.labelOddRowsButton.click()
-        elif intervalType == "SHOW_EVEN_ROWS":
+        if intervalType == "SHOW_EVEN_ROWS":
             self.showEvenRowsButton.click()
         elif intervalType == "SHOW_ODD_ROWS":
             self.showOddRowsButton.click()
@@ -351,20 +367,32 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def set_up_row_label_selector_connections(self):
         """ Set up connection for label interval selector. """
         
+
+        self.connect(self.showRowLabelChecker, 
+                     SIGNAL("clicked(bool)"),
+                     self.change_row_label_visibility)
+
+        self.connect(self.showColumnLabelChecker, 
+                     SIGNAL("clicked(bool)"),
+                     self.change_column_label_visibility)
+
         self.connect(self.labelAllRowsButton,
                      SIGNAL("clicked(bool)"),
                      partial(self.change_row_label_interval, 
                              "LABEL_ALL_ROWS"))
 
-        self.connect(self.labelEvenRowsButton,
+        self.connect(self.showRowsWithIntervalButton,
                      SIGNAL("clicked(bool)"),
                      partial(self.change_row_label_interval, 
-                             "LABEL_EVEN_ROWS"))
+                             "SHOW_ROWS_WITH_INTERVAL"))
 
-        self.connect(self.labelOddRowsButton,
-                     SIGNAL("clicked(bool)"),
-                     partial(self.change_row_label_interval, 
-                             "LABEL_ODD_ROWS"))
+        self.connect(self.rowLabelsIntervalSpinner,
+                     SIGNAL("valueChanged(int)"),
+                     self.change_row_label_interval_properties)
+
+        self.connect(self.rowLabelsIntervalStartSpinner,
+                     SIGNAL("valueChanged(int)"),
+                     self.change_row_label_interval_properties)
 
         self.connect(self.showEvenRowsButton,
                      SIGNAL("clicked(bool)"),
@@ -389,12 +417,53 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      self.change_odd_row_label_location) 
 
 
+    
+    def change_row_label_visibility(self, status):
+        """ Toggle the visibility of the row labels. """
+
+        if status:
+            self.settings.showRowLabels.value = 1
+        else:
+            self.settings.showRowLabels.value = 0
+        self.emit(SIGNAL("toggle_rowLabel_visibility(bool)"), status)
+
+
+    
+    def change_column_label_visibility(self, status):
+        """ Toggle the visibility of the column labels. """
+
+        if status:
+            self.settings.showColumnLabels.value = 1
+        else:
+            self.settings.showColumnLabels.value = 0
+        self.emit(SIGNAL("toggle_columnLabel_visibility(bool)"), status)
+
+
 
     def change_row_label_interval(self, state, clicked):
         """ Sets the new label interval and lets the canvas know. """
 
-        self.settings.rowLabelInterval.value = state 
+        self.settings.rowLabelMode.value = state 
+        if state == "SHOW_ROWS_WITH_INTERVAL":
+            self.settings.rowLabelsShowInterval.value = \
+                self.rowLabelsIntervalSpinner.value()
+            self.settings.rowLabelsShowIntervalStart.value = \
+                self.rowLabelsIntervalStartSpinner.value()
+
         self.emit(SIGNAL("row_label_interval_changed"))
+
+
+    
+    def change_row_label_interval_properties(self):
+        """ Changes the values of the row label interval properties. """
+
+        self.settings.rowLabelsShowInterval.value = \
+            self.rowLabelsIntervalSpinner.value()
+        self.settings.rowLabelsShowIntervalStart.value = \
+            self.rowLabelsIntervalStartSpinner.value()
+
+        self.emit(SIGNAL("row_label_interval_changed"))
+
 
 
 

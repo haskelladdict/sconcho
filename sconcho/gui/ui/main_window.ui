@@ -140,7 +140,6 @@
     <addaction name="actionApply_Color_to_Selection"/>
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>
-    <addaction name="actionShow_grid_labels"/>
     <addaction name="actionShow_legend"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -489,7 +488,7 @@
     <string>toggle visibility of legend</string>
    </property>
   </action>
-  <action name="actionShow_grid_labels">
+  <action name="actionShow_row_labels">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -497,7 +496,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show &amp;Grid Labels</string>
+    <string>Show &amp;Row Labels</string>
    </property>
    <property name="toolTip">
     <string>toggle visbility of grid labels</string>
@@ -690,6 +689,17 @@
   <action name="actionAdd_Row_Repeat">
    <property name="text">
     <string>&amp;Add Row Repeat</string>
+   </property>
+  </action>
+  <action name="actionShow_column_labels">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show &amp;Column Labels</string>
    </property>
   </action>
  </widget>

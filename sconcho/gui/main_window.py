@@ -81,8 +81,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.settings = settings
         self._restore_window_settings()
-        self.preferencesDialog = None
-        self.patternRowRepeatEditorDialog = None
+        self.preferencesDialog = PreferencesDialog(self.settings, self)
+        self.patternRowRepeatEditorDialog = PatternRowRepeatEditorDialog()
         self.exportBitmapDialog = None
         self.manualDialog = None
 
@@ -162,7 +162,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _set_up_connections(self):
         """ Set up all connections for MainWindow. """
-        
+
         self.connect(self.actionQuit, SIGNAL("triggered()"),
                      self.close)
 
@@ -212,9 +212,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("triggered()"),
                      self.open_manage_knitting_symbols_dialog)
 
-        self.connect(self.actionShow_grid_labels, SIGNAL("toggled(bool)"),
-                     self.canvas.toggle_label_visibility)
-        
         self.connect(self.actionShow_legend, SIGNAL("toggled(bool)"),
                      self.canvas.toggle_legend_visibility)
 
@@ -251,13 +248,104 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("triggered()"),
                      self.canvas.apply_color_to_selection)
 
-
         self.connect(self.action_Undo, SIGNAL("triggered()"),
                      self.canvas.undo)
 
         self.connect(self.action_Redo, SIGNAL("triggered()"),
                      self.canvas.redo)
 
+        # connections for patternRowRepeatEditorDialog
+        self.connect(self.patternRowRepeatEditorDialog,
+                     SIGNAL("added_row_repeat"),
+                     self.canvas.rowLabelTracker.add_row_repeat)
+        self.connect(self.patternRowRepeatEditorDialog,
+                     SIGNAL("allow_all_label_options"),
+                     self.preferencesDialog.allow_all_label_options)
+        self.connect(self.patternRowRepeatEditorDialog,
+                     SIGNAL("added_row_repeat"),
+                     self.canvas.set_up_labels)
+        self.connect(self.patternRowRepeatEditorDialog,
+                     SIGNAL("deleted_row_repeat"),
+                     self.canvas.rowLabelTracker.delete_row_repeat)
+        self.connect(self.patternRowRepeatEditorDialog,
+                     SIGNAL("deleted_row_repeat"),
+                     self.canvas.set_up_labels)
+
+        # connections for preferences dialog
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("label_font_changed"),
+                     self.canvas.label_font_changed)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("label_font_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("legend_font_changed"),
+                     self.canvas.legend_font_changed)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("legend_font_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("toggle_rowLabel_visibility(bool)"),
+                     self.canvas.toggle_rowLabel_visibility)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("toggle_columnLabel_visibility(bool)"),
+                     self.canvas.toggle_columnLabel_visibility)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_interval_changed"),
+                     self.canvas.set_up_labels)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_interval_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_start_changed"),
+                     self.canvas.set_up_labels)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_start_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_start_changed"),
+                     self.canvas.adjust_manage_grid_dialog_after_row_label_offset)
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_location_changed"),
+                     self.canvas.set_up_labels)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_location_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("grid_cell_dimensions_changed"),
+                     self.canvas.change_grid_cell_dimensions)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("grid_cell_dimensions_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("highlighted_row_visibility_changed"),
+                     self.canvas.toggle_row_highlighting)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("redraw_highlighted_rows"),
+                     self.canvas.set_up_highlighted_rows)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("redraw_highlighted_rows"),
+                     self.set_project_dirty)
+
+        self.connect(self,
+                     SIGNAL("update_preferences"),
+                     self.preferencesDialog.populate_interface)
 
 
     def keyPressEvent(self, event):
@@ -881,23 +969,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def open_row_repeat_dialog(self):
         """ Open the dialog for adding/deleting row repeats. """
 
-        if not self.patternRowRepeatEditorDialog:
-            self.patternRowRepeatEditorDialog = \
-                PatternRowRepeatEditorDialog()
-
-            self.connect(self.patternRowRepeatEditorDialog,
-                         SIGNAL("added_row_repeat"),
-                         self.canvas.rowLabelTracker.add_row_repeat)
-            self.connect(self.patternRowRepeatEditorDialog,
-                         SIGNAL("added_row_repeat"),
-                         self.canvas.set_up_labels)
-            self.connect(self.patternRowRepeatEditorDialog,
-                         SIGNAL("deleted_row_repeat"),
-                         self.canvas.rowLabelTracker.delete_row_repeat)
-            self.connect(self.patternRowRepeatEditorDialog,
-                         SIGNAL("deleted_row_repeat"),
-                         self.canvas.set_up_labels)
-
         self.patternRowRepeatEditorDialog.raise_()
         self.patternRowRepeatEditorDialog.show()
 
@@ -906,80 +977,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def open_preferences_dialog(self):
         """ Open the preferences dialog. """
 
-        if not self.preferencesDialog:
-            self.preferencesDialog = PreferencesDialog(self.settings, self)
-            
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("label_font_changed"),
-                         self.canvas.label_font_changed)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("label_font_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("legend_font_changed"),
-                         self.canvas.legend_font_changed)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("legend_font_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_interval_changed"),
-                         self.canvas.set_up_labels)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_interval_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_start_changed"),
-                         self.canvas.set_up_labels)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_start_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_start_changed"),
-                         self.canvas.adjust_manage_grid_dialog_after_row_label_offset)
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_location_changed"),
-                         self.canvas.set_up_labels)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_location_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog,
-                         SIGNAL("grid_cell_dimensions_changed"),
-                         self.canvas.change_grid_cell_dimensions)
-
-            self.connect(self.preferencesDialog,
-                         SIGNAL("grid_cell_dimensions_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog,
-                         SIGNAL("highlighted_row_visibility_changed"),
-                         self.canvas.toggle_row_highlighting)
-
-            self.connect(self.preferencesDialog,
-                         SIGNAL("redraw_highlighted_rows"),
-                         self.canvas.set_up_highlighted_rows)
-
-            self.connect(self.preferencesDialog,
-                         SIGNAL("redraw_highlighted_rows"),
-                         self.set_project_dirty)
-
-            self.connect(self,
-                         SIGNAL("update_preferences"),
-                         self.preferencesDialog.populate_interface)
-
-
         self.preferencesDialog.raise_()
         self.preferencesDialog.show()
-
 
 
 

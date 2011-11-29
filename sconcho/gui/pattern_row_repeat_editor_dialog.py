@@ -139,10 +139,14 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
         else:
             errorLogger.write("Unknown mode in PatternRowRepeatEditor. "
                               "Expected either ADD_MODE or UPDATE_MODE. ")
+            return
             
         self.entryGrouper.setVisible(False)
         self.controlGrouper.setEnabled(True)
         self.emit(SIGNAL("added_row_repeat"), startRow, endRow, numRepeat)
+
+        # in the presence of row repeats we require "label all rows" mode
+        self.emit(SIGNAL("allow_all_label_options"), False)
 
 
 
@@ -228,6 +232,12 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
 
                 self.emit(SIGNAL("deleted_row_repeat"), prevStart, prevEnd)
                 self.repeatWidget.removeRow(row)
+
+
+        # in all row repeats are gone we can remove the requirement
+        # of the "label all rows" mode
+        if self.repeatWidget.rowCount() == 0:
+            self.emit(SIGNAL("allow_all_label_options"), True)
 
 
 

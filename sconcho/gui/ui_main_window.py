@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Nov 26 13:59:48 2011
+# Created: Mon Nov 28 23:41:04 2011
 #      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -242,13 +242,13 @@ class Ui_MainWindow(object):
         self.actionShow_legend.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle visibility of legend", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_legend.setStatusTip(QtGui.QApplication.translate("MainWindow", "toggle visibility of legend", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_legend.setObjectName(_fromUtf8("actionShow_legend"))
-        self.actionShow_grid_labels = QtGui.QAction(MainWindow)
-        self.actionShow_grid_labels.setCheckable(True)
-        self.actionShow_grid_labels.setChecked(True)
-        self.actionShow_grid_labels.setText(QtGui.QApplication.translate("MainWindow", "Show &Grid Labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShow_grid_labels.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle visbility of grid labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShow_grid_labels.setStatusTip(QtGui.QApplication.translate("MainWindow", "toggle visbility of grid labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShow_grid_labels.setObjectName(_fromUtf8("actionShow_grid_labels"))
+        self.actionShow_row_labels = QtGui.QAction(MainWindow)
+        self.actionShow_row_labels.setCheckable(True)
+        self.actionShow_row_labels.setChecked(True)
+        self.actionShow_row_labels.setText(QtGui.QApplication.translate("MainWindow", "Show &Row Labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_row_labels.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle visbility of grid labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_row_labels.setStatusTip(QtGui.QApplication.translate("MainWindow", "toggle visbility of grid labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_row_labels.setObjectName(_fromUtf8("actionShow_row_labels"))
         self.action_Insert_delete_rows_and_columns = QtGui.QAction(MainWindow)
         self.action_Insert_delete_rows_and_columns.setText(QtGui.QApplication.translate("MainWindow", "&Insert/Delete Rows and Columns", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Insert_delete_rows_and_columns.setStatusTip(QtGui.QApplication.translate("MainWindow", "insert/delete rows and columns", None, QtGui.QApplication.UnicodeUTF8))
@@ -356,6 +356,11 @@ class Ui_MainWindow(object):
         self.actionAdd_Row_Repeat = QtGui.QAction(MainWindow)
         self.actionAdd_Row_Repeat.setText(QtGui.QApplication.translate("MainWindow", "&Add Row Repeat", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAdd_Row_Repeat.setObjectName(_fromUtf8("actionAdd_Row_Repeat"))
+        self.actionShow_column_labels = QtGui.QAction(MainWindow)
+        self.actionShow_column_labels.setCheckable(True)
+        self.actionShow_column_labels.setChecked(True)
+        self.actionShow_column_labels.setText(QtGui.QApplication.translate("MainWindow", "Show &Column Labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_column_labels.setObjectName(_fromUtf8("actionShow_column_labels"))
         self.menuRecent_Files.addAction(self.action_Clear_Recently_Used_Files)
         self.menuRecent_Files.addSeparator()
         self.menuFile.addAction(self.actionNew)
@@ -383,7 +388,6 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.actionApply_Color_to_Selection)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionShow_pattern_grid)
-        self.menuView.addAction(self.actionShow_grid_labels)
         self.menuView.addAction(self.actionShow_legend)
         self.menuHelp.addAction(self.actionSconcho_Manual)
         self.menuHelp.addSeparator()

@@ -227,7 +227,7 @@ def write_settings(stream, settings):
 
     stream << settings.labelFont.value
     
-    intervalType = get_row_label_interval(settings.rowLabelInterval.value)
+    intervalType = get_row_label_interval(settings.rowLabelMode.value)
     stream.writeInt32(intervalType) 
     
     stream << settings.legendFont.value
@@ -488,7 +488,7 @@ def read_settings(stream, settings, version):
         settings.labelFont.value = labelFont
 
     if labelState:
-        settings.rowLabelInterval.value = labelState
+        settings.rowLabelMode.value = labelState
 
     if legendFont.family():
         settings.legendFont.value = legendFont
