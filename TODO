@@ -4,3 +4,4 @@
 - allow adding of legend entry for repeat boxes
 - allow to only include odd numbers for rows
 - allow to show only every nth label
+- hiding the pattern grid is currently broken
