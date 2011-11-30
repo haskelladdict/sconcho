@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Mon Nov 28 23:41:04 2011
+# Created: Tue Nov 29 21:05:29 2011
 #      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -213,7 +213,7 @@ class Ui_PreferencesDialog(object):
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.verticalLayout_9.addWidget(self.showRowLabelChecker)
         self.showColumnLabelChecker = QtGui.QGroupBox(self.labelTab)
-        self.showColumnLabelChecker.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Column Label Properties", None, QtGui.QApplication.UnicodeUTF8))
+        self.showColumnLabelChecker.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Show Column Labels", None, QtGui.QApplication.UnicodeUTF8))
         self.showColumnLabelChecker.setCheckable(True)
         self.showColumnLabelChecker.setObjectName(_fromUtf8("showColumnLabelChecker"))
         self.verticalLayout_7 = QtGui.QVBoxLayout(self.showColumnLabelChecker)

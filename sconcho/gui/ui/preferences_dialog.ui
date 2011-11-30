@@ -412,7 +412,7 @@
        <item>
         <widget class="QGroupBox" name="showColumnLabelChecker">
          <property name="title">
-          <string>Column Label Properties</string>
+          <string>Show Column Labels</string>
          </property>
          <property name="checkable">
           <bool>true</bool>

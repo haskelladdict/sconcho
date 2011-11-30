@@ -2481,7 +2481,7 @@ class RowLabelTracker(object):
 
     def delete_row_repeat(self, start, end):
         """ Remove a row repeat from row label tracker. """
-        
+
         for i in range(start, end+1):
             del self.rangeMap[i]
 

@@ -52,6 +52,11 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
         super(PatternRowRepeatEditorDialog, self).__init__(parent)
         self.setupUi(self)
 
+        # we need this to keep track of the ranges to be delated
+        # during update mode
+        self.previousStart = 0
+        self.previousEnd = 0
+
         self.mode = None
 
         self.entryGrouper.setVisible(False)
@@ -136,6 +141,10 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
             self.repeatWidget.item(selection, 1).setText(unicode(endRow))
             self.repeatWidget.item(selection, 2).setText(unicode(numRepeat))
 
+            # remove the previous repeat
+            self.emit(SIGNAL("deleted_row_repeat"), self.previousStart, 
+                      self.previousEnd)
+
         else:
             errorLogger.write("Unknown mode in PatternRowRepeatEditor. "
                               "Expected either ADD_MODE or UPDATE_MODE. ")
@@ -186,6 +195,7 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
 
 
     def update_repeat(self):
+        """ Open the dialog for updating a row repeat. """
         
         selection = self.repeatWidget.currentRow()
         if selection < 0:
@@ -204,6 +214,10 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
         if not status1 or not status2 or not status3:
             return
 
+        # store the values so we can delete the range when
+        # the user accepts
+        self.previousStart = prevStart
+        self.previousEnd = prevEnd
 
         self.entryGrouper.setVisible(True)
         self.controlGrouper.setEnabled(False)
