@@ -1711,7 +1711,10 @@ class PatternCanvas(QGraphicsScene):
         """
 
         for item in self.items():
-            if isinstance(item, PatternGridItem):
+            if isinstance(item, PatternGridItem) \
+            or isinstance(item, PatternLabelItem) \
+            or isinstance(item, PatternHighlightItem) \
+            or isinstance(item, PatternRepeatItem):
                 if status:
                     item.show()
                 else:
