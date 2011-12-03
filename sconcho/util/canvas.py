@@ -69,7 +69,7 @@ def is_click_in_grid(col, row, numCols, numRows):
     else:
         return False
 
-    
+
 
 def is_click_on_labels(col, row, numCols, numRows):
     """ Returns true if col and row is within the grid labels. 

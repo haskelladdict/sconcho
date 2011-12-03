@@ -105,6 +105,9 @@ class PatternCanvas(QGraphicsScene):
         self._numRows = 10
         self._rowLabelOffset = self.settings.rowLabelStart.value
         self._numColumns = 10
+        self.rowLabelTracker = RowLabelTracker(self, self.settings)
+        self.repeatTracker = {}
+        self.markedRows = {}
 
         self._copySelection = {}
         self._copySelectionDim = None
@@ -115,7 +118,6 @@ class PatternCanvas(QGraphicsScene):
 
         self.gridLegend = {}
 
-        self.set_up_row_label_tracker()
         self.set_up_main_grid()
         self.set_up_labels()
 
@@ -168,13 +170,6 @@ class PatternCanvas(QGraphicsScene):
                 if visibility == 0:
                     element.hide()
                 self.addItem(element)
-
-
-
-    def set_up_row_label_tracker(self):
-        """ Generate the row label tracker. """
-
-        self.rowLabelTracker = RowLabelTracker(self, self.settings)
 
 
 
@@ -624,7 +619,7 @@ class PatternCanvas(QGraphicsScene):
                                             self._unitCellDim.height())
        
         if event.button() == Qt.RightButton:
-            self.handle_right_click_on_grid(event, row, col)
+            self.handle_right_click_on_canvas(event, col, row)
 
             # don't propagate this event
             return
@@ -632,13 +627,32 @@ class PatternCanvas(QGraphicsScene):
         elif (event.button() == Qt.LeftButton) and \
              (event.modifiers() & Qt.ShiftModifier):
 
-            if is_click_on_labels(col, row, self._numColumns, self._numRows):
-                 self.handle_left_click_on_labels(col, row)
+            if is_click_on_labels(col, row, self._numColumns, 
+                                  self._numRows):
+                 self.select_column_row_cells(col, row)
+
+        elif (event.button() == Qt.LeftButton) and \
+             (event.modifiers() & Qt.ControlModifier):
+
+            if is_click_on_labels(col, row, self._numColumns, 
+                                  self._numRows):
+                 self.mark_column_row(col, row)
 
         # tell our main window that something changed
         self.emit(SIGNAL("scene_changed"))
 
         return QGraphicsScene.mousePressEvent(self, event)
+
+
+
+    def clear_marked_rows(self):
+        """ Clear all currently marked rows. """
+
+        print("releasing")
+        for rowItem in self.markedRows.values():
+            self.removeItem(rowItem)
+            del rowItem
+        self.markedRows.clear()
 
 
 
@@ -667,7 +681,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def handle_left_click_on_labels(self, col, row):
+    def select_column_row_cells(self, col, row):
         """ Deal with user clicks on the grid labels. 
 
         These select whole rows or columns depending on
@@ -696,6 +710,34 @@ class PatternCanvas(QGraphicsScene):
                 selection.add(entry)
 
         self._paint_cells(selection, unselection)
+
+
+    
+    def mark_column_row(self, col, row):
+        """ Deal with user clicks on the grid labels. 
+
+        Mark whole rows or columns as selected. 
+
+        """
+
+        assert ((row == self._numRows) or (col == self._numColumns) or
+                (row == -1) or (col == -1))
+
+        if (row == -1) or (row == self._numRows):
+            print("no column marking yet")
+        else:
+            print(row)
+            if row not in self.markedRows:
+                markItem = MarkRowItem(row, self._numColumns,
+                                       self._unitCellDim.width(),
+                                       self._unitCellDim.height() )
+                self.markedRows[row] = markItem
+                self.addItem(markItem)
+            else:
+                deadRow = self.markedRows[row]
+                del self.markedRows[row]
+                self.removeItem(deadRow)
+                del deadRow
 
 
 
@@ -730,9 +772,52 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def handle_right_click_on_grid(self, event, row, col):
-        """ Handles a right click on the pattern grid by
-        displaying a QMenu with options.
+    def insert_delete_columns_rows_menu(self, screenPos, col, row):
+        """ Show menu for deleting rows or columns. """
+
+        rowColMenu = QMenu()
+
+
+        if len(self.markedRows):
+            deleteRowsAction = rowColMenu.addAction("delete selected rows")
+            self.connect(deleteRowsAction, SIGNAL("triggered()"),
+                         self.delete_marked_rows)
+
+            addRowAboveAction = rowColMenu.addAction("insert row above")
+            self.connect(addRowAboveAction, SIGNAL("triggered()"),
+                         self.insert_grid_rows)
+            rowColMenu.addSeparator()
+            if len(self.markedRows) != 1:
+                addRowAboveAction.setEnabled(False)
+
+        rowColMenu.exec_(screenPos)
+
+
+
+    def handle_right_click_on_canvas(self, event, col, row):
+        """ Handles a right click on the canvas grid by
+
+        Dispatches the proper menu display function. 
+
+        """
+
+
+        # search for pattern repeats; we search a slightly extended 
+        # area otherwise clicking on them is tricky
+        
+        clickOnLabels = is_click_on_labels(col, row, self._numColumns,
+                                           self._numRows)
+
+        if clickOnLabels:
+            self.insert_delete_columns_rows_menu(event.screenPos(),
+                                                 col, row)
+        else:
+            self.show_grid_menu(event, col, row)
+
+
+
+    def show_grid_menu(self, event, col, row):
+        """ Shows the grid action menu. 
 
         If the click occured outside the pattern grid we show
         the menu only if there is a pattern repeat item 
@@ -741,41 +826,42 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        # search for pattern repeats; we search a slightly extended 
-        # area otherwise clicking on them is tricky
         clickInGrid = is_click_in_grid(col, row, self._numColumns,
                                        self._numRows)
         searchArea = QRectF(event.scenePos(), QSizeF(1, 1))
         searchArea = searchArea.adjusted(-4.0, -4.0, 4.0, 4.0)
         patternRepeats = extract_patternItems(self.items(searchArea),
                                               PatternRepeatItem)
+
         if (not patternRepeats) and (not clickInGrid):
             return
 
         gridMenu = QMenu()
-        rowAction = gridMenu.addAction("Insert/Delete Rows and Columns")
-        self.connect(rowAction, SIGNAL("triggered()"),
-                     partial(self.insert_delete_rows_columns, col, row))
-        gridMenu.addSeparator()
-
         scenePos = event.scenePos()
-        colorAction = gridMenu.addAction("&Grab Color and Insert Into "
-                                         "Color Selector")
-        self.connect(colorAction, SIGNAL("triggered()"),
+
+        # grab color actoin
+        grabColorAction = gridMenu.addAction("&Grab Color and Insert Into "
+                                             "Color Selector")
+        self.connect(grabColorAction, SIGNAL("triggered()"),
                      partial(self.grab_color_from_cell_add_to_widget, 
                              scenePos))
-        colorAction = gridMenu.addAction("&Select All Grid Cells With Same "
-                                         "Color As Cell")
-        self.connect(colorAction, SIGNAL("triggered()"),
+
+        # select color action
+        selectColorAction = gridMenu.addAction("&Select All Grid Cells "
+                                               "With Same Color As Cell")
+        self.connect(selectColorAction, SIGNAL("triggered()"),
                      partial(self.select_all_cells_with_same_color, 
                              scenePos))
-        colorAction = gridMenu.addAction("&Select All Grid Cells With Same "
-                                         "Symbol As Cell")
-        self.connect(colorAction, SIGNAL("triggered()"),
+
+        # select symbol action
+        symbolAction = gridMenu.addAction("&Select All Grid Cells With "
+                                          "Same Symbol As Cell")
+        self.connect(symbolAction, SIGNAL("triggered()"),
                      partial(self.select_all_cells_with_same_symbol, 
                              scenePos))
         gridMenu.addSeparator()
 
+        # add repeat box action
         addRepeatAction = gridMenu.addAction("&Add Pattern Repeat "
                                              "Around Selection")
         self.connect(addRepeatAction, SIGNAL("triggered()"),
@@ -783,7 +869,7 @@ class PatternCanvas(QGraphicsScene):
         if not can_outline_selection(self._selectedCells.values()):
             addRepeatAction.setEnabled(False)
 
-        
+        # edit repeat box action
         editRepeatAction = gridMenu.addAction("&Edit Pattern Repeat")
         if patternRepeats:
             self.connect(editRepeatAction, SIGNAL("triggered()"),
@@ -793,6 +879,7 @@ class PatternCanvas(QGraphicsScene):
             editRepeatAction.setEnabled(False)
         gridMenu.addSeparator()
 
+        # copy action
         copyAction = gridMenu.addAction("&Copy Rectangular Selection")
         (status, (colDim, rowDim)) = \
                 is_active_selection_rectangular(self._selectedCells.values())
@@ -801,6 +888,7 @@ class PatternCanvas(QGraphicsScene):
         if not status:
             copyAction.setEnabled(False)
 
+        # paste action
         pasteAction = gridMenu.addAction("&Paste Rectangular Selection")
         self.connect(pasteAction, SIGNAL("triggered()"),
                      partial(self.paste_selection, col, row))
@@ -816,6 +904,9 @@ class PatternCanvas(QGraphicsScene):
         if not clickInGrid:
             pasteAction.setEnabled(False)
             colorAction.setEnabled(False)
+            grabColorAction.setEnabled(False)
+            selectColorAction.setEnabled(False)
+            symbolAction.setEnabled(False)
 
         gridMenu.exec_(event.screenPos())
 
@@ -1240,17 +1331,21 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def insert_grid_rows(self, num, mode, rowPivot):
+    def insert_grid_rows(self):
         """ Deals with requests to insert a row. This operation might
         take some time so we switch to a wait cursor.
 
         """
 
-        pivot = self.convert_canvas_row_to_internal(rowPivot)
-        assert(pivot >= 0 and pivot < self._numRows)
+        assert(len(self.markedRows) == 1)
+        
+        num = 1
+        rowPivot = self.markedRows.keys()[0]
+        mode = "above"
 
-        insertRowCommand = InsertRow(self, num, pivot, mode)
+        insertRowCommand = InsertRow(self, num, rowPivot, mode)
         self._undoStack.push(insertRowCommand)
+        self.clear_marked_rows()
 
         
 
@@ -1279,6 +1374,17 @@ class PatternCanvas(QGraphicsScene):
         deleteRowCommand = DeleteRow(self, num, pivot, mode)
         self._undoStack.push(deleteRowCommand)
  
+
+
+    def delete_marked_rows(self):
+        """ Delete all currently marked rows. """
+
+        deadRows = self.markedRows.keys()
+
+        deleteRowsCommand = DeleteRow(self, deadRows)
+        self._undoStack.push(deleteRowsCommand)
+        self.clear_marked_rows()
+        
 
 
     def insert_grid_columns(self, num, mode, columnPivot):
@@ -2335,8 +2441,8 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
 #########################################################
 ## 
-## class for managing a rectangular item for 
-## highlighting odd rows
+## class for highling every other row on grid if requested
+## by a user
 ##
 #########################################################
 class PatternHighlightItem(QGraphicsRectItem):
@@ -2359,6 +2465,45 @@ class PatternHighlightItem(QGraphicsRectItem):
         self._brush = QBrush(color) 
         self.setBrush(self._brush)
 
+
+
+
+#########################################################
+## 
+## class for highlighting the currently marked set
+## of rows
+##
+#########################################################
+class MarkRowItem(QGraphicsRectItem):
+
+    Type = 70000 + 7
+
+   
+    def __init__(self, row, numColumns, cellWidth, cellHeight, 
+                 parent = None):
+
+        originX = 0
+        originY = row * cellHeight
+        width = numColumns * cellWidth
+        super(MarkRowItem, self).__init__(originX, originY, width, 
+                                          cellHeight, parent)
+
+        self.markedRow = row
+        self._pen = QPen(Qt.SolidLine) 
+        self.setPen(self._pen)
+        self.setZValue(2)
+
+        color = QColor(Qt.blue)
+        color.setAlphaF(0.4)
+        self._brush = QBrush(color) 
+        self.setBrush(self._brush)
+
+
+    @property
+    def row(self):
+        """ Return the marked row """
+
+        return self.markedRow
 
 
 
