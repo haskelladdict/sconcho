@@ -221,10 +221,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.canvas, SIGNAL("scene_changed"),
                      self.set_project_dirty)
 
-        self.connect(self.action_Insert_delete_rows_and_columns, 
-                     SIGNAL("triggered()"),
-                     partial(self.canvas.insert_delete_rows_columns, 1, 1))
-
         self.connect(self.actionZoom_In, SIGNAL("triggered()"),
                      self.graphicsView.zoom_in)
 

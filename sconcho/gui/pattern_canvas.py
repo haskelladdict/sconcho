@@ -114,9 +114,6 @@ class PatternCanvas(QGraphicsScene):
         self._copySelectionDim = None
 
         self._textLabels = []
-
-        self.insertDeleteRowColDialog = None
-
         self.gridLegend = {}
 
         self.set_up_main_grid()
@@ -962,40 +959,6 @@ class PatternCanvas(QGraphicsScene):
                 self._rowLabelOffset, self._numRows)
 
 
-    def insert_delete_rows_columns(self, col, row):
-        """ This method manages the addition and deletion of rows and 
-        columns via a widget.
-
-        NOTE: Make sure the signals are only connected *once* inside the
-        if. Otherwise weird things are bound to happen (like multiple
-        deletes, inserts, etc.).
-        
-        """
-
-        if not self.insertDeleteRowColDialog:
-            self.insertDeleteRowColDialog = \
-                ManageGridDialog(self._rowLabelOffset, self._numRows, 
-                                 self._numColumns, row, col, self.parent())
-            self.connect(self.insertDeleteRowColDialog, 
-                         SIGNAL("insert_rows"), 
-                         self.insert_grid_rows)
-            self.connect(self.insertDeleteRowColDialog, 
-                         SIGNAL("delete_rows"), 
-                         self.delete_grid_rows)
-            self.connect(self.insertDeleteRowColDialog, 
-                         SIGNAL("insert_columns"), 
-                         self.insert_grid_columns)
-            self.connect(self.insertDeleteRowColDialog, 
-                         SIGNAL("delete_columns"), 
-                         self.delete_grid_columns)
-        else:
-            self.insertDeleteRowColDialog.set_row_col(row,col)
-
-        self.insertDeleteRowColDialog.raise_()
-        self.insertDeleteRowColDialog.show()
-
-
-
     def apply_color_to_selection(self, color = None):
         """ This slot changes the background color of all selected cells
         to the currently active color.
@@ -1386,33 +1349,6 @@ class PatternCanvas(QGraphicsScene):
 
         
 
-    def delete_grid_rows(self, num, mode, rowPivot):
-        """ Deals with requests to delete a specific row. """
-       
-        pivot = self.convert_canvas_row_to_internal(rowPivot)
-        assert(pivot >= 0 and pivot < self._numRows)
-
-        # make sure we can delete num rows above/below rowPivot
-        if mode == "above":
-            if (pivot - num) < 0:
-                QMessageBox.warning(None, msg.canNotDeleteRowAboveTitle,
-                                    msg.canNotDeleteRowAboveText,
-                                    QMessageBox.Close)
-                return
-
-        else:
-            if ((pivot + num) > self._numRows) or (num >= self._numRows):
-                QMessageBox.warning(None, msg.canNotDeleteRowBelowTitle,
-                                    msg.canNotDeleteRowBelowText,
-                                    QMessageBox.Close)
-                return
-
-       
-        deleteRowCommand = DeleteRow(self, num, pivot, mode)
-        self._undoStack.push(deleteRowCommand)
- 
-
-
     def delete_marked_rows(self):
         """ Delete all currently marked rows. """
 
@@ -1423,15 +1359,6 @@ class PatternCanvas(QGraphicsScene):
         self.clear_marked_rows()
         
 
-
-    def delete_marked_columns(self):
-        """ Delete all currently marked columns. """
-
-        deadColumns = self.markedColumns.keys()
-
-        deleteColumnsCommand = DeleteColumns(self, deadColumns)
-        self._undoStack.push(deleteColumnsCommand)
-        self.clear_marked_columns()
 
 
 
@@ -1491,6 +1418,18 @@ class PatternCanvas(QGraphicsScene):
         insertColumnCommand = InsertColumns(self, num, pivot, mode)
         self._undoStack.push(insertColumnCommand)
         self.clear_marked_columns()
+
+
+    
+    def delete_marked_columns(self):
+        """ Delete all currently marked columns. """
+
+        deadColumns = self.markedColumns.keys()
+
+        deleteColumnsCommand = DeleteColumns(self, deadColumns)
+        self._undoStack.push(deleteColumnsCommand)
+        self.clear_marked_columns()
+
 
 
     def delete_grid_columns(self, num, mode, columnPivot):
