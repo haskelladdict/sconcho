@@ -648,7 +648,6 @@ class PatternCanvas(QGraphicsScene):
     def clear_marked_rows(self):
         """ Clear all currently marked rows. """
 
-        print("releasing")
         for rowItem in self.markedRows.values():
             self.removeItem(rowItem)
             del rowItem
@@ -726,7 +725,6 @@ class PatternCanvas(QGraphicsScene):
         if (row == -1) or (row == self._numRows):
             print("no column marking yet")
         else:
-            print(row)
             if row not in self.markedRows:
                 markItem = MarkRowItem(row, self._numColumns,
                                        self._unitCellDim.width(),
@@ -782,13 +780,19 @@ class PatternCanvas(QGraphicsScene):
             deleteRowsAction = rowColMenu.addAction("delete selected rows")
             self.connect(deleteRowsAction, SIGNAL("triggered()"),
                          self.delete_marked_rows)
+            rowColMenu.addSeparator()
 
             addRowAboveAction = rowColMenu.addAction("insert row above")
             self.connect(addRowAboveAction, SIGNAL("triggered()"),
-                         self.insert_grid_rows)
-            rowColMenu.addSeparator()
+                         partial(self.insert_grid_rows, "above"))
             if len(self.markedRows) != 1:
                 addRowAboveAction.setEnabled(False)
+
+            addRowBelowAction = rowColMenu.addAction("insert row below")
+            self.connect(addRowBelowAction, SIGNAL("triggered()"),
+                         partial(self.insert_grid_rows, "below"))
+            if len(self.markedRows) != 1:
+                addRowBelowAction.setEnabled(False)
 
         rowColMenu.exec_(screenPos)
 
@@ -1331,7 +1335,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def insert_grid_rows(self):
+    def insert_grid_rows(self, mode):
         """ Deals with requests to insert a row. This operation might
         take some time so we switch to a wait cursor.
 
@@ -1341,7 +1345,6 @@ class PatternCanvas(QGraphicsScene):
         
         num = 1
         rowPivot = self.markedRows.keys()[0]
-        mode = "above"
 
         insertRowCommand = InsertRow(self, num, rowPivot, mode)
         self._undoStack.push(insertRowCommand)
