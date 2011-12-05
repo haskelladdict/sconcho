@@ -61,9 +61,9 @@ from sconcho.util.misc import wait_cursor
 from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
 from sconcho.util.misc import errorLogger
 from sconcho.gui.undo_framework import (PasteCells, 
-                                        InsertRow, 
+                                        InsertRows, 
                                         DeleteRows,
-                                        InsertColumn, 
+                                        InsertColumns, 
                                         DeleteColumns,
                                         ActivateSymbol, 
                                         ActivateColor, 
@@ -821,12 +821,12 @@ class PatternCanvas(QGraphicsScene):
             deleteColsAction.setEnabled(False)
 
         addColRightAction = rowColMenu.addAction("insert column right of")
-        #self.connect(addColRightAction, SIGNAL("triggered()"),
-        #             partial(self.insert_grid_columns, "above"))
+        self.connect(addColRightAction, SIGNAL("triggered()"),
+                     partial(self.insert_grid_columns, "right of"))
 
         addColLeftAction = rowColMenu.addAction("insert column left of")
-        #self.connect(addColLeftAction, SIGNAL("triggered()"),
-        #             partial(self.insert_grid_rows, "below"))
+        self.connect(addColLeftAction, SIGNAL("triggered()"),
+                     partial(self.insert_grid_columns, "left of"))
         if len(self.markedColumns) != 1:
             addColRightAction.setEnabled(False)
             addColLeftAction.setEnabled(False)
@@ -1380,7 +1380,7 @@ class PatternCanvas(QGraphicsScene):
         num = 1
         rowPivot = self.markedRows.keys()[0]
 
-        insertRowCommand = InsertRow(self, num, rowPivot, mode)
+        insertRowCommand = InsertRows(self, num, rowPivot, mode)
         self._undoStack.push(insertRowCommand)
         self.clear_marked_rows()
 
@@ -1435,10 +1435,13 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def insert_grid_columns(self, num, mode, columnPivot):
+    def insert_grid_columns(self, mode):
         """ Deals with requests to insert a column. """
 
-        pivot = self.convert_canvas_column_to_internal(columnPivot)
+        num = 1
+        pivot = self.markedColumns.keys()[0]
+
+        assert(len(self.markedColumns) == 1)
         assert(pivot >= 0 and pivot < self._numColumns)
 
         # first we need to check if we can actually insert num
@@ -1485,9 +1488,9 @@ class PatternCanvas(QGraphicsScene):
                         return
 
         # ok we're good to insert then 
-        insertColumnCommand = InsertColumn(self, num, pivot, mode)
+        insertColumnCommand = InsertColumns(self, num, pivot, mode)
         self._undoStack.push(insertColumnCommand)
-
+        self.clear_marked_columns()
 
 
     def delete_grid_columns(self, num, mode, columnPivot):

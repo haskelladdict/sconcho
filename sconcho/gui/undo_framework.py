@@ -154,13 +154,13 @@ class PasteCells(QUndoCommand):
 
 
 
-class InsertRow(QUndoCommand):
+class InsertRows(QUndoCommand):
     """ This class encapsulates the insertion of a row action. """
 
 
     def __init__(self, canvas, rowShift, pivot, mode, parent = None):
 
-        super(InsertRow, self).__init__(parent)
+        super(InsertRows, self).__init__(parent)
         self.setText("insert row")
         self.canvas = canvas
         self.rowShift = rowShift
@@ -211,7 +211,7 @@ class InsertRow(QUndoCommand):
                                            self.pivot, self.rowShift)
         
         self.canvas._numRows += self.rowShift
-        self._finalize()
+        self.finalize()
 
 
 
@@ -260,11 +260,11 @@ class InsertRow(QUndoCommand):
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
  
         self.canvas._numRows -= self.rowShift
-        self._finalize()
+        self.finalize()
        
 
 
-    def _finalize(self):
+    def finalize(self):
         """ Common stuff for redo/undo after the canvas has been adjusted
         appropriately.
 
@@ -489,13 +489,13 @@ class DeleteRows(QUndoCommand):
         self.canvas.emit(SIGNAL("scene_changed"))
 
 
-class InsertColumn(QUndoCommand):
+class InsertColumns(QUndoCommand):
     """ This class encapsulates the insertion of columns. """
 
 
     def __init__(self, canvas, columnShift, pivot, mode, parent = None):
 
-        super(InsertColumn, self).__init__(parent)
+        super(InsertColumns, self).__init__(parent)
         self.setText("insert column")
         self.canvas = canvas
         self.columnShift = columnShift
@@ -536,7 +536,8 @@ class InsertColumn(QUndoCommand):
         for column in range(0, self.columnShift):
             self.canvas._create_column(self.pivot + column)
 
-        shift_legend_horizontally(self.canvas.gridLegend, self.columnShift, 
+        shift_legend_horizontally(self.canvas.gridLegend, 
+                                  self.columnShift, 
                                   self.unitWidth, self.numRows, 
                                   self.unitHeight)
         self.canvas._selectedCells = \
@@ -545,7 +546,7 @@ class InsertColumn(QUndoCommand):
                                              self.columnShift)
         
         self.canvas._numColumns += self.columnShift
-        self._finalize()
+        self.finalize()
 
 
 
@@ -594,11 +595,11 @@ class InsertColumn(QUndoCommand):
             shift_item_column_wise(item, columnLeftShift, self.unitWidth)
  
         self.canvas._numColumns -= self.columnShift
-        self._finalize()
+        self.finalize()
        
 
 
-    def _finalize(self):
+    def finalize(self):
         """ Common stuff for redo/undo after the canvas has been adjusted
         appropriately.
 
@@ -607,8 +608,6 @@ class InsertColumn(QUndoCommand):
         self.canvas.finalize_grid_change()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
-        self.canvas.insertDeleteRowColDialog.set_upper_column_limit( \
-                self.canvas._numColumns)
 
 
 
