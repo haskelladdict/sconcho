@@ -62,9 +62,9 @@ from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
 from sconcho.util.misc import errorLogger
 from sconcho.gui.undo_framework import (PasteCells, 
                                         InsertRow, 
-                                        DeleteRow,
+                                        DeleteRows,
                                         InsertColumn, 
-                                        DeleteColumn,
+                                        DeleteColumns,
                                         ActivateSymbol, 
                                         ActivateColor, 
                                         PaintCells, 
@@ -108,6 +108,7 @@ class PatternCanvas(QGraphicsScene):
         self.rowLabelTracker = RowLabelTracker(self, self.settings)
         self.repeatTracker = {}
         self.markedRows = {}
+        self.markedColumns = {}
 
         self._copySelection = {}
         self._copySelectionDim = None
@@ -654,6 +655,14 @@ class PatternCanvas(QGraphicsScene):
         self.markedRows.clear()
 
 
+    def clear_marked_columns(self):
+        """ Clear all currently marked columns. """
+
+        for columnItem in self.markedColumns.values():
+            self.removeItem(columnItem)
+            del columnItem
+        self.markedColumns.clear()
+
 
     def select_region(self, region):
         """ This function selects items based on a whole region.
@@ -712,18 +721,28 @@ class PatternCanvas(QGraphicsScene):
 
 
     
-    def mark_column_row(self, col, row):
+    def mark_column_row(self, column, row):
         """ Deal with user clicks on the grid labels. 
 
         Mark whole rows or columns as selected. 
 
         """
 
-        assert ((row == self._numRows) or (col == self._numColumns) or
-                (row == -1) or (col == -1))
+        assert ((row == self._numRows) or (column == self._numColumns) or
+                (row == -1) or (column == -1))
 
         if (row == -1) or (row == self._numRows):
-            print("no column marking yet")
+            if column not in self.markedColumns:
+                markItem = MarkColumnItem(column, self._numRows,
+                                          self._unitCellDim.width(),
+                                          self._unitCellDim.height() )
+                self.markedColumns[column] = markItem
+                self.addItem(markItem)
+            else:
+                deadColumn = self.markedColumns[column]
+                del self.markedColumns[column]
+                self.removeItem(deadColumn)
+                del deadColumn
         else:
             if row not in self.markedRows:
                 markItem = MarkRowItem(row, self._numColumns,
@@ -775,24 +794,42 @@ class PatternCanvas(QGraphicsScene):
 
         rowColMenu = QMenu()
 
+        # row options
+        deleteRowsAction = rowColMenu.addAction("delete selected rows")
+        self.connect(deleteRowsAction, SIGNAL("triggered()"),
+                     self.delete_marked_rows)
+        if not self.markedRows:
+            deleteRowsAction.setEnabled(False)
 
-        if len(self.markedRows):
-            deleteRowsAction = rowColMenu.addAction("delete selected rows")
-            self.connect(deleteRowsAction, SIGNAL("triggered()"),
-                         self.delete_marked_rows)
-            rowColMenu.addSeparator()
+        addRowAboveAction = rowColMenu.addAction("insert row above")
+        self.connect(addRowAboveAction, SIGNAL("triggered()"),
+                     partial(self.insert_grid_rows, "above"))
 
-            addRowAboveAction = rowColMenu.addAction("insert row above")
-            self.connect(addRowAboveAction, SIGNAL("triggered()"),
-                         partial(self.insert_grid_rows, "above"))
-            if len(self.markedRows) != 1:
-                addRowAboveAction.setEnabled(False)
+        addRowBelowAction = rowColMenu.addAction("insert row below")
+        self.connect(addRowBelowAction, SIGNAL("triggered()"),
+                     partial(self.insert_grid_rows, "below"))
+        if len(self.markedRows) != 1:
+            addRowBelowAction.setEnabled(False)
+            addRowAboveAction.setEnabled(False)
+        
+        rowColMenu.addSeparator()
+        # column options
+        deleteColsAction = rowColMenu.addAction("delete selected columns")
+        self.connect(deleteColsAction, SIGNAL("triggered()"),
+                     self.delete_marked_columns)
+        if not self.markedColumns:
+            deleteColsAction.setEnabled(False)
 
-            addRowBelowAction = rowColMenu.addAction("insert row below")
-            self.connect(addRowBelowAction, SIGNAL("triggered()"),
-                         partial(self.insert_grid_rows, "below"))
-            if len(self.markedRows) != 1:
-                addRowBelowAction.setEnabled(False)
+        addColRightAction = rowColMenu.addAction("insert column right of")
+        #self.connect(addColRightAction, SIGNAL("triggered()"),
+        #             partial(self.insert_grid_columns, "above"))
+
+        addColLeftAction = rowColMenu.addAction("insert column left of")
+        #self.connect(addColLeftAction, SIGNAL("triggered()"),
+        #             partial(self.insert_grid_rows, "below"))
+        if len(self.markedColumns) != 1:
+            addColRightAction.setEnabled(False)
+            addColLeftAction.setEnabled(False)
 
         rowColMenu.exec_(screenPos)
 
@@ -806,9 +843,6 @@ class PatternCanvas(QGraphicsScene):
         """
 
 
-        # search for pattern repeats; we search a slightly extended 
-        # area otherwise clicking on them is tricky
-        
         clickOnLabels = is_click_on_labels(col, row, self._numColumns,
                                            self._numRows)
 
@@ -1384,10 +1418,21 @@ class PatternCanvas(QGraphicsScene):
 
         deadRows = self.markedRows.keys()
 
-        deleteRowsCommand = DeleteRow(self, deadRows)
+        deleteRowsCommand = DeleteRows(self, deadRows)
         self._undoStack.push(deleteRowsCommand)
         self.clear_marked_rows()
         
+
+
+    def delete_marked_columns(self):
+        """ Delete all currently marked columns. """
+
+        deadColumns = self.markedColumns.keys()
+
+        deleteColumnsCommand = DeleteColumns(self, deadColumns)
+        self._undoStack.push(deleteColumnsCommand)
+        self.clear_marked_columns()
+
 
 
     def insert_grid_columns(self, num, mode, columnPivot):
@@ -2507,6 +2552,45 @@ class MarkRowItem(QGraphicsRectItem):
         """ Return the marked row """
 
         return self.markedRow
+
+
+
+#########################################################
+## 
+## class for highlighting the currently marked set
+## of columns
+##
+#########################################################
+class MarkColumnItem(QGraphicsRectItem):
+
+    Type = 70000 + 8
+
+   
+    def __init__(self, column, numRows, cellWidth, cellHeight, 
+                 parent = None):
+
+        originX = column * cellWidth
+        originY = 0
+        height = numRows * cellHeight
+        super(MarkColumnItem, self).__init__(originX, originY, cellWidth, 
+                                             height, parent)
+
+        self.markedColumn = column
+        self._pen = QPen(Qt.SolidLine) 
+        self.setPen(self._pen)
+        self.setZValue(2)
+
+        color = QColor(Qt.magenta)
+        color.setAlphaF(0.4)
+        self._brush = QBrush(color) 
+        self.setBrush(self._brush)
+
+
+    @property
+    def column(self):
+        """ Return the marked column """
+
+        return self.markedColumn
 
 
 
