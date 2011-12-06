@@ -820,6 +820,13 @@ class PatternCanvas(QGraphicsScene):
         if len(self.markedRows) != 1:
             addRowBelowAction.setEnabled(False)
             addRowAboveAction.setEnabled(False)
+
+        rowColMenu.addSeparator()
+        addRowRepeatAction = rowColMenu.addAction("add row repeat")
+        self.connect(addRowRepeatAction, SIGNAL("triggered()"),
+                     self.add_row_repeat)
+        if not self.markedRows:
+            addRowRepeatAction.setEnabled(False)
         
         rowColMenu.addSeparator()
         # column options
@@ -1329,6 +1336,12 @@ class PatternCanvas(QGraphicsScene):
             return None
         else:
             return patternItems[0]
+
+
+    def add_row_repeat(self):
+        """ Add a row repeat for all selected rows. """
+
+        print("adding a row repeat")
 
 
 
