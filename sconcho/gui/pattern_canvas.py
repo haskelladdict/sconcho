@@ -479,6 +479,7 @@ class PatternCanvas(QGraphicsScene):
         """ Unselects all currently selected cells. """
 
         self._paint_cells(None, self._selectedCells.values())
+        self.clear_marked_columns_rows()
 
 
 
@@ -642,6 +643,17 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def clear_marked_columns_rows(self):
+        """ This is just a wrapper to clear both columns
+        and rows. 
+
+        """
+
+        self.clear_marked_columns()
+        self.clear_marked_rows()
+
+
+
     def clear_marked_rows(self):
         """ Clear all currently marked rows. """
 
@@ -649,6 +661,7 @@ class PatternCanvas(QGraphicsScene):
             self.removeItem(rowItem)
             del rowItem
         self.markedRows.clear()
+
 
 
     def clear_marked_columns(self):
@@ -1332,7 +1345,7 @@ class PatternCanvas(QGraphicsScene):
 
         insertRowCommand = InsertRows(self, num, rowPivot, mode)
         self._undoStack.push(insertRowCommand)
-        self.clear_marked_rows()
+        self.clear_marked_columns_rows()
 
         
 
@@ -1343,9 +1356,7 @@ class PatternCanvas(QGraphicsScene):
 
         deleteRowsCommand = DeleteRows(self, deadRows)
         self._undoStack.push(deleteRowsCommand)
-        self.clear_marked_rows()
-        
-
+        self.clear_marked_columns_rows()
 
 
 
@@ -1404,7 +1415,7 @@ class PatternCanvas(QGraphicsScene):
         # ok we're good to insert then 
         insertColumnCommand = InsertColumns(self, num, pivot, mode)
         self._undoStack.push(insertColumnCommand)
-        self.clear_marked_columns()
+        self.clear_marked_columns_rows()
 
 
     
@@ -1441,7 +1452,7 @@ class PatternCanvas(QGraphicsScene):
 
         deleteColumnsCommand = DeleteColumns(self, deadColumns)
         self._undoStack.push(deleteColumnsCommand)
-        self.clear_marked_columns()
+        self.clear_marked_columns_rows()
 
 
 
