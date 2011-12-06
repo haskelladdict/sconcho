@@ -1,6 +1,5 @@
 all:
 	pyuic4 -o ui_main_window.py ui/main_window.ui
-	pyuic4 -o ui_manage_grid_dialog.py ui/manage_grid_dialog.ui
 	pyuic4 -o ui_export_bitmap_dialog.py ui/export_bitmap_dialog.ui
 	pyuic4 -o ui_new_pattern_dialog.py ui/new_pattern_dialog.ui
 	pyuic4 -o ui_sconcho_manual.py ui/sconcho_manual.ui

@@ -56,7 +56,6 @@ from PyQt4.QtGui import (QGraphicsScene,
 from PyQt4.QtSvg import (QGraphicsSvgItem) 
 
 from sconcho.util.canvas import * 
-from sconcho.gui.manage_grid_dialog import ManageGridDialog
 from sconcho.util.misc import wait_cursor
 from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
 from sconcho.util.misc import errorLogger
@@ -947,18 +946,6 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def adjust_manage_grid_dialog_after_row_label_offset(self, offset):
-        """ Change limits in add/delete dialog after row label offset 
-        change.
-
-        """
-
-        self._rowLabelOffset = offset
-        if self.insertDeleteRowColDialog:
-            self.insertDeleteRowColDialog.set_row_limit(\
-                self._rowLabelOffset, self._numRows)
-
-
     def apply_color_to_selection(self, color = None):
         """ This slot changes the background color of all selected cells
         to the currently active color.
@@ -1548,7 +1535,6 @@ class PatternCanvas(QGraphicsScene):
         # we probably should add a dialog here
         self._numRows    = numRows
         self._numColumns = numColumns
-        self.insertDeleteRowColDialog = None
         
         self._clear_canvas()
         self._textLabels = []
