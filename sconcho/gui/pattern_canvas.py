@@ -1426,45 +1426,13 @@ class PatternCanvas(QGraphicsScene):
 
         deadColumns = self.markedColumns.keys()
 
-        deleteColumnsCommand = DeleteColumns(self, deadColumns)
-        self._undoStack.push(deleteColumnsCommand)
-        self.clear_marked_columns()
-
-
-
-    def delete_grid_columns(self, num, mode, columnPivot):
-        """ Deals with requests to delete a specific number of columns. """
-
-        pivot = self.convert_canvas_column_to_internal(columnPivot)
-        assert(pivot >= 0 and pivot < self._numColumns)
-
-        # make sure we can delete num columns left of/right of columnPivot
-        if mode == "left of":
-            if (pivot - num) < 0:
-                QMessageBox.warning(None, msg.canNotDeleteColumnLeftOfTitle,
-                                    msg.canNotDeleteColumnLeftOfText,
-                                    QMessageBox.Close)
-                return
-
-        else:
-            if ((pivot + num) > self._numColumns) or (num >= self._numColumns):
-                QMessageBox.warning(None, msg.canNotDeleteColumnRightOfTitle,
-                                    msg.canNotDeleteColumnRightOfText,
-                                    QMessageBox.Close)
-                return
-
-        # in order for us to be able to delete the requested number
-        # of columns the selection has to be rectangular (this is
+        # in order for us to be able to delete the requested 
+        # columns, the selection has to be rectangular (this is
         # similar to the check we do when before allowing to copy
         # a selection
-        if mode == QString("left of"):
-            colRange = range(pivot - num, pivot)
-        else:
-            colRange = range(pivot, pivot + num)
-
         selectedItems = set()
         for rowID in range(0, self._numRows):
-            for colID in colRange:
+            for colID in deadColumns:
                 item = self._item_at_row_col(rowID, colID)
                 if item:
                     selectedItems.add(item)
@@ -1475,7 +1443,8 @@ class PatternCanvas(QGraphicsScene):
                                                 item.width, item.color,
                                                 item.symbol))
 
-        (status, (colDim, rowDim)) = is_active_selection_rectangular(selection)
+        (status, (colDim, rowDim)) = \
+            is_active_selection_rectangular(selection)
         
         if not status:
             QMessageBox.warning(None, msg.noColDeleteLayoutTitle,
@@ -1483,10 +1452,9 @@ class PatternCanvas(QGraphicsScene):
                                 QMessageBox.Close)
             return
 
-
-        # ok we're good to delete then 
-        deleteColumnCommand = DeleteColumn(self, num, pivot, mode)
-        self._undoStack.push(deleteColumnCommand)
+        deleteColumnsCommand = DeleteColumns(self, deadColumns)
+        self._undoStack.push(deleteColumnsCommand)
+        self.clear_marked_columns()
 
 
 
