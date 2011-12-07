@@ -104,6 +104,7 @@ class PatternCanvas(QGraphicsScene):
         self._numRows = 10
         self._rowLabelOffset = self.settings.rowLabelStart.value
         self._numColumns = 10
+        self.rowRepeatTracker = {}
         self.rowLabelTracker = RowLabelTracker(self, self.settings)
         self.repeatTracker = {}
         self.markedRows = {}
@@ -825,7 +826,7 @@ class PatternCanvas(QGraphicsScene):
         addRowRepeatAction = rowColMenu.addAction("add row repeat")
         self.connect(addRowRepeatAction, SIGNAL("triggered()"),
                      self.add_row_repeat)
-        if not self.markedRows:
+        if (not self.markedRows) or (not self.can_add_row_repeat()):
             addRowRepeatAction.setEnabled(False)
         
         rowColMenu.addSeparator()
@@ -1343,6 +1344,32 @@ class PatternCanvas(QGraphicsScene):
 
         print("adding a row repeat")
 
+
+
+    def can_add_row_repeat(self):
+        """ Checks whether we can add a row repeat given the
+        currently selected row selection.
+
+        In order form them to be selectable the cells have
+        to form a contiguous block and none of the selected
+        rows can be part of an already existing block.
+
+        """
+
+        for row in self.markedRows:
+            if row in self.rowRepeatTracker:
+                return False
+
+        allRows = list(self.markedRows.keys())
+        allRows.sort()
+        previous = allRows[0]
+        for row in allRows[1:]:
+            if row - previous != 1:
+                return False
+            previous = row
+
+        return True
+            
 
 
     def insert_grid_rows(self, mode):
