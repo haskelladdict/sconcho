@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Tue Dec  6 09:27:01 2011
+# Created: Thu Dec  8 11:20:14 2011
 #      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -383,7 +383,6 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.menu_Zoom.menuAction())
         self.menuView.addAction(self.actionUnselect_All)
         self.menuView.addAction(self.actionCreate_Pattern_Repeat)
-        self.menuView.addAction(self.actionAdd_Row_Repeat)
         self.menuView.addAction(self.actionApply_Color_to_Selection)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionShow_pattern_grid)

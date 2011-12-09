@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Tue Dec  6 09:27:02 2011
+# Created: Thu Dec  8 11:20:14 2011
 #      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -165,10 +165,10 @@ class Ui_PreferencesDialog(object):
         self.rowLabelsIntervalSpinner.setMaximum(10000)
         self.rowLabelsIntervalSpinner.setObjectName(_fromUtf8("rowLabelsIntervalSpinner"))
         self.horizontalLayout_3.addWidget(self.rowLabelsIntervalSpinner)
-        self.label_14 = QtGui.QLabel(self.showRowLabelChecker)
-        self.label_14.setText(QtGui.QApplication.translate("PreferencesDialog", "label starting at row", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_14.setObjectName(_fromUtf8("label_14"))
-        self.horizontalLayout_3.addWidget(self.label_14)
+        self.rowLabelsStartLabel = QtGui.QLabel(self.showRowLabelChecker)
+        self.rowLabelsStartLabel.setText(QtGui.QApplication.translate("PreferencesDialog", "label starting at row", None, QtGui.QApplication.UnicodeUTF8))
+        self.rowLabelsStartLabel.setObjectName(_fromUtf8("rowLabelsStartLabel"))
+        self.horizontalLayout_3.addWidget(self.rowLabelsStartLabel)
         self.rowLabelsIntervalStartSpinner = QtGui.QSpinBox(self.showRowLabelChecker)
         self.rowLabelsIntervalStartSpinner.setMinimum(1)
         self.rowLabelsIntervalStartSpinner.setMaximum(10000)

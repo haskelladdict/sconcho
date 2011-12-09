@@ -82,7 +82,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings = settings
         self._restore_window_settings()
         self.preferencesDialog = PreferencesDialog(self.settings, self)
-        self.patternRowRepeatEditorDialog = PatternRowRepeatEditorDialog()
+        #self.patternRowRepeatEditorDialog = PatternRowRepeatEditorDialog()
         self.exportBitmapDialog = None
         self.manualDialog = None
 
@@ -184,8 +184,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPrefs, SIGNAL("triggered()"),
                      self.open_preferences_dialog)
 
-        self.connect(self.actionAdd_Row_Repeat, SIGNAL("triggered()"),
-                     self.open_row_repeat_dialog)
+        #self.connect(self.actionAdd_Row_Repeat, SIGNAL("triggered()"),
+        #             self.open_row_repeat_dialog)
 
         self.connect(self.actionSave, SIGNAL("triggered()"),
                      partial(self.save_pattern_dialog, "save"))
@@ -221,6 +221,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.canvas, SIGNAL("scene_changed"),
                      self.set_project_dirty)
 
+        self.connect(self.canvas, SIGNAL("row_repeat_added"),
+                     partial(self.preferencesDialog.allow_all_label_options, False))
+
         self.connect(self.actionZoom_In, SIGNAL("triggered()"),
                      self.graphicsView.zoom_in)
 
@@ -251,21 +254,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.canvas.redo)
 
         # connections for patternRowRepeatEditorDialog
-        self.connect(self.patternRowRepeatEditorDialog,
-                     SIGNAL("added_row_repeat"),
-                     self.canvas.rowLabelTracker.add_row_repeat)
-        self.connect(self.patternRowRepeatEditorDialog,
-                     SIGNAL("allow_all_label_options"),
-                     self.preferencesDialog.allow_all_label_options)
-        self.connect(self.patternRowRepeatEditorDialog,
-                     SIGNAL("added_row_repeat"),
-                     self.canvas.set_up_labels)
-        self.connect(self.patternRowRepeatEditorDialog,
-                     SIGNAL("deleted_row_repeat"),
-                     self.canvas.rowLabelTracker.delete_row_repeat)
-        self.connect(self.patternRowRepeatEditorDialog,
-                     SIGNAL("deleted_row_repeat"),
-                     self.canvas.set_up_labels)
+        #self.connect(self.patternRowRepeatEditorDialog,
+        #             SIGNAL("added_row_repeat"),
+        #             self.canvas.rowLabelTracker.add_row_repeat)
+        #self.connect(self.patternRowRepeatEditorDialog,
+        #             SIGNAL("allow_all_label_options"),
+        #             self.preferencesDialog.allow_all_label_options)
+        #self.connect(self.patternRowRepeatEditorDialog,
+        #             SIGNAL("added_row_repeat"),
+        #             self.canvas.set_up_labels)
+        #self.connect(self.patternRowRepeatEditorDialog,
+        #             SIGNAL("deleted_row_repeat"),
+        #             self.canvas.rowLabelTracker.delete_row_repeat)
+        #self.connect(self.patternRowRepeatEditorDialog,
+        #             SIGNAL("deleted_row_repeat"),
+        #             self.canvas.set_up_labels)
 
         # connections for preferences dialog
         self.connect(self.preferencesDialog, 
@@ -956,14 +959,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.canvas.clearFocus()
 
         printPrevDialog.exec_()
-
-
-
-    def open_row_repeat_dialog(self):
-        """ Open the dialog for adding/deleting row repeats. """
-
-        self.patternRowRepeatEditorDialog.raise_()
-        self.patternRowRepeatEditorDialog.show()
 
 
 

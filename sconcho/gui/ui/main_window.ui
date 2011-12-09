@@ -135,7 +135,6 @@
     <addaction name="menu_Zoom"/>
     <addaction name="actionUnselect_All"/>
     <addaction name="actionCreate_Pattern_Repeat"/>
-    <addaction name="actionAdd_Row_Repeat"/>
     <addaction name="actionApply_Color_to_Selection"/>
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>

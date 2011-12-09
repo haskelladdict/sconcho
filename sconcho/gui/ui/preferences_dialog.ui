@@ -276,7 +276,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_14">
+             <widget class="QLabel" name="rowLabelsStartLabel">
               <property name="text">
                <string>label starting at row</string>
               </property>

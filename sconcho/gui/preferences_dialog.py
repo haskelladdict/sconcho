@@ -52,6 +52,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.setupUi(self)
 
         self.settings = settings
+        self.rowLabelsUnlocked = True
         self.populate_interface()
         self.establish_connections()
         self.set_up_personal_symbol_path()
@@ -319,6 +320,11 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def allow_all_label_options(self, status):
         """ Toggle status of allowing all row label options """
 
+        self.rowLabelsUnlocked = status
+
+        self.rowLabelsIntervalSpinner.setEnabled(status)
+        self.rowLabelsIntervalStartSpinner.setEnabled(status)
+        self.rowLabelsStartLabel.setEnabled(status)
         self.showRowsWithIntervalButton.setEnabled(status)
 
         # since these are mutually exclusive we have to be 
@@ -466,11 +472,11 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
 
 
-
     def change_row_label_start(self, start):
         """ Sets the new label interval and lets the canvas know. """
 
-        self._adjust_row_label_selectors(start)
+        if self.rowLabelsUnlocked:
+            self._adjust_row_label_selectors(start)
         self.settings.rowLabelStart.value = start
         self.emit(SIGNAL("row_label_start_changed"), start)
 

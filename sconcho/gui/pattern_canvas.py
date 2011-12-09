@@ -106,7 +106,6 @@ class PatternCanvas(QGraphicsScene):
         self._numColumns = 10
         self.rowRepeatTracker = {}
         self.rowLabelTracker = RowLabelTracker(self, self.settings)
-        self.repeatTracker = {}
         self.markedRows = {}
         self.markedColumns = {}
 
@@ -1338,11 +1337,53 @@ class PatternCanvas(QGraphicsScene):
         else:
             return patternItems[0]
 
+    
+    def delete_row_repeat(self):
+        """ Add a row repeat for all selected rows. """
+
+        print("furz")
+        #repeatLength = len(self.markedRows)
+        #for row in self.markedRows.keys():
+        #    self.rowRepeatTracker[row] = (3, repeatLength)
+        #self.clear_marked_columns_rows()
+
+        #self.emit(SIGNAL("row_repeat_added"))
+
+    
+
+    def can_add_row_repeat(self):
+        """ Checks whether we can add a row repeat given the
+        currently selected row selection.
+
+        In order form them to be selectable the cells have
+        to form a contiguous block and none of the selected
+        rows can be part of an already existing block.
+
+        """
+
+        for row in self.markedRows:
+            if row in self.rowRepeatTracker:
+                return False
+
+        allRows = list(self.markedRows.keys())
+        allRows.sort()
+        previous = allRows[0]
+        for row in allRows[1:]:
+            if row - previous != 1:
+                return False
+            previous = row
+
+        return True
 
     def add_row_repeat(self):
         """ Add a row repeat for all selected rows. """
 
-        print("adding a row repeat")
+        repeatLength = len(self.markedRows)
+        for row in self.markedRows.keys():
+            self.rowRepeatTracker[row] = (3, repeatLength)
+        self.clear_marked_columns_rows()
+
+        self.emit(SIGNAL("row_repeat_added"))
 
 
 
@@ -2650,24 +2691,9 @@ class RowLabelTracker(object):
         self.rangeMap = {}
         self.settings = settings
         self.canvas = canvas
+        self.rangeMap = canvas.rowRepeatTracker
 
 
-
-    def add_row_repeat(self, start, end, multiplicity):
-        """ Add a row repeat range to row label tracker. """
-
-        for i in range(start, end+1):
-            self.rangeMap[i] = (multiplicity, end-start+1)
-
-
-
-    def delete_row_repeat(self, start, end):
-        """ Remove a row repeat from row label tracker. """
-
-        for i in range(start, end+1):
-            del self.rangeMap[i]
-
-    
 
     def get_labels(self):
         """ Main routine computing the current set of labels. """
@@ -2685,8 +2711,8 @@ class RowLabelTracker(object):
             labelInterval = self.settings.rowLabelsShowInterval.value 
             labelStart = self.settings.rowLabelsShowIntervalStart.value
         elif labelIntervalState == "SHOW_EVEN_ROWS" \
-        or labelIntervalState == "SHOW_ODD_ROWS":
-            counter_func = lambda x: 2*x - 1 + labelOffset 
+             or labelIntervalState == "SHOW_ODD_ROWS":
+            counter_func = lambda x: 2*(numRows - x) - 1 + labelOffset 
             rowShift = 2
 
         labels = []
@@ -2702,21 +2728,22 @@ class RowLabelTracker(object):
         else:
             nextCount = 0
             repeatShift = 0
-            for row in range(1, numRows + 1):
+            for row in range(1, numRows+1):
                 rowEntry = counter_func(row)
-                if row in self.rangeMap:
-                    (mult, length) = self.rangeMap[row]
+                realRow = numRows - row
+                if realRow in self.rangeMap:
+                    (mult, length) = self.rangeMap[realRow]
 
                     rowLabel = []
                     for i in range(0, mult):
                         rowLabel.append(rowEntry + repeatShift 
                                         + i * length * rowShift)
-                    nextCount += (mult - 1) * rowShift;
+                    nextCount += (mult - 1) * rowShift
                     labels.append(rowLabel)
                 else:
                     repeatShift = nextCount
                     labels.append([rowEntry + repeatShift])
-
+                    
         return labels
 
 
