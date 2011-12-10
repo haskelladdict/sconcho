@@ -59,6 +59,7 @@ from PyQt4.QtSvg import (QGraphicsSvgItem)
 from sconcho.util.canvas import * 
 from sconcho.util.misc import wait_cursor
 from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
+from sconcho.gui.row_repeat_number_dialog import RowRepeatNumDialog
 from sconcho.util.misc import errorLogger
 from sconcho.gui.undo_framework import (PasteCells, 
                                         InsertRows, 
@@ -1395,13 +1396,19 @@ class PatternCanvas(QGraphicsScene):
     def add_row_repeat(self):
         """ Add a row repeat for all selected rows. """
 
-        repeatLength = len(self.markedRows)
-        repeatID = uuid.uuid4()
-        for row in self.markedRows.keys():
-            self.rowRepeatTracker[row] = (3, repeatLength, repeatID)
-        self.clear_marked_columns_rows()
+        # fire up dialog to ask for number of repeats
+        repeatDialog = RowRepeatNumDialog()
+        if repeatDialog.exec_():
+            numRepeats = repeatDialog.num_repeats
+            repeatLength = len(self.markedRows)
+            repeatID = uuid.uuid4()
+            for row in self.markedRows.keys():
+                self.rowRepeatTracker[row] = (numRepeats, 
+                                              repeatLength, 
+                                              repeatID)
+            self.clear_marked_columns_rows()
 
-        self.emit(SIGNAL("row_repeat_added"))
+            self.emit(SIGNAL("row_repeat_added"))
 
 
 

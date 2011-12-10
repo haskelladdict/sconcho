@@ -7,6 +7,7 @@ all:
 	pyuic4 -o ui_manage_symbol_dialog.py ui/manage_symbol_dialog.ui
 	pyuic4 -o ui_pattern_repeat_box_dialog.py ui/pattern_repeat_box_dialog.ui
 	pyuic4 -o ui_update_dialog.py ui/update_dialog.ui
+	pyuic4 -o ui_row_repeat_number_dialog.py ui/row_repeat_number_dialog.ui
 	pyrcc4 -o icons_rc.py icons.qrc
 
 
