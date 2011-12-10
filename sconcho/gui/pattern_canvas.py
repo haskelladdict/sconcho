@@ -24,9 +24,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-import operator
 import copy
 from functools import partial
+import operator
+import uuid
 
 from PyQt4.QtCore import (Qt, 
                           QRectF, 
@@ -828,6 +829,12 @@ class PatternCanvas(QGraphicsScene):
         if (not self.markedRows) or (not self.can_add_row_repeat()):
             addRowRepeatAction.setEnabled(False)
         
+        deleteRowRepeatAction = rowColMenu.addAction("delete row repeat")
+        self.connect(deleteRowRepeatAction, SIGNAL("triggered()"),
+                     self.delete_row_repeat)
+        if (not self.markedRows) or (not self.can_delete_row_repeat()):
+            deleteRowRepeatAction.setEnabled(False)
+        
         rowColMenu.addSeparator()
         # column options
         deleteColsAction = rowColMenu.addAction("delete selected columns")
@@ -1337,50 +1344,61 @@ class PatternCanvas(QGraphicsScene):
         else:
             return patternItems[0]
 
+
     
     def delete_row_repeat(self):
         """ Add a row repeat for all selected rows. """
 
-        print("furz")
-        #repeatLength = len(self.markedRows)
-        #for row in self.markedRows.keys():
-        #    self.rowRepeatTracker[row] = (3, repeatLength)
-        #self.clear_marked_columns_rows()
+        assert(self.markedRows)
 
-        #self.emit(SIGNAL("row_repeat_added"))
+        row = self.markedRows.keys()[0]
+        deadID = get_row_repeat_id(self.rowRepeatTracker[row])
+        repeatRows = list(self.rowRepeatTracker.keys())
+        for row in repeatRows:
+            if get_row_repeat_id(self.rowRepeatTracker[row]) == deadID:
+                del self.rowRepeatTracker[row]
+        self.clear_marked_columns_rows()
+        self.set_up_labels()
 
-    
+        if not self.rowRepeatTracker:
+            self.emit(SIGNAL("no_more_row_repeats"))
 
-    def can_add_row_repeat(self):
-        """ Checks whether we can add a row repeat given the
-        currently selected row selection.
 
-        In order form them to be selectable the cells have
-        to form a contiguous block and none of the selected
-        rows can be part of an already existing block.
 
+
+    def can_delete_row_repeat(self):
+        """ Checks whether we can delete a row repeat given the
+        currently active row selection.
+
+        We allow a user to delete a row repeat if all selected
+        rows are within the same row repeat (not all repeat rows
+        have to be selected)
         """
 
+        rowIDs = set()
         for row in self.markedRows:
             if row in self.rowRepeatTracker:
+                (dummy1, dummy2, theID) = self.rowRepeatTracker[row]
+                rowIDs.add(theID)
+            else:
                 return False
 
-        allRows = list(self.markedRows.keys())
-        allRows.sort()
-        previous = allRows[0]
-        for row in allRows[1:]:
-            if row - previous != 1:
-                return False
-            previous = row
+        # check if all selected rows belong to same repeat, i.e. have
+        # the same repeat ID
+        if len(rowIDs) == 1:
+            return True
+        else:
+            return False
 
-        return True
+
 
     def add_row_repeat(self):
         """ Add a row repeat for all selected rows. """
 
         repeatLength = len(self.markedRows)
+        repeatID = uuid.uuid4()
         for row in self.markedRows.keys():
-            self.rowRepeatTracker[row] = (3, repeatLength)
+            self.rowRepeatTracker[row] = (3, repeatLength, repeatID)
         self.clear_marked_columns_rows()
 
         self.emit(SIGNAL("row_repeat_added"))
@@ -1391,7 +1409,7 @@ class PatternCanvas(QGraphicsScene):
         """ Checks whether we can add a row repeat given the
         currently selected row selection.
 
-        In order form them to be selectable the cells have
+        In order for them to be selectable the cells have
         to form a contiguous block and none of the selected
         rows can be part of an already existing block.
 
@@ -2688,7 +2706,6 @@ class RowLabelTracker(object):
 
     def __init__(self, canvas, settings):
 
-        self.rangeMap = {}
         self.settings = settings
         self.canvas = canvas
         self.rangeMap = canvas.rowRepeatTracker
@@ -2732,7 +2749,7 @@ class RowLabelTracker(object):
                 rowEntry = counter_func(row)
                 realRow = numRows - row
                 if realRow in self.rangeMap:
-                    (mult, length) = self.rangeMap[realRow]
+                    (mult, length, rowId) = self.rangeMap[realRow]
 
                     rowLabel = []
                     for i in range(0, mult):

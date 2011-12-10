@@ -224,6 +224,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.canvas, SIGNAL("row_repeat_added"),
                      partial(self.preferencesDialog.allow_all_label_options, False))
 
+        self.connect(self.canvas, SIGNAL("no_more_row_labels"),
+                     partial(self.preferencesDialog.allow_all_label_options, True))
+
         self.connect(self.actionZoom_In, SIGNAL("triggered()"),
                      self.graphicsView.zoom_in)
 
@@ -252,23 +255,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.action_Redo, SIGNAL("triggered()"),
                      self.canvas.redo)
-
-        # connections for patternRowRepeatEditorDialog
-        #self.connect(self.patternRowRepeatEditorDialog,
-        #             SIGNAL("added_row_repeat"),
-        #             self.canvas.rowLabelTracker.add_row_repeat)
-        #self.connect(self.patternRowRepeatEditorDialog,
-        #             SIGNAL("allow_all_label_options"),
-        #             self.preferencesDialog.allow_all_label_options)
-        #self.connect(self.patternRowRepeatEditorDialog,
-        #             SIGNAL("added_row_repeat"),
-        #             self.canvas.set_up_labels)
-        #self.connect(self.patternRowRepeatEditorDialog,
-        #             SIGNAL("deleted_row_repeat"),
-        #             self.canvas.rowLabelTracker.delete_row_repeat)
-        #self.connect(self.patternRowRepeatEditorDialog,
-        #             SIGNAL("deleted_row_repeat"),
-        #             self.canvas.set_up_labels)
 
         # connections for preferences dialog
         self.connect(self.preferencesDialog, 

@@ -1,3 +1,4 @@
+- editable row labels
 - more sophisticated print dialog
 - colors in color widget don't update right away when
   loading a new sconcho project.

@@ -512,6 +512,12 @@ def get_edge_id(gridPoint1, gridPoint2):
 
 
 
+def get_row_repeat_id(entry):
+    """ Returns the pattern repeat id of a patter row repeat. """
+
+    return entry[2]
+
+
 ############################################################################
 #
 # Helper Classes
