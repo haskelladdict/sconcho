@@ -209,7 +209,9 @@ class InsertRows(QUndoCommand):
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells, 
                                            self.pivot, self.rowShift)
-        
+
+        self.redo_adjust_row_repeats(self.pivot, self.rowShift)
+    
         self.canvas._numRows += self.rowShift
         self.finalize()
 
@@ -258,10 +260,39 @@ class InsertRows(QUndoCommand):
 
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
- 
+
+        self.undo_adjust_row_repeats(self.pivot, self.rowShift)
         self.canvas._numRows -= self.rowShift
         self.finalize()
-       
+
+
+
+    def undo_adjust_row_repeats(self, pivot, rowShift):
+        """ Adjust the row repeats such that they are consistent 
+        with the newly inserted rows. 
+
+        If a row is inserted within a row repeat we assume the user
+        wants to extend the row repeat itself.
+
+        """
+
+        self.canvas.rowRepeatTracker.shift_and_expand_repeats(pivot, 
+                                                              -rowShift)
+
+
+
+    def redo_adjust_row_repeats(self, pivot, rowShift):
+        """ Adjust the row repeats such that they are consistent 
+        with the newly inserted rows. 
+
+        If a row is inserted within a row repeat we assume the user
+        wants to extend the row repeat itself.
+
+        """
+
+        self.canvas.rowRepeatTracker.shift_and_expand_repeats(pivot, 
+                                                              rowShift)
+
 
 
     def finalize(self):
@@ -273,6 +304,7 @@ class InsertRows(QUndoCommand):
         self.canvas.finalize_grid_change()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
+
 
 
 
@@ -294,6 +326,8 @@ class DeleteRows(QUndoCommand):
         self.reverseDeadRanges = list(self.deadRanges)
         self.reverseDeadRanges.reverse()
 
+        self.deadRepeatRows = {}
+
         self.numColumns = canvas._numColumns
         self.unitHeight = self.canvas._unitCellDim.height()
         self.unitWidth = self.canvas._unitCellDim.width()
@@ -314,7 +348,9 @@ class DeleteRows(QUndoCommand):
         self.delete_requested_items(self.deadRows)
         self.remove_selected_cells(self.deadRows)
         for (pivot, num) in self.deadRanges:
+            print(pivot, num)
             self.redo_shift_remaining_items(pivot, -num)
+            self.redo_adjust_row_repeats(pivot, num)           
         self.canvas._numRows -= len(self.deadRows)
         self.finalize()
        
@@ -330,7 +366,9 @@ class DeleteRows(QUndoCommand):
         """
 
         for (pivot, num) in self.reverseDeadRanges:
+            print(pivot, num)
             self.undo_shift_remaining_items(pivot, num)
+            self.undo_adjust_row_repeats(pivot, num)
         self.readd_selected_cells()
         self.readd_deleted_items()
         self.canvas._numRows += len(self.deadRows)
@@ -355,6 +393,33 @@ class DeleteRows(QUndoCommand):
 
         deadRanges.append((prevItem, length))
         return deadRanges
+
+
+
+    def undo_adjust_row_repeats(self, pivot, rowShift):
+        """ Adjust the row repeats such that they are consistent 
+        with the deleted rows. 
+
+        """
+
+        self.canvas.rowRepeatTracker.shift_repeats(pivot, rowShift)
+        if pivot in self.deadRepeatRows:
+            item = self.deadRepeatRows[pivot]
+            self.canvas.rowRepeatTracker.restore_repeat_row(item)
+
+
+
+    def redo_adjust_row_repeats(self, pivot, rowShift):
+        """ Adjust the row repeats such that they are consistent 
+        with the deleted rows. 
+
+        """
+
+        item = self.canvas.rowRepeatTracker.delete_repeat_row(pivot, 
+                                                              rowShift)
+        self.deadRepeatRows[pivot] = item
+        self.canvas.rowRepeatTracker.shift_and_expand_repeats(pivot, 
+                                                              -rowShift)
 
 
 
@@ -611,6 +676,7 @@ class InsertColumns(QUndoCommand):
 
 
 
+
 class DeleteColumns(QUndoCommand):
     """ This class encapsulates the deletion of columns. """
 
@@ -620,9 +686,6 @@ class DeleteColumns(QUndoCommand):
         super(DeleteColumns, self).__init__(parent)
         self.setText("delete column")
         self.canvas = canvas
-        #self.columnShift = columnShift
-        #self.pivot = pivot
-        #self.mode = mode
         self.numRows = canvas._numRows
         self.numColumns = canvas._numColumns
         self.unitHeight = self.canvas._unitCellDim.height()
@@ -1377,8 +1440,75 @@ class ColorSelectedCells(QUndoCommand):
 
 
 
+class AddRowRepeat(QUndoCommand):
+    """ This class encapsulates the creation of a row repeat
+    item on the canvas.
+
+    """
+
+    def __init__(self, canvas, multiplicity, parent = None):
+
+        super(AddRowRepeat, self).__init__(parent)
+
+        self.canvas = canvas
+        self.rowRepeatTracker = canvas.rowRepeatTracker
+        self.rows = canvas.markedRows.keys()
+        self.multiplicity = multiplicity
 
 
+
+    def redo(self):
+        """ The redo action. """
+
+        self.rowRepeatTracker.add_repeat(self.rows, self.multiplicity)
+        self.canvas.set_up_labels()
+        
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        self.rowRepeatTracker.delete_repeat(self.rows)
+        self.canvas.set_up_labels()
+
+
+
+
+class DeleteRowRepeat(QUndoCommand):
+    """ This class encapsulates the creation of a row repeat
+    item on the canvas.
+
+    """
+
+    def __init__(self, canvas, parent = None):
+
+        super(DeleteRowRepeat, self).__init__(parent)
+
+        self.canvas = canvas
+        self.rowRepeatTracker = canvas.rowRepeatTracker
+        
+        firstRow = canvas.markedRows.keys()[0]
+        (rowRange, multiplicity) = self.rowRepeatTracker[firstRow]
+
+        self.multiplicity = multiplicity
+        self.rows = list(rowRange)
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        self.rowRepeatTracker.delete_repeat(self.rows)
+        self.canvas.set_up_labels()
+        
+
+
+    def undo(self):
+        """ The undo action. """
+
+        self.rowRepeatTracker.add_repeat(self.rows, self.multiplicity)
+        self.canvas.set_up_labels()
 
 
 ##############

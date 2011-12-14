@@ -71,6 +71,8 @@ from sconcho.gui.undo_framework import (PasteCells,
                                         PaintCells, 
                                         MoveCanvasItem, 
                                         AddPatternRepeat,
+                                        AddRowRepeat,
+                                        DeleteRowRepeat,
                                         EditPatternRepeat, 
                                         DeletePatternRepeat,
                                         ColorSelectedCells) 
@@ -106,7 +108,7 @@ class PatternCanvas(QGraphicsScene):
         self._numRows = 10
         self._rowLabelOffset = self.settings.rowLabelStart.value
         self._numColumns = 10
-        self.rowRepeatTracker = {}
+        self.rowRepeatTracker = RowRepeatTracker()
         self.rowLabelTracker = RowLabelTracker(self, self.settings)
         self.markedRows = {}
         self.markedColumns = {}
@@ -1348,18 +1350,17 @@ class PatternCanvas(QGraphicsScene):
 
     
     def delete_row_repeat(self):
-        """ Add a row repeat for all selected rows. """
+        """ Delete the row repeat corresponding the the
+        selected rows. 
+
+        NOTE: This function expects that all marked rows are
+        part of a single repeat.
+        """
 
         assert(self.markedRows)
-
-        row = self.markedRows.keys()[0]
-        deadID = get_row_repeat_id(self.rowRepeatTracker[row])
-        repeatRows = list(self.rowRepeatTracker.keys())
-        for row in repeatRows:
-            if get_row_repeat_id(self.rowRepeatTracker[row]) == deadID:
-                del self.rowRepeatTracker[row]
+        deleteRowRepeatCommand = DeleteRowRepeat(self) 
+        self._undoStack.push(deleteRowRepeatCommand)
         self.clear_marked_columns_rows()
-        self.set_up_labels()
 
         if not self.rowRepeatTracker:
             self.emit(SIGNAL("no_more_row_repeats"))
@@ -1375,21 +1376,9 @@ class PatternCanvas(QGraphicsScene):
         rows are within the same row repeat (not all repeat rows
         have to be selected)
         """
-
-        rowIDs = set()
-        for row in self.markedRows:
-            if row in self.rowRepeatTracker:
-                (dummy1, dummy2, theID) = self.rowRepeatTracker[row]
-                rowIDs.add(theID)
-            else:
-                return False
-
-        # check if all selected rows belong to same repeat, i.e. have
-        # the same repeat ID
-        if len(rowIDs) == 1:
-            return True
-        else:
-            return False
+        
+        rows = self.markedRows
+        return self.rowRepeatTracker.rows_are_in_a_single_repeat(rows)
 
 
 
@@ -1400,14 +1389,10 @@ class PatternCanvas(QGraphicsScene):
         repeatDialog = RowRepeatNumDialog()
         if repeatDialog.exec_():
             numRepeats = repeatDialog.num_repeats
-            repeatLength = len(self.markedRows)
-            repeatID = uuid.uuid4()
-            for row in self.markedRows.keys():
-                self.rowRepeatTracker[row] = (numRepeats, 
-                                              repeatLength, 
-                                              repeatID)
-            self.clear_marked_columns_rows()
+            addRowRepeatCommand = AddRowRepeat(self, numRepeats) 
+            self._undoStack.push(addRowRepeatCommand)
 
+            self.clear_marked_columns_rows()
             self.emit(SIGNAL("row_repeat_added"))
 
 
@@ -1422,9 +1407,8 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        for row in self.markedRows:
-            if row in self.rowRepeatTracker:
-                return False
+        if self.rowRepeatTracker.rows_are_in_any_repeat(self.markedRows):
+            return False
 
         allRows = list(self.markedRows.keys())
         allRows.sort()
@@ -1435,7 +1419,7 @@ class PatternCanvas(QGraphicsScene):
             previous = row
 
         return True
-            
+
 
 
     def insert_grid_rows(self, mode):
@@ -2756,8 +2740,8 @@ class RowLabelTracker(object):
                 rowEntry = counter_func(row)
                 realRow = numRows - row
                 if realRow in self.rangeMap:
-                    (mult, length, rowId) = self.rangeMap[realRow]
-
+                    (rowRange, mult) = self.rangeMap[realRow]
+                    length = len(rowRange)
                     rowLabel = []
                     for i in range(0, mult):
                         rowLabel.append(rowEntry + repeatShift 
@@ -2771,3 +2755,203 @@ class RowLabelTracker(object):
         return labels
 
 
+
+###################################################################
+# 
+# this class tracks all row repeats on the canvas 
+#
+###################################################################
+class RowRepeatTracker(object):
+
+    def __init__(self, repeats = []):
+        """ Constructor. """
+
+        self.repeats = repeats
+
+
+
+    def __len__(self):
+        """ Length of tracker is given by the number of repeats. """
+
+        return len(self.repeats)
+
+
+
+    def __getitem__(self, row):
+        """ Return the repeat length and number or repeats of the repeat
+        row belongs to.
+
+        """
+
+        for (theRange, mult) in self.repeats:
+            if row in theRange:
+                return (theRange, mult)
+
+
+
+    def __contains__(self, row):
+        """ Checks is row is within one of the ranges. """
+
+        if not self.repeats:
+            return False
+
+        status = False
+        for (theRange, mult) in self.repeats:
+            if row in theRange:
+                status = True
+                break
+
+        return status
+        
+
+
+
+    def add_repeat(self, rows, numRepeats):
+        """ Add a new row repeat. """
+
+        if not rows:
+            return
+
+        rows.sort()
+        repeatRange = range(rows[0], rows[-1]+1)
+        self.repeats.append((repeatRange, numRepeats))
+        
+
+
+    def restore_repeat_row(self, restoreInfo):
+
+        for item in restoreInfo:
+            print("restoring ", restoreInfo)
+            (deadRange, newRange, mult) = item
+            if deadRange:
+                self.delete_repeat(deadRange)
+            self.add_repeat(newRange, mult)
+
+
+    
+    def delete_repeat_row(self, rowID, num):
+
+        changedRepeats = []
+        removeRange = set(range(rowID, rowID + num))
+        for index in range(len(self.repeats)):
+            (theRange, mult) = self.repeats[index]
+            originalRange = set(theRange)
+            
+            if originalRange.intersection(removeRange):
+                newRange = list(originalRange.difference(removeRange))
+                newRange.sort()
+                if newRange:
+                    self.repeats[index] = (newRange, mult)
+                else:
+                    del self.repeats[index]
+                changedRepeats.append((newRange, theRange, mult))
+        
+        print("changing  ", changedRepeats)
+        return changedRepeats
+
+
+
+    def delete_repeat(self, rows):
+        """ Delete the repeat corresponding to the given rows.
+
+        NOTE: We assume that the rows passed in are all within
+        a single pattern repeat.
+
+        """
+
+        if not rows:
+            return
+
+        firstRow = rows[0]
+        for index in range(len(self.repeats)):
+            theRange = self.repeats[index][0]
+            if firstRow in theRange:
+                self.repeats.pop(index)
+                return
+
+
+
+    def rows_are_in_any_repeat(self, rows):
+        """ Check if the given rows are within any of the
+        currently existing row repeats.
+
+        """
+
+        for row in rows:
+            for (theRange, mult) in self.repeats:
+                if row in theRange:
+                    return True
+
+        return False
+
+
+    
+    def rows_are_in_a_single_repeat(self, deadRows):
+        """ Check if all rows within dead rows are part
+        of a single repeat. """
+        
+        matches = {}
+        for row in deadRows:
+            rowInRepeat = False
+            for (repID, (theRange, mult)) in enumerate(self.repeats):
+                if (row in theRange):
+                    matches[repID] = True
+                    rowInRepeat = True
+
+            if not rowInRepeat:
+                return False
+
+        return len(matches) == 1
+        
+
+
+    def shift_and_expand_repeats(self, pivot, rowShift):
+        """ Shift and expand row repeats after inserting of canvas
+        rows.
+
+        """
+
+        for index in range(len(self.repeats)):
+            (theRange, mult) = self.repeats[index]
+            
+            # extend the range by row shift
+            if pivot in theRange[1:]:    
+                newRange = range(theRange[0], theRange[-1]+rowShift+1) 
+            # just shift
+            elif pivot <= min(theRange):
+                newRange = range(theRange[0]+rowShift, 
+                                 theRange[-1]+rowShift+1)
+            # don't do anything
+            else:
+                newRange = theRange
+
+            self.repeats[index] = (newRange, mult)
+
+
+
+    def shift_repeats(self, pivot, rowShift):
+        """ Shift row repeats after deleting of canvas.
+
+        NOTE: We are only interested in shifting ranges
+        of which pivot is not part of.
+
+        """
+
+        for index in range(len(self.repeats)):
+            (theRange, mult) = self.repeats[index]
+            
+            # extend the range by row shift
+            if pivot in theRange:    
+                print("in repeat")
+                continue
+            # just shift
+            elif pivot < min(theRange):
+                print("shifting")
+                newRange = range(theRange[0]+rowShift, 
+                                 theRange[-1]+rowShift+1)
+            # don't do anything
+            else:
+                print("nothing")
+                newRange = theRange
+
+            self.repeats[index] = (newRange, mult)
