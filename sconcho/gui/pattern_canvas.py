@@ -70,6 +70,8 @@ from sconcho.gui.undo_framework import (PasteCells,
                                         ActivateColor, 
                                         PaintCells, 
                                         MoveCanvasItem, 
+                                        MarkRows,
+                                        UnmarkRows,
                                         AddPatternRepeat,
                                         AddRowRepeat,
                                         DeleteRowRepeat,
@@ -758,16 +760,18 @@ class PatternCanvas(QGraphicsScene):
                 del deadColumn
         else:
             if row not in self.markedRows:
-                markItem = MarkRowItem(row, self._numColumns,
-                                       self._unitCellDim.width(),
-                                       self._unitCellDim.height() )
-                self.markedRows[row] = markItem
-                self.addItem(markItem)
+                markedRow = MarkRowItem(row, self._numColumns,
+                                        self._unitCellDim.width(),
+                                        self._unitCellDim.height() )
+                markRowCommand = MarkRows(self, [markedRow])
+                self._undoStack.push(markRowCommand)
             else:
-                deadRow = self.markedRows[row]
-                del self.markedRows[row]
-                self.removeItem(deadRow)
-                del deadRow
+                unmarkRowCommand = UnmarkRows(self, [row])
+                self._undoStack.push(unmarkRowCommand)
+                #deadRow = self.markedRows[row]
+                #del self.markedRows[row]
+                #self.removeItem(deadRow)
+                #del deadRow
 
 
 

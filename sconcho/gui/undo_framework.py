@@ -554,6 +554,7 @@ class DeleteRows(QUndoCommand):
         self.canvas.emit(SIGNAL("scene_changed"))
 
 
+
 class InsertColumns(QUndoCommand):
     """ This class encapsulates the insertion of columns. """
 
@@ -1511,6 +1512,79 @@ class DeleteRowRepeat(QUndoCommand):
         self.canvas.set_up_labels()
 
 
-##############
-##############
 
+class MarkRows(QUndoCommand):
+    """ This class encapsulates marking of rows. """
+
+
+    def __init__(self, canvas, markedRows, parent = None):
+
+        super(MarkRows, self).__init__(parent) 
+        self.setText("mark rows")
+
+        self.canvas = canvas
+        self.markedRows = markedRows
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        for markedRow in self.markedRows:
+            row = markedRow.row
+            self.canvas.markedRows[row] = markedRow
+            self.canvas.addItem(markedRow)
+
+
+
+    def undo(self):
+        """ The undo action. """
+        
+        for markedRow in self.markedRows:
+            row = markedRow.row
+            deadRow = self.canvas.markedRows[row]
+            del self.canvas.markedRows[row]
+            self.canvas.removeItem(deadRow)
+            del deadRow
+
+
+
+
+class UnmarkRows(QUndoCommand):
+    """ This class encapsulates un-marking of rows. """
+
+
+    def __init__(self, canvas, unmarkRows, parent = None):
+
+        super(UnmarkRows, self).__init__(parent) 
+        self.setText("unmark rows")
+
+        self.canvas = canvas
+        self.unmarkRows = unmarkRows
+        self.previouslyMarkedRows = []
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        for row in self.unmarkRows:
+            unmarkRow = self.canvas.markedRows[row]
+            self.previouslyMarkedRows.append(unmarkRow)
+            del self.canvas.markedRows[row]
+            self.canvas.removeItem(unmarkRow)
+            del unmarkRow
+
+
+
+    def undo(self):
+        """ The undo action. """
+        
+        for markedRow in self.previouslyMarkedRows:
+            row = markedRow.row
+            self.canvas.markedRows[row] = markedRow
+            self.canvas.addItem(markedRow)
+
+
+##############
+##############
