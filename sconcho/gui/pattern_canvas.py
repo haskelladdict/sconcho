@@ -2734,13 +2734,27 @@ class RowLabelTracker(object):
                     labels.append(None)
 
         else:
+            # running label shift due to preceding row repeats and ID
+            # of current repeat
             nextCount = 0
+            prevID = 0
+
+            # label shift due to preceding row repeats
             repeatShift = 0
+
             for row in range(1, numRows+1):
                 rowEntry = counter_func(row)
                 realRow = numRows - row
+
+                # check if the current row is part of a repeat. 
+                # if yes figure out the labels
+                # NOTE: This is pretty messy right now - there 
+                # should be a better way
                 if realRow in self.rangeMap:
-                    (rowRange, mult) = self.rangeMap[realRow]
+                    (rowRange, mult, repeatID) = self.rangeMap[realRow]
+                    if repeatID != prevID:
+                        repeatShift = nextCount
+                        prevID = repeatID
                     length = len(rowRange)
                     rowLabel = []
                     for i in range(0, mult):
@@ -2764,7 +2778,16 @@ class RowLabelTracker(object):
 class RowRepeatTracker(object):
 
     def __init__(self, repeats = []):
-        """ Constructor. """
+        """ NOTE: A row repeat is stored as a triple
+        
+        (repeatRange, multiplicity, ID)
+
+        where:   repeatRange  = range of rows in this repeat
+                                (as a internal canvas row count)
+                 multiplicity = number of repeats
+                 ID           = unique per repeat ID
+
+        """
 
         self.repeats = repeats
 
@@ -2783,9 +2806,9 @@ class RowRepeatTracker(object):
 
         """
 
-        for (theRange, mult) in self.repeats:
+        for (theRange, mult, repeatID) in self.repeats:
             if row in theRange:
-                return (theRange, mult)
+                return (theRange, mult, repeatID)
 
 
 
@@ -2796,7 +2819,7 @@ class RowRepeatTracker(object):
             return False
 
         status = False
-        for (theRange, mult) in self.repeats:
+        for (theRange, mult, repeatID) in self.repeats:
             if row in theRange:
                 status = True
                 break
@@ -2814,14 +2837,24 @@ class RowRepeatTracker(object):
 
         rows.sort()
         repeatRange = range(rows[0], rows[-1]+1)
-        self.repeats.append((repeatRange, numRepeats))
+        repeatID = uuid.uuid4()
+        self.repeats.append((repeatRange, numRepeats, repeatID))
         
 
 
-    def restore_repeat_row(self, restoreInfo):
+    def restore_repeat(self, restoreInfo):
+        """ This function restores a given row repeat to a previous
+        state.
+
+        restoreInfo is a triple with the currentRange as well
+        as the previousRange (to be reestablished) and multiplicity.
+        The multiplicity is needed since it is possible that we
+        are restoring a repeat that had been completely removed
+        and for which we've thus lost all multiplicity info.
+
+        """
 
         for item in restoreInfo:
-            print("restoring ", restoreInfo)
             (deadRange, newRange, mult) = item
             if deadRange:
                 self.delete_repeat(deadRange)
@@ -2829,24 +2862,37 @@ class RowRepeatTracker(object):
 
 
     
-    def delete_repeat_row(self, rowID, num):
+    def change_repeat(self, startRow, numRows):
+        """ This function is used to change row repeats.
+
+        Currently, the only user of this function is the undo 
+        framework when deleting a block of rows of length numRows 
+        starting at startRow.
+
+        The function detects any row repeats that are affected
+        by the deleting rows and removes them from the range.
+        It returns a triple of (newRange, oldRange, multiplicity).
+        This information is then used by restore_repeat to restore
+        the previous state.
+
+        """
 
         changedRepeats = []
-        removeRange = set(range(rowID, rowID + num))
-        for index in range(len(self.repeats)):
-            (theRange, mult) = self.repeats[index]
+        removeRange = set(range(startRow, startRow + numRows))
+        repeats = list(self.repeats)
+        for index in range(len(repeats)):
+            (theRange, mult, repeatID) = repeats[index]
             originalRange = set(theRange)
             
             if originalRange.intersection(removeRange):
                 newRange = list(originalRange.difference(removeRange))
                 newRange.sort()
                 if newRange:
-                    self.repeats[index] = (newRange, mult)
+                    self.repeats[index] = (newRange, mult, repeatID)
                 else:
                     del self.repeats[index]
                 changedRepeats.append((newRange, theRange, mult))
         
-        print("changing  ", changedRepeats)
         return changedRepeats
 
 
@@ -2878,7 +2924,7 @@ class RowRepeatTracker(object):
         """
 
         for row in rows:
-            for (theRange, mult) in self.repeats:
+            for (theRange, mult, repeatID) in self.repeats:
                 if row in theRange:
                     return True
 
@@ -2893,9 +2939,9 @@ class RowRepeatTracker(object):
         matches = {}
         for row in deadRows:
             rowInRepeat = False
-            for (repID, (theRange, mult)) in enumerate(self.repeats):
+            for (i, (theRange, mult, repeatID)) in enumerate(self.repeats):
                 if (row in theRange):
-                    matches[repID] = True
+                    matches[i] = True
                     rowInRepeat = True
 
             if not rowInRepeat:
@@ -2912,7 +2958,7 @@ class RowRepeatTracker(object):
         """
 
         for index in range(len(self.repeats)):
-            (theRange, mult) = self.repeats[index]
+            (theRange, mult, repeatID) = self.repeats[index]
             
             # extend the range by row shift
             if pivot in theRange[1:]:    
@@ -2925,33 +2971,4 @@ class RowRepeatTracker(object):
             else:
                 newRange = theRange
 
-            self.repeats[index] = (newRange, mult)
-
-
-
-    def shift_repeats(self, pivot, rowShift):
-        """ Shift row repeats after deleting of canvas.
-
-        NOTE: We are only interested in shifting ranges
-        of which pivot is not part of.
-
-        """
-
-        for index in range(len(self.repeats)):
-            (theRange, mult) = self.repeats[index]
-            
-            # extend the range by row shift
-            if pivot in theRange:    
-                print("in repeat")
-                continue
-            # just shift
-            elif pivot < min(theRange):
-                print("shifting")
-                newRange = range(theRange[0]+rowShift, 
-                                 theRange[-1]+rowShift+1)
-            # don't do anything
-            else:
-                print("nothing")
-                newRange = theRange
-
-            self.repeats[index] = (newRange, mult)
+            self.repeats[index] = (newRange, mult, repeatID)

@@ -348,7 +348,6 @@ class DeleteRows(QUndoCommand):
         self.delete_requested_items(self.deadRows)
         self.remove_selected_cells(self.deadRows)
         for (pivot, num) in self.deadRanges:
-            print(pivot, num)
             self.redo_shift_remaining_items(pivot, -num)
             self.redo_adjust_row_repeats(pivot, num)           
         self.canvas._numRows -= len(self.deadRows)
@@ -366,7 +365,6 @@ class DeleteRows(QUndoCommand):
         """
 
         for (pivot, num) in self.reverseDeadRanges:
-            print(pivot, num)
             self.undo_shift_remaining_items(pivot, num)
             self.undo_adjust_row_repeats(pivot, num)
         self.readd_selected_cells()
@@ -402,10 +400,11 @@ class DeleteRows(QUndoCommand):
 
         """
 
-        self.canvas.rowRepeatTracker.shift_repeats(pivot, rowShift)
+        self.canvas.rowRepeatTracker.shift_and_expand_repeats(pivot, 
+                                                              rowShift)
         if pivot in self.deadRepeatRows:
             item = self.deadRepeatRows[pivot]
-            self.canvas.rowRepeatTracker.restore_repeat_row(item)
+            self.canvas.rowRepeatTracker.restore_repeat(item)
 
 
 
@@ -415,9 +414,10 @@ class DeleteRows(QUndoCommand):
 
         """
 
-        item = self.canvas.rowRepeatTracker.delete_repeat_row(pivot, 
-                                                              rowShift)
-        self.deadRepeatRows[pivot] = item
+        item = self.canvas.rowRepeatTracker.change_repeat(pivot, rowShift)
+        if item:
+            self.deadRepeatRows[pivot] = item
+
         self.canvas.rowRepeatTracker.shift_and_expand_repeats(pivot, 
                                                               -rowShift)
 
