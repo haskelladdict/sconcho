@@ -57,6 +57,7 @@ from sconcho.util.canvas import *
 from sconcho.util.misc import wait_cursor
 from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
 from sconcho.gui.row_repeat_number_dialog import RowRepeatNumDialog
+from sconcho.gui.num_row_column_dialog import NumRowColumnDialog
 from sconcho.util.misc import errorLogger
 from sconcho.gui.undo_framework import (PasteCells, 
                                         InsertRows, 
@@ -807,11 +808,11 @@ class PatternCanvas(QGraphicsScene):
         if not self.markedRows:
             deleteRowsAction.setEnabled(False)
 
-        addRowAboveAction = rowColMenu.addAction("&insert row above")
+        addRowAboveAction = rowColMenu.addAction("&insert rows above")
         self.connect(addRowAboveAction, SIGNAL("triggered()"),
                      partial(self.insert_grid_rows, "above"))
 
-        addRowBelowAction = rowColMenu.addAction("insert row &below")
+        addRowBelowAction = rowColMenu.addAction("insert rows &below")
         self.connect(addRowBelowAction, SIGNAL("triggered()"),
                      partial(self.insert_grid_rows, "below"))
         if len(self.markedRows) != 1:
@@ -1424,13 +1425,16 @@ class PatternCanvas(QGraphicsScene):
         """
 
         assert(len(self.markedRows) == 1)
-        
-        num = 1
-        rowPivot = self.markedRows.keys()[0]
 
-        insertRowCommand = InsertRows(self, num, rowPivot, mode)
-        self._undoStack.push(insertRowCommand)
-        self.clear_marked_columns_rows()
+        rowPivot = self.markedRows.keys()[0]
+        numRowDialog = NumRowColumnDialog("rows")
+        if numRowDialog.exec_():
+            numRows = numRowDialog.num
+            insertRowCommand = InsertRows(self, numRows, rowPivot, mode)
+            self._undoStack.beginMacro("insert rows")
+            self._undoStack.push(insertRowCommand)
+            self.clear_marked_columns_rows()
+            self._undoStack.endMacro()
 
         
 
@@ -1498,9 +1502,14 @@ class PatternCanvas(QGraphicsScene):
                         return
 
         # ok we're good to insert then 
-        insertColumnCommand = InsertColumns(self, num, pivot, mode)
-        self._undoStack.push(insertColumnCommand)
-        self.clear_marked_columns_rows()
+        numColumnDialog = NumRowColumnDialog("columns")
+        if numColumnDialog.exec_():
+            numColumns = numColumnDialog.num
+            insertColCommand = InsertColumns(self, numColumns, pivot, mode)
+            self._undoStack.beginMacro("insert columns")
+            self._undoStack.push(insertColCommand)
+            self.clear_marked_columns_rows()
+            self._undoStack.endMacro()
 
 
     
