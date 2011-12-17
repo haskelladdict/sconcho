@@ -878,7 +878,7 @@ class RowLabelTracker(object):
             labelStart = self.settings.rowLabelsShowIntervalStart.value
         elif labelIntervalState == "SHOW_EVEN_ROWS" \
              or labelIntervalState == "SHOW_ODD_ROWS":
-            counter_func = lambda x: 2*(numRows - x) - 1 + labelOffset 
+            counter_func = lambda x: 2*x - 1 + labelOffset 
             rowShift = 2
 
         labels = []
