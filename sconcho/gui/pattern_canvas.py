@@ -808,17 +808,17 @@ class PatternCanvas(QGraphicsScene):
         rowColMenu = QMenu()
 
         # row options
-        deleteRowsAction = rowColMenu.addAction("delete selected rows")
+        deleteRowsAction = rowColMenu.addAction("delete selected &rows")
         self.connect(deleteRowsAction, SIGNAL("triggered()"),
                      self.delete_marked_rows)
         if not self.markedRows:
             deleteRowsAction.setEnabled(False)
 
-        addRowAboveAction = rowColMenu.addAction("insert row above")
+        addRowAboveAction = rowColMenu.addAction("&insert row above")
         self.connect(addRowAboveAction, SIGNAL("triggered()"),
                      partial(self.insert_grid_rows, "above"))
 
-        addRowBelowAction = rowColMenu.addAction("insert row below")
+        addRowBelowAction = rowColMenu.addAction("insert row &below")
         self.connect(addRowBelowAction, SIGNAL("triggered()"),
                      partial(self.insert_grid_rows, "below"))
         if len(self.markedRows) != 1:
@@ -826,13 +826,13 @@ class PatternCanvas(QGraphicsScene):
             addRowAboveAction.setEnabled(False)
 
         rowColMenu.addSeparator()
-        addRowRepeatAction = rowColMenu.addAction("add row repeat")
+        addRowRepeatAction = rowColMenu.addAction("&add row repeat")
         self.connect(addRowRepeatAction, SIGNAL("triggered()"),
                      self.add_row_repeat)
         if (not self.markedRows) or (not self.can_add_row_repeat()):
             addRowRepeatAction.setEnabled(False)
         
-        deleteRowRepeatAction = rowColMenu.addAction("delete row repeat")
+        deleteRowRepeatAction = rowColMenu.addAction("&delete row repeat")
         self.connect(deleteRowRepeatAction, SIGNAL("triggered()"),
                      self.delete_row_repeat)
         if (not self.markedRows) or (not self.can_delete_row_repeat()):
@@ -840,7 +840,7 @@ class PatternCanvas(QGraphicsScene):
         
         rowColMenu.addSeparator()
         # column options
-        deleteColsAction = rowColMenu.addAction("delete selected columns")
+        deleteColsAction = rowColMenu.addAction("delete selected &columns")
         self.connect(deleteColsAction, SIGNAL("triggered()"),
                      self.delete_marked_columns)
         if not self.markedColumns:
