@@ -94,7 +94,8 @@ class PatternCanvas(QGraphicsScene):
         self._rowLabelOffset = self.settings.rowLabelStart.value
         self._numColumns = 10
         self.rowRepeatTracker = RowRepeatTracker()
-        self.rowLabelTracker = RowLabelTracker(self, self.settings)
+        self.rowLabelTracker = RowLabelTracker(self)
+        self.columnLabelTracker = ColumnLabelTracker(self)
         self.markedRows = {}
         self.markedColumns = {}
 
@@ -240,12 +241,18 @@ class PatternCanvas(QGraphicsScene):
 
         unitWidth = self._unitCellDim.width()
         yPos = self._unitCellDim.height() * self._numRows
-        for col in range(self._numColumns - 1, -1, -1):
-            labelText = QString(unicode(self._numColumns - col))
+        
+        columnLabelList = self.columnLabelTracker.get_labels()
+        for (col, colLabel) in enumerate(columnLabelList):
+            if not colLabel:
+                continue
+
+            labelText = QString(unicode(colLabel))
             textWidth = fontMetric.width(labelText)
             item = PatternLabelItem(labelText, isRowLabel = False)
             
-            xPos = unitWidth * col + (unitWidth * 0.6 -textWidth)
+            xPos = unitWidth * (self._numColumns - col - 1) + \
+                (unitWidth * 0.6 -textWidth)
             item.setPos(xPos, yPos)
             item.setFont(labelFont)
             item.setToolTip("Shift-Click to select whole column")

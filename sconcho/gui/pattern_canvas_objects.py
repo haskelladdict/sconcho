@@ -952,27 +952,31 @@ class NostitchVisualizer(object):
 ####################################################################
 class RowLabelTracker(object):
 
-    def __init__(self, canvas, settings):
+    def __init__(self, canvas):
 
-        self.settings = settings
+        self.settings = canvas.settings
         self.canvas = canvas
         self.rangeMap = canvas.rowRepeatTracker
 
 
 
-    def get_labels(self):
-        """ Main routine computing the current set of labels. """
+    def get_basic_parameters(self):
+        """ set up the basic parameters based on the current
+        settings.
+
+        """
 
         labelIntervalState = self.settings.rowLabelMode.value
         labelOffset = self.settings.rowLabelStart.value - 1
-        numRows = self.canvas._numRows
 
         labelInterval = 1
         labelStart = 1
         rowShift = 1
 
+        withInterval = (labelIntervalState == "SHOW_ROWS_WITH_INTERVAL")
+
         counter_func = lambda x: (x + labelOffset)
-        if labelIntervalState == "SHOW_ROWS_WITH_INTERVAL":
+        if withInterval:
             labelInterval = self.settings.rowLabelsShowInterval.value 
             labelStart = self.settings.rowLabelsShowIntervalStart.value
         elif labelIntervalState == "SHOW_EVEN_ROWS" \
@@ -980,8 +984,20 @@ class RowLabelTracker(object):
             counter_func = lambda x: 2*x - 1 + labelOffset 
             rowShift = 2
 
+        return (counter_func, labelInterval, labelStart, rowShift,
+                withInterval)
+
+
+
+    def get_labels(self):
+        """ Main routine computing the current set of labels. """
+
+        (counter_func, labelInterval, labelStart, rowShift, withInterval) =\
+            self.get_basic_parameters()
+
         labels = []
-        if labelIntervalState == "SHOW_ROWS_WITH_INTERVAL":
+        numRows = self.canvas._numRows
+        if withInterval:
             for row in range(1, numRows + 1):
                 rowEntry = counter_func(row)
                 if (rowEntry - labelStart) % labelInterval == 0 \
@@ -1022,6 +1038,65 @@ class RowLabelTracker(object):
                 else:
                     repeatShift = nextCount
                     labels.append([rowEntry + repeatShift])
+                    
+        return labels
+
+
+
+
+####################################################################
+#
+# helper class for creating the proper column labels
+#
+####################################################################
+class ColumnLabelTracker(object):
+
+    def __init__(self, canvas):
+
+        self.settings = canvas.settings
+        self.canvas = canvas
+
+
+
+    def get_basic_parameters(self):
+        """ set up the basic parameters based on the current settings. """
+
+        labelIntervalState = self.settings.columnLabelMode.value
+
+        labelInterval = 1
+        labelOffset = 0
+        labelStart = 1
+
+        withInterval = (labelIntervalState == "SHOW_COLUMNS_WITH_INTERVAL")
+
+        counter_func = lambda x: (x + labelOffset)
+        if withInterval:
+            labelInterval = self.settings.columnLabelsShowInterval.value 
+            labelStart = self.settings.columnLabelsShowIntervalStart.value
+
+        return (counter_func, labelInterval, labelStart, withInterval)
+
+
+
+    def get_labels(self):
+        """ Main routine computing the current set of column labels. """
+
+        (counter_func, labelInterval, labelStart, withInterval) =\
+            self.get_basic_parameters()
+
+        labels = []
+        numColumns = self.canvas._numColumns
+        if withInterval:
+            for column in range(1, numColumns + 1):
+                columnEntry = counter_func(column)
+                if (columnEntry - labelStart) % labelInterval == 0 \
+                and columnEntry >= labelStart:
+                    labels.append(columnEntry)
+                else:
+                    labels.append(None)
+
+        else:
+            labels = range(1, numColumns + 1)
                     
         return labels
 

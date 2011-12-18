@@ -419,7 +419,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
-           <widget class="QRadioButton" name="labelAllRowsButton_2">
+           <widget class="QRadioButton" name="labelAllColumnsButton">
             <property name="text">
              <string>label all columns</string>
             </property>
@@ -431,14 +431,14 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
-             <widget class="QRadioButton" name="showSpacedColumnsButton">
+             <widget class="QRadioButton" name="showColumnsWithIntervalButton">
               <property name="text">
                <string>show only every </string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="columnShowSpacerSpinner">
+             <widget class="QSpinBox" name="columnLabelsIntervalSpinner">
               <property name="minimum">
                <number>1</number>
               </property>
@@ -455,7 +455,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="columnShowStartSpinner">
+             <widget class="QSpinBox" name="columnLabelsIntervalStartSpinner">
               <property name="minimum">
                <number>1</number>
               </property>
