@@ -1384,6 +1384,19 @@ class EditPatternRepeatLegend(QUndoCommand):
         self.showInLegend = pathItem.hasLegend 
         self.haveLegend = self.pathItem.itemID in self.canvas.repeatLegend
 
+        # NOTE: Do not store canvas items. Just get temporaries to
+        # extract the properties. 
+        # TODO: Try to understand why we can't keep object references to
+        # legendItem or legendTextItem. If we do we end up with a situation
+        # that has null objects. I suspect that some things don't get
+        # garbage collected properly if we hold on to them.
+        if self.haveLegend:
+            (legendItem, legendTextItem) = \
+                self.canvas.repeatLegend[self.pathItem.itemID]
+            self.legendText = legendTextItem.toPlainText()
+            self.itemPos = legendItem.scenePos()
+            self.textPos = legendTextItem.scenePos()
+            self.oldColor = legendItem.color
 
 
     def redo(self):
@@ -1407,15 +1420,18 @@ class EditPatternRepeatLegend(QUndoCommand):
         if self.haveLegend:
             (self.legendItem, self.legendTextItem) = \
                 self.canvas.repeatLegend[self.pathItem.itemID]
-            self.oldColor = self.legendItem.color
 
             if self.showInLegend:
                 self.legendItem.color = self.newColor
                 self.legendItem.update()
             else:
-                self.pathItem.legendText = self.legendTextItem.toPlainText()
-                self.pathItem.legendItemPos = self.legendItem.scenePos()
-                self.pathItem.legendTextPos = self.legendTextItem.scenePos()
+                self.oldLegendText = self.pathItem.legendText
+                self.oldLegendItemPos = self.pathItem.legendItemPos
+                self.oldLegendTextPos = self.pathItem.legendTextPos
+                self.pathItem.legendText = self.legendText
+                self.pathItem.legendItemPos = self.itemPos
+                self.pathItem.legendTextPos = self.textPos
+
                 self.canvas.removeItem(self.legendItem)
                 self.canvas.removeItem(self.legendTextItem)
                 del self.canvas.repeatLegend[self.pathItem.itemID]
@@ -1449,6 +1465,9 @@ class EditPatternRepeatLegend(QUndoCommand):
                 self.canvas.addItem(self.legendTextItem)
                 self.canvas.repeatLegend[self.pathItem.itemID] = \
                     (self.legendItem, self.legendTextItem)
+                self.pathItem.legendText = self.oldLegendText
+                self.pathItem.legendItemPos = self.oldLegendItemPos
+                self.pathItem.legendTextPos = self.oldLegendTextPos 
         else:
             if self.showInLegend:
                 self.canvas.removeItem(self.legendItem)

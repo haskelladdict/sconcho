@@ -1873,6 +1873,8 @@ class PatternCanvas(QGraphicsScene):
         legendFont = self.settings.legendFont.value
         for item in self.gridLegend.values():
             legendItem_text(item).setFont(legendFont)
+        for item in self.repeatLegend.values():
+            repeatLegendItem_text(item).setFont(legendFont)
 
 
 
