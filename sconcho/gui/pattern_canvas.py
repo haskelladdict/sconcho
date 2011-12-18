@@ -59,25 +59,7 @@ from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
 from sconcho.gui.row_repeat_number_dialog import RowRepeatNumDialog
 from sconcho.gui.num_row_column_dialog import NumRowColumnDialog
 from sconcho.util.misc import errorLogger
-from sconcho.gui.undo_framework import (PasteCells, 
-                                        InsertRows, 
-                                        DeleteRows,
-                                        InsertColumns, 
-                                        DeleteColumns,
-                                        ActivateSymbol, 
-                                        ActivateColor, 
-                                        PaintCells, 
-                                        MoveCanvasItem, 
-                                        MarkRows,
-                                        UnmarkRows,
-                                        MarkColumns,
-                                        UnmarkColumns,
-                                        AddPatternRepeat,
-                                        AddRowRepeat,
-                                        DeleteRowRepeat,
-                                        EditPatternRepeat, 
-                                        DeletePatternRepeat,
-                                        ColorSelectedCells) 
+from sconcho.gui.undo_framework import *
 from sconcho.gui.pattern_canvas_objects import *
 import sconcho.util.messages as msg
 
@@ -121,6 +103,7 @@ class PatternCanvas(QGraphicsScene):
 
         self._textLabels = []
         self.gridLegend = {}
+        self.repeatLegend = {}
 
         self.set_up_main_grid()
         self.set_up_labels()
@@ -416,6 +399,22 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def _get_legend_y_coordinate_for_placement(self):
+        """ Computes a conservative good value of the y
+        coordinate for placing the next legend item. 
+
+        """
+
+        legendYmax = compute_max_legend_y_coordinate(self.gridLegend,
+                                                     self.repeatLegend)
+        canvasYmax = (self._numRows + 1) * self._unitCellDim.height()
+
+        yMax = max(legendYmax, canvasYmax)
+
+        return yMax
+        
+
+
     def _add_legend_item(self, symbol, color):
         """ This adds a new legend entry including an PatternLegendItem
         and a textual description. This function also attemps to be
@@ -423,10 +422,7 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
-        legendYmax = compute_max_legend_y_coordinate(self.gridLegend)
-        canvasYmax = (self._numRows + 1) * self._unitCellDim.height()
-
-        yMax = max(legendYmax, canvasYmax)
+        yMax = self._get_legend_y_coordinate_for_placement()
 
         # add the symbol part of the legend
         width  = int(symbol["width"])
@@ -1025,8 +1021,13 @@ class PatternCanvas(QGraphicsScene):
                 lines.append(line)
 
         repeatItem = PatternRepeatItem(lines)
+
+        self._undoStack.beginMacro("add pattern repeat")
         patternRepeatCommand = AddPatternRepeat(self, repeatItem)
         self._undoStack.push(patternRepeatCommand)
+        patternLegendCommand = AddPatternRepeatLegend(self, repeatItem)
+        self._undoStack.push(patternLegendCommand)
+        self._undoStack.endMacro()
         
 
 
@@ -1034,18 +1035,30 @@ class PatternCanvas(QGraphicsScene):
         """ Edit the provided pattern repeat item. """
 
         patternRepeat.highlight()
-        dialog = PatternRepeatDialog(patternRepeat.line_width,
-                                     patternRepeat.line_color)
+        dialog = PatternRepeatDialog(patternRepeat.width,
+                                     patternRepeat.color,
+                                     patternRepeat.hasLegend)
         status = dialog.exec_()
         if status > 0:
+            self._undoStack.beginMacro("edit pattern repeat")
             patternRepeatCommand = EditPatternRepeat(patternRepeat,
                                                      dialog.color,
-                                                     dialog.width)
+                                                     dialog.width,
+                                                     dialog.showInLegend)
             self._undoStack.push(patternRepeatCommand)
+            patternLegendCommand = EditPatternRepeatLegend(self, 
+                                                           patternRepeat)
+            self._undoStack.push(patternLegendCommand) 
+            self._undoStack.endMacro()
         elif status < 0:
+            self._undoStack.beginMacro("delete pattern repeat")
             patternRepeatCommand = DeletePatternRepeat(self, patternRepeat)
             self._undoStack.push(patternRepeatCommand)
-            
+            patternLegendCommand = DeletePatternRepeatLegend(self,
+                                                             patternRepeat)
+            self._undoStack.push(patternLegendCommand)
+            self._undoStack.endMacro()
+
         patternRepeat.unhighlight()
 
 
@@ -1839,12 +1852,16 @@ class PatternCanvas(QGraphicsScene):
             for item in self.gridLegend.values():
                 legendItem_symbol(item).show()
                 legendItem_text(item).show()
-
+            for item in self.repeatLegend.values():
+                repeatLegendItem_symbol(item).show()
+                repeatLegendItem_text(item).show()
         else:
             for item in self.gridLegend.values():
                 legendItem_symbol(item).hide()
                 legendItem_text(item).hide()
-
+            for item in self.repeatLegend.values():
+                repeatLegendItem_symbol(item).hide()
+                repeatLegendItem_text(item).hide()
 
 
     def legend_font_changed(self):

@@ -452,9 +452,7 @@ class PatternLabelItem(QGraphicsTextItem):
 
 #########################################################
 ## 
-## class for managing a single pattern grid label
-## (this does nothing spiffy at all, we just need
-## it to identify the item on the canvas)
+## class for managing a pattern repeat item
 ##
 #########################################################
 class PatternRepeatItem(QGraphicsItemGroup):
@@ -468,12 +466,22 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
     Type = 70000 + 5
 
-    def __init__(self, lines, width = None, color = None, parent = None):
+    def __init__(self, lines, hasLegend = Qt.Checked, width = None, 
+                 color = None, parent = None):
 
         super(PatternRepeatItem, self).__init__(parent)
 
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setZValue(1)
+
+        # we keep track of some of our legends properties
+        self.hasLegend = hasLegend
+        self.legendText = QString("pattern repeat")
+        self.legendItemPos = QPointF()
+        self.legendTextPos = QPointF()
+
+        # we use this ID for tracking our legend entry
+        self.itemID = uuid.uuid4()
 
         # set up group
         self.lineElements = []
@@ -540,8 +548,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
 
     def unhighlight(self):
-        """ Revert hightlighting of cells and go back to normal
-        brush.
+        """ Revert hightlighting of cells and go back to normal brush.
 
         """
 
@@ -549,23 +556,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
 
 
-    @property
-    def line_color(self):
-        """ Returns a the current line color. """
-
-        return self.color
-        
-
-
-    @property
-    def line_width(self):
-        """ Returns a the current line width. """
-
-        return self.width
-
-
-
-    def set_properties(self, color, width):
+    def set_properties(self, color, width, legendStatus):
         """ Sets the color and width to the requested values.
 
         NOTE: the fact that we call paint_elements in addition to
@@ -575,6 +566,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         self.color = color
         self.width = width
+        self.hasLegend = legendStatus
         self.paint_elements()
 
          
@@ -766,6 +758,113 @@ class MarkColumnItem(QGraphicsRectItem):
         """ Return the marked column """
 
         return self.markedColumn
+
+
+
+#########################################################
+## 
+## class for managing the legend item corresponding
+## to pattern repeat
+##
+#########################################################
+class RepeatLegendItem(QGraphicsRectItem):
+
+    Type = 70000 + 9
+
+
+    def __init__(self, color, parent = None):
+
+        super(RepeatLegendItem, self).__init__(parent)
+
+        # NOTE: need this distinction for cache mode based on
+        # the Qt version otherwise rendering is broken
+        if QT_VERSION < 0x040703:
+            self.setCacheMode(QGraphicsItem.NoCache)
+        else:
+            self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+
+        self.setZValue(1)
+        self.setFlag(QGraphicsItem.ItemIsMovable)
+
+        self._position = self.pos()
+
+        self.penColor = color
+        self.itemHeight = 20
+        self.itemWidth = 40
+
+        self._pen = QPen()
+        self._pen.setWidthF(3.0)
+        self._pen.setColor(self.penColor)
+        self.setPen(self._pen)
+
+        self.setRect(0, 0, self.itemWidth, self.itemHeight)
+
+
+
+    @property
+    def height(self):
+        
+        return self.itemHeight
+
+
+
+    @property
+    def width(self):
+        
+        return self.itemWidth
+
+
+
+    @property
+    def color(self):
+        
+        return self.penColor
+
+
+
+    @color.setter
+    def color(self, newColor):
+        
+        self.penColor = newColor
+        self._pen.setColor(self.penColor)
+        self.setPen(self._pen)
+
+
+
+    def mousePressEvent(self, event):
+        """ We reimplement this function to store the position of
+        the item when a user issues a mouse press.
+
+        """
+
+        self._position = self.pos()
+
+        if (event.modifiers() & Qt.ControlModifier):
+            QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
+        else:
+            event.ignore()
+
+        return QGraphicsRectItem.mousePressEvent(self, event)
+
+
+
+    def mouseReleaseEvent(self, event):
+        """ We reimplement this function to check if its position
+        has changed since the last mouse click. If yes we
+        let the canvas know so it can store the action as
+        a Redo/Undo event.
+
+        """
+
+        QApplication.restoreOverrideCursor()
+
+        # this is needed for undo/redo
+        if self._position != self.pos():
+           self.scene().canvas_item_position_changed(self, self._position,
+                                                     self.pos()) 
+
+        return QGraphicsRectItem.mouseReleaseEvent(self, event)
+
 
 
 

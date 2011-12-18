@@ -44,7 +44,9 @@ from sconcho.util.canvas import (get_item_id,
 
 from sconcho.util.misc import (errorLogger)
 from sconcho.gui.pattern_canvas_objects import (MarkRowItem,
-                                                MarkColumnItem) 
+                                                MarkColumnItem,
+                                                RepeatLegendItem,
+                                                PatternLegendText) 
 
 
 ###########################################################################
@@ -1256,6 +1258,208 @@ class MoveCanvasItem(QUndoCommand):
 
 
 
+class AddPatternRepeatLegend(QUndoCommand):
+    """ This class encapsulates the creation of a legend for a
+    pattern repeat item the canvas.
+
+    """
+    
+    def __init__(self, canvas, pathItem, parent = None):
+
+        super(AddPatternRepeatLegend, self).__init__(parent)
+
+        self.canvas = canvas
+        self.pathItem = pathItem 
+        self.legendText = self.pathItem.legendText
+
+        self.legendItem = RepeatLegendItem(self.pathItem.color)
+        self.legendTextItem = PatternLegendText(self.legendText)
+
+        yCoord = self.canvas._get_legend_y_coordinate_for_placement()
+        self.itemPos = QPointF(0, yCoord + self.legendItem.height + 30)
+        self.textPos = QPointF(self.legendItem.width + 30,                 
+                               yCoord + self.legendItem.height + 20)
+
+
+
+    def redo(self):
+
+        self.canvas.addItem(self.legendItem)
+        self.legendItem.setPos(self.itemPos)
+        self.legendItem.update()
+        
+        self.canvas.addItem(self.legendTextItem)
+        self.legendTextItem.setPos(self.textPos)
+        self.legendTextItem.setFont(self.canvas.settings.legendFont.value)
+        self.legendTextItem.update()
+        
+        self.canvas.repeatLegend[self.pathItem.itemID] = \
+            (self.legendItem, self.legendTextItem)
+        
+         
+
+    def undo(self):
+
+        self.itemPos = self.legendItem.scenePos()
+        self.textPos = self.legendTextItem.scenePos()
+        self.legendText = self.legendTextItem.toPlainText()
+
+        self.canvas.removeItem(self.legendItem)
+        self.canvas.removeItem(self.legendTextItem)
+        del self.canvas.repeatLegend[self.pathItem.itemID]
+
+
+
+
+class DeletePatternRepeatLegend(QUndoCommand):
+    """ This class encapsulates the deletion of a legend for a
+    pattern repeat item the canvas.
+
+    """
+    
+    def __init__(self, canvas, pathItem, parent = None):
+
+        super(DeletePatternRepeatLegend, self).__init__(parent)
+
+        self.canvas = canvas
+        self.pathItem = pathItem 
+
+        if self.pathItem.hasLegend:
+            (self.legendItem, self.legendTextItem) = \
+                self.canvas.repeatLegend[self.pathItem.itemID]
+        else:
+            self.legendItem = None
+            self.legendTextItem = None
+
+
+    def redo(self):
+
+        if self.pathItem.hasLegend:
+        
+            # store position and content
+            self.itemPos = self.legendItem.scenePos()
+            self.textPos = self.legendTextItem.scenePos()
+            self.legendText = self.legendTextItem.toPlainText()
+
+            self.canvas.removeItem(self.legendItem)
+            self.canvas.removeItem(self.legendTextItem)
+            del self.canvas.repeatLegend[self.pathItem.itemID]
+        
+         
+
+    def undo(self):
+
+        if self.pathItem.hasLegend:
+
+            # restore items at proper position and text
+            self.canvas.addItem(self.legendItem)
+            self.legendItem.setPos(self.itemPos)
+            self.legendItem.update()
+
+            self.canvas.addItem(self.legendTextItem)
+            self.legendTextItem.setPos(self.textPos)
+            self.legendTextItem.setFont(self.canvas.settings.legendFont.value)
+            self.legendTextItem.update()
+
+            self.canvas.repeatLegend[self.pathItem.itemID] = \
+                (self.legendItem, self.legendTextItem)
+
+
+
+
+
+class EditPatternRepeatLegend(QUndoCommand):
+    """ This class encapsulates the editing of a legend for a
+    pattern repeat item the canvas.
+
+    """
+    
+    def __init__(self, canvas, pathItem, parent = None):
+
+        super(EditPatternRepeatLegend, self).__init__(parent)
+
+        self.canvas = canvas
+        self.pathItem = pathItem 
+        self.newColor = pathItem.color
+        self.showInLegend = pathItem.hasLegend 
+        self.haveLegend = self.pathItem.itemID in self.canvas.repeatLegend
+
+
+
+    def redo(self):
+        """ redoing when editing a pattern repeat legend boils
+        down to three cases:
+
+        1) we don't want to show a legend but currently have one:
+           store values of legend and then remove it. Note: We have
+           to store positions and text within the PatternRepeatItem
+           itself since these values won't persist between
+           EditPatternRepeatLegend actions
+
+        2) we don't want to show a legend and don't have one:
+           nothing to do
+
+        3) we want to show a legend and have one:
+           update the legend color, that's it
+
+        """
+          
+        if self.haveLegend:
+            (self.legendItem, self.legendTextItem) = \
+                self.canvas.repeatLegend[self.pathItem.itemID]
+            self.oldColor = self.legendItem.color
+
+            if self.showInLegend:
+                self.legendItem.color = self.newColor
+                self.legendItem.update()
+            else:
+                self.pathItem.legendText = self.legendTextItem.toPlainText()
+                self.pathItem.legendItemPos = self.legendItem.scenePos()
+                self.pathItem.legendTextPos = self.legendTextItem.scenePos()
+                self.canvas.removeItem(self.legendItem)
+                self.canvas.removeItem(self.legendTextItem)
+                del self.canvas.repeatLegend[self.pathItem.itemID]
+        else:
+            if self.showInLegend:
+                self.legendItem = RepeatLegendItem(self.newColor)
+                self.canvas.addItem(self.legendItem)
+                self.legendItem.setPos(self.pathItem.legendItemPos)
+
+                self.legendTextItem = \
+                    PatternLegendText(self.pathItem.legendText)
+                self.canvas.addItem(self.legendTextItem)
+                self.legendTextItem.setPos(self.pathItem.legendTextPos)
+                self.legendTextItem.setFont(self.canvas.settings.legendFont.value)
+                self.canvas.repeatLegend[self.pathItem.itemID] = \
+                    (self.legendItem, self.legendTextItem)
+
+
+
+    def undo(self):
+        """ See redo for an explanation of the possible actions. """
+
+
+        if self.haveLegend:
+            if self.showInLegend:
+                self.legendItem.color = self.oldColor
+                self.legendItem.update()
+        
+            else:
+                self.canvas.addItem(self.legendItem)
+                self.canvas.addItem(self.legendTextItem)
+                self.canvas.repeatLegend[self.pathItem.itemID] = \
+                    (self.legendItem, self.legendTextItem)
+        else:
+            if self.showInLegend:
+                self.canvas.removeItem(self.legendItem)
+                del self.legendItem
+                self.canvas.removeItem(self.legendTextItem)
+                del self.legendTextItem
+                del self.canvas.repeatLegend[self.pathItem.itemID]
+
+
+
+
 class AddPatternRepeat(QUndoCommand):
     """ This class encapsulates the creation of a pattern repeat
     item on the canvas.
@@ -1284,9 +1488,9 @@ class AddPatternRepeat(QUndoCommand):
                 if itemID in self.canvas._selectedCells:
                     del self.canvas._selectedCells[itemID]
                 else:
-                    errorString = ("AddPatternRepeat.redo: trying to delete "
+                    errString = ("AddPatternRepeat.redo: trying to delete "
                                    "invalid selected cell.")
-                    errorLogger.write(errorString)
+                    errorLogger.write(errString)
 
                 item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:
@@ -1310,6 +1514,7 @@ class AddPatternRepeat(QUndoCommand):
          
         
 
+
 class EditPatternRepeat(QUndoCommand):
     """ This class encapsulates the editing of a pattern repeat
     item on the canvas.
@@ -1317,29 +1522,34 @@ class EditPatternRepeat(QUndoCommand):
     """
 
     
-    def __init__(self, patternRepeat, newColor, newWidth, parent = None):
+    def __init__(self, patternRepeat, newColor, newWidth, 
+                 newLegendStatus, parent = None):
 
         super(EditPatternRepeat, self).__init__(parent)
 
         self.patternRepeat = patternRepeat
         self.oldColor = patternRepeat.color
         self.oldWidth = patternRepeat.width
+        self.oldLegendStatus = patternRepeat.hasLegend
         self.newColor = newColor
         self.newWidth = newWidth
+        self.newLegendStatus = newLegendStatus
 
 
 
     def redo(self):
         """ The redo action. """
 
-        self.patternRepeat.set_properties(self.newColor, self.newWidth)
+        self.patternRepeat.set_properties(self.newColor, self.newWidth,
+                                          self.newLegendStatus)
 
 
 
     def undo(self):
         """ The undo action. """
 
-        self.patternRepeat.set_properties(self.oldColor, self.oldWidth)
+        self.patternRepeat.set_properties(self.oldColor, self.oldWidth,
+                                          self.oldLegendStatus)
 
 
 

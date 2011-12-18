@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/pattern_repeat_box_dialog.ui'
 #
-# Created: Sat Dec 17 14:12:21 2011
+# Created: Sat Dec 17 20:56:52 2011
 #      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -47,6 +47,11 @@ class Ui_PatternRepeatDialog(object):
         self.label_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
+        self.legendChecker = QtGui.QCheckBox(self.groupBox)
+        self.legendChecker.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Show in Legend", None, QtGui.QApplication.UnicodeUTF8))
+        self.legendChecker.setChecked(True)
+        self.legendChecker.setObjectName(_fromUtf8("legendChecker"))
+        self.gridLayout.addWidget(self.legendChecker, 2, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.verticalLayout_2.addWidget(self.groupBox)
         spacerItem = QtGui.QSpacerItem(20, 64, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)

@@ -202,7 +202,7 @@ def shift_selection_horizontally(selection, pivot, columnShift):
 
 
 
-def compute_max_legend_y_coordinate(gridLegend):
+def compute_max_legend_y_coordinate(gridLegend, repeatLegend):
     """ Given the current list of existing legend items
     figure out the largest y coordinate among them all.
 
@@ -212,6 +212,10 @@ def compute_max_legend_y_coordinate(gridLegend):
     for item in gridLegend.values():
         yList.append(legendItem_symbol(item).scenePos().y())
         yList.append(legendItem_text(item).scenePos().y())
+
+    for item in repeatLegend.values():
+        yList.append(repeatLegendItem_symbol(item).scenePos().y())
+        yList.append(repeatLegendItem_text(item).scenePos().y())
 
     return max(yList)
 
@@ -255,6 +259,26 @@ def legendItem_text(item):
     """
 
     return item[2]
+
+
+
+def repeatLegendItem_symbol(item):
+    """ Convenience wrapper returning the current symbol for a
+    particular repeat legend item.
+
+    """
+
+    return item[0]
+
+
+
+def repeatLegendItem_text(item):
+    """ Convenience wrapper returning the current description text
+    for a particular legend item.
+
+    """
+
+    return item[1]
 
 
 
