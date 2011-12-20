@@ -466,8 +466,8 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
     Type = 70000 + 5
 
-    def __init__(self, lines, hasLegend = Qt.Checked, width = None, 
-                 color = None, parent = None):
+    def __init__(self, lines,  width = None, color = None, 
+                 hasLegend = True, parent = None):
 
         super(PatternRepeatItem, self).__init__(parent)
 
@@ -566,7 +566,10 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         self.color = color
         self.width = width
-        self.hasLegend = legendStatus
+        if legendStatus == Qt.Checked:
+            self.hasLegend = True
+        else:
+            self.hasLegend = False
         self.paint_elements()
 
          

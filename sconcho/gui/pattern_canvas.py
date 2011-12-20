@@ -1042,9 +1042,14 @@ class PatternCanvas(QGraphicsScene):
         """ Edit the provided pattern repeat item. """
 
         patternRepeat.highlight()
+        if patternRepeat.hasLegend:
+            legendCheckStatus = Qt.Checked
+        else:
+            legendCheckStatus = Qt.Unchecked
+        
         dialog = PatternRepeatDialog(patternRepeat.width,
                                      patternRepeat.color,
-                                     patternRepeat.hasLegend)
+                                     legendCheckStatus)
         status = dialog.exec_()
         if status > 0:
             self._undoStack.beginMacro("edit pattern repeat")
@@ -1724,13 +1729,26 @@ class PatternCanvas(QGraphicsScene):
         
         repeatItem = PatternRepeatItem(itemInfo["lines"],
                                        itemInfo["width"],
-                                       itemInfo["color"])
+                                       itemInfo["color"],
+                                       itemInfo["hasLegend"])
         self.addItem(repeatItem)
+
+        # for items without an existing legend initialize the 
+        # legend coordinates to a reasonable value
+        # FIXME: This appears a little hackish - can we do
+        #        better? Width and height of the repeat legend
+        #        item is currently hardcoded?
+        if not itemInfo["hasLegend"]:
+            yCoord = self._get_legend_y_coordinate_for_placement()
+            repeatItem.legendItemPos = QPointF(0,yCoord + 50)
+            repeatItem.legendTextPos = QPointF(70, yCoord + 40)
+
         repeatItem.setPos(itemInfo["position"])
 
 
 
-    def _load_pattern_grid_items(self, patternGridItemInfo, knittingSymbols):
+    def _load_pattern_grid_items(self, patternGridItemInfo, 
+                                 knittingSymbols):
         """ Re-create all patternGridItems based on loaded
         sconcho project.
 

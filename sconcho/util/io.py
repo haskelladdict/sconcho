@@ -37,9 +37,9 @@ from PyQt4.QtSvg import QSvgGenerator
 
 from sconcho.gui.pattern_canvas_objects import (PatternGridItem, 
                                                 PatternLegendItem,
-                                        #legendItem_symbol, legendItem_text,
                                                 PatternRepeatItem, 
                                                 NostitchVisualizer)
+from sconcho.util.canvas import (legendItem_symbol, legendItem_text)
 from sconcho.util.misc import wait_cursor
 from sconcho.util.exceptions import PatternReadError
 import sconcho.util.messages as msg
@@ -108,8 +108,9 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
 
     # prepare data structures
     patternGridItems = get_patternGridItems(canvas)
-    legendItems      = canvas.gridLegend.values()
-    patternRepeats   = get_patternRepeats(canvas)
+    legendItems = canvas.gridLegend.values()
+    patternRepeats = get_patternRepeats(canvas)
+    repeatLegends = canvas.repeatLegend
 
     status = None
     handle = None
@@ -286,7 +287,8 @@ def write_patternRepeats(stream, repeats):
             stream << point
 
         stream << repeat.pos()
-        stream.writeInt32(repeat.width)
+        stream.writeInt16(0)
+        stream.writeInt16(repeat.width)
         stream << repeat.color
 
 
@@ -550,20 +552,21 @@ def read_patternRepeats(stream, numRepeats):
             stream >> point2
             
             lines.append(QLineF(point1, point2))
-                                
-            
 
         # read width and color
         position = QPointF()
         stream >> position
-        width = stream.readInt32()
+        legendID = stream.readInt16()
+        width = stream.readInt16()
         color = QColor()
         stream >> color 
         
-        newItem = { "lines"    : lines,
-                    "position" : position,
-                    "width"    : width,
-                    "color"    : color }
+        print(width, color)
+        newItem = { "lines"     : lines,
+                    "position"  : position,
+                    "width"     : width,
+                    "color"     : color,
+                    "hasLegend" : False}
  
         patternRepeats.append(newItem)
 
