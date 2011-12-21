@@ -1055,13 +1055,15 @@ class PatternCanvas(QGraphicsScene):
             self._undoStack.beginMacro("edit pattern repeat")
             patternRepeatCommand = EditPatternRepeat(patternRepeat,
                                                      dialog.color,
-                                                     dialog.width,
-                                                     dialog.showInLegend)
+                                                     dialog.width)
+                                                     #dialog.showInLegend)
             self._undoStack.push(patternRepeatCommand)
             patternLegendCommand = EditPatternRepeatLegend(self, 
-                                                           patternRepeat)
+                                                           patternRepeat,
+                                                           dialog.showInLegend)
             self._undoStack.push(patternLegendCommand) 
             self._undoStack.endMacro()
+            self.emit(SIGNAL("scene changed"))
         elif status < 0:
             self._undoStack.beginMacro("delete pattern repeat")
             patternRepeatCommand = DeletePatternRepeat(self, patternRepeat)
@@ -1070,6 +1072,7 @@ class PatternCanvas(QGraphicsScene):
                                                              patternRepeat)
             self._undoStack.push(patternLegendCommand)
             self._undoStack.endMacro()
+            self.emit(SIGNAL("scene changed"))
 
         patternRepeat.unhighlight()
 
@@ -1652,6 +1655,7 @@ class PatternCanvas(QGraphicsScene):
 
         # clear all caches
         self.gridLegend.clear()
+        self.repeatLegend.clear()
         self._selectedCells = {}                                          
         self._undoStack.clear()
         self._copySelection = {}
@@ -1677,7 +1681,8 @@ class PatternCanvas(QGraphicsScene):
 
     @wait_cursor
     def load_previous_pattern(self, knittingSymbols, patternGridItemInfo,
-                              legendItemInfo, patternRepeats):
+                              legendItemInfo, patternRepeats, 
+                              repeatLegends):
         """ Clear curent canvas and establishes a new canvas
         based on the passed canvas items. Returns True on success
         and False otherwise.
@@ -1710,7 +1715,11 @@ class PatternCanvas(QGraphicsScene):
             arrange_label_item(self.gridLegend, *entry)
 
         for entry in patternRepeats:
-            self._load_patternRepeatItem(entry)
+
+            # also retrieve the proper legend
+            repeatID = entry["legendID"]
+            legendEntry = repeatLegends[repeatID]
+            self._load_patternRepeatItem(entry, legendEntry)
         
 
         # need to clear our caches, otherwise we'll try 
@@ -1724,27 +1733,31 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def _load_patternRepeatItem(self, itemInfo):
+    def _load_patternRepeatItem(self, itemInfo, legendInfo):
         """ Recreates a pattern repeat item based on itemInfo. """
         
         repeatItem = PatternRepeatItem(itemInfo["lines"],
                                        itemInfo["width"],
                                        itemInfo["color"],
-                                       itemInfo["hasLegend"])
+                                       legendInfo["isVisible"])
         self.addItem(repeatItem)
-
-        # for items without an existing legend initialize the 
-        # legend coordinates to a reasonable value
-        # FIXME: This appears a little hackish - can we do
-        #        better? Width and height of the repeat legend
-        #        item is currently hardcoded?
-        if not itemInfo["hasLegend"]:
-            yCoord = self._get_legend_y_coordinate_for_placement()
-            repeatItem.legendItemPos = QPointF(0,yCoord + 50)
-            repeatItem.legendTextPos = QPointF(70, yCoord + 40)
-
         repeatItem.setPos(itemInfo["position"])
 
+        # add the legend entry
+        legendItem = RepeatLegendItem(itemInfo["color"])
+        legendTextItem = PatternLegendText(legendInfo["itemText"])
+        legendItem.setPos(legendInfo["itemPos"])
+        legendTextItem.setPos(legendInfo["textItemPos"])
+
+        if not legendInfo["isVisible"]:
+            legendItem.hide()
+            legendTextItem.hide()
+
+        self.addItem(legendItem)
+        self.addItem(legendTextItem)
+
+        self.repeatLegend[repeatItem.itemID] = (legendItem, legendTextItem)
+            
 
 
     def _load_pattern_grid_items(self, patternGridItemInfo, 

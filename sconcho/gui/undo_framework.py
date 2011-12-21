@@ -1270,7 +1270,7 @@ class AddPatternRepeatLegend(QUndoCommand):
 
         self.canvas = canvas
         self.pathItem = pathItem 
-        self.legendText = self.pathItem.legendText
+        self.legendText = QString("pattern repeat")
 
         self.legendItem = RepeatLegendItem(self.pathItem.color)
         self.legendTextItem = PatternLegendText(self.legendText)
@@ -1279,7 +1279,7 @@ class AddPatternRepeatLegend(QUndoCommand):
         self.itemPos = QPointF(0, yCoord + self.legendItem.height + 30)
         self.textPos = QPointF(self.legendItem.width + 30,                 
                                yCoord + self.legendItem.height + 20)
-
+        
 
 
     def redo(self):
@@ -1324,45 +1324,39 @@ class DeletePatternRepeatLegend(QUndoCommand):
         self.canvas = canvas
         self.pathItem = pathItem 
 
-        if self.pathItem.hasLegend:
-            (self.legendItem, self.legendTextItem) = \
+        #if self.pathItem.hasLegend:
+        (self.legendItem, self.legendTextItem) = \
                 self.canvas.repeatLegend[self.pathItem.itemID]
-        else:
-            self.legendItem = None
-            self.legendTextItem = None
+
 
 
     def redo(self):
 
-        if self.pathItem.hasLegend:
-        
-            # store position and content
-            self.itemPos = self.legendItem.scenePos()
-            self.textPos = self.legendTextItem.scenePos()
-            self.legendText = self.legendTextItem.toPlainText()
+        # store position and content
+        self.itemPos = self.legendItem.scenePos()
+        self.textPos = self.legendTextItem.scenePos()
+        self.legendText = self.legendTextItem.toPlainText()
 
-            self.canvas.removeItem(self.legendItem)
-            self.canvas.removeItem(self.legendTextItem)
-            del self.canvas.repeatLegend[self.pathItem.itemID]
+        self.canvas.removeItem(self.legendItem)
+        self.canvas.removeItem(self.legendTextItem)
+        del self.canvas.repeatLegend[self.pathItem.itemID]
         
          
 
     def undo(self):
 
-        if self.pathItem.hasLegend:
+        # restore items at proper position and text
+        self.canvas.addItem(self.legendItem)
+        self.legendItem.setPos(self.itemPos)
+        self.legendItem.update()
 
-            # restore items at proper position and text
-            self.canvas.addItem(self.legendItem)
-            self.legendItem.setPos(self.itemPos)
-            self.legendItem.update()
+        self.canvas.addItem(self.legendTextItem)
+        self.legendTextItem.setPos(self.textPos)
+        self.legendTextItem.setFont(self.canvas.settings.legendFont.value)
+        self.legendTextItem.update()
 
-            self.canvas.addItem(self.legendTextItem)
-            self.legendTextItem.setPos(self.textPos)
-            self.legendTextItem.setFont(self.canvas.settings.legendFont.value)
-            self.legendTextItem.update()
-
-            self.canvas.repeatLegend[self.pathItem.itemID] = \
-                (self.legendItem, self.legendTextItem)
+        self.canvas.repeatLegend[self.pathItem.itemID] = \
+            (self.legendItem, self.legendTextItem)
 
 
 
@@ -1374,29 +1368,19 @@ class EditPatternRepeatLegend(QUndoCommand):
 
     """
     
-    def __init__(self, canvas, pathItem, parent = None):
+    def __init__(self, canvas, pathItem, legendVisibility, parent = None):
 
         super(EditPatternRepeatLegend, self).__init__(parent)
 
         self.canvas = canvas
         self.pathItem = pathItem 
         self.newColor = pathItem.color
-        self.showInLegend = pathItem.hasLegend 
-        self.haveLegend = self.pathItem.itemID in self.canvas.repeatLegend
+        self.shownInLegend = pathItem.hasLegend 
+        if legendVisibility == Qt.Checked:
+            self.newLegendVisibility = True
+        else:
+            self.newLegendVisibility = False
 
-        # NOTE: Do not store canvas items. Just get temporaries to
-        # extract the properties. 
-        # TODO: Try to understand why we can't keep object references to
-        # legendItem or legendTextItem. If we do we end up with a situation
-        # that has null objects. I suspect that some things don't get
-        # garbage collected properly if we hold on to them.
-        if self.haveLegend:
-            (legendItem, legendTextItem) = \
-                self.canvas.repeatLegend[self.pathItem.itemID]
-            self.legendText = legendTextItem.toPlainText()
-            self.itemPos = legendItem.scenePos()
-            self.textPos = legendTextItem.scenePos()
-            self.oldColor = legendItem.color
 
 
     def redo(self):
@@ -1416,65 +1400,40 @@ class EditPatternRepeatLegend(QUndoCommand):
            update the legend color, that's it
 
         """
-          
-        if self.haveLegend:
-            (self.legendItem, self.legendTextItem) = \
-                self.canvas.repeatLegend[self.pathItem.itemID]
 
-            if self.showInLegend:
-                self.legendItem.color = self.newColor
-                self.legendItem.update()
-            else:
-                self.oldLegendText = self.pathItem.legendText
-                self.oldLegendItemPos = self.pathItem.legendItemPos
-                self.oldLegendTextPos = self.pathItem.legendTextPos
-                self.pathItem.legendText = self.legendText
-                self.pathItem.legendItemPos = self.itemPos
-                self.pathItem.legendTextPos = self.textPos
+        (self.legendItem, self.legendTextItem) = \
+            self.canvas.repeatLegend[self.pathItem.itemID]
 
-                self.canvas.removeItem(self.legendItem)
-                self.canvas.removeItem(self.legendTextItem)
-                del self.canvas.repeatLegend[self.pathItem.itemID]
-        else:
-            if self.showInLegend:
-                self.legendItem = RepeatLegendItem(self.newColor)
-                self.canvas.addItem(self.legendItem)
-                self.legendItem.setPos(self.pathItem.legendItemPos)
+        self.oldColor = self.legendItem.color
+        self.legendItem.color = self.newColor                      
+        self.legendItem.update()
 
-                self.legendTextItem = \
-                    PatternLegendText(self.pathItem.legendText)
-                self.canvas.addItem(self.legendTextItem)
-                self.legendTextItem.setPos(self.pathItem.legendTextPos)
-                self.legendTextItem.setFont(self.canvas.settings.legendFont.value)
-                self.canvas.repeatLegend[self.pathItem.itemID] = \
-                    (self.legendItem, self.legendTextItem)
-
-
+        if self.shownInLegend and not self.newLegendVisibility:
+            self.legendItem.hide()
+            self.legendTextItem.hide()
+            self.pathItem.hasLegend = False
+        elif not self.shownInLegend and self.newLegendVisibility:
+            self.legendItem.show()
+            self.legendTextItem.show()
+            self.pathItem.hasLegend = True
+            
+        
 
     def undo(self):
         """ See redo for an explanation of the possible actions. """
 
 
-        if self.haveLegend:
-            if self.showInLegend:
-                self.legendItem.color = self.oldColor
-                self.legendItem.update()
-        
-            else:
-                self.canvas.addItem(self.legendItem)
-                self.canvas.addItem(self.legendTextItem)
-                self.canvas.repeatLegend[self.pathItem.itemID] = \
-                    (self.legendItem, self.legendTextItem)
-                self.pathItem.legendText = self.oldLegendText
-                self.pathItem.legendItemPos = self.oldLegendItemPos
-                self.pathItem.legendTextPos = self.oldLegendTextPos 
-        else:
-            if self.showInLegend:
-                self.canvas.removeItem(self.legendItem)
-                del self.legendItem
-                self.canvas.removeItem(self.legendTextItem)
-                del self.legendTextItem
-                del self.canvas.repeatLegend[self.pathItem.itemID]
+        self.legendItem.color = self.oldColor                      
+        self.legendItem.update()
+
+        if self.shownInLegend and not self.newLegendVisibility:
+            self.legendItem.show()
+            self.legendTextItem.show()
+            self.pathItem.hasLegend = True
+        elif not self.shownInLegend and self.newLegendVisibility:
+            self.legendItem.hide()
+            self.legendTextItem.hide()
+            self.pathItem.hasLegend = False
 
 
 
@@ -1541,34 +1500,33 @@ class EditPatternRepeat(QUndoCommand):
     """
 
     
-    def __init__(self, patternRepeat, newColor, newWidth, 
-                 newLegendStatus, parent = None):
+    def __init__(self, patternRepeat, newColor, newWidth, parent = None):
 
         super(EditPatternRepeat, self).__init__(parent)
 
         self.patternRepeat = patternRepeat
         self.oldColor = patternRepeat.color
         self.oldWidth = patternRepeat.width
-        self.oldLegendStatus = patternRepeat.hasLegend
+        #self.oldLegendStatus = patternRepeat.hasLegend
         self.newColor = newColor
         self.newWidth = newWidth
-        self.newLegendStatus = newLegendStatus
+        #self.newLegendStatus = newLegendStatus
 
 
 
     def redo(self):
         """ The redo action. """
 
-        self.patternRepeat.set_properties(self.newColor, self.newWidth,
-                                          self.newLegendStatus)
+        self.patternRepeat.set_properties(self.newColor, self.newWidth)
+                                       #   self.newLegendStatus)
 
 
 
     def undo(self):
         """ The undo action. """
 
-        self.patternRepeat.set_properties(self.oldColor, self.oldWidth,
-                                          self.oldLegendStatus)
+        self.patternRepeat.set_properties(self.oldColor, self.oldWidth)
+                                       #   self.oldLegendStatus)
 
 
 

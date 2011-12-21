@@ -111,6 +111,7 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
     legendItems = canvas.gridLegend.values()
     patternRepeats = get_patternRepeats(canvas)
     repeatLegends = canvas.repeatLegend
+    assert(len(patternRepeats) == len(repeatLegends))
 
     status = None
     handle = None
@@ -130,10 +131,11 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         stream.writeInt32(len(legendItems))
         stream.writeInt32(len(colors))
         stream.writeInt32(len(patternRepeats))
+        stream.writeInt32(len(repeatLegends))
 
         # the next are 4 dummy entries so we can add more
         # output within the same API
-        for count in range(4):
+        for count in range(3):
             stream.writeInt32(0)
 
         # write content
@@ -143,6 +145,7 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         write_active_symbol(stream, activeSymbol)
         write_patternRepeats(stream, patternRepeats)
         write_settings(stream, settings)
+        write_repeatLegends(stream, repeatLegends)
 
 
     except (IOError, OSError) as e:
@@ -248,6 +251,10 @@ def write_settings(stream, settings):
     stream.writeInt32(settings.highlightRowsStart.value)
     stream << QString(settings.highlightRowsColor.value)
 
+    # write 200 dummy bytes so we can add more items
+    for i in range(0,200):
+        stream.writeInt32(0)
+
 
 
 def get_patternRepeats(canvas):
@@ -287,9 +294,36 @@ def write_patternRepeats(stream, repeats):
             stream << point
 
         stream << repeat.pos()
-        stream.writeInt16(0)
+
+        # store 16 bit of the id to we can match the repeat
+        # with the proper legend entry
+        stream.writeUInt16(repeat.itemID.fields[1])
+
         stream.writeInt16(repeat.width)
         stream << repeat.color
+
+
+
+def write_repeatLegends(stream, repeatLegends):
+    """ write the legends for all repeat items.
+
+    NOTE: We also store 16 bits of the id so we can
+    properly match it with its repeat item.
+
+    """
+
+    for (legendID, (item, textItem)) in repeatLegends.iteritems():
+    
+        if item.isVisible():
+            isVisible = 1
+        else:
+            isVisible = 0
+    
+        stream.writeUInt16(legendID.fields[1])
+        stream.writeUInt16(isVisible)
+        stream << item.pos()
+        stream << textItem.pos()
+        stream << QString(textItem.toPlainText())
 
 
 
@@ -328,12 +362,13 @@ def read_project(settings, openFileName):
         numLegendItems = stream.readInt32()
         numColors = stream.readInt32()
         numRepeats = stream.readInt32()
+        numRepeatLegends = stream.readInt32()
 
         # the next are 4 dummy entries we just skip
-        for count in range(4):
+        for count in range(3):
             stream.readInt32()
 
-        # write elements
+        # read elements
         patternGridItems = read_patternGridItems(stream, numGridItems)
         legendItems = read_legendItems(stream, numLegendItems)
         colors = read_colors(stream, numColors)
@@ -343,9 +378,11 @@ def read_project(settings, openFileName):
         if version == 1:
             read_settings(stream, settings, version)
             patternRepeats = read_patternRepeats(stream, numRepeats)
+            repeatLegends = {}
         elif version == 2:
             patternRepeats = read_patternRepeats(stream, numRepeats)
             read_settings(stream, settings, version)
+            repeatLegends = read_patternRepeatLegends(stream, numRepeatLegends)
         else:
             raise IOError, "unsupported API version"
             
@@ -360,7 +397,7 @@ def read_project(settings, openFileName):
             return (False, status, None, None, None, None, None)
 
     return (True, None, patternGridItems, legendItems, colors, 
-            activeSymbol, patternRepeats)
+            activeSymbol, patternRepeats, repeatLegends)
 
 
 
@@ -532,6 +569,9 @@ def read_settings(stream, settings, version):
         if highlightRowsColor:
             settings.highlightRowsColor.value = highlightRowsColor
 
+        # reat 200 dummy bytes so we can add more items
+        for i in range(0,200):
+            stream.readInt32()
 
 
 def read_patternRepeats(stream, numRepeats):
@@ -556,21 +596,59 @@ def read_patternRepeats(stream, numRepeats):
         # read width and color
         position = QPointF()
         stream >> position
-        legendID = stream.readInt16()
+        legendID = stream.readUInt16()
         width = stream.readInt16()
         color = QColor()
         stream >> color 
         
-        print(width, color)
         newItem = { "lines"     : lines,
                     "position"  : position,
                     "width"     : width,
                     "color"     : color,
-                    "hasLegend" : False}
+                    "legendID"  : legendID}
  
         patternRepeats.append(newItem)
 
     return patternRepeats
+
+
+
+def read_patternRepeatLegends(stream, numRepeatLegends):
+    """ Read in the info for the pattern repeat legends. 
+
+    NOTE: In contrast to the other read routine this
+    one returns a dictionary with the legendID as key
+    so we can match it effeciently with the corresponding
+    repeat.
+
+    """
+
+    patternRepeatLegends = {}
+    for count in range(numRepeatLegends):
+        
+        legendID = stream.readUInt16()
+        isVisible = stream.readUInt16()
+
+        itemPos = QPointF()
+        stream >> itemPos
+
+        textItemPos = QPointF()
+        stream >> textItemPos 
+
+        itemText = QString()
+        stream >> itemText 
+
+ 
+        newItem = { "legendID"    : legendID,
+                    "isVisible"   : isVisible,
+                    "itemPos"     : itemPos,
+                    "textItemPos" : textItemPos,
+                    "itemText"    : itemText}
+ 
+        patternRepeatLegends[legendID] = newItem
+
+
+    return patternRepeatLegends
 
 
 

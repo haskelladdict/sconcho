@@ -5,3 +5,6 @@
 - more sophisticated print dialog
 - colors in color widget don't update right away when
   loading a new sconcho project.
+- at some point we should move to a new file format version
+  to fix up some of the cruft that has build up over time
+

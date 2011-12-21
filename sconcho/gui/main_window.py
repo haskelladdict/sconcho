@@ -184,9 +184,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPrefs, SIGNAL("triggered()"),
                      self.open_preferences_dialog)
 
-        #self.connect(self.actionAdd_Row_Repeat, SIGNAL("triggered()"),
-        #             self.open_row_repeat_dialog)
-
         self.connect(self.actionSave, SIGNAL("triggered()"),
                      partial(self.save_pattern_dialog, "save"))
 
@@ -880,10 +877,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         """
 
-
         (status, errMsg, patternGridItems, legendItems, colors,
-         activeItem, patternRepeats) = io.read_project(self.settings,
-                                                       readFilePath)
+         activeItem, patternRepeats, repeatLegends) = \
+         io.read_project(self.settings, readFilePath)
         
         if not status:
             QMessageBox.critical(self, msg.errorOpeningProjectTitle,
@@ -894,7 +890,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.canvas.load_previous_pattern(self._knittingSymbols, 
                                                  patternGridItems,
                                                  legendItems,
-                                                 patternRepeats):
+                                                 patternRepeats,
+                                                 repeatLegends):
             return
 
         set_up_colors(self.colorWidget, colors)

@@ -476,9 +476,6 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         # we keep track of some of our legends properties
         self.hasLegend = hasLegend
-        self.legendText = QString("pattern repeat")
-        self.legendItemPos = QPointF()
-        self.legendTextPos = QPointF()
 
         # we use this ID for tracking our legend entry
         self.itemID = uuid.uuid4()
@@ -556,7 +553,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
 
 
-    def set_properties(self, color, width, legendStatus):
+    def set_properties(self, color, width): 
         """ Sets the color and width to the requested values.
 
         NOTE: the fact that we call paint_elements in addition to
@@ -566,10 +563,6 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         self.color = color
         self.width = width
-        if legendStatus == Qt.Checked:
-            self.hasLegend = True
-        else:
-            self.hasLegend = False
         self.paint_elements()
 
          
