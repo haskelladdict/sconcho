@@ -378,6 +378,8 @@ def read_project(settings, openFileName):
         if version == 1:
             read_settings(stream, settings, version)
             patternRepeats = read_patternRepeats(stream, numRepeats)
+            # API version 1 knows nothing about legends for pattern
+            # repeats
             repeatLegends = {}
         elif version == 2:
             patternRepeats = read_patternRepeats(stream, numRepeats)

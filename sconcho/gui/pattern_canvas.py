@@ -1056,14 +1056,13 @@ class PatternCanvas(QGraphicsScene):
             patternRepeatCommand = EditPatternRepeat(patternRepeat,
                                                      dialog.color,
                                                      dialog.width)
-                                                     #dialog.showInLegend)
             self._undoStack.push(patternRepeatCommand)
             patternLegendCommand = EditPatternRepeatLegend(self, 
                                                            patternRepeat,
                                                            dialog.showInLegend)
             self._undoStack.push(patternLegendCommand) 
             self._undoStack.endMacro()
-            self.emit(SIGNAL("scene changed"))
+            self.emit(SIGNAL("scene_changed"))
         elif status < 0:
             self._undoStack.beginMacro("delete pattern repeat")
             patternRepeatCommand = DeletePatternRepeat(self, patternRepeat)
@@ -1072,7 +1071,7 @@ class PatternCanvas(QGraphicsScene):
                                                              patternRepeat)
             self._undoStack.push(patternLegendCommand)
             self._undoStack.endMacro()
-            self.emit(SIGNAL("scene changed"))
+            self.emit(SIGNAL("scene_changed"))
 
         patternRepeat.unhighlight()
 
@@ -1718,10 +1717,12 @@ class PatternCanvas(QGraphicsScene):
 
             # also retrieve the proper legend
             repeatID = entry["legendID"]
-            legendEntry = repeatLegends[repeatID]
-            self._load_patternRepeatItem(entry, legendEntry)
+            if repeatID in repeatLegends:
+                self._load_patternRepeatItem(entry, repeatLegends[repeatID])
+            else:
+                self._load_patternRepeatItem(entry, None)
+            
         
-
         # need to clear our caches, otherwise we'll try 
         # to remove non-existing items
         self._textLabels = []
@@ -1734,29 +1735,50 @@ class PatternCanvas(QGraphicsScene):
 
 
     def _load_patternRepeatItem(self, itemInfo, legendInfo):
-        """ Recreates a pattern repeat item based on itemInfo. """
-        
-        repeatItem = PatternRepeatItem(itemInfo["lines"],
-                                       itemInfo["width"],
-                                       itemInfo["color"],
-                                       legendInfo["isVisible"])
-        self.addItem(repeatItem)
-        repeatItem.setPos(itemInfo["position"])
+        """ Recreates a pattern repeat item and its legend based on 
+        itemInfo and legendInfo. """
 
-        # add the legend entry
+        # create the legend entry
         legendItem = RepeatLegendItem(itemInfo["color"])
-        legendTextItem = PatternLegendText(legendInfo["itemText"])
-        legendItem.setPos(legendInfo["itemPos"])
-        legendTextItem.setPos(legendInfo["textItemPos"])
 
-        if not legendInfo["isVisible"]:
+        if legendInfo:
+            legendItemPos = legendInfo["itemPos"]
+            legendTextPos = legendInfo["textItemPos"]
+            legendText    = legendInfo["itemText"]
+            legendIsVisible = legendInfo["isVisible"]
+        else:
+            legendText = QString("pattern repeat")
+            yCoord = self._get_legend_y_coordinate_for_placement()
+            legendItemPos = QPointF(0, yCoord + legendItem.height + 30)
+            legendTextPos = QPointF(legendItem.width + 30, 
+                                    yCoord + legendItem.height + 20)
+            legendIsVisible = False
+        
+        # now that we know the text and positions create the text
+        # item and move it in place
+        legendTextItem = PatternLegendText(legendText)
+        legendItem.setPos(legendItemPos)
+        legendTextItem.setPos(legendTextPos)
+
+        if not legendIsVisible:
             legendItem.hide()
             legendTextItem.hide()
 
         self.addItem(legendItem)
         self.addItem(legendTextItem)
 
+        
+        # create the actual pattern repeat
+        repeatItem = PatternRepeatItem(itemInfo["lines"],
+                                       itemInfo["width"],
+                                       itemInfo["color"],
+                                       legendIsVisible)
+        self.addItem(repeatItem)
+        repeatItem.setPos(itemInfo["position"])
+
+        # connect repeat box and legend
         self.repeatLegend[repeatItem.itemID] = (legendItem, legendTextItem)
+
             
 
 
