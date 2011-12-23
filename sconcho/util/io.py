@@ -756,14 +756,15 @@ def get_row_label_identifier(intervalState):
     """
 
     intervalIdentifier = "LABEL_ALL_ROWS"
-    if intervalState == 102:
-        intervalIdentifier = "LABEL_ODD_ROWS"   
-    elif intervalState == 103:
-        intervalIdentifier = "LABEL_EVEN_ROWS"    
-    elif intervalState == 104:
+    if intervalState == 101:
+        intervalIdentifier = "SHOW_ROWS_WITH_INTERVAL"   
+    #elif intervalState == 103:
+    #    intervalIdentifier = "LABEL_EVEN_ROWS"    
+    if intervalState == 104:
         intervalIdentifier = "SHOW_ODD_ROWS"   
     elif intervalState == 105:
         intervalIdentifier = "SHOW_EVEN_ROWS"   
+    
 
     return intervalIdentifier
 
@@ -777,14 +778,17 @@ def get_row_label_interval(labelType):
 
     This function is the inverse of get_row_label_indentifier.
     See this function for more comments.
+
+    NOTE: There is a gap in the ids since some lagacy options
+    were removed.
     
     """
 
     intervalState = 101
-    if labelType == "LABEL_ODD_ROWS":
-        intervalState = 102
-    elif labelType == "LABEL_EVEN_ROWS":
-        intervalState = 103
+    if labelType == "SHOW_ROWS_WITH_INTERVAL":
+        intervalState = 101
+    #elif labelType == "LABEL_EVEN_ROWS":
+    #    intervalState = 103
     elif labelType == "SHOW_ODD_ROWS":
         intervalState = 104
     elif labelType == "SHOW_EVEN_ROWS":
