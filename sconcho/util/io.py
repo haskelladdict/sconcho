@@ -232,8 +232,8 @@ def write_settings(stream, settings):
 
     stream << settings.labelFont.value
     
-    intervalType = get_row_label_interval(settings.rowLabelMode.value)
-    stream.writeInt32(intervalType) 
+    rowIntervalMode = get_row_label_interval(settings.rowLabelMode.value)
+    stream.writeInt32(rowIntervalMode) 
     
     stream << settings.legendFont.value
     stream.writeInt32(settings.gridCellWidth.value)
@@ -242,7 +242,7 @@ def write_settings(stream, settings):
     # row label info
     stream.writeInt32(settings.rowLabelStart.value)
     evenRowLabelLocation = \
-        get_even_row_label_location(settings.evenRowLabelLocation.value)
+        get_row_label_location(settings.evenRowLabelLocation.value)
     stream.writeInt32(evenRowLabelLocation)
 
     # row highlighting info
@@ -250,6 +250,21 @@ def write_settings(stream, settings):
     stream.writeInt32(settings.highlightRowsOpacity.value)
     stream.writeInt32(settings.highlightRowsStart.value)
     stream << QString(settings.highlightRowsColor.value)
+
+    # write rest of row/column settings
+    # NOTE: The row settings aren't combined with the rest to
+    # remain backward compatible.
+    oddRowLabelLocation = \
+        get_row_label_location(settings.oddRowLabelLocation.value)
+    stream.writeInt32(oddRowLabelLocation)
+    stream.writeInt32(settings.rowLabelsShowInterval.value)
+    stream.writeInt32(settings.rowLabelsShowIntervalStart.value)
+
+    columnIntervalMode = \
+        get_column_label_interval(settings.columnLabelMode.value)
+    stream.writeInt32(columnIntervalMode) 
+    stream.writeInt32(settings.columnLabelsShowInterval.value)
+    stream.writeInt32(settings.columnLabelsShowIntervalStart.value)
 
     # write 200 dummy bytes so we can add more items
     for i in range(0,200):
@@ -552,7 +567,7 @@ def read_settings(stream, settings, version):
         evenRowLabelLocation = stream.readInt32()
         if evenRowLabelLocation:
             settings.evenRowLabelLocation.value = \
-                get_even_row_label_location_string(evenRowLabelLocation)
+                get_row_label_location_string(evenRowLabelLocation)
 
         highlightRows = stream.readInt32()
         if highlightRows:
@@ -570,6 +585,38 @@ def read_settings(stream, settings, version):
         stream >> highlightRowsColor
         if highlightRowsColor:
             settings.highlightRowsColor.value = highlightRowsColor
+
+        # write rest of row/column settings
+        # NOTE: The row settings aren't combined with the rest to
+        # remain backward compatible.
+        oddRowLabelLocation = stream.readInt32()
+        if oddRowLabelLocation:
+            settings.oddRowLabelLocation.value = \
+                get_row_label_location_string(oddRowLabelLocation)
+
+        rowLabelsShowInterval = stream.readInt32()
+        if rowLabelsShowInterval:
+            settings.rowLabelsShowInterval.value = rowLabelsShowInterval
+
+        rowLabelsShowIntervalStart = stream.readInt32()
+        if rowLabelsShowIntervalStart:
+            settings.rowLabelsShowIntervalStart.value = \
+                rowLabelsShowIntervalStart
+
+        columnLabelMode = stream.readInt32()
+        if columnLabelMode:
+            settings.columnLabelMode.value = \
+                get_column_label_identifier(columnLabelMode)
+
+        columnLabelsShowInterval = stream.readInt32()
+        if columnLabelsShowInterval:
+            settings.columnLabelsShowInterval.value = \
+                columnLabelsShowInterval
+
+        columnLabelsShowIntervalStart = stream.readInt32()
+        if columnLabelsShowIntervalStart:
+            settings.columnLabelsShowIntervalStart.value = \
+                columnLabelsShowIntervalStart
 
         # reat 200 dummy bytes so we can add more items
         for i in range(0,200):
@@ -756,10 +803,8 @@ def get_row_label_identifier(intervalState):
     """
 
     intervalIdentifier = "LABEL_ALL_ROWS"
-    if intervalState == 101:
+    if intervalState == 102:
         intervalIdentifier = "SHOW_ROWS_WITH_INTERVAL"   
-    #elif intervalState == 103:
-    #    intervalIdentifier = "LABEL_EVEN_ROWS"    
     if intervalState == 104:
         intervalIdentifier = "SHOW_ODD_ROWS"   
     elif intervalState == 105:
@@ -786,9 +831,7 @@ def get_row_label_interval(labelType):
 
     intervalState = 101
     if labelType == "SHOW_ROWS_WITH_INTERVAL":
-        intervalState = 101
-    #elif labelType == "LABEL_EVEN_ROWS":
-    #    intervalState = 103
+        intervalState = 102
     elif labelType == "SHOW_ODD_ROWS":
         intervalState = 104
     elif labelType == "SHOW_EVEN_ROWS":
@@ -798,11 +841,11 @@ def get_row_label_interval(labelType):
 
 
 
-def get_even_row_label_location(evenRowLabelLocation):
-    """ Turn string with even row label location into integer identifier """
+def get_row_label_location(rowLabelLocation):
+    """ Turn string with row label location into integer identifier """
 
     locationState = 10
-    if evenRowLabelLocation == "LEFT_OF":
+    if rowLabelLocation == "LEFT_OF":
         locationState = 11
 
     return locationState
@@ -810,10 +853,10 @@ def get_even_row_label_location(evenRowLabelLocation):
 
 
 
-def get_even_row_label_location_string(state):
-    """ Turn an even row label identifier into the corresponding string.
+def get_row_label_location_string(state):
+    """ Turn a row label identifier into the corresponding string.
 
-    This function is the inverse of get_even_row_label_location.
+    This function is the inverse of get_row_label_location.
 
     """
 
@@ -822,3 +865,47 @@ def get_even_row_label_location_string(state):
         locationString = "LEFT_OF"
 
     return locationString
+
+
+
+def get_column_label_identifier(intervalState):
+    """ This function is the inverse of get_column_label_interval.
+
+    It converts a stored integer into the the proper column
+    label state.
+ 
+    NOTE: Previously we used the labelInterval Int field to store 
+    a true interval. Since this option is gone we re-use the Int
+    to store the row label interval state. Since label
+    intervals previously had to be <= 100 we can reuse values
+    > 100 for this purpose. For folks who load an old spf file that
+    still has a true label interval field we map to the default
+    of LABEL_ALL_ROWS.
+
+    """
+
+    intervalIdentifier = "LABEL_ALL_COLUMNS"
+    if intervalState == 102:
+        intervalIdentifier = "SHOW_COLUMNS_WITH_INTERVAL"   
+
+    return intervalIdentifier
+
+
+
+def get_column_label_interval(labelType):
+    """ This function is the inverse of get_column_label_identifier.
+
+    It converts a column label state into an integer state stored
+    within the spf file.
+
+    This function is the inverse of get_column_label_indentifier.
+    See this function for more comments.
+
+    """
+
+    intervalState = 101
+    if labelType == "SHOW_COLUMNS_WITH_INTERVAL":
+        intervalState = 102
+
+    return intervalState
+

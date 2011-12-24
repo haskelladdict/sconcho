@@ -778,28 +778,12 @@ p, li { white-space: pre-wrap; }
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>603</x>
-     <y>691</y>
+     <x>565</x>
+     <y>670</y>
     </hint>
     <hint type="destinationlabel">
-     <x>175</x>
-     <y>428</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rowLabelStartSpinner</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>rowLabelsIntervalStartSpinner</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>529</x>
-     <y>290</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>473</x>
-     <y>375</y>
+     <x>441</x>
+     <y>654</y>
     </hint>
    </hints>
   </connection>

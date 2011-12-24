@@ -353,22 +353,25 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         start of the row labels 
 
         """
-       
+
         intervalType = self.settings.rowLabelMode.value
-        self.labelAllRowsButton.click()
+        self.labelAllRowsButton.setChecked(True)
         if intervalType == "SHOW_EVEN_ROWS":
-            self.showEvenRowsButton.click()
+            self.showEvenRowsButton.setChecked(True)
         elif intervalType == "SHOW_ODD_ROWS":
-            self.showOddRowsButton.click()
+            self.showOddRowsButton.setChecked(True)
         elif intervalType == "SHOW_ROWS_WITH_INTERVAL":
-            self.showRowsWithIntervalButton.click()
+            self.showRowsWithIntervalButton.setChecked(True)
 
         rowLabelStart = self.settings.rowLabelStart.value
+
         self.rowLabelStartSpinner.setValue(rowLabelStart)
         self._adjust_row_label_selectors(rowLabelStart)
 
         rowInterval = self.settings.rowLabelsShowInterval.value
+        self.rowLabelsIntervalSpinner.blockSignals(True)
         self.rowLabelsIntervalSpinner.setValue(rowInterval)
+        self.rowLabelsIntervalSpinner.blockSignals(False)
         
         rowShowInterval = self.settings.rowLabelsShowIntervalStart.value
         self.rowLabelsIntervalStartSpinner.setValue(rowShowInterval)
@@ -536,14 +539,16 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         """ Sets up the column label interval selectors. """
        
         intervalType = self.settings.columnLabelMode.value
-        self.labelAllColumnsButton.click()
+        self.labelAllColumnsButton.setChecked(True)
         if intervalType == "SHOW_COLUMNS_WITH_INTERVAL":
-            self.showColumnsWithIntervalButton.click()
+            self.showColumnsWithIntervalButton.setChecked(True)
 
         columnInterval = \
             self.settings.columnLabelsShowInterval.value
+        self.columnLabelsIntervalSpinner.blockSignals(True)
         self.columnLabelsIntervalSpinner.setValue(columnInterval)
-        
+        self.columnLabelsIntervalSpinner.blockSignals(False)
+
         columnShowInterval = \
             self.settings.columnLabelsShowIntervalStart.value
         self.columnLabelsIntervalStartSpinner.setValue(columnShowInterval)

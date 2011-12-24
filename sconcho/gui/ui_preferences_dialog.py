@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Sun Dec 18 15:16:49 2011
+# Created: Sat Dec 24 15:42:16 2011
 #      by: PyQt4 UI code generator 4.8.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -368,7 +368,6 @@ class Ui_PreferencesDialog(object):
         self.retranslateUi(PreferencesDialog)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), PreferencesDialog.hide)
-        QtCore.QObject.connect(self.rowLabelStartSpinner, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.rowLabelsIntervalStartSpinner.setValue)
         QtCore.QMetaObject.connectSlotsByName(PreferencesDialog)
 
     def retranslateUi(self, PreferencesDialog):

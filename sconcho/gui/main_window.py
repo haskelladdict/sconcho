@@ -881,6 +881,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
          activeItem, patternRepeats, repeatLegends) = \
          io.read_project(self.settings, readFilePath)
         
+
         if not status:
             QMessageBox.critical(self, msg.errorOpeningProjectTitle,
                                  errMsg, QMessageBox.Close)
@@ -902,7 +903,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # provide feedback in statusbar
         readFileName = QFileInfo(readFilePath).fileName()
         self.emit(SIGNAL("update_preferences"))
-        self.statusBar().showMessage("successfully opened " + readFileName, 
+        self.statusBar().showMessage("successfully opened " + readFileName,
                                      3000)
 
 
