@@ -1380,8 +1380,10 @@ class PatternCanvas(QGraphicsScene):
 
         assert(self.markedRows)
         deleteRowRepeatCommand = DeleteRowRepeat(self) 
+        self._undoStack.beginMacro("delete rows")
         self._undoStack.push(deleteRowRepeatCommand)
         self.clear_marked_columns_rows()
+        self._undoStack.endMacro()
 
         if not self.rowRepeatTracker:
             self.emit(SIGNAL("no_more_row_repeats"))
@@ -1471,8 +1473,10 @@ class PatternCanvas(QGraphicsScene):
         deadRows = self.markedRows.keys()
 
         deleteRowsCommand = DeleteRows(self, deadRows)
+        self._undoStack.beginMacro("delete marked rows")
         self._undoStack.push(deleteRowsCommand)
         self.clear_marked_columns_rows()
+        self._undoStack.endMacro()
 
 
 
@@ -1572,8 +1576,10 @@ class PatternCanvas(QGraphicsScene):
             return
 
         deleteColumnsCommand = DeleteColumns(self, deadColumns)
+        self._undoStack.beginMacro("delete columns")
         self._undoStack.push(deleteColumnsCommand)
         self.clear_marked_columns_rows()
+        self._undoStack.endMacro()
 
 
 
