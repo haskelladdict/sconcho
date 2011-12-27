@@ -202,14 +202,18 @@ repeat box can now be moved.
 Inserting and Deleting Columns and Rows in the Chart
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Additional rows and columns can be inserted into and deleted from an 
-already existing chart using the *Insert/Delete Rows and Columns* dialog 
-(**Grid -> Insert/Delete Rows and Columns**). Here, it is important to keep 
-in mind that while it is always possible to add and remove rows, columns 
-can be added only if the new column does not appear within an already 
-existing multi-cell symbol. Similarly, a column can be removed only if 
-it is not part of a multi-cell symbol.
+Deleting rows and columns is simple. Mark the rows or columns you
+would like to delete by holding down the *Control Key* (*Command Key* 
+on Mac OSX) and then clicking on their respective labels. Next, open 
+up the **Row And Column Management Menu** by right mouse clicking 
+outside the pattern area and then selecting "delete selected rows" 
+or "delete selected columns".
 
+To add rows and columns mark a **single** row/column by holding down 
+the *Control Key* (*Command Key* on Mac OSX) and then clicking on 
+its label. Next, open up the **Row And Column Management Menu** by 
+right mouse clicking outside the pattern area and then selecting 
+to proper add row/column selection.
 
 
 Saving and Opening Sconcho Projects
