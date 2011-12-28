@@ -1,7 +1,7 @@
 Sconcho Manual
 --------------
 
-*Author: Markus Dittrich (last change 11/03/2011)*
+*Author: Markus Dittrich (last change 12/28/2011)*
 
 Sconcho is a tool for creating knitting charts. Charts can be created by 
 placing stitch patterns into a rectangular grid. Sconcho has a large
@@ -23,6 +23,8 @@ Mac OSX).
 * `Changing a Symbol's Background Color`_ 
 * `Changing the Legend Layout`_
 * `Adding Pattern Repeat Boxes`_
+* `Adding Row Repeats`_
+* `Marking Rows and Columns`_
 * `Inserting and Deleting Columns and Rows in the Chart`_
 * `Saving and Opening Sconcho Projects`_
 * `Exporting and Printing Charts`_
@@ -189,9 +191,14 @@ Pattern repeat boxes can be added to the pattern grid. Simply highlight
 all cells that should be inside the repeat box (i.e., the repeat box will
 be the outline of the selected cells) and then click on
 **View -> Create Pattern Repeat** to create it. To change the color and
-line thickness of an existing repeat box or to delete a box move the mouse
-over the pattern repeat box, right click and select **Edit Pattern Repeat**
-to make visible a dialog for changing the box's properties.
+line thickness of an existing repeat box or to delete a repeat box 
+move the mouse anywhere within the pattern repeat box, right click and 
+select **Edit Pattern Repeat** to make visible a dialog for changing 
+the box's properties. Pattern repeat boxes by default have a legend
+entry consisting of a symbol showing a rectangular box of the same 
+color as the pattern repeat and a text box whose content can be changed. 
+The visibility of the legend entry for a repeat box can be toggled
+on or off in its **Edit Pattern Repeat** dialog.  
 
 To move a pattern repeat box hold down the **Control Key**
 (the **Command Key** on Mac OSX) and **Left Mouse Click** on the
@@ -199,21 +206,50 @@ desired item. The cursor should change to a cross shape and the
 repeat box can now be moved.
 
 
+Adding Row Repeats
+~~~~~~~~~~~~~~~~~~
+
+You can add any number of row repeats to your chart. Sconcho
+will automatically adjust the row labels for you in this case.
+To add a row repeat mark any number of **consecutive** rows
+(see `Marking Rows and Columns`_). Then right mouse click
+anywhere outside the pattern to bring up the 
+**Row And Column Management Menu**. Select *add row repeat*
+and then the number of repeats in the appearing
+repeat dialog.
+
+Row repeats can be deleted by marking (at least one)
+row within the repeat. Selecting *delete row repeat* in the 
+**Row And Column Management Menu** will then delete 
+the repeat. You can delete several repeats simultaneously
+by selecting several rows, each one part of a different
+repeat.
+
+
 Inserting and Deleting Columns and Rows in the Chart
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Deleting rows and columns is simple. Mark the rows or columns you
-would like to delete by holding down the *Control Key* (*Command Key* 
-on Mac OSX) and then clicking on their respective labels. Next, open 
-up the **Row And Column Management Menu** by right mouse clicking 
-outside the pattern area and then selecting "delete selected rows" 
-or "delete selected columns".
+would like to delete (see `Marking Rows and Columns`_).
+Next, open up the **Row And Column Management Menu** by right mouse 
+clicking outside the pattern area and then selecting 
+"delete selected rows" or "delete selected columns". 
 
-To add rows and columns mark a **single** row/column by holding down 
-the *Control Key* (*Command Key* on Mac OSX) and then clicking on 
-its label. Next, open up the **Row And Column Management Menu** by 
+To add rows and columns mark a **single** row/column.
+Next, open up the **Row And Column Management Menu** by 
 right mouse clicking outside the pattern area and then selecting 
-to proper add row/column selection.
+the desired proper add row/column selection.
+
+
+Marking Rows and Columns
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Rows or columns can be marked by holding down the *Control Key* 
+(*Command Key* on Mac OSX) and then clicking on their respective 
+labels. The marked rows/columns will turn blue/magenta. 
+Marked rows/columns can be unmarked individually by clicking on 
+them again or by selecting **View -> Deselect All** (or by clicking 
+on the corresponding toolbar button).
 
 
 Saving and Opening Sconcho Projects
