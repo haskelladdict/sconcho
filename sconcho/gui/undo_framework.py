@@ -1679,7 +1679,7 @@ class DeleteRowRepeat(QUndoCommand):
         self.rowRepeatTracker = canvas.rowRepeatTracker
         
         firstRow = canvas.markedRows.keys()[0]
-        (rowRange, multiplicity) = self.rowRepeatTracker[firstRow]
+        (rowRange, multiplicity, dummy) = self.rowRepeatTracker[firstRow]
 
         self.multiplicity = multiplicity
         self.rows = list(rowRange)
