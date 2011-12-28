@@ -735,7 +735,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if path in files:
                 return
             else:
-                files.append(path)
+                fullPath = QFileInfo(path).absoluteFilePath()
+                files.append(fullPath)
                 while len(files) > 10:
                     files.takeFirst()
 
@@ -745,10 +746,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # the actual path is stored as data since the text
         # of the Action also provides numbering and accelerators
         for (index, path) in enumerate(files):
-            newPath = QAction(QString("&%d.  %s" % (index+1, path)),
-                              self.menuRecent_Files)
-            newPath.setData(QVariant(path))
-            self.menuRecent_Files.addAction(newPath)
+            fileName = QFileInfo(path).fileName()
+            newPathAction = \
+                QAction(QString("&%d.  %s" % (index+1, fileName)),
+                        self.menuRecent_Files)
+            newPathAction.setData(QVariant(path))
+            self.menuRecent_Files.addAction(newPathAction)
 
 
 
