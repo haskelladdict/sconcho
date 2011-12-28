@@ -218,12 +218,10 @@ anywhere outside the pattern to bring up the
 and then the number of repeats in the appearing
 repeat dialog.
 
-Row repeats can be deleted by marking (at least one)
+A row repeat can be deleted by marking (at least one)
 row within the repeat. Selecting *delete row repeat* in the 
 **Row And Column Management Menu** will then delete 
-the repeat. You can delete several repeats simultaneously
-by selecting several rows, each one part of a different
-repeat.
+the repeat. 
 
 
 Inserting and Deleting Columns and Rows in the Chart
