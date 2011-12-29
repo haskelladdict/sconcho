@@ -1565,33 +1565,47 @@ class PatternCanvas(QGraphicsScene):
 
         deadColumns = self.markedColumns.keys()
 
+        # separate columns by connected pieces
+        deadColumns.sort()
+        deadColumnsList = []
+        currentItem = deadColumns[0]
+        currentColumn = [currentItem]
+        for column in deadColumns[1:]:
+            if column - currentItem == 1:
+                currentColumn.append(column)
+            else:
+                deadColumnsList.append(currentColumn)
+                currentColumn = [column]
+            currentItem = column
+        deadColumnsList.append(currentColumn)
+
         # in order for us to be able to delete the requested 
         # columns, the selection has to be rectangular (this is
         # similar to the check we do when before allowing to copy
         # a selection
-        selectedItems = set()
-        for rowID in range(0, self._numRows):
-            for colID in deadColumns:
-                item = self._item_at_row_col(rowID, colID)
-                if item:
-                    selectedItems.add(item)
+        for deadColumns in deadColumnsList:
+            selectedItems = set()
+            for rowID in range(0, self._numRows):
+                for colID in deadColumns:
+                    item = self._item_at_row_col(rowID, colID)
+                    if item:
+                        selectedItems.add(item)
 
-        selection = []
-        for item in selectedItems:
-            selection.append(PatternCanvasEntry(item.column, item.row, 
-                                                item.width, item.color,
-                                                item.symbol))
+            selection = []
+            for item in selectedItems:
+                selection.append(PatternCanvasEntry(item.column, item.row, 
+                                                    item.width, item.color,
+                                                    item.symbol))
+            (status, (colDim, rowDim)) = \
+                is_active_selection_rectangular(selection)
 
-        (status, (colDim, rowDim)) = \
-            is_active_selection_rectangular(selection)
-        
-        if not status:
-            return False
-        else:
-            return True
+            if not status:
+                return False
+
+        return True
 
 
-    
+
     def delete_marked_columns(self):
         """ Delete all currently marked columns. """
 
