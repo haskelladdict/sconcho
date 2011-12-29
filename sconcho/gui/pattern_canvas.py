@@ -1722,7 +1722,7 @@ class PatternCanvas(QGraphicsScene):
     @wait_cursor
     def load_previous_pattern(self, knittingSymbols, patternGridItemInfo,
                               legendItemInfo, patternRepeats, 
-                              repeatLegends):
+                              repeatLegends, rowRepeats):
         """ Clear curent canvas and establishes a new canvas
         based on the passed canvas items. Returns True on success
         and False otherwise.
@@ -1763,7 +1763,9 @@ class PatternCanvas(QGraphicsScene):
             else:
                 self._load_patternRepeatItem(entry, None)
             
-        
+        for rowRepeat in rowRepeats:
+            self.rowRepeatTracker.add_repeat(rowRepeat[0], rowRepeat[1])
+
         # need to clear our caches, otherwise we'll try 
         # to remove non-existing items
         self._textLabels = []

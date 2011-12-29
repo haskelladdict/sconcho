@@ -1119,6 +1119,28 @@ class RowRepeatTracker(object):
 
         self.repeats = repeats
 
+        # counter for iterator
+        self.current = 0
+
+    
+    
+    def __iter__(self):
+        
+        self.current = 0
+        return self
+
+
+    
+    def next(self):
+        """ Simple next function to allow iteration over content. """
+
+        if self.current == len(self.repeats):
+            raise StopIteration
+        else:
+            iterValue = self.repeats[self.current]
+            self.current += 1
+            return iterValue
+
 
 
     def __len__(self):
@@ -1153,7 +1175,6 @@ class RowRepeatTracker(object):
                 break
 
         return status
-        
 
 
 

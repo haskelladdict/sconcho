@@ -82,7 +82,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings = settings
         self._restore_window_settings()
         self.preferencesDialog = PreferencesDialog(self.settings, self)
-        #self.patternRowRepeatEditorDialog = PatternRowRepeatEditorDialog()
         self.exportBitmapDialog = None
         self.manualDialog = None
 
@@ -881,7 +880,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         (status, errMsg, patternGridItems, legendItems, colors,
-         activeItem, patternRepeats, repeatLegends) = \
+         activeItem, patternRepeats, repeatLegends, rowRepeats) = \
          io.read_project(self.settings, readFilePath)
         
 
@@ -895,7 +894,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                  patternGridItems,
                                                  legendItems,
                                                  patternRepeats,
-                                                 repeatLegends):
+                                                 repeatLegends,
+                                                 rowRepeats):
             return
 
         set_up_colors(self.colorWidget, colors)

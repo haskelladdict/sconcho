@@ -111,6 +111,7 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
     legendItems = canvas.gridLegend.values()
     patternRepeats = get_patternRepeats(canvas)
     repeatLegends = canvas.repeatLegend
+    rowRepeats = canvas.rowRepeatTracker
     assert(len(patternRepeats) == len(repeatLegends))
 
     status = None
@@ -132,10 +133,11 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         stream.writeInt32(len(colors))
         stream.writeInt32(len(patternRepeats))
         stream.writeInt32(len(repeatLegends))
-
+        stream.writeInt32(len(rowRepeats))
+        
         # the next are 4 dummy entries so we can add more
         # output within the same API
-        for count in range(3):
+        for count in range(2):
             stream.writeInt32(0)
 
         # write content
@@ -146,6 +148,7 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         write_patternRepeats(stream, patternRepeats)
         write_settings(stream, settings)
         write_repeatLegends(stream, repeatLegends)
+        write_rowRepeats(stream, rowRepeats)
 
 
     except (IOError, OSError) as e:
@@ -342,6 +345,16 @@ def write_repeatLegends(stream, repeatLegends):
 
 
 
+def write_rowRepeats(stream, rowRepeats):
+    """ write the row repeats if any. """
+
+    for (rowList, multiplicity, dummy) in rowRepeats:
+        stream.writeInt32(multiplicity)
+        stream.writeInt32(len(rowList))
+        for row in rowList:
+            stream.writeInt32(row)
+
+
 
 #############################################################################
 #
@@ -377,9 +390,10 @@ def read_project(settings, openFileName):
         numColors = stream.readInt32()
         numRepeats = stream.readInt32()
         numRepeatLegends = stream.readInt32()
+        numRowRepeats = stream.readInt32()
 
         # the next are 4 dummy entries we just skip
-        for count in range(3):
+        for count in range(2):
             stream.readInt32()
 
         # read elements
@@ -393,12 +407,14 @@ def read_project(settings, openFileName):
             read_settings(stream, settings, version)
             patternRepeats = read_patternRepeats(stream, numRepeats)
             # API version 1 knows nothing about legends for pattern
-            # repeats
+            # repeats and rowRepeats
             repeatLegends = {}
+            rowRepeats = []
         elif version == 2:
             patternRepeats = read_patternRepeats(stream, numRepeats)
             read_settings(stream, settings, version)
             repeatLegends = read_patternRepeatLegends(stream, numRepeatLegends)
+            rowRepeats = read_rowRepeats(stream, numRowRepeats)
         else:
             raise IOError, "unsupported API version"
             
@@ -410,10 +426,10 @@ def read_project(settings, openFileName):
         if handle is not None:
             handle.close()
         if status is not None:
-            return (False, status, None, None, None, None, None, None)
+            return (False, status, None, None, None, None, None, None, None)
 
     return (True, None, patternGridItems, legendItems, colors, 
-            activeSymbol, patternRepeats, repeatLegends)
+            activeSymbol, patternRepeats, repeatLegends, rowRepeats)
 
 
 
@@ -697,6 +713,25 @@ def read_patternRepeatLegends(stream, numRepeatLegends):
 
 
     return patternRepeatLegends
+
+
+
+def read_rowRepeats(stream, numRowRepeats):
+    """ Read in the info for the row repeats. """
+
+    rowRepeatList = []
+    for count in range(numRowRepeats):
+        
+        multiplicity = stream.readInt32()
+        length = stream.readInt32()
+        rowList = []
+        for index in range(length):
+            item = stream.readInt32()
+            rowList.append(item)
+
+        rowRepeatList.append((rowList, multiplicity))
+
+    return rowRepeatList
 
 
 
