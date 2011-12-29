@@ -840,18 +840,22 @@ class PatternCanvas(QGraphicsScene):
         deleteColsAction = rowColMenu.addAction("delete selected &columns")
         self.connect(deleteColsAction, SIGNAL("triggered()"),
                      self.delete_marked_columns)
-        if not self.markedColumns:
+        if not self.markedColumns or \
+           not self.can_delete_grid_columns():
             deleteColsAction.setEnabled(False)
 
         addColRightAction = rowColMenu.addAction("insert column right of")
         self.connect(addColRightAction, SIGNAL("triggered()"),
                      partial(self.insert_grid_columns, "right of"))
+        if len(self.markedColumns) != 1 or \
+           not self.can_insert_grid_columns("right of"):
+            addColRightAction.setEnabled(False)
 
         addColLeftAction = rowColMenu.addAction("insert column left of")
         self.connect(addColLeftAction, SIGNAL("triggered()"),
                      partial(self.insert_grid_columns, "left of"))
-        if len(self.markedColumns) != 1:
-            addColRightAction.setEnabled(False)
+        if len(self.markedColumns) != 1 or \
+           not self.can_insert_grid_columns("left of"):
             addColLeftAction.setEnabled(False)
 
         rowColMenu.exec_(screenPos)
@@ -1480,8 +1484,14 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def insert_grid_columns(self, mode):
-        """ Deals with requests to insert a column. """
+    def can_insert_grid_columns(self, mode):
+        """ Check if columns can be inserted as requested.
+
+        This function checks if given the currently
+        marked columns we can insert the requested
+        columns.
+
+        """
 
         num = 1
         pivot = self.markedColumns.keys()[0]
@@ -1513,26 +1523,26 @@ class PatternCanvas(QGraphicsScene):
 
         if not isExternalColumn:
             if rowCounter != self._numRows:
-                QMessageBox.warning(None, msg.noColInsertLayoutTitle,
-                                msg.noColInsertLayoutText,
-                                QMessageBox.Close)
-                return
+                return False
        
         if not isExternalColumn:
             for row in range(0, self._numRows):
                 item = self._item_at_row_col(row, pivot + shift)
                 if not item:
-                    return
+                    return False
                 
                 if isinstance(item, PatternGridItem):
                     if item.column != (pivot + shift):
-                        QMessageBox.warning(None, 
-                                            msg.noColInsertLayoutTitle,
-                                            msg.noColInsertLayoutText,
-                                            QMessageBox.Close)
-                        return
+                        return False
 
-        # ok we're good to insert then 
+        return True
+
+
+
+    def insert_grid_columns(self, mode):
+        """ Deals with requests to insert a column. """
+
+        pivot = self.markedColumns.keys()[0]
         numColumnDialog = NumRowColumnDialog("columns")
         if numColumnDialog.exec_():
             numColumns = numColumnDialog.num
@@ -1543,9 +1553,15 @@ class PatternCanvas(QGraphicsScene):
             self._undoStack.endMacro()
 
 
-    
-    def delete_marked_columns(self):
-        """ Delete all currently marked columns. """
+
+    def can_delete_grid_columns(self):
+        """ Checks if the selected columns can be deleted.
+
+        The selected columns can only be deleted if the current
+        layout allows it (we can't delete only parts of multi
+        stitch repeats.
+
+        """
 
         deadColumns = self.markedColumns.keys()
 
@@ -1570,11 +1586,16 @@ class PatternCanvas(QGraphicsScene):
             is_active_selection_rectangular(selection)
         
         if not status:
-            QMessageBox.warning(None, msg.noColDeleteLayoutTitle,
-                                msg.noColDeleteLayoutText,
-                                QMessageBox.Close)
-            return
+            return False
+        else:
+            return True
 
+
+    
+    def delete_marked_columns(self):
+        """ Delete all currently marked columns. """
+
+        deadColumns = self.markedColumns.keys()
         deleteColumnsCommand = DeleteColumns(self, deadColumns)
         self._undoStack.beginMacro("delete columns")
         self._undoStack.push(deleteColumnsCommand)
