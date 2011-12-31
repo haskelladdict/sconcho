@@ -357,6 +357,42 @@ def is_active_selection_rectangular(selectedCells):
 
 
 
+def get_marked_rows(selectedCells, numColumns):
+    """ Returns a list of completely selected rows.
+
+    Returns a list of selected rows if nothing else
+    is selected and otherwise an empty list.
+
+    """
+
+    if selectedCells:
+        cellsByRow = order_selection_by_rows(selectedCells) 
+        values = set(num_unitcells(row) for row in cellsByRow.values())
+        if len(values) == 1 and values.pop() == numColumns:
+            return cellsByRow.keys()
+
+    return []
+
+
+
+def get_marked_columns(selectedCells, numRows):
+    """ Returns a list of completely selected columns.
+
+    Returns a list of selected columns if nothing else
+    is selected and otherwise an empty list.
+
+    """
+
+    if selectedCells:
+        cellsByColumn = order_selection_by_columns(selectedCells) 
+        values = set(len(col) for col in cellsByColumn.values())
+        if len(values) == 1 and values.pop() == numRows:
+            return cellsByColumn.keys()
+
+    return []
+
+
+
 def can_outline_selection(selection):
     """ This function determines if the currently action selection
     can be outlined. This requires the selection to be connected

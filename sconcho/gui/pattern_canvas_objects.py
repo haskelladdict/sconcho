@@ -681,91 +681,13 @@ class PatternHighlightItem(QGraphicsRectItem):
 
 #########################################################
 ## 
-## class for highlighting the currently marked set
-## of rows
-##
-#########################################################
-class MarkRowItem(QGraphicsRectItem):
-
-    Type = 70000 + 7
-
-   
-    def __init__(self, row, numColumns, cellWidth, cellHeight, 
-                 parent = None):
-
-        originX = 0
-        originY = row * cellHeight
-        width = numColumns * cellWidth
-        super(MarkRowItem, self).__init__(originX, originY, width, 
-                                          cellHeight, parent)
-
-        self.markedRow = row
-        self._pen = QPen(Qt.SolidLine) 
-        self.setPen(self._pen)
-        self.setZValue(2)
-
-        color = QColor(Qt.blue)
-        color.setAlphaF(0.4)
-        self._brush = QBrush(color) 
-        self.setBrush(self._brush)
-
-
-    @property
-    def row(self):
-        """ Return the marked row """
-
-        return self.markedRow
-
-
-
-#########################################################
-## 
-## class for highlighting the currently marked set
-## of columns
-##
-#########################################################
-class MarkColumnItem(QGraphicsRectItem):
-
-    Type = 70000 + 8
-
-   
-    def __init__(self, numRows, column, cellWidth, cellHeight, 
-                 parent = None):
-
-        originX = column * cellWidth
-        originY = 0
-        height = numRows * cellHeight
-        super(MarkColumnItem, self).__init__(originX, originY, cellWidth, 
-                                             height, parent)
-
-        self.markedColumn = column
-        self._pen = QPen(Qt.SolidLine) 
-        self.setPen(self._pen)
-        self.setZValue(2)
-
-        color = QColor(Qt.magenta)
-        color.setAlphaF(0.4)
-        self._brush = QBrush(color) 
-        self.setBrush(self._brush)
-
-
-    @property
-    def column(self):
-        """ Return the marked column """
-
-        return self.markedColumn
-
-
-
-#########################################################
-## 
 ## class for managing the legend item corresponding
 ## to pattern repeat
 ##
 #########################################################
 class RepeatLegendItem(QGraphicsRectItem):
 
-    Type = 70000 + 9
+    Type = 70000 + 7
 
 
     def __init__(self, color, parent = None):

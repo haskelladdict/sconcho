@@ -43,9 +43,7 @@ from sconcho.util.canvas import (get_item_id,
                                  PatternCanvasEntry)
 
 from sconcho.util.misc import (errorLogger)
-from sconcho.gui.pattern_canvas_objects import (MarkRowItem,
-                                                MarkColumnItem,
-                                                RepeatLegendItem,
+from sconcho.gui.pattern_canvas_objects import (RepeatLegendItem,
                                                 PatternLegendText) 
 
 
@@ -1608,7 +1606,7 @@ class AddRowRepeat(QUndoCommand):
 
         self.canvas = canvas
         self.rowRepeatTracker = canvas.rowRepeatTracker
-        self.rows = canvas.markedRows.keys()
+        self.rows = canvas.marked_rows() #.keys()
         self.multiplicity = multiplicity
 
 
@@ -1632,7 +1630,7 @@ class AddRowRepeat(QUndoCommand):
 
 
 class DeleteRowRepeat(QUndoCommand):
-    """ This class encapsulates the creation of a row repeat
+    """ This class encapsulates the deletion of a row repeat
     item on the canvas.
 
     """
@@ -1644,7 +1642,7 @@ class DeleteRowRepeat(QUndoCommand):
         self.canvas = canvas
         self.rowRepeatTracker = canvas.rowRepeatTracker
         
-        firstRow = canvas.markedRows.keys()[0]
+        firstRow = canvas.marked_rows()[0] #.keys()[0]
         (rowRange, multiplicity, dummy) = self.rowRepeatTracker[firstRow]
 
         self.multiplicity = multiplicity
@@ -1665,156 +1663,4 @@ class DeleteRowRepeat(QUndoCommand):
 
         self.rowRepeatTracker.add_repeat(self.rows, self.multiplicity)
         self.canvas.set_up_labels()
-
-
-
-class MarkRows(QUndoCommand):
-    """ This class encapsulates marking of rows. """
-
-
-    def __init__(self, canvas, markedRows, parent = None):
-
-        super(MarkRows, self).__init__(parent) 
-        self.setText("mark rows")
-
-        self.canvas = canvas
-        self.markedRows = markedRows
-
-
-
-    def redo(self):
-        """ The redo action. """
-
-        for row in self.markedRows:
-            markedRow = MarkRowItem(row, self.canvas._numColumns,
-                                    self.canvas._unitCellDim.width(),
-                                    self.canvas._unitCellDim.height() )
-            self.canvas.markedRows[row] = markedRow
-            self.canvas.addItem(markedRow)
-
-
-
-    def undo(self):
-        """ The undo action. """
-        
-        for row in self.markedRows:
-            deadRow = self.canvas.markedRows[row]
-            del self.canvas.markedRows[row]
-            self.canvas.removeItem(deadRow)
-            del deadRow
-
-
-
-
-class UnmarkRows(QUndoCommand):
-    """ This class encapsulates un-marking of rows. """
-
-
-    def __init__(self, canvas, unmarkedRows, parent = None):
-
-        super(UnmarkRows, self).__init__(parent) 
-        self.setText("unmark rows")
-
-        self.canvas = canvas
-        self.unmarkedRows = unmarkedRows
-
-
-
-    def redo(self):
-        """ The redo action. """
-
-        for row in self.unmarkedRows:
-            unmarkRow = self.canvas.markedRows[row]
-            del self.canvas.markedRows[row]
-            self.canvas.removeItem(unmarkRow)
-            del unmarkRow
-
-
-
-    def undo(self):
-        """ The undo action. """
-        
-        for row in self.unmarkedRows:
-            markedRow = MarkRowItem(row, self.canvas._numColumns,
-                                    self.canvas._unitCellDim.width(),
-                                    self.canvas._unitCellDim.height() )
-            self.canvas.markedRows[row] = markedRow
-            self.canvas.addItem(markedRow)
-
-
-
-
-class MarkColumns(QUndoCommand):
-    """ This class encapsulates marking of columns. """
-
-
-    def __init__(self, canvas, markedColumns, parent = None):
-
-        super(MarkColumns, self).__init__(parent) 
-        self.setText("mark columns")
-
-        self.canvas = canvas
-        self.markedColumns = markedColumns
-
-
-
-    def redo(self):
-        """ The redo action. """
-
-        for column in self.markedColumns:
-            markedColumn = MarkColumnItem(self.canvas._numRows, column,
-                                          self.canvas._unitCellDim.width(),
-                                          self.canvas._unitCellDim.height())
-            self.canvas.markedColumns[column] = markedColumn
-            self.canvas.addItem(markedColumn)
-
-
-
-    def undo(self):
-        """ The undo action. """
-        
-        for column in self.markedColumns:
-            deadColumn = self.canvas.markedColumns[column]
-            del self.canvas.markedColumns[column]
-            self.canvas.removeItem(deadColumn)
-            del deadColumn
-
-
-
-
-
-class UnmarkColumns(QUndoCommand):
-    """ This class encapsulates un-marking of columns. """
-
-
-    def __init__(self, canvas, unmarkedColumns, parent = None):
-
-        super(UnmarkColumns, self).__init__(parent) 
-        self.setText("unmark columns")
-
-        self.canvas = canvas
-        self.unmarkedColumns = unmarkedColumns
-
-
-
-    def redo(self):
-        """ The redo action. """
-
-        for column in self.unmarkedColumns:
-            unmarkColumn = self.canvas.markedColumns[column]
-            del self.canvas.markedColumns[column]
-            self.canvas.removeItem(unmarkColumn)
-            del unmarkColumn
-
-
-
-    def undo(self):
-        """ The undo action. """
-        
-        for column in self.unmarkedColumns:
-            markedColumn = MarkColumnItem(self.canvas._numRows, column,
-                                          self.canvas._unitCellDim.width(),
-                                          self.canvas._unitCellDim.height())
-            self.canvas.markedColumns[column] = markedColumn
-            self.canvas.addItem(markedColumn)
 
