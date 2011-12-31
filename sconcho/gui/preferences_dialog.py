@@ -26,7 +26,7 @@ from __future__ import absolute_import
 
 from functools import partial
 
-from PyQt4.QtCore import (SIGNAL, QString, QDir)
+from PyQt4.QtCore import (SIGNAL, QString, QDir, QT_VERSION)
 from PyQt4.QtGui import (QDialog, QFontDatabase, QFileDialog,
                          QColorDialog, QColor)
 
@@ -191,6 +191,14 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         availableStyles  = fontDatabase.styles(fontFamily)
         targetStyle      = fontDatabase.styleString(newLegendFont)
         targetStyleIndex = 0
+
+        # FIXME: There seems to be a bug in Qt 4.8 
+        # "Normal" styleStrings are "Regular" in styles leading to
+        # a mismatch below
+        if QT_VERSION >= 0x040800:
+            if targetStyle == "Normal":
+                targetStyle = "Regular"
+
         self.legendStyleComboBox.clear()
         for (index, style) in enumerate(availableStyles):
             self.legendStyleComboBox.addItem(style)
@@ -267,6 +275,14 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         availableStyles  = fontDatabase.styles(fontFamily)
         targetStyle      = fontDatabase.styleString(newLabelFont)
         targetStyleIndex = 0
+
+        # FIXME: There seems to be a bug in Qt 4.8 
+        # "Normal" styleStrings are "Regular" in styles leading to
+        # a mismatch below
+        if QT_VERSION >= 0x040800:
+            if targetStyle == "Normal":
+                targetStyle = "Regular"
+
         self.labelStyleComboBox.clear()
         for (index, style) in enumerate(availableStyles):
             self.labelStyleComboBox.addItem(style)

@@ -1,4 +1,3 @@
-- allow pattern repeats boxes to be listed in legend (optional)
 - add option for heavier lines every 10x10 boxes for 
   highlighting purposes
 - editable row labels
@@ -7,4 +6,5 @@
   loading a new sconcho project.
 - at some point we should move to a new file format version
   to fix up some of the cruft that has build up over time
-
+- allow selecting a group of legend items and move them
+  together.
