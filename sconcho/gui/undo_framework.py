@@ -193,12 +193,10 @@ class InsertRows(QUndoCommand):
         
         """
     
-        shiftedItems = set()
-        for colID in range(0, self.numColumns):
-            for rowID in range(self.pivot, self.numRows):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    shiftedItems.add(item)
+        shiftedItems = \
+            self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                self.pivot, 
+                                                self.numRows)
 
         for item in shiftedItems:
             shift_item_row_wise(item, self.rowShift, self.unitHeight)
@@ -241,26 +239,18 @@ class InsertRows(QUndoCommand):
                 shift_selection_vertically(self.canvas._selectedCells, 
                                            self.pivot, rowUpShift)
 
-        # remove all previously inserted rows
-        selection = set()
-        for colID in range(0, self.numColumns):
-            for rowID in range(self.pivot, self.pivot + self.rowShift):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
-
+        selection = \
+            self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                self.pivot, 
+                                                self.pivot + self.rowShift)
         for item in selection:
             self.canvas.removeItem(item)
             del item
 
-        # shift the rest back into place
-        selection.clear()
-        for colID in range(0, self.numColumns):
-            for rowID in range(self.pivot + self.rowShift, 
-                               self.numRows + self.rowShift):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
+        selection = \
+            self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                self.pivot + self.rowShift, 
+                                                self.numRows + self.rowShift)
 
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
