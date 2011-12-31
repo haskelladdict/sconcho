@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/update_dialog.ui'
 #
-# Created: Sat Dec 24 15:42:16 2011
-#      by: PyQt4 UI code generator 4.8.6
+# Created: Sat Dec 31 12:49:34 2011
+#      by: PyQt4 UI code generator 4.9
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,7 +18,6 @@ class Ui_UpdateDialog(object):
     def setupUi(self, UpdateDialog):
         UpdateDialog.setObjectName(_fromUtf8("UpdateDialog"))
         UpdateDialog.resize(507, 165)
-        UpdateDialog.setWindowTitle(QtGui.QApplication.translate("UpdateDialog", "Check For Updates", None, QtGui.QApplication.UnicodeUTF8))
         UpdateDialog.setModal(True)
         self.verticalLayout = QtGui.QVBoxLayout(UpdateDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -31,7 +30,6 @@ class Ui_UpdateDialog(object):
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.closeButton = QtGui.QPushButton(UpdateDialog)
-        self.closeButton.setText(QtGui.QApplication.translate("UpdateDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
         self.closeButton.setObjectName(_fromUtf8("closeButton"))
         self.horizontalLayout.addWidget(self.closeButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -40,5 +38,6 @@ class Ui_UpdateDialog(object):
         QtCore.QMetaObject.connectSlotsByName(UpdateDialog)
 
     def retranslateUi(self, UpdateDialog):
-        pass
+        UpdateDialog.setWindowTitle(QtGui.QApplication.translate("UpdateDialog", "Check For Updates", None, QtGui.QApplication.UnicodeUTF8))
+        self.closeButton.setText(QtGui.QApplication.translate("UpdateDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
 

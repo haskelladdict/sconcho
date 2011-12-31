@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/row_repeat_number_dialog.ui'
 #
-# Created: Sat Dec 24 15:42:16 2011
-#      by: PyQt4 UI code generator 4.8.6
+# Created: Sat Dec 31 12:49:35 2011
+#      by: PyQt4 UI code generator 4.9
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,7 +18,6 @@ class Ui_RowRepeatNumDialog(object):
     def setupUi(self, RowRepeatNumDialog):
         RowRepeatNumDialog.setObjectName(_fromUtf8("RowRepeatNumDialog"))
         RowRepeatNumDialog.resize(254, 117)
-        RowRepeatNumDialog.setWindowTitle(QtGui.QApplication.translate("RowRepeatNumDialog", "Row Repeat Selector", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout = QtGui.QVBoxLayout(RowRepeatNumDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -31,8 +30,6 @@ class Ui_RowRepeatNumDialog(object):
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.label = QtGui.QLabel(RowRepeatNumDialog)
-        self.label.setText(QtGui.QApplication.translate("RowRepeatNumDialog", "select number of \n"
-"row repeats", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout.addWidget(self.label)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -48,5 +45,7 @@ class Ui_RowRepeatNumDialog(object):
         QtCore.QMetaObject.connectSlotsByName(RowRepeatNumDialog)
 
     def retranslateUi(self, RowRepeatNumDialog):
-        pass
+        RowRepeatNumDialog.setWindowTitle(QtGui.QApplication.translate("RowRepeatNumDialog", "Row Repeat Selector", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("RowRepeatNumDialog", "select number of \n"
+"row repeats", None, QtGui.QApplication.UnicodeUTF8))
 

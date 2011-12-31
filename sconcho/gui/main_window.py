@@ -56,7 +56,6 @@ from sconcho.gui.color_widget import (ColorWidget, ColorSynchronizer)
 from sconcho.gui.pattern_canvas import PatternCanvas
 from sconcho.gui.export_bitmap_dialog import ExportBitmapDialog
 from sconcho.gui.new_pattern_dialog import NewPatternDialog
-from sconcho.gui.pattern_row_repeat_editor_dialog import PatternRowRepeatEditorDialog
 from sconcho.gui.preferences_dialog import PreferencesDialog
 from sconcho.gui.sconcho_manual import SconchoManual
 from sconcho.gui.update_dialog import UpdateDialog
@@ -726,7 +725,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if len(fileString) == 0:
             files = QStringList()
         else:
-            files = fileString.split(":")
+            files = fileString.split("%")
 
         # whithout a path we simply update the menu without
         # adding any filename
@@ -739,7 +738,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 while len(files) > 10:
                     files.takeFirst()
 
-        self.settings.recently_used_files = files.join(":")
+        self.settings.recently_used_files = files.join("%")
         self.clear_recently_used_files_menu()
 
         # the actual path is stored as data since the text
