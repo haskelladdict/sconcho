@@ -349,9 +349,10 @@ class DeleteRows(QUndoCommand):
         
         """
 
-        self.delete_requested_items(self.deadRows)
-        self.remove_selected_cells(self.deadRows)
+        self.deletedCells = []
         for (pivot, num) in self.deadRanges:
+            self.delete_requested_items(pivot, num)
+            self.remove_selected_cells(pivot, num)
             self.redo_shift_remaining_items(pivot, -num)
             self.redo_adjust_row_repeats(pivot, num)           
         self.canvas._numRows -= len(self.deadRows)
@@ -427,17 +428,13 @@ class DeleteRows(QUndoCommand):
 
 
 
-    def delete_requested_items(self, deleteRange):
+    def delete_requested_items(self, pivot, rowShift): 
         """ Delete the requested items. """ 
-      
-        selection = set()
-        for colID in range(0, self.numColumns):
-            for rowID in deleteRange:
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
 
-        self.deletedCells = []
+        selection = self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                        pivot, 
+                                                        pivot + rowShift)
+
         for item in selection:
             self.deletedCells.append(PatternCanvasEntry(item.column, 
                                                         item.row, 
@@ -449,7 +446,7 @@ class DeleteRows(QUndoCommand):
 
 
 
-    def remove_selected_cells(self, deleteRange):
+    def remove_selected_cells(self, pivot, rowShift): 
         """ Remove the deleted items from the current selection
         (if applicable).
 
@@ -458,7 +455,7 @@ class DeleteRows(QUndoCommand):
         self.deadSelectedCells = {}
         cellsByRow = \
             order_selection_by_rows(self.canvas._selectedCells.values())
-        for rowID in deleteRange:
+        for rowID in range(pivot, pivot+rowShift):
             if rowID in cellsByRow:
                 for entry in cellsByRow[rowID]:
                     entryID = get_item_id(entry.column, entry.row)
@@ -473,14 +470,8 @@ class DeleteRows(QUndoCommand):
 
         """
 
-        selection = set()
-        shiftRange = range(pivot, self.numRows)
-        for colID in range(0, self.numColumns):
-            for rowID in shiftRange:
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
-
+        selection = self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                        pivot, self.numRows)
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
 
@@ -504,12 +495,8 @@ class DeleteRows(QUndoCommand):
                 shift_selection_vertically(self.canvas._selectedCells, 
                                            pivot, rowDownShift)
 
-        shiftItems = set()
-        for colID in range(0, self.numColumns):
-            for rowID in range(pivot, self.numRows):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    shiftItems.add(item)
+        shiftItems = self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                         pivot, self.numRows)
 
         for item in shiftItems:
             shift_item_row_wise(item, rowDownShift, self.unitHeight)

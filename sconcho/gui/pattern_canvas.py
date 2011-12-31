@@ -271,6 +271,7 @@ class PatternCanvas(QGraphicsScene):
 
         self.set_up_labels()
         self.set_up_highlighted_rows()
+        self.invalidate()
 
 
 
@@ -1371,6 +1372,37 @@ class PatternCanvas(QGraphicsScene):
             return None
         else:
             return patternItems[0]
+
+
+
+    def _items_in_col_row_range(self, colStart, colEnd, rowStart, rowEnd,
+                                patternType = None):
+        """ This function selects all items of patternType in a given
+        range.
+
+        NOTE: This is much faster than calling item at row col individually
+        and should be done for any reasonable range.
+
+        """
+
+        if not patternType:
+            patternType = PatternGridItem
+
+        # select cells
+        cellWidth = self._unitCellDim.width()
+        cellHeight = self._unitCellDim.height()
+        allItems = self.items((colStart + 0.25) * cellWidth,
+                              (rowStart + 0.25) * cellHeight,
+                              (colEnd - colStart - 0.5) * cellWidth,
+                              (rowEnd - rowStart - 0.5) * cellHeight)
+
+        selection = set()
+        for item in allItems:
+            if isinstance(item, patternType):
+                selection.add(item)
+
+        return selection
+
 
 
     
