@@ -37,6 +37,7 @@ from PyQt4.QtCore import (Qt,
 from PyQt4.QtGui import (QGraphicsScene, 
                          QGraphicsObject, 
                          QPen, 
+                         QAction,
                          QColor, 
                          QBrush, 
                          QGraphicsTextItem, 
@@ -739,8 +740,7 @@ class PatternCanvas(QGraphicsScene):
         rowColMenu = QMenu()
 
         # row options
-        rowColMenu.addAction("Row Tasks (available if only")
-        rowColMenu.addAction("complete rows are selected)")
+        rowColMenu.addAction("Row Tasks")
         rowColMenu.addSeparator()
         deleteRowsAction = rowColMenu.addAction("delete selected &rows")
         self.connect(deleteRowsAction, SIGNAL("triggered()"),
@@ -774,8 +774,7 @@ class PatternCanvas(QGraphicsScene):
         
 
         rowColMenu.addSeparator()
-        rowColMenu.addAction("Columns Tasks (available if only")
-        rowColMenu.addAction("complete columns are selected)")
+        rowColMenu.addAction("Column Tasks")
         rowColMenu.addSeparator()
         # column options
         deleteColsAction = rowColMenu.addAction("delete selected &columns")
