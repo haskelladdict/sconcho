@@ -560,8 +560,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         colorList = [QColor(name) for name in [Qt.white, Qt.red, Qt.blue, \
-                        Qt.black, Qt.darkGray, Qt.cyan, Qt.yellow, Qt.green, 
-                        Qt.magenta]]
+                        Qt.black, Qt.darkGray, Qt.cyan, Qt.yellow, \
+                        Qt.green, Qt.magenta]]
         self.colorWidget.initialize(colorTracker, colorList)
         
 
@@ -1078,10 +1078,11 @@ def set_up_colors(widget, colors):
     for (i, item) in enumerate(widget.colorWidgets):
         (aColor, state) = colors[i]
         item.color = aColor
+        item.repaint()
         if state == 1:
             widget._synchronizer.select(item)
             
-        item.repaint()
+
 
 
 

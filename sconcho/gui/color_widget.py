@@ -118,7 +118,7 @@ class ColorSelectorItem(QFrame):
         # define and set stylesheets
         self.define_stylesheets() 
         self.setStyleSheet(self._unselectedStyleSheet)
-        self._currentStyleSheet = self._unselectedStyleSheet
+        self.selected = False
 
         self.setMinimumHeight(40)
         self.setMaximumHeight(40)
@@ -140,6 +140,12 @@ class ColorSelectorItem(QFrame):
 
         self.itemColor = color
         self.define_stylesheets()
+
+        # need this to update colors 
+        if self.selected:
+            self.activate_me()
+        else:
+            self.inactivate_me()
 
 
 
@@ -183,7 +189,7 @@ class ColorSelectorItem(QFrame):
         """
 
         self.setStyleSheet(self._selectedStyleSheet)
-        self._currentStyleSheet = self._selectedStyleSheet
+        self.selected = True
 
 
 
@@ -193,7 +199,7 @@ class ColorSelectorItem(QFrame):
         """
 
         self.setStyleSheet(self._unselectedStyleSheet)
-        self._currentStyleSheet = self._unselectedStyleSheet
+        self.selected = False
 
 
 
