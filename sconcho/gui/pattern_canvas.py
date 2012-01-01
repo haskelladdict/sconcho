@@ -625,7 +625,6 @@ class PatternCanvas(QGraphicsScene):
                                             self._unitCellDim.width(),
                                             self._unitCellDim.height())
        
-        print("pressing")
         if event.button() == Qt.RightButton:
             self.handle_right_click_on_canvas(event, col, row)
 
@@ -812,7 +811,6 @@ class PatternCanvas(QGraphicsScene):
         if clickInGrid:
             self.show_grid_menu(event, col, row)
         else:
-            print("delete columns menu")
             self.insert_delete_columns_rows_menu(event.screenPos(),
                                                  col, row)
 
