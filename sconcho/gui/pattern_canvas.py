@@ -625,6 +625,7 @@ class PatternCanvas(QGraphicsScene):
                                             self._unitCellDim.width(),
                                             self._unitCellDim.height())
        
+        print("pressing")
         if event.button() == Qt.RightButton:
             self.handle_right_click_on_canvas(event, col, row)
 
@@ -739,11 +740,14 @@ class PatternCanvas(QGraphicsScene):
 
         rowColMenu = QMenu()
 
+        markedRows = self.marked_rows()
+        markedColumns = self.marked_columns()
+
         # row options
         deleteRowsAction = rowColMenu.addAction("delete selected &rows")
         self.connect(deleteRowsAction, SIGNAL("triggered()"),
                      self.delete_marked_rows)
-        if not self.marked_rows():
+        if not markedRows:
             deleteRowsAction.setEnabled(False)
 
         addRowAboveAction = rowColMenu.addAction("&insert rows above")
@@ -753,7 +757,7 @@ class PatternCanvas(QGraphicsScene):
         addRowBelowAction = rowColMenu.addAction("insert rows &below")
         self.connect(addRowBelowAction, SIGNAL("triggered()"),
                      partial(self.insert_grid_rows, "below"))
-        if len(self.marked_rows()) != 1:
+        if len(markedRows) != 1:
             addRowBelowAction.setEnabled(False)
             addRowAboveAction.setEnabled(False)
 
@@ -761,36 +765,34 @@ class PatternCanvas(QGraphicsScene):
         addRowRepeatAction = rowColMenu.addAction("&add row repeat")
         self.connect(addRowRepeatAction, SIGNAL("triggered()"),
                      self.add_row_repeat)
-        if (not self.marked_rows()) or (not self.can_add_row_repeat()):
+        if (not markedRows) or (not self.can_add_row_repeat()):
             addRowRepeatAction.setEnabled(False)
         
         deleteRowRepeatAction = rowColMenu.addAction("&delete row repeat")
         self.connect(deleteRowRepeatAction, SIGNAL("triggered()"),
                      self.delete_row_repeat)
-        if (not self.marked_rows()) or (not self.can_delete_row_repeat()):
+        if (not markedRows) or (not self.can_delete_row_repeat()):
             deleteRowRepeatAction.setEnabled(False)
         
-
         rowColMenu.addSeparator()
         # column options
         deleteColsAction = rowColMenu.addAction("delete selected &columns")
         self.connect(deleteColsAction, SIGNAL("triggered()"),
                      self.delete_marked_columns)
-        if not self.marked_columns() or \
-           not self.can_delete_grid_columns():
+        if not markedColumns or not self.can_delete_grid_columns():
             deleteColsAction.setEnabled(False)
 
         addColRightAction = rowColMenu.addAction("insert column right of")
         self.connect(addColRightAction, SIGNAL("triggered()"),
                      partial(self.insert_grid_columns, "right of"))
-        if len(self.marked_columns()) != 1 or \
+        if len(markedColumns) != 1 or \
            not self.can_insert_grid_columns("right of"):
             addColRightAction.setEnabled(False)
 
         addColLeftAction = rowColMenu.addAction("insert column left of")
         self.connect(addColLeftAction, SIGNAL("triggered()"),
                      partial(self.insert_grid_columns, "left of"))
-        if len(self.marked_columns()) != 1 or \
+        if len(markedColumns) != 1 or \
            not self.can_insert_grid_columns("left of"):
             addColLeftAction.setEnabled(False)
 
@@ -810,6 +812,7 @@ class PatternCanvas(QGraphicsScene):
         if clickInGrid:
             self.show_grid_menu(event, col, row)
         else:
+            print("delete columns menu")
             self.insert_delete_columns_rows_menu(event.screenPos(),
                                                  col, row)
 
@@ -1549,46 +1552,18 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        deadColumns = self.marked_columns()
+        # check if selection is rectangular 
+        (status, (colDim, rowDim)) = \
+            is_active_selection_rectangular(self._selectedCells.values())
 
-        # separate columns by connected pieces
-        deadColumns.sort()
-        deadColumnsList = []
-        currentItem = deadColumns[0]
-        currentColumn = [currentItem]
-        for column in deadColumns[1:]:
-            if column - currentItem == 1:
-                currentColumn.append(column)
-            else:
-                deadColumnsList.append(currentColumn)
-                currentColumn = [column]
-            currentItem = column
-        deadColumnsList.append(currentColumn)
+        if status:
+           
+            # check if we have complete columns
+            deadColumns = self.marked_columns()
+            if deadColumns:
+                return True
 
-        # in order for us to be able to delete the requested 
-        # columns, the selection has to be rectangular (this is
-        # similar to the check we do when before allowing to copy
-        # a selection
-        for deadColumns in deadColumnsList:
-            selectedItems = set()
-            for rowID in range(0, self._numRows):
-                for colID in deadColumns:
-                    item = self._item_at_row_col(rowID, colID)
-                    if item:
-                        selectedItems.add(item)
-
-            selection = []
-            for item in selectedItems:
-                selection.append(PatternCanvasEntry(item.column, item.row, 
-                                                    item.width, item.color,
-                                                    item.symbol))
-            (status, (colDim, rowDim)) = \
-                is_active_selection_rectangular(selection)
-
-            if not status:
-                return False
-
-        return True
+        return False
 
 
 

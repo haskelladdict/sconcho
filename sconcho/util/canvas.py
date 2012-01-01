@@ -318,6 +318,7 @@ def is_active_selection_rectangular(selectedCells):
 
     # check that each row has the same number of unit cells
     values = set(num_unitcells(row) for row in cellsByRow.values())
+    print(values)
     if len(values) != 1:
         return (False, (0,0))
 
@@ -329,6 +330,7 @@ def is_active_selection_rectangular(selectedCells):
     
     numCols = values.pop()
     numRows = len(cellsByRow)
+    print("furz")
     return (True, (numCols, numRows))
 
 
@@ -360,7 +362,14 @@ def get_marked_columns(selectedCells, numRows):
     """
 
     if selectedCells:
-        cellsByColumn = order_selection_by_columns(selectedCells) 
+        cellsByColumn = {}
+        for cell in selectedCells:
+            for col in range(cell.column, cell.column + cell.width):
+                if not col in cellsByColumn:
+                    cellsByColumn[col] = [cell]
+                else:
+                    cellsByColumn[col].append(cell)
+
         values = set(len(col) for col in cellsByColumn.values())
         if len(values) == 1 and values.pop() == numRows:
             return cellsByColumn.keys()
