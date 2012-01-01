@@ -1,7 +1,7 @@
 Sconcho Manual
 --------------
 
-*Author: Markus Dittrich (last change 12/28/2011)*
+*Author: Markus Dittrich (last change 01/01/2012)*
 
 Sconcho is a tool for creating knitting charts. Charts can be created by 
 placing stitch patterns into a rectangular grid. Sconcho has a large
@@ -188,31 +188,33 @@ Adding Pattern Repeat Boxes
 
 Pattern repeat boxes can be added to the pattern grid. Simply highlight
 all cells that should be inside the repeat box (i.e., the repeat box will
-be the outline of the selected cells) and then click on
+be the outline of the selected cells) and click on
 **View -> Create Pattern Repeat** to create it. To change the color and
-line thickness of an existing repeat box or to delete a repeat box 
-move the mouse anywhere within the pattern repeat box, right click and 
-select **Edit Pattern Repeat** to make visible a dialog for changing 
-the box's properties. Pattern repeat boxes by default have a legend
-entry consisting of a symbol showing a rectangular box of the same 
-color as the pattern repeat and a text box whose content can be changed. 
+line thickness of an existing repeat box or to delete a repeat box, 
+right mouse click anywhere within the pattern repeat box and 
+select *Edit Pattern Repeat* in the menu that will appear.
+This will open a dialog window for changing the repeat box's properties. 
+
+Pattern repeat boxes by default have a legend entry associated with them
+consisting of a symbol showing a rectangular box of the same 
+color as the pattern repeat and a text box whose content can be modified. 
 The visibility of the legend entry for a repeat box can be toggled
-on or off in its **Edit Pattern Repeat** dialog.  
+on or off in its *Edit Pattern Repeat* dialog.  
 
 To move a pattern repeat box hold down the **Control Key**
 (the **Command Key** on Mac OSX) and **Left Mouse Click** on the
 desired item. The cursor should change to a cross shape and the
-repeat box can now be moved.
+repeat box can now be dragged while holding down the left mouse
+button.
 
 
 Adding Row Repeats
 ~~~~~~~~~~~~~~~~~~
 
-You can add any number of row repeats to your chart. Sconcho
-will automatically adjust the row labels for you in this case.
-To add a row repeat select any number of **consecutive** rows
-Then right mouse click
-anywhere outside the pattern to bring up the 
+You can add any number of non-overlapping row repeats to your chart. 
+Sconcho will automatically adjust the row labels for you in this case.
+To add a row repeat select any number of **consecutive** rows.
+Then right mouse click anywhere outside the chart area to bring up the 
 **Row And Column Management Menu**. Select *add row repeat*
 and then the number of repeats in the appearing
 repeat dialog.
@@ -226,19 +228,21 @@ the repeat.
 Inserting and Deleting Columns and Rows in the Chart
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Deleting rows and columns is simple. Select the rows or columns you
-would like to delete.
-Next, open up the **Row And Column Management Menu** by right mouse 
-clicking outside the pattern area and then selecting 
-"delete selected rows" or "delete selected columns". 
+Deleting rows and columns is straightforward. First, select the rows 
+or columns you would like to delete. Next, open up the 
+**Row And Column Management Menu** by right mouse clicking anywhere
+outside the actual chart area and then selecting "delete selected rows" 
+or "delete selected columns". 
 
-To add rows and columns mark a **single** row/column.
+**NOTE:** Deleting of rows and columns is only possible
+if complete rows or columns have been selected. If the current
+selection is anything but either complete rows or columns,
+deleting is disabled and these options are grayed out.
+
+To add rows or columns mark a **single** complete row/column.
 Next, open up the **Row And Column Management Menu** by 
-right mouse clicking outside the pattern area and then selecting 
-the desired proper add row/column selection.
-
-**NOTE:** For inserting/deleting columns and rows to work
-only complete rows or columns have to be selected.
+right mouse clicking outside the chart area and then selecting 
+the desired add row or column selection.
 
 
 Saving and Opening Sconcho Projects
