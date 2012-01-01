@@ -318,7 +318,6 @@ def is_active_selection_rectangular(selectedCells):
 
     # check that each row has the same number of unit cells
     values = set(num_unitcells(row) for row in cellsByRow.values())
-    print(values)
     if len(values) != 1:
         return (False, (0,0))
 
@@ -330,7 +329,6 @@ def is_active_selection_rectangular(selectedCells):
     
     numCols = values.pop()
     numRows = len(cellsByRow)
-    print("furz")
     return (True, (numCols, numRows))
 
 

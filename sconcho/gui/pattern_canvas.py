@@ -1735,6 +1735,7 @@ class PatternCanvas(QGraphicsScene):
         self._textLabels = []
         self.finalize_grid_change()
         self.change_grid_cell_dimensions()
+        self.clear_undo_stack()
 
         self.emit(SIGNAL("adjust_view"))
         return True
