@@ -69,7 +69,7 @@ def is_click_in_grid(col, row, numCols, numRows):
     else:
         return False
 
-    
+
 
 def is_click_on_labels(col, row, numCols, numRows):
     """ Returns true if col and row is within the grid labels. 
@@ -202,7 +202,7 @@ def shift_selection_horizontally(selection, pivot, columnShift):
 
 
 
-def compute_max_legend_y_coordinate(gridLegend):
+def compute_max_legend_y_coordinate(gridLegend, repeatLegend):
     """ Given the current list of existing legend items
     figure out the largest y coordinate among them all.
 
@@ -212,6 +212,10 @@ def compute_max_legend_y_coordinate(gridLegend):
     for item in gridLegend.values():
         yList.append(legendItem_symbol(item).scenePos().y())
         yList.append(legendItem_text(item).scenePos().y())
+
+    for item in repeatLegend.values():
+        yList.append(repeatLegendItem_symbol(item).scenePos().y())
+        yList.append(repeatLegendItem_text(item).scenePos().y())
 
     return max(yList)
 
@@ -255,6 +259,26 @@ def legendItem_text(item):
     """
 
     return item[2]
+
+
+
+def repeatLegendItem_symbol(item):
+    """ Convenience wrapper returning the current symbol for a
+    particular repeat legend item.
+
+    """
+
+    return item[0]
+
+
+
+def repeatLegendItem_text(item):
+    """ Convenience wrapper returning the current description text
+    for a particular legend item.
+
+    """
+
+    return item[1]
 
 
 
@@ -330,6 +354,42 @@ def is_active_selection_rectangular(selectedCells):
     numCols = values.pop()
     numRows = len(cellsByRow)
     return (True, (numCols, numRows))
+
+
+
+def get_marked_rows(selectedCells, numColumns):
+    """ Returns a list of completely selected rows.
+
+    Returns a list of selected rows if nothing else
+    is selected and otherwise an empty list.
+
+    """
+
+    if selectedCells:
+        cellsByRow = order_selection_by_rows(selectedCells) 
+        values = set(num_unitcells(row) for row in cellsByRow.values())
+        if len(values) == 1 and values.pop() == numColumns:
+            return cellsByRow.keys()
+
+    return []
+
+
+
+def get_marked_columns(selectedCells, numRows):
+    """ Returns a list of completely selected columns.
+
+    Returns a list of selected columns if nothing else
+    is selected and otherwise an empty list.
+
+    """
+
+    if selectedCells:
+        cellsByColumn = order_selection_by_columns(selectedCells) 
+        values = set(len(col) for col in cellsByColumn.values())
+        if len(values) == 1 and values.pop() == numRows:
+            return cellsByColumn.keys()
+
+    return []
 
 
 
@@ -510,6 +570,12 @@ def get_edge_id(gridPoint1, gridPoint2):
 
     return ":".join(map(str, gridPoint1 + gridPoint2))
 
+
+
+def get_row_repeat_id(entry):
+    """ Returns the pattern repeat id of a patter row repeat. """
+
+    return entry[2]
 
 
 ############################################################################

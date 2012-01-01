@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>make_1_right</svgName>
+    <category>increases</category>
+    <symbolName>make 1 right</symbolName>
+    <symbolDescription>With left needle, lift strand between sts from the back and knit through the front loop</symbolDescription>
+    <symbolWidth>1</symbolWidth>
+  </knittingSymbol>
+</sconcho>

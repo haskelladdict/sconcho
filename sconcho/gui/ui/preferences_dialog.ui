@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>514</height>
+    <width>614</width>
+    <height>702</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>sconcho: Preferences</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_9">
+  <layout class="QVBoxLayout" name="verticalLayout_10">
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
@@ -101,7 +101,20 @@
       <attribute name="title">
        <string>Labels</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_7">
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
@@ -158,37 +171,20 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_3">
+        <widget class="QGroupBox" name="showRowLabelChecker">
          <property name="title">
-          <string>Row Label Properties</string>
+          <string>Show Row Labels</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <layout class="QGridLayout" name="gridLayout_6">
-            <item row="7" column="0">
-             <widget class="QRadioButton" name="showEvenRowsButton">
-              <property name="text">
-               <string>Even Row Labels Only</string>
-              </property>
-              <attribute name="buttonGroup">
-               <string>buttonGroup</string>
-              </attribute>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QRadioButton" name="labelOddRowsButton">
-              <property name="text">
-               <string>Hide Even Row Labels</string>
-              </property>
-              <attribute name="buttonGroup">
-               <string>buttonGroup</string>
-              </attribute>
-             </widget>
-            </item>
-            <item row="2" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
              <widget class="QRadioButton" name="labelAllRowsButton">
               <property name="text">
-               <string>Label All Rows</string>
+               <string>label all rows</string>
               </property>
               <property name="checked">
                <bool>true</bool>
@@ -198,47 +194,7 @@
               </attribute>
              </widget>
             </item>
-            <item row="4" column="0">
-             <widget class="QRadioButton" name="labelEvenRowsButton">
-              <property name="text">
-               <string>Hide Odd Row Labels</string>
-              </property>
-              <attribute name="buttonGroup">
-               <string>buttonGroup</string>
-              </attribute>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="QRadioButton" name="showOddRowsButton">
-              <property name="text">
-               <string>Odd Row Labels Only</string>
-              </property>
-              <attribute name="buttonGroup">
-               <string>buttonGroup</string>
-              </attribute>
-             </widget>
-            </item>
-            <item row="2" column="2">
-             <widget class="QLabel" name="label_8">
-              <property name="text">
-               <string>row labels start at</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="2">
-             <widget class="QSpinBox" name="rowLabelStartSpinner">
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>10000</number>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
+            <item>
              <spacer name="horizontalSpacer_2">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -251,14 +207,170 @@
               </property>
              </spacer>
             </item>
-            <item row="6" column="2">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>row labels start with</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="rowLabelStartSpinner">
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="showOddRowsButton">
+            <property name="text">
+             <string>odd row labels only</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="showEvenRowsButton">
+            <property name="text">
+             <string>even row labels only</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QRadioButton" name="showRowsWithIntervalButton">
+              <property name="text">
+               <string>show only every </string>
+              </property>
+              <attribute name="buttonGroup">
+               <string>buttonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="rowLabelsIntervalSpinner">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>10000</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="rowLabelsStartLabel">
+              <property name="text">
+               <string>label starting at row</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="rowLabelsIntervalStartSpinner">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>10000</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_9">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>15</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="label_13">
+              <property name="text">
+               <string>odd row label location</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="oddRowLabelLocationComboBox">
+              <item>
+               <property name="text">
+                <string>right of pattern</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>left of pattern</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Preferred</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>100</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
              <widget class="QLabel" name="label_9">
               <property name="text">
                <string>even row label location</string>
               </property>
              </widget>
             </item>
-            <item row="7" column="2">
+            <item>
              <widget class="QComboBox" name="evenRowLabelLocationComboBox">
               <item>
                <property name="text">
@@ -272,6 +384,99 @@
               </item>
              </widget>
             </item>
+            <item>
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Preferred</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>100</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+         <zorder>showOddRowsButton</zorder>
+         <zorder>showEvenRowsButton</zorder>
+         <zorder>verticalSpacer_7</zorder>
+         <zorder></zorder>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="showColumnLabelChecker">
+         <property name="title">
+          <string>Show Column Labels</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QRadioButton" name="labelAllColumnsButton">
+            <property name="text">
+             <string>label all columns</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QRadioButton" name="showColumnsWithIntervalButton">
+              <property name="text">
+               <string>show only every </string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="columnLabelsIntervalSpinner">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>10000</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_16">
+              <property name="text">
+               <string>label starting at column</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="columnLabelsIntervalStartSpinner">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>10000</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
           </item>
          </layout>
@@ -284,19 +489,6 @@
        <string>Grid Properties</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_8">
-       <item>
-        <spacer name="verticalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>46</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
        <item>
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="0" column="0">
@@ -333,17 +525,46 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="2">
+          <spacer name="horizontalSpacer_8">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </item>
        <item>
-        <spacer name="verticalSpacer_4">
+        <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Preferred</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>80</height>
+           <height>20</height>
           </size>
          </property>
         </spacer>
@@ -406,14 +627,17 @@
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer_6">
+        <spacer name="verticalSpacer_4">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Preferred</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>29</height>
+           <height>20</height>
           </size>
          </property>
         </spacer>
@@ -427,6 +651,19 @@
           <bool>true</bool>
          </property>
         </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -481,14 +718,14 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <spacer name="verticalSpacer">
+    <spacer name="verticalSpacer_6">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>236</height>
+       <height>29</height>
       </size>
      </property>
     </spacer>
@@ -541,12 +778,12 @@ p, li { white-space: pre-wrap; }
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>268</x>
-     <y>491</y>
+     <x>565</x>
+     <y>670</y>
     </hint>
     <hint type="destinationlabel">
-     <x>175</x>
-     <y>428</y>
+     <x>441</x>
+     <y>654</y>
     </hint>
    </hints>
   </connection>

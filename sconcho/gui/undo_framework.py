@@ -43,6 +43,8 @@ from sconcho.util.canvas import (get_item_id,
                                  PatternCanvasEntry)
 
 from sconcho.util.misc import (errorLogger)
+from sconcho.gui.pattern_canvas_objects import (RepeatLegendItem,
+                                                PatternLegendText) 
 
 
 ###########################################################################
@@ -154,13 +156,13 @@ class PasteCells(QUndoCommand):
 
 
 
-class InsertRow(QUndoCommand):
+class InsertRows(QUndoCommand):
     """ This class encapsulates the insertion of a row action. """
 
 
     def __init__(self, canvas, rowShift, pivot, mode, parent = None):
 
-        super(InsertRow, self).__init__(parent)
+        super(InsertRows, self).__init__(parent)
         self.setText("insert row")
         self.canvas = canvas
         self.rowShift = rowShift
@@ -189,12 +191,10 @@ class InsertRow(QUndoCommand):
         
         """
     
-        shiftedItems = set()
-        for colID in range(0, self.numColumns):
-            for rowID in range(self.pivot, self.numRows):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    shiftedItems.add(item)
+        shiftedItems = \
+            self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                self.pivot, 
+                                                self.numRows)
 
         for item in shiftedItems:
             shift_item_row_wise(item, self.rowShift, self.unitHeight)
@@ -209,9 +209,11 @@ class InsertRow(QUndoCommand):
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells, 
                                            self.pivot, self.rowShift)
-        
+
+        self.redo_adjust_row_repeats(self.pivot, self.rowShift)
+    
         self.canvas._numRows += self.rowShift
-        self._finalize()
+        self.finalize()
 
 
 
@@ -235,36 +237,57 @@ class InsertRow(QUndoCommand):
                 shift_selection_vertically(self.canvas._selectedCells, 
                                            self.pivot, rowUpShift)
 
-        # remove all previously inserted rows
-        selection = set()
-        for colID in range(0, self.numColumns):
-            for rowID in range(self.pivot, self.pivot + self.rowShift):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
-
+        selection = \
+            self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                self.pivot, 
+                                                self.pivot + self.rowShift)
         for item in selection:
             self.canvas.removeItem(item)
             del item
 
-        # shift the rest back into place
-        selection.clear()
-        for colID in range(0, self.numColumns):
-            for rowID in range(self.pivot + self.rowShift, 
-                               self.numRows + self.rowShift):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
+        selection = \
+            self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                self.pivot + self.rowShift, 
+                                                self.numRows + self.rowShift)
 
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
- 
+
+        self.undo_adjust_row_repeats(self.pivot, self.rowShift)
         self.canvas._numRows -= self.rowShift
-        self._finalize()
-       
+        self.finalize()
 
 
-    def _finalize(self):
+
+    def undo_adjust_row_repeats(self, pivot, rowShift):
+        """ Adjust the row repeats such that they are consistent 
+        with the newly inserted rows. 
+
+        If a row is inserted within a row repeat we assume the user
+        wants to extend the row repeat itself.
+
+        """
+
+        self.canvas.rowRepeatTracker.shift_and_expand_repeats(pivot, 
+                                                              -rowShift)
+
+
+
+    def redo_adjust_row_repeats(self, pivot, rowShift):
+        """ Adjust the row repeats such that they are consistent 
+        with the newly inserted rows. 
+
+        If a row is inserted within a row repeat we assume the user
+        wants to extend the row repeat itself.
+
+        """
+
+        self.canvas.rowRepeatTracker.shift_and_expand_repeats(pivot, 
+                                                              rowShift)
+
+
+
+    def finalize(self):
         """ Common stuff for redo/undo after the canvas has been adjusted
         appropriately.
 
@@ -274,27 +297,29 @@ class InsertRow(QUndoCommand):
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
 
-        # NOTE: We need to propagate the canvas' values for
-        # numRows, rowLabelOffset
-        self.canvas.insertDeleteRowColDialog.set_row_limit( \
-                self.canvas._rowLabelOffset, self.canvas._numRows)
 
 
 
-
-class DeleteRow(QUndoCommand):
+class DeleteRows(QUndoCommand):
     """ This class encapsulates the deletion of rows. """
 
 
-    def __init__(self, canvas, rowShift, pivot, mode, parent = None):
+    def __init__(self, canvas, deadRows, parent = None):
 
-        super(DeleteRow, self).__init__(parent)
+        super(DeleteRows, self).__init__(parent)
         self.setText("delete row")
         self.canvas = canvas
-        self.rowShift = rowShift
-        self.pivot = pivot
-        self.mode = mode
         self.numRows = canvas._numRows
+
+        self.deadRows = deadRows
+        self.deadRows.sort()
+        self.deadRows.reverse()
+        self.deadRanges = self.compute_dead_ranges()
+        self.reverseDeadRanges = list(self.deadRanges)
+        self.reverseDeadRanges.reverse()
+
+        self.deadRepeatRows = {}
+
         self.numColumns = canvas._numColumns
         self.unitHeight = self.canvas._unitCellDim.height()
         self.unitWidth = self.canvas._unitCellDim.width()
@@ -312,22 +337,14 @@ class DeleteRow(QUndoCommand):
         
         """
 
-        # deleting always implies shifting some things up
-        rowUpShift = -1 * self.rowShift
-
-        if self.mode == "above":
-            deleteRange = range(self.pivot - self.rowShift, self.pivot)
-            shiftRange = range(self.pivot, self.numRows)
-        else:
-            deleteRange = range(self.pivot, self.pivot + self.rowShift)
-            shiftRange = range(self.pivot + self.rowShift, self.numRows)
-
-
-        self._delete_requested_items(deleteRange)
-        self._remove_selected_cells(deleteRange)
-        self._redo_shift_remaining_items(shiftRange, rowUpShift)
-        self.canvas._numRows -= self.rowShift
-        self._finalize()
+        self.deletedCells = []
+        for (pivot, num) in self.deadRanges:
+            self.delete_requested_items(pivot, num)
+            self.remove_selected_cells(pivot, num)
+            self.redo_shift_remaining_items(pivot, -num)
+            self.redo_adjust_row_repeats(pivot, num)           
+        self.canvas._numRows -= len(self.deadRows)
+        self.finalize()
        
 
 
@@ -340,50 +357,93 @@ class DeleteRow(QUndoCommand):
 
         """
 
-        if self.mode == "above":
-            shiftRange  = range(self.pivot - self.rowShift, 
-                                self.numRows - self.rowShift)
-        else:
-            shiftRange  = range(self.pivot, self.numRows - self.rowShift)
-
-            
-        self._undo_shift_remaining_items(shiftRange)
-        self._readd_selected_cells()
-        self._readd_deleted_items()
-        self.canvas._numRows += self.rowShift
-        self._finalize()
+        for (pivot, num) in self.reverseDeadRanges:
+            self.undo_shift_remaining_items(pivot, num)
+            self.undo_adjust_row_repeats(pivot, num)
+        self.readd_selected_cells()
+        self.readd_deleted_items()
+        self.canvas._numRows += len(self.deadRows)
+        self.finalize()
        
 
 
-    def _delete_requested_items(self, deleteRange):
-        """ Delete the requested items. """ 
-      
-        selection = set()
-        for colID in range(0, self.numColumns):
-            for rowID in deleteRange:
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
+    def compute_dead_ranges(self):
+        """ Compute the ranges of selected cells to be deleted. """
 
-        self.deletedCells = []
+        deadRanges = []
+        prevItem = self.deadRows[0]
+        length = 1
+        for item in self.deadRows[1:]:
+            if prevItem - item == 1:
+                length += 1
+            else:
+                deadRanges.append((prevItem, length))
+                length = 1
+
+            prevItem = item
+
+        deadRanges.append((prevItem, length))
+        return deadRanges
+
+
+
+    def undo_adjust_row_repeats(self, pivot, rowShift):
+        """ Adjust the row repeats such that they are consistent 
+        with the deleted rows. 
+
+        """
+
+        self.canvas.rowRepeatTracker.shift_and_expand_repeats(pivot, 
+                                                              rowShift)
+        if pivot in self.deadRepeatRows:
+            item = self.deadRepeatRows[pivot]
+            self.canvas.rowRepeatTracker.restore_repeat(item)
+
+
+
+    def redo_adjust_row_repeats(self, pivot, rowShift):
+        """ Adjust the row repeats such that they are consistent 
+        with the deleted rows. 
+
+        """
+
+        item = self.canvas.rowRepeatTracker.change_repeat(pivot, rowShift)
+        if item:
+            self.deadRepeatRows[pivot] = item
+
+        self.canvas.rowRepeatTracker.shift_and_expand_repeats(pivot, 
+                                                              -rowShift)
+
+
+
+    def delete_requested_items(self, pivot, rowShift): 
+        """ Delete the requested items. """ 
+
+        selection = self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                        pivot, 
+                                                        pivot + rowShift)
+
         for item in selection:
-            self.deletedCells.append(PatternCanvasEntry(item.column, item.row, 
-                                                        item.width, item.color,
+            self.deletedCells.append(PatternCanvasEntry(item.column, 
+                                                        item.row, 
+                                                        item.width, 
+                                                        item.color,
                                                         item.symbol))
             self.canvas.removeItem(item)
             del item
 
 
 
-    def _remove_selected_cells(self, deleteRange):
+    def remove_selected_cells(self, pivot, rowShift): 
         """ Remove the deleted items from the current selection
         (if applicable).
 
         """
 
         self.deadSelectedCells = {}
-        cellsByRow = order_selection_by_rows(self.canvas._selectedCells.values())
-        for rowID in deleteRange:
+        cellsByRow = \
+            order_selection_by_rows(self.canvas._selectedCells.values())
+        for rowID in range(pivot, pivot+rowShift):
             if rowID in cellsByRow:
                 for entry in cellsByRow[rowID]:
                     entryID = get_item_id(entry.column, entry.row)
@@ -392,19 +452,14 @@ class DeleteRow(QUndoCommand):
 
 
 
-    def _redo_shift_remaining_items(self, shiftRange, rowUpShift):
+    def redo_shift_remaining_items(self, pivot, rowUpShift):
         """ Shift all remaining canvas elements to accomodate the
         inserted rows.
 
         """
 
-        selection = set()
-        for colID in range(0, self.numColumns):
-            for rowID in shiftRange:
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
-
+        selection = self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                        pivot, self.numRows)
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
 
@@ -413,34 +468,30 @@ class DeleteRow(QUndoCommand):
                                 self.unitWidth)
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells, 
-                                           self.pivot, rowUpShift)
+                                           pivot, rowUpShift)
 
 
 
-    def _undo_shift_remaining_items(self, shiftRange):
+    def undo_shift_remaining_items(self, pivot, rowDownShift):
         """ Shift elements on canvas back to shifting done in redo. """
 
         # make sure to shift legend and selection first
-        shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
+        shift_legend_vertically(self.canvas.gridLegend, rowDownShift, 
                                 self.unitHeight, self.numColumns, 
                                 self.unitWidth)
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells, 
-                                           self.pivot, self.rowShift)
+                                           pivot, rowDownShift)
 
-        shiftItems = set()
-        for colID in range(0, self.numColumns):
-            for rowID in shiftRange:
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    shiftItems.add(item)
+        shiftItems = self.canvas._items_in_col_row_range(0, self.numColumns,
+                                                         pivot, self.numRows)
 
         for item in shiftItems:
-            shift_item_row_wise(item, self.rowShift, self.unitHeight)
+            shift_item_row_wise(item, rowDownShift, self.unitHeight)
 
             
 
-    def _readd_selected_cells(self):
+    def readd_selected_cells(self):
         """ Re-add the previously deleted selected cells. """
         
         for (key, entry) in self.deadSelectedCells.items():
@@ -448,7 +499,7 @@ class DeleteRow(QUndoCommand):
 
 
 
-    def _readd_deleted_items(self):
+    def readd_deleted_items(self):
         """ Re-add previously deleted items. """
 
         for entry in self.deletedCells:
@@ -471,7 +522,7 @@ class DeleteRow(QUndoCommand):
 
 
 
-    def _finalize(self):
+    def finalize(self):
         """ Common stuff for redo/undo after the canvas has been adjusted
         appropriately.
 
@@ -481,20 +532,15 @@ class DeleteRow(QUndoCommand):
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
 
-        # NOTE: We need to propagate the canvas' values for
-        # numRows, rowLabelOffset
-        self.canvas.insertDeleteRowColDialog.set_row_limit( \
-                self.canvas._rowLabelOffset, self.canvas._numRows)
 
 
-
-class InsertColumn(QUndoCommand):
+class InsertColumns(QUndoCommand):
     """ This class encapsulates the insertion of columns. """
 
 
     def __init__(self, canvas, columnShift, pivot, mode, parent = None):
 
-        super(InsertColumn, self).__init__(parent)
+        super(InsertColumns, self).__init__(parent)
         self.setText("insert column")
         self.canvas = canvas
         self.columnShift = columnShift
@@ -522,12 +568,10 @@ class InsertColumn(QUndoCommand):
         
         """
     
-        shiftedItems = set()
-        for rowID in range(0, self.numRows):
-            for colID in range(self.pivot, self.numColumns):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    shiftedItems.add(item)
+        shiftedItems = \
+            self.canvas._items_in_col_row_range(self.pivot, 
+                                                self.numColumns,
+                                                0, self.numRows)
 
         for item in shiftedItems:
             shift_item_column_wise(item, self.columnShift, self.unitWidth)
@@ -535,7 +579,8 @@ class InsertColumn(QUndoCommand):
         for column in range(0, self.columnShift):
             self.canvas._create_column(self.pivot + column)
 
-        shift_legend_horizontally(self.canvas.gridLegend, self.columnShift, 
+        shift_legend_horizontally(self.canvas.gridLegend, 
+                                  self.columnShift, 
                                   self.unitWidth, self.numRows, 
                                   self.unitHeight)
         self.canvas._selectedCells = \
@@ -544,7 +589,7 @@ class InsertColumn(QUndoCommand):
                                              self.columnShift)
         
         self.canvas._numColumns += self.columnShift
-        self._finalize()
+        self.finalize()
 
 
 
@@ -568,13 +613,10 @@ class InsertColumn(QUndoCommand):
                 shift_selection_horizontally(self.canvas._selectedCells, 
                                              self.pivot, columnLeftShift)
 
-        # remove all previously inserted columns
-        selection = set()
-        for rowID in range(0, self.numRows):
-            for colID in range(self.pivot, self.pivot + self.columnShift):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
+        selection = self.canvas._items_in_col_row_range( \
+                          self.pivot, 
+                          self.pivot + self.columnShift,
+                          0, self.numRows)
 
         for item in selection:
             self.canvas.removeItem(item)
@@ -582,22 +624,19 @@ class InsertColumn(QUndoCommand):
 
         # shift the rest back into place
         selection.clear()
-        for rowID in range(0, self.numRows):
-            for colID in range(self.pivot + self.columnShift, 
-                               self.numColumns + self.columnShift):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
-
+        selection = self.canvas._items_in_col_row_range( \
+                          self.pivot + self.columnShift, 
+                          self.numColumns + self.columnShift,
+                          0, self.numRows)
         for item in selection:
             shift_item_column_wise(item, columnLeftShift, self.unitWidth)
  
         self.canvas._numColumns -= self.columnShift
-        self._finalize()
+        self.finalize()
        
 
 
-    def _finalize(self):
+    def finalize(self):
         """ Common stuff for redo/undo after the canvas has been adjusted
         appropriately.
 
@@ -606,29 +645,30 @@ class InsertColumn(QUndoCommand):
         self.canvas.finalize_grid_change()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
-        self.canvas.insertDeleteRowColDialog.set_upper_column_limit( \
-                self.canvas._numColumns)
 
 
 
 
-
-class DeleteColumn(QUndoCommand):
+class DeleteColumns(QUndoCommand):
     """ This class encapsulates the deletion of columns. """
 
 
-    def __init__(self, canvas, columnShift, pivot, mode, parent = None):
+    def __init__(self, canvas, deadColumns, parent = None):
 
-        super(DeleteColumn, self).__init__(parent)
+        super(DeleteColumns, self).__init__(parent)
         self.setText("delete column")
         self.canvas = canvas
-        self.columnShift = columnShift
-        self.pivot = pivot
-        self.mode = mode
         self.numRows = canvas._numRows
         self.numColumns = canvas._numColumns
         self.unitHeight = self.canvas._unitCellDim.height()
         self.unitWidth = self.canvas._unitCellDim.width()
+
+        self.deadColumns = deadColumns
+        self.deadColumns.sort()
+        self.deadColumns.reverse()
+        self.deadRanges = self.compute_dead_ranges()
+        self.reverseDeadRanges = list(self.deadRanges)
+        self.reverseDeadRanges.reverse()
 
 
 
@@ -644,22 +684,13 @@ class DeleteColumn(QUndoCommand):
         
         """
 
-        # deleting always implies shifting some things to the left
-        columnLeftShift = -1 * self.columnShift
-
-        if self.mode == "left of":
-            deleteRange = range(self.pivot - self.columnShift, self.pivot)
-            shiftRange = range(self.pivot, self.numColumns)
-        else:
-            deleteRange = range(self.pivot, self.pivot + self.columnShift)
-            shiftRange = range(self.pivot + self.columnShift, self.numColumns)
-
-
-        self._delete_requested_items(deleteRange)
-        self._remove_selected_cells(deleteRange)
-        self._redo_shift_remaining_items(shiftRange, columnLeftShift)
-        self.canvas._numColumns -= self.columnShift
-        self._finalize()
+        self.deletedCells = []
+        for (pivot, num) in self.deadRanges:
+            self.delete_requested_items(pivot, num)
+            self.remove_selected_cells(pivot, num)
+            self.redo_shift_remaining_items(pivot, -num)
+        self.canvas._numColumns -= len(self.deadColumns)
+        self.finalize() 
        
 
 
@@ -672,42 +703,55 @@ class DeleteColumn(QUndoCommand):
 
         """
 
-        if self.mode == "left of":
-            shiftRange  = range(self.pivot - self.columnShift, 
-                                self.numColumns - self.columnShift)
-        else:
-            shiftRange  = range(self.pivot, self.numColumns - self.columnShift)
+        for (pivot, num) in self.reverseDeadRanges:
+            self.undo_shift_remaining_items(pivot, num)
+        self.readd_selected_cells()
+        self.readd_deleted_items()
+        self.canvas._numColumns += len(self.deadColumns)
+        self.finalize()
 
 
-        self._undo_shift_remaining_items(shiftRange)
-        self._readd_selected_cells()
-        self._readd_deleted_items()
-        self.canvas._numColumns += self.columnShift
-        self._finalize()
-       
+
+    def compute_dead_ranges(self):
+        """ Compute the ranges of selected cells to be deleted. """
+
+        deadRanges = []
+        prevItem = self.deadColumns[0]
+        length = 1
+        for item in self.deadColumns[1:]:
+            if prevItem - item == 1:
+                length += 1
+            else:
+                deadRanges.append((prevItem, length))
+                length = 1
+
+            prevItem = item
+
+        deadRanges.append((prevItem, length))
+        return deadRanges
 
 
-    def _delete_requested_items(self, deleteRange):
+
+    def delete_requested_items(self, pivot, columnShift): 
         """ Delete the requested items. """
         
-        selection = set()
-        for rowID in range(0, self.numRows):
-            for colID in deleteRange:
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    selection.add(item)
+        selection = self.canvas._items_in_col_row_range(pivot, 
+                                                        pivot + columnShift,
+                                                        0,  self.numRows)
+                                                        
 
-        self.deletedCells = []
         for item in selection:
-            self.deletedCells.append(PatternCanvasEntry(item.column, item.row, 
-                                                        item.width, item.color, 
+            self.deletedCells.append(PatternCanvasEntry(item.column, 
+                                                        item.row, 
+                                                        item.width, 
+                                                        item.color, 
                                                         item.symbol))
             self.canvas.removeItem(item)
             del item
 
 
 
-    def _remove_selected_cells(self, deleteRange):
+    def remove_selected_cells(self, pivot, columnShift): 
         """ Remove the any deleted items from the current
         selection (if applicable).
 
@@ -716,7 +760,7 @@ class DeleteColumn(QUndoCommand):
         self.deadSelectedCells = {}
         cellsByColumn = order_selection_by_columns(\
             self.canvas._selectedCells.values())
-        for colID in deleteRange:
+        for colID in range(pivot, pivot+columnShift): 
             if colID in cellsByColumn:
                 for entry in cellsByColumn[colID]:
                     entryID = get_item_id(entry.column, entry.row)
@@ -725,18 +769,15 @@ class DeleteColumn(QUndoCommand):
 
 
 
-    def _redo_shift_remaining_items(self, shiftRange, columnLeftShift):
+    def redo_shift_remaining_items(self, pivot, columnLeftShift):
         """ Shift all remaining canvas elements to accomodate the
-        inserted rows.
+        inserted columns.
 
         """
         
-        selection = set()
-        for rowID in range(0, self.numRows):
-            for colID in shiftRange:
-                item = self.canvas._item_at_row_col(rowID, colID)
-                selection.add(item)
-
+        selection = \
+            self.canvas._items_in_col_row_range(pivot, self.numColumns,
+                                                0,  self.numRows)
         for item in selection:
             shift_item_column_wise(item, columnLeftShift, self.unitWidth)
 
@@ -745,35 +786,31 @@ class DeleteColumn(QUndoCommand):
                                   self.unitHeight)
         self.canvas._selectedCells = \
                 shift_selection_horizontally(self.canvas._selectedCells,
-                                             self.pivot, columnLeftShift)
+                                             pivot, columnLeftShift)
 
 
 
-    def _undo_shift_remaining_items(self, shiftRange):
+    def undo_shift_remaining_items(self, pivot, columnRightShift):
         """ Shift elements on canvas back to shifting done in redo. """
 
         # make sure to shift legend and selection first
-        shift_legend_horizontally(self.canvas.gridLegend, self.columnShift, 
+        shift_legend_horizontally(self.canvas.gridLegend, 
+                                  columnRightShift, 
                                   self.unitWidth, self.numRows,
                                   self.unitHeight)
         self.canvas._selectedCells = \
                 shift_selection_horizontally(self.canvas._selectedCells,
-                                             self.pivot, self.columnShift)
+                                             pivot, columnRightShift)
 
-
-        shiftItems = set()
-        for colID in shiftRange:
-            for rowID in range(0, self.numRows):
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    shiftItems.add(item)
-
+        shiftItems = \
+            self.canvas._items_in_col_row_range(pivot, self.numColumns,
+                                                0, self.numRows)
         for item in shiftItems:
-            shift_item_column_wise(item, self.columnShift, self.unitWidth)
+            shift_item_column_wise(item, columnRightShift, self.unitWidth)
 
 
 
-    def _readd_selected_cells(self):
+    def readd_selected_cells(self):
         """ Re-add previously deleted selected cells. """
 
         for (key, entry) in self.deadSelectedCells.items():
@@ -781,7 +818,7 @@ class DeleteColumn(QUndoCommand):
 
 
 
-    def _readd_deleted_items(self):
+    def readd_deleted_items(self):
         """ Re-add previously deleted items. """
 
         for entry in self.deletedCells:
@@ -805,7 +842,7 @@ class DeleteColumn(QUndoCommand):
 
 
             
-    def _finalize(self):
+    def finalize(self):
         """ Common stuff for redo/undo after the canvas has been adjusted
         appropriately.
 
@@ -814,9 +851,6 @@ class DeleteColumn(QUndoCommand):
         self.canvas.finalize_grid_change()
         self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
-        self.canvas.insertDeleteRowColDialog.set_upper_column_limit( \
-                self.canvas._numColumns)
-
 
 
 
@@ -1180,6 +1214,186 @@ class MoveCanvasItem(QUndoCommand):
 
 
 
+class AddPatternRepeatLegend(QUndoCommand):
+    """ This class encapsulates the creation of a legend for a
+    pattern repeat item the canvas.
+
+    """
+    
+    def __init__(self, canvas, pathItem, parent = None):
+
+        super(AddPatternRepeatLegend, self).__init__(parent)
+
+        self.canvas = canvas
+        self.pathItem = pathItem 
+        self.legendText = QString("pattern repeat")
+
+        self.legendItem = RepeatLegendItem(self.pathItem.color)
+        self.legendTextItem = PatternLegendText(self.legendText)
+
+        yCoord = self.canvas._get_legend_y_coordinate_for_placement()
+        self.itemPos = QPointF(0, yCoord + self.legendItem.height + 30)
+        self.textPos = QPointF(self.legendItem.width + 30,                 
+                               yCoord + self.legendItem.height + 20)
+        
+
+
+    def redo(self):
+
+        self.canvas.addItem(self.legendItem)
+        self.legendItem.setPos(self.itemPos)
+        self.legendItem.update()
+        
+        self.canvas.addItem(self.legendTextItem)
+        self.legendTextItem.setPos(self.textPos)
+        self.legendTextItem.setFont(self.canvas.settings.legendFont.value)
+        self.legendTextItem.update()
+        
+        self.canvas.repeatLegend[self.pathItem.itemID] = \
+            (self.legendItem, self.legendTextItem)
+        
+         
+
+    def undo(self):
+
+        self.itemPos = self.legendItem.scenePos()
+        self.textPos = self.legendTextItem.scenePos()
+        self.legendText = self.legendTextItem.toPlainText()
+
+        self.canvas.removeItem(self.legendItem)
+        self.canvas.removeItem(self.legendTextItem)
+        del self.canvas.repeatLegend[self.pathItem.itemID]
+
+
+
+
+class DeletePatternRepeatLegend(QUndoCommand):
+    """ This class encapsulates the deletion of a legend for a
+    pattern repeat item the canvas.
+
+    """
+    
+    def __init__(self, canvas, pathItem, parent = None):
+
+        super(DeletePatternRepeatLegend, self).__init__(parent)
+
+        self.canvas = canvas
+        self.pathItem = pathItem 
+
+        #if self.pathItem.hasLegend:
+        (self.legendItem, self.legendTextItem) = \
+                self.canvas.repeatLegend[self.pathItem.itemID]
+
+
+
+    def redo(self):
+
+        # store position and content
+        self.itemPos = self.legendItem.scenePos()
+        self.textPos = self.legendTextItem.scenePos()
+        self.legendText = self.legendTextItem.toPlainText()
+
+        self.canvas.removeItem(self.legendItem)
+        self.canvas.removeItem(self.legendTextItem)
+        del self.canvas.repeatLegend[self.pathItem.itemID]
+        
+         
+
+    def undo(self):
+
+        # restore items at proper position and text
+        self.canvas.addItem(self.legendItem)
+        self.legendItem.setPos(self.itemPos)
+        self.legendItem.update()
+
+        self.canvas.addItem(self.legendTextItem)
+        self.legendTextItem.setPos(self.textPos)
+        self.legendTextItem.setFont(self.canvas.settings.legendFont.value)
+        self.legendTextItem.update()
+
+        self.canvas.repeatLegend[self.pathItem.itemID] = \
+            (self.legendItem, self.legendTextItem)
+
+
+
+
+
+class EditPatternRepeatLegend(QUndoCommand):
+    """ This class encapsulates the editing of a legend for a
+    pattern repeat item the canvas.
+
+    """
+    
+    def __init__(self, canvas, pathItem, legendVisibility, parent = None):
+
+        super(EditPatternRepeatLegend, self).__init__(parent)
+
+        self.canvas = canvas
+        self.pathItem = pathItem 
+        self.newColor = pathItem.color
+        self.shownInLegend = pathItem.hasLegend 
+        if legendVisibility == Qt.Checked:
+            self.newLegendVisibility = True
+        else:
+            self.newLegendVisibility = False
+
+
+
+    def redo(self):
+        """ redoing when editing a pattern repeat legend boils
+        down to three cases:
+
+        1) we don't want to show a legend but currently have one:
+           store values of legend and then remove it. Note: We have
+           to store positions and text within the PatternRepeatItem
+           itself since these values won't persist between
+           EditPatternRepeatLegend actions
+
+        2) we don't want to show a legend and don't have one:
+           nothing to do
+
+        3) we want to show a legend and have one:
+           update the legend color, that's it
+
+        """
+
+        (self.legendItem, self.legendTextItem) = \
+            self.canvas.repeatLegend[self.pathItem.itemID]
+
+        self.oldColor = self.legendItem.color
+        self.legendItem.color = self.newColor                      
+        self.legendItem.update()
+
+        if self.shownInLegend and not self.newLegendVisibility:
+            self.legendItem.hide()
+            self.legendTextItem.hide()
+            self.pathItem.hasLegend = False
+        elif not self.shownInLegend and self.newLegendVisibility:
+            self.legendItem.show()
+            self.legendTextItem.show()
+            self.pathItem.hasLegend = True
+            
+        
+
+    def undo(self):
+        """ See redo for an explanation of the possible actions. """
+
+
+        self.legendItem.color = self.oldColor                      
+        self.legendItem.update()
+
+        if self.shownInLegend and not self.newLegendVisibility:
+            self.legendItem.show()
+            self.legendTextItem.show()
+            self.pathItem.hasLegend = True
+        elif not self.shownInLegend and self.newLegendVisibility:
+            self.legendItem.hide()
+            self.legendTextItem.hide()
+            self.pathItem.hasLegend = False
+
+
+
+
 class AddPatternRepeat(QUndoCommand):
     """ This class encapsulates the creation of a pattern repeat
     item on the canvas.
@@ -1208,9 +1422,9 @@ class AddPatternRepeat(QUndoCommand):
                 if itemID in self.canvas._selectedCells:
                     del self.canvas._selectedCells[itemID]
                 else:
-                    errorString = ("AddPatternRepeat.redo: trying to delete "
+                    errString = ("AddPatternRepeat.redo: trying to delete "
                                    "invalid selected cell.")
-                    errorLogger.write(errorString)
+                    errorLogger.write(errString)
 
                 item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:
@@ -1234,6 +1448,7 @@ class AddPatternRepeat(QUndoCommand):
          
         
 
+
 class EditPatternRepeat(QUndoCommand):
     """ This class encapsulates the editing of a pattern repeat
     item on the canvas.
@@ -1248,8 +1463,10 @@ class EditPatternRepeat(QUndoCommand):
         self.patternRepeat = patternRepeat
         self.oldColor = patternRepeat.color
         self.oldWidth = patternRepeat.width
+        #self.oldLegendStatus = patternRepeat.hasLegend
         self.newColor = newColor
         self.newWidth = newWidth
+        #self.newLegendStatus = newLegendStatus
 
 
 
@@ -1257,6 +1474,7 @@ class EditPatternRepeat(QUndoCommand):
         """ The redo action. """
 
         self.patternRepeat.set_properties(self.newColor, self.newWidth)
+                                       #   self.newLegendStatus)
 
 
 
@@ -1264,6 +1482,7 @@ class EditPatternRepeat(QUndoCommand):
         """ The undo action. """
 
         self.patternRepeat.set_properties(self.oldColor, self.oldWidth)
+                                       #   self.oldLegendStatus)
 
 
 
@@ -1362,3 +1581,78 @@ class ColorSelectedCells(QUndoCommand):
                 self.canvas.remove_from_legend(item)
                 item.color = previousColor
                 self.canvas.add_to_legend(item)
+
+
+
+
+
+class AddRowRepeat(QUndoCommand):
+    """ This class encapsulates the creation of a row repeat
+    item on the canvas.
+
+    """
+
+    def __init__(self, canvas, multiplicity, parent = None):
+
+        super(AddRowRepeat, self).__init__(parent)
+
+        self.canvas = canvas
+        self.rowRepeatTracker = canvas.rowRepeatTracker
+        self.rows = canvas.marked_rows() #.keys()
+        self.multiplicity = multiplicity
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        self.rowRepeatTracker.add_repeat(self.rows, self.multiplicity)
+        self.canvas.set_up_labels()
+        
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        self.rowRepeatTracker.delete_repeat(self.rows)
+        self.canvas.set_up_labels()
+
+
+
+
+class DeleteRowRepeat(QUndoCommand):
+    """ This class encapsulates the deletion of a row repeat
+    item on the canvas.
+
+    """
+
+    def __init__(self, canvas, parent = None):
+
+        super(DeleteRowRepeat, self).__init__(parent)
+
+        self.canvas = canvas
+        self.rowRepeatTracker = canvas.rowRepeatTracker
+        
+        firstRow = canvas.marked_rows()[0] #.keys()[0]
+        (rowRange, multiplicity, dummy) = self.rowRepeatTracker[firstRow]
+
+        self.multiplicity = multiplicity
+        self.rows = list(rowRange)
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        self.rowRepeatTracker.delete_repeat(self.rows)
+        self.canvas.set_up_labels()
+        
+
+
+    def undo(self):
+        """ The undo action. """
+
+        self.rowRepeatTracker.add_repeat(self.rows, self.multiplicity)
+        self.canvas.set_up_labels()
+

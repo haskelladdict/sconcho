@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/sconcho_manual.ui'
 #
-# Created: Sat Nov  5 12:39:17 2011
-#      by: PyQt4 UI code generator 4.8.6
+# Created: Sat Dec 31 12:49:34 2011
+#      by: PyQt4 UI code generator 4.9
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -19,7 +19,6 @@ class Ui_SconchoManual(object):
         SconchoManual.setObjectName(_fromUtf8("SconchoManual"))
         SconchoManual.setWindowModality(QtCore.Qt.NonModal)
         SconchoManual.resize(925, 550)
-        SconchoManual.setWindowTitle(QtGui.QApplication.translate("SconchoManual", "Sconcho Manual", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout = QtGui.QVBoxLayout(SconchoManual)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.helpBrowser = QtGui.QTextBrowser(SconchoManual)
@@ -30,7 +29,6 @@ class Ui_SconchoManual(object):
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.pushButton = QtGui.QPushButton(SconchoManual)
-        self.pushButton.setText(QtGui.QApplication.translate("SconchoManual", "&Close", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.horizontalLayout.addWidget(self.pushButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -40,5 +38,6 @@ class Ui_SconchoManual(object):
         QtCore.QMetaObject.connectSlotsByName(SconchoManual)
 
     def retranslateUi(self, SconchoManual):
-        pass
+        SconchoManual.setWindowTitle(QtGui.QApplication.translate("SconchoManual", "Sconcho Manual", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton.setText(QtGui.QApplication.translate("SconchoManual", "&Close", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -80,7 +80,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.settings = settings
         self._restore_window_settings()
-        self.preferencesDialog = None
+        self.preferencesDialog = PreferencesDialog(self.settings, self)
         self.exportBitmapDialog = None
         self.manualDialog = None
 
@@ -160,7 +160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _set_up_connections(self):
         """ Set up all connections for MainWindow. """
-        
+
         self.connect(self.actionQuit, SIGNAL("triggered()"),
                      self.close)
 
@@ -207,9 +207,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("triggered()"),
                      self.open_manage_knitting_symbols_dialog)
 
-        self.connect(self.actionShow_grid_labels, SIGNAL("toggled(bool)"),
-                     self.canvas.toggle_label_visibility)
-        
         self.connect(self.actionShow_legend, SIGNAL("toggled(bool)"),
                      self.canvas.toggle_legend_visibility)
 
@@ -219,9 +216,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.canvas, SIGNAL("scene_changed"),
                      self.set_project_dirty)
 
-        self.connect(self.action_Insert_delete_rows_and_columns, 
-                     SIGNAL("triggered()"),
-                     partial(self.canvas.insert_delete_rows_columns, 1, 1))
+        self.connect(self.canvas, SIGNAL("row_repeat_added"),
+                     partial(self.preferencesDialog.allow_all_label_options, False))
+
+        self.connect(self.canvas, SIGNAL("no_more_row_labels"),
+                     partial(self.preferencesDialog.allow_all_label_options, True))
 
         self.connect(self.actionZoom_In, SIGNAL("triggered()"),
                      self.graphicsView.zoom_in)
@@ -252,6 +251,86 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.action_Redo, SIGNAL("triggered()"),
                      self.canvas.redo)
 
+        # connections for preferences dialog
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("label_font_changed"),
+                     self.canvas.label_font_changed)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("label_font_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("legend_font_changed"),
+                     self.canvas.legend_font_changed)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("legend_font_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("toggle_rowLabel_visibility(bool)"),
+                     self.canvas.toggle_rowLabel_visibility)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("toggle_columnLabel_visibility(bool)"),
+                     self.canvas.toggle_columnLabel_visibility)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_interval_changed"),
+                     self.canvas.set_up_labels)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_interval_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("column_label_interval_changed"),
+                     self.canvas.set_up_labels)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("column_label_interval_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_start_changed"),
+                     self.canvas.set_up_labels)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_start_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_location_changed"),
+                     self.canvas.set_up_labels)
+
+        self.connect(self.preferencesDialog, 
+                     SIGNAL("row_label_location_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("grid_cell_dimensions_changed"),
+                     self.canvas.change_grid_cell_dimensions)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("grid_cell_dimensions_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("highlighted_row_visibility_changed"),
+                     self.canvas.toggle_row_highlighting)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("redraw_highlighted_rows"),
+                     self.canvas.set_up_highlighted_rows)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("redraw_highlighted_rows"),
+                     self.set_project_dirty)
+
+        self.connect(self,
+                     SIGNAL("update_preferences"),
+                     self.preferencesDialog.populate_interface)
 
 
     def keyPressEvent(self, event):
@@ -646,7 +725,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if len(fileString) == 0:
             files = QStringList()
         else:
-            files = fileString.split(":")
+            files = fileString.split("%")
 
         # whithout a path we simply update the menu without
         # adding any filename
@@ -654,20 +733,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if path in files:
                 return
             else:
-                files.append(path)
+                fullPath = QFileInfo(path).absoluteFilePath()
+                files.append(fullPath)
                 while len(files) > 10:
                     files.takeFirst()
 
-        self.settings.recently_used_files = files.join(":")
+        self.settings.recently_used_files = files.join("%")
         self.clear_recently_used_files_menu()
 
         # the actual path is stored as data since the text
         # of the Action also provides numbering and accelerators
         for (index, path) in enumerate(files):
-            newPath = QAction(QString("&%d.  %s" % (index+1, path)),
-                              self.menuRecent_Files)
-            newPath.setData(QVariant(path))
-            self.menuRecent_Files.addAction(newPath)
+            fileName = QFileInfo(path).fileName()
+            newPathAction = \
+                QAction(QString("&%d.  %s" % (index+1, fileName)),
+                        self.menuRecent_Files)
+            newPathAction.setData(QVariant(path))
+            self.menuRecent_Files.addAction(newPathAction)
 
 
 
@@ -796,11 +878,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         """
 
-
         (status, errMsg, patternGridItems, legendItems, colors,
-         activeItem, patternRepeats) = io.read_project(self.settings,
-                                                       readFilePath)
+         activeItem, patternRepeats, repeatLegends, rowRepeats) = \
+         io.read_project(self.settings, readFilePath)
         
+
         if not status:
             QMessageBox.critical(self, msg.errorOpeningProjectTitle,
                                  errMsg, QMessageBox.Close)
@@ -810,7 +892,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.canvas.load_previous_pattern(self._knittingSymbols, 
                                                  patternGridItems,
                                                  legendItems,
-                                                 patternRepeats):
+                                                 patternRepeats,
+                                                 repeatLegends,
+                                                 rowRepeats):
             return
 
         set_up_colors(self.colorWidget, colors)
@@ -821,7 +905,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # provide feedback in statusbar
         readFileName = QFileInfo(readFilePath).fileName()
         self.emit(SIGNAL("update_preferences"))
-        self.statusBar().showMessage("successfully opened " + readFileName, 
+        self.statusBar().showMessage("successfully opened " + readFileName,
                                      3000)
 
 
@@ -875,80 +959,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def open_preferences_dialog(self):
         """ Open the preferences dialog. """
 
-        if not self.preferencesDialog:
-            self.preferencesDialog = PreferencesDialog(self.settings, self)
-            
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("label_font_changed"),
-                         self.canvas.label_font_changed)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("label_font_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("legend_font_changed"),
-                         self.canvas.legend_font_changed)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("legend_font_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_interval_changed"),
-                         self.canvas.set_up_labels)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_interval_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_start_changed"),
-                         self.canvas.set_up_labels)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_start_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("row_label_start_changed"),
-                         self.canvas.adjust_manage_grid_dialog_after_row_label_offset)
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("even_row_label_location_changed"),
-                         self.canvas.set_up_labels)
-
-            self.connect(self.preferencesDialog, 
-                         SIGNAL("even_row_label_location_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog,
-                         SIGNAL("grid_cell_dimensions_changed"),
-                         self.canvas.change_grid_cell_dimensions)
-
-            self.connect(self.preferencesDialog,
-                         SIGNAL("grid_cell_dimensions_changed"),
-                         self.set_project_dirty)
-
-            self.connect(self.preferencesDialog,
-                         SIGNAL("highlighted_row_visibility_changed"),
-                         self.canvas.toggle_row_highlighting)
-
-            self.connect(self.preferencesDialog,
-                         SIGNAL("redraw_highlighted_rows"),
-                         self.canvas.set_up_highlighted_rows)
-
-            self.connect(self.preferencesDialog,
-                         SIGNAL("redraw_highlighted_rows"),
-                         self.set_project_dirty)
-
-            self.connect(self,
-                         SIGNAL("update_preferences"),
-                         self.preferencesDialog.populate_interface)
-
-
         self.preferencesDialog.raise_()
         self.preferencesDialog.show()
-
 
 
 

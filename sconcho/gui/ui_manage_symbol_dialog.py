@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/manage_symbol_dialog.ui'
 #
-# Created: Sat Nov  5 12:39:17 2011
-#      by: PyQt4 UI code generator 4.8.6
+# Created: Sat Dec 31 12:49:34 2011
+#      by: PyQt4 UI code generator 4.9
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,7 +18,6 @@ class Ui_ManageKnittingSymbolDialog(object):
     def setupUi(self, ManageKnittingSymbolDialog):
         ManageKnittingSymbolDialog.setObjectName(_fromUtf8("ManageKnittingSymbolDialog"))
         ManageKnittingSymbolDialog.resize(753, 660)
-        ManageKnittingSymbolDialog.setWindowTitle(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "sconcho: Manage Custom Knitting Symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout_5 = QtGui.QVBoxLayout(ManageKnittingSymbolDialog)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -38,11 +37,6 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.verticalLayout.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label_7 = QtGui.QLabel(self.frame)
-        self.label_7.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Available Symbols</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.verticalLayout.addWidget(self.label_7)
         self.availableSymbolsWidget = QtGui.QTreeWidget(self.frame)
@@ -53,20 +47,16 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.availableSymbolsWidget.setSizePolicy(sizePolicy)
         self.availableSymbolsWidget.setColumnCount(1)
         self.availableSymbolsWidget.setObjectName(_fromUtf8("availableSymbolsWidget"))
-        self.availableSymbolsWidget.headerItem().setText(0, QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Category/Symbol", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout.addWidget(self.availableSymbolsWidget)
         self.addSymbolButton = QtGui.QPushButton(self.frame)
-        self.addSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "&Add New Symbol", None, QtGui.QApplication.UnicodeUTF8))
         self.addSymbolButton.setObjectName(_fromUtf8("addSymbolButton"))
         self.verticalLayout.addWidget(self.addSymbolButton)
         self.updateSymbolButton = QtGui.QPushButton(self.frame)
         self.updateSymbolButton.setEnabled(False)
-        self.updateSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Update Selected Symbol ", None, QtGui.QApplication.UnicodeUTF8))
         self.updateSymbolButton.setObjectName(_fromUtf8("updateSymbolButton"))
         self.verticalLayout.addWidget(self.updateSymbolButton)
         self.deleteSymbolButton = QtGui.QPushButton(self.frame)
         self.deleteSymbolButton.setEnabled(False)
-        self.deleteSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "&Delete Selected Symbol", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteSymbolButton.setObjectName(_fromUtf8("deleteSymbolButton"))
         self.verticalLayout.addWidget(self.deleteSymbolButton)
         self.verticalLayout_4.addLayout(self.verticalLayout)
@@ -80,11 +70,6 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.label_4 = QtGui.QLabel(self.symbolEntryFrame)
-        self.label_4.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">SVG Image</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.verticalLayout_2.addWidget(self.label_4)
         self.horizontalLayout_8 = QtGui.QHBoxLayout()
@@ -106,7 +91,6 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.horizontalLayout_8.addWidget(self.svgPathEdit)
         self.browseSymbolButton = QtGui.QPushButton(self.symbolEntryFrame)
         self.browseSymbolButton.setEnabled(True)
-        self.browseSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.browseSymbolButton.setAutoDefault(False)
         self.browseSymbolButton.setObjectName(_fromUtf8("browseSymbolButton"))
         self.horizontalLayout_8.addWidget(self.browseSymbolButton)
@@ -114,18 +98,12 @@ class Ui_ManageKnittingSymbolDialog(object):
         spacerItem = QtGui.QSpacerItem(20, 18, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem)
         self.label_12 = QtGui.QLabel(self.symbolEntryFrame)
-        self.label_12.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Description</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_12.setObjectName(_fromUtf8("label_12"))
         self.verticalLayout_2.addWidget(self.label_12)
         self.gridLayout_3 = QtGui.QGridLayout()
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         self.symbolNameLabel = QtGui.QLabel(self.symbolEntryFrame)
         self.symbolNameLabel.setEnabled(True)
-        self.symbolNameLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &name", None, QtGui.QApplication.UnicodeUTF8))
         self.symbolNameLabel.setObjectName(_fromUtf8("symbolNameLabel"))
         self.gridLayout_3.addWidget(self.symbolNameLabel, 0, 0, 1, 1)
         self.symbolNameEntry = QtGui.QLineEdit(self.symbolEntryFrame)
@@ -134,12 +112,10 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.gridLayout_3.addWidget(self.symbolNameEntry, 0, 1, 1, 1)
         self.symbolCategoryLabel = QtGui.QLabel(self.symbolEntryFrame)
         self.symbolCategoryLabel.setEnabled(True)
-        self.symbolCategoryLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &category", None, QtGui.QApplication.UnicodeUTF8))
         self.symbolCategoryLabel.setObjectName(_fromUtf8("symbolCategoryLabel"))
         self.gridLayout_3.addWidget(self.symbolCategoryLabel, 1, 0, 1, 1)
         self.symbolWidthLabel = QtGui.QLabel(self.symbolEntryFrame)
         self.symbolWidthLabel.setEnabled(True)
-        self.symbolWidthLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &width", None, QtGui.QApplication.UnicodeUTF8))
         self.symbolWidthLabel.setObjectName(_fromUtf8("symbolWidthLabel"))
         self.gridLayout_3.addWidget(self.symbolWidthLabel, 3, 0, 1, 1)
         self.symbolWidthSpinner = QtGui.QSpinBox(self.symbolEntryFrame)
@@ -150,7 +126,6 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.gridLayout_3.addWidget(self.symbolWidthSpinner, 3, 1, 1, 1)
         self.symbolDescriptionLabel = QtGui.QLabel(self.symbolEntryFrame)
         self.symbolDescriptionLabel.setEnabled(True)
-        self.symbolDescriptionLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &description", None, QtGui.QApplication.UnicodeUTF8))
         self.symbolDescriptionLabel.setObjectName(_fromUtf8("symbolDescriptionLabel"))
         self.gridLayout_3.addWidget(self.symbolDescriptionLabel, 4, 0, 1, 1)
         self.symbolDescriptionEntry = QtGui.QTextEdit(self.symbolEntryFrame)
@@ -168,11 +143,9 @@ class Ui_ManageKnittingSymbolDialog(object):
         spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem2)
         self.cancelButton = QtGui.QPushButton(self.symbolEntryFrame)
-        self.cancelButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Cancel", None, QtGui.QApplication.UnicodeUTF8))
         self.cancelButton.setObjectName(_fromUtf8("cancelButton"))
         self.horizontalLayout_3.addWidget(self.cancelButton)
         self.actionButton = QtGui.QPushButton(self.symbolEntryFrame)
-        self.actionButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Add", None, QtGui.QApplication.UnicodeUTF8))
         self.actionButton.setObjectName(_fromUtf8("actionButton"))
         self.horizontalLayout_3.addWidget(self.actionButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
@@ -188,7 +161,6 @@ class Ui_ManageKnittingSymbolDialog(object):
         spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_6.addItem(spacerItem4)
         self.pushButton_4 = QtGui.QPushButton(ManageKnittingSymbolDialog)
-        self.pushButton_4.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_4.setAutoDefault(False)
         self.pushButton_4.setObjectName(_fromUtf8("pushButton_4"))
         self.horizontalLayout_6.addWidget(self.pushButton_4)
@@ -203,6 +175,33 @@ class Ui_ManageKnittingSymbolDialog(object):
         QtCore.QMetaObject.connectSlotsByName(ManageKnittingSymbolDialog)
 
     def retranslateUi(self, ManageKnittingSymbolDialog):
-        pass
+        ManageKnittingSymbolDialog.setWindowTitle(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "sconcho: Manage Custom Knitting Symbols", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_7.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Available Symbols</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.availableSymbolsWidget.headerItem().setText(0, QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Category/Symbol", None, QtGui.QApplication.UnicodeUTF8))
+        self.addSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "&Add New Symbol", None, QtGui.QApplication.UnicodeUTF8))
+        self.updateSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Update Selected Symbol ", None, QtGui.QApplication.UnicodeUTF8))
+        self.deleteSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "&Delete Selected Symbol", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">SVG Image</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.browseSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_12.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Description</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.symbolNameLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &name", None, QtGui.QApplication.UnicodeUTF8))
+        self.symbolCategoryLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &category", None, QtGui.QApplication.UnicodeUTF8))
+        self.symbolWidthLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &width", None, QtGui.QApplication.UnicodeUTF8))
+        self.symbolDescriptionLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &description", None, QtGui.QApplication.UnicodeUTF8))
+        self.cancelButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Cancel", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Add", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_4.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4.QtSvg import QSvgWidget

@@ -35,10 +35,11 @@ from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from PyQt4.QtSvg import QSvgGenerator
 
-from sconcho.gui.pattern_canvas import (PatternGridItem, PatternLegendItem,
-                                        legendItem_symbol, legendItem_text,
-                                        PatternRepeatItem, 
-                                        NostitchVisualizer)
+from sconcho.gui.pattern_canvas_objects import (PatternGridItem, 
+                                                PatternLegendItem,
+                                                PatternRepeatItem, 
+                                                NostitchVisualizer)
+from sconcho.util.canvas import (legendItem_symbol, legendItem_text)
 from sconcho.util.misc import wait_cursor
 from sconcho.util.exceptions import PatternReadError
 import sconcho.util.messages as msg
@@ -107,8 +108,11 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
 
     # prepare data structures
     patternGridItems = get_patternGridItems(canvas)
-    legendItems      = canvas.gridLegend.values()
-    patternRepeats   = get_patternRepeats(canvas)
+    legendItems = canvas.gridLegend.values()
+    patternRepeats = get_patternRepeats(canvas)
+    repeatLegends = canvas.repeatLegend
+    rowRepeats = canvas.rowRepeatTracker
+    assert(len(patternRepeats) == len(repeatLegends))
 
     status = None
     handle = None
@@ -128,10 +132,12 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         stream.writeInt32(len(legendItems))
         stream.writeInt32(len(colors))
         stream.writeInt32(len(patternRepeats))
-
+        stream.writeInt32(len(repeatLegends))
+        stream.writeInt32(len(rowRepeats))
+        
         # the next are 4 dummy entries so we can add more
         # output within the same API
-        for count in range(4):
+        for count in range(2):
             stream.writeInt32(0)
 
         # write content
@@ -141,6 +147,8 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         write_active_symbol(stream, activeSymbol)
         write_patternRepeats(stream, patternRepeats)
         write_settings(stream, settings)
+        write_repeatLegends(stream, repeatLegends)
+        write_rowRepeats(stream, rowRepeats)
 
 
     except (IOError, OSError) as e:
@@ -227,8 +235,8 @@ def write_settings(stream, settings):
 
     stream << settings.labelFont.value
     
-    intervalType = get_row_label_interval(settings.rowLabelInterval.value)
-    stream.writeInt32(intervalType) 
+    rowIntervalMode = get_row_label_interval(settings.rowLabelMode.value)
+    stream.writeInt32(rowIntervalMode) 
     
     stream << settings.legendFont.value
     stream.writeInt32(settings.gridCellWidth.value)
@@ -237,7 +245,7 @@ def write_settings(stream, settings):
     # row label info
     stream.writeInt32(settings.rowLabelStart.value)
     evenRowLabelLocation = \
-        get_even_row_label_location(settings.evenRowLabelLocation.value)
+        get_row_label_location(settings.evenRowLabelLocation.value)
     stream.writeInt32(evenRowLabelLocation)
 
     # row highlighting info
@@ -245,6 +253,25 @@ def write_settings(stream, settings):
     stream.writeInt32(settings.highlightRowsOpacity.value)
     stream.writeInt32(settings.highlightRowsStart.value)
     stream << QString(settings.highlightRowsColor.value)
+
+    # write rest of row/column settings
+    # NOTE: The row settings aren't combined with the rest to
+    # remain backward compatible.
+    oddRowLabelLocation = \
+        get_row_label_location(settings.oddRowLabelLocation.value)
+    stream.writeInt32(oddRowLabelLocation)
+    stream.writeInt32(settings.rowLabelsShowInterval.value)
+    stream.writeInt32(settings.rowLabelsShowIntervalStart.value)
+
+    columnIntervalMode = \
+        get_column_label_interval(settings.columnLabelMode.value)
+    stream.writeInt32(columnIntervalMode) 
+    stream.writeInt32(settings.columnLabelsShowInterval.value)
+    stream.writeInt32(settings.columnLabelsShowIntervalStart.value)
+
+    # write 200 dummy bytes so we can add more items
+    for i in range(0,200):
+        stream.writeInt32(0)
 
 
 
@@ -285,9 +312,47 @@ def write_patternRepeats(stream, repeats):
             stream << point
 
         stream << repeat.pos()
-        stream.writeInt32(repeat.width)
+
+        # store 16 bit of the id to we can match the repeat
+        # with the proper legend entry
+        stream.writeUInt16(repeat.itemID.fields[1])
+
+        stream.writeInt16(repeat.width)
         stream << repeat.color
 
+
+
+def write_repeatLegends(stream, repeatLegends):
+    """ write the legends for all repeat items.
+
+    NOTE: We also store 16 bits of the id so we can
+    properly match it with its repeat item.
+
+    """
+
+    for (legendID, (item, textItem)) in repeatLegends.iteritems():
+    
+        if item.isVisible():
+            isVisible = 1
+        else:
+            isVisible = 0
+    
+        stream.writeUInt16(legendID.fields[1])
+        stream.writeUInt16(isVisible)
+        stream << item.pos()
+        stream << textItem.pos()
+        stream << QString(textItem.toPlainText())
+
+
+
+def write_rowRepeats(stream, rowRepeats):
+    """ write the row repeats if any. """
+
+    for (rowList, multiplicity, dummy) in rowRepeats:
+        stream.writeInt32(multiplicity)
+        stream.writeInt32(len(rowList))
+        for row in rowList:
+            stream.writeInt32(row)
 
 
 
@@ -305,17 +370,16 @@ def read_project(settings, openFileName):
     try:
         handle = QFile(openFileName)
         if not handle.open(QIODevice.ReadOnly):
-            return (False, unicode(handle.errorString()), None, 
-                    None, None, None, None)
+            raise IOError, handle.errorString()
 
         stream = QDataStream(handle)
 
         # check header
         magic = stream.readInt32()
         if magic != MAGIC_NUMBER:
-            errorString = ("Unrecognized file type - \n{0}\nis not "
+            status = ("Unrecognized file type - \n{0}\nis not "
                            "a sconcho spf file!").format(openFileName)
-            return (False, errorString, None, None, None, None, None)
+            raise IOError, status
 
         version = stream.readInt32()
         stream.setVersion(QDataStream.Qt_4_5)
@@ -325,12 +389,14 @@ def read_project(settings, openFileName):
         numLegendItems = stream.readInt32()
         numColors = stream.readInt32()
         numRepeats = stream.readInt32()
+        numRepeatLegends = stream.readInt32()
+        numRowRepeats = stream.readInt32()
 
         # the next are 4 dummy entries we just skip
-        for count in range(4):
+        for count in range(2):
             stream.readInt32()
 
-        # write elements
+        # read elements
         patternGridItems = read_patternGridItems(stream, numGridItems)
         legendItems = read_legendItems(stream, numLegendItems)
         colors = read_colors(stream, numColors)
@@ -340,9 +406,15 @@ def read_project(settings, openFileName):
         if version == 1:
             read_settings(stream, settings, version)
             patternRepeats = read_patternRepeats(stream, numRepeats)
+            # API version 1 knows nothing about legends for pattern
+            # repeats and rowRepeats
+            repeatLegends = {}
+            rowRepeats = []
         elif version == 2:
             patternRepeats = read_patternRepeats(stream, numRepeats)
             read_settings(stream, settings, version)
+            repeatLegends = read_patternRepeatLegends(stream, numRepeatLegends)
+            rowRepeats = read_rowRepeats(stream, numRowRepeats)
         else:
             raise IOError, "unsupported API version"
             
@@ -354,10 +426,10 @@ def read_project(settings, openFileName):
         if handle is not None:
             handle.close()
         if status is not None:
-            return (False, status, None, None, None, None, None)
+            return (False, status, None, None, None, None, None, None, None)
 
     return (True, None, patternGridItems, legendItems, colors, 
-            activeSymbol, patternRepeats)
+            activeSymbol, patternRepeats, repeatLegends, rowRepeats)
 
 
 
@@ -488,7 +560,7 @@ def read_settings(stream, settings, version):
         settings.labelFont.value = labelFont
 
     if labelState:
-        settings.rowLabelInterval.value = labelState
+        settings.rowLabelMode.value = labelState
 
     if legendFont.family():
         settings.legendFont.value = legendFont
@@ -510,7 +582,7 @@ def read_settings(stream, settings, version):
         evenRowLabelLocation = stream.readInt32()
         if evenRowLabelLocation:
             settings.evenRowLabelLocation.value = \
-                get_even_row_label_location_string(evenRowLabelLocation)
+                get_row_label_location_string(evenRowLabelLocation)
 
         highlightRows = stream.readInt32()
         if highlightRows:
@@ -529,6 +601,41 @@ def read_settings(stream, settings, version):
         if highlightRowsColor:
             settings.highlightRowsColor.value = highlightRowsColor
 
+        # write rest of row/column settings
+        # NOTE: The row settings aren't combined with the rest to
+        # remain backward compatible.
+        oddRowLabelLocation = stream.readInt32()
+        if oddRowLabelLocation:
+            settings.oddRowLabelLocation.value = \
+                get_row_label_location_string(oddRowLabelLocation)
+
+        rowLabelsShowInterval = stream.readInt32()
+        if rowLabelsShowInterval:
+            settings.rowLabelsShowInterval.value = rowLabelsShowInterval
+
+        rowLabelsShowIntervalStart = stream.readInt32()
+        if rowLabelsShowIntervalStart:
+            settings.rowLabelsShowIntervalStart.value = \
+                rowLabelsShowIntervalStart
+
+        columnLabelMode = stream.readInt32()
+        if columnLabelMode:
+            settings.columnLabelMode.value = \
+                get_column_label_identifier(columnLabelMode)
+
+        columnLabelsShowInterval = stream.readInt32()
+        if columnLabelsShowInterval:
+            settings.columnLabelsShowInterval.value = \
+                columnLabelsShowInterval
+
+        columnLabelsShowIntervalStart = stream.readInt32()
+        if columnLabelsShowIntervalStart:
+            settings.columnLabelsShowIntervalStart.value = \
+                columnLabelsShowIntervalStart
+
+        # reat 200 dummy bytes so we can add more items
+        for i in range(0,200):
+            stream.readInt32()
 
 
 def read_patternRepeats(stream, numRepeats):
@@ -549,24 +656,82 @@ def read_patternRepeats(stream, numRepeats):
             stream >> point2
             
             lines.append(QLineF(point1, point2))
-                                
-            
 
         # read width and color
         position = QPointF()
         stream >> position
-        width = stream.readInt32()
+        legendID = stream.readUInt16()
+        width = stream.readInt16()
         color = QColor()
         stream >> color 
         
-        newItem = { "lines"    : lines,
-                    "position" : position,
-                    "width"    : width,
-                    "color"    : color }
+        newItem = { "lines"     : lines,
+                    "position"  : position,
+                    "width"     : width,
+                    "color"     : color,
+                    "legendID"  : legendID}
  
         patternRepeats.append(newItem)
 
     return patternRepeats
+
+
+
+def read_patternRepeatLegends(stream, numRepeatLegends):
+    """ Read in the info for the pattern repeat legends. 
+
+    NOTE: In contrast to the other read routine this
+    one returns a dictionary with the legendID as key
+    so we can match it effeciently with the corresponding
+    repeat.
+
+    """
+
+    patternRepeatLegends = {}
+    for count in range(numRepeatLegends):
+        
+        legendID = stream.readUInt16()
+        isVisible = stream.readUInt16()
+
+        itemPos = QPointF()
+        stream >> itemPos
+
+        textItemPos = QPointF()
+        stream >> textItemPos 
+
+        itemText = QString()
+        stream >> itemText 
+
+ 
+        newItem = { "legendID"    : legendID,
+                    "isVisible"   : isVisible,
+                    "itemPos"     : itemPos,
+                    "textItemPos" : textItemPos,
+                    "itemText"    : itemText}
+ 
+        patternRepeatLegends[legendID] = newItem
+
+
+    return patternRepeatLegends
+
+
+
+def read_rowRepeats(stream, numRowRepeats):
+    """ Read in the info for the row repeats. """
+
+    rowRepeatList = []
+    for count in range(numRowRepeats):
+        
+        multiplicity = stream.readInt32()
+        length = stream.readInt32()
+        rowList = []
+        for index in range(length):
+            item = stream.readInt32()
+            rowList.append(item)
+
+        rowRepeatList.append((rowList, multiplicity))
+
+    return rowRepeatList
 
 
 
@@ -673,13 +838,12 @@ def get_row_label_identifier(intervalState):
 
     intervalIdentifier = "LABEL_ALL_ROWS"
     if intervalState == 102:
-        intervalIdentifier = "LABEL_ODD_ROWS"   
-    elif intervalState == 103:
-        intervalIdentifier = "LABEL_EVEN_ROWS"    
-    elif intervalState == 104:
+        intervalIdentifier = "SHOW_ROWS_WITH_INTERVAL"   
+    if intervalState == 104:
         intervalIdentifier = "SHOW_ODD_ROWS"   
     elif intervalState == 105:
         intervalIdentifier = "SHOW_EVEN_ROWS"   
+    
 
     return intervalIdentifier
 
@@ -693,14 +857,15 @@ def get_row_label_interval(labelType):
 
     This function is the inverse of get_row_label_indentifier.
     See this function for more comments.
+
+    NOTE: There is a gap in the ids since some lagacy options
+    were removed.
     
     """
 
     intervalState = 101
-    if labelType == "LABEL_ODD_ROWS":
+    if labelType == "SHOW_ROWS_WITH_INTERVAL":
         intervalState = 102
-    elif labelType == "LABEL_EVEN_ROWS":
-        intervalState = 103
     elif labelType == "SHOW_ODD_ROWS":
         intervalState = 104
     elif labelType == "SHOW_EVEN_ROWS":
@@ -710,11 +875,11 @@ def get_row_label_interval(labelType):
 
 
 
-def get_even_row_label_location(evenRowLabelLocation):
-    """ Turn string with even row label location into integer identifier """
+def get_row_label_location(rowLabelLocation):
+    """ Turn string with row label location into integer identifier """
 
     locationState = 10
-    if evenRowLabelLocation == "LEFT_OF":
+    if rowLabelLocation == "LEFT_OF":
         locationState = 11
 
     return locationState
@@ -722,10 +887,10 @@ def get_even_row_label_location(evenRowLabelLocation):
 
 
 
-def get_even_row_label_location_string(state):
-    """ Turn an even row label identifier into the corresponding string.
+def get_row_label_location_string(state):
+    """ Turn a row label identifier into the corresponding string.
 
-    This function is the inverse of get_even_row_label_location.
+    This function is the inverse of get_row_label_location.
 
     """
 
@@ -734,3 +899,47 @@ def get_even_row_label_location_string(state):
         locationString = "LEFT_OF"
 
     return locationString
+
+
+
+def get_column_label_identifier(intervalState):
+    """ This function is the inverse of get_column_label_interval.
+
+    It converts a stored integer into the the proper column
+    label state.
+ 
+    NOTE: Previously we used the labelInterval Int field to store 
+    a true interval. Since this option is gone we re-use the Int
+    to store the row label interval state. Since label
+    intervals previously had to be <= 100 we can reuse values
+    > 100 for this purpose. For folks who load an old spf file that
+    still has a true label interval field we map to the default
+    of LABEL_ALL_ROWS.
+
+    """
+
+    intervalIdentifier = "LABEL_ALL_COLUMNS"
+    if intervalState == 102:
+        intervalIdentifier = "SHOW_COLUMNS_WITH_INTERVAL"   
+
+    return intervalIdentifier
+
+
+
+def get_column_label_interval(labelType):
+    """ This function is the inverse of get_column_label_identifier.
+
+    It converts a column label state into an integer state stored
+    within the spf file.
+
+    This function is the inverse of get_column_label_indentifier.
+    See this function for more comments.
+
+    """
+
+    intervalState = 101
+    if labelType == "SHOW_COLUMNS_WITH_INTERVAL":
+        intervalState = 102
+
+    return intervalState
+

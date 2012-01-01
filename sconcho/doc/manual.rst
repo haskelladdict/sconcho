@@ -1,7 +1,7 @@
 Sconcho Manual
 --------------
 
-*Author: Markus Dittrich (last change 11/03/2011)*
+*Author: Markus Dittrich (last change 12/28/2011)*
 
 Sconcho is a tool for creating knitting charts. Charts can be created by 
 placing stitch patterns into a rectangular grid. Sconcho has a large
@@ -23,6 +23,7 @@ Mac OSX).
 * `Changing a Symbol's Background Color`_ 
 * `Changing the Legend Layout`_
 * `Adding Pattern Repeat Boxes`_
+* `Adding Row Repeats`_
 * `Inserting and Deleting Columns and Rows in the Chart`_
 * `Saving and Opening Sconcho Projects`_
 * `Exporting and Printing Charts`_
@@ -189,9 +190,14 @@ Pattern repeat boxes can be added to the pattern grid. Simply highlight
 all cells that should be inside the repeat box (i.e., the repeat box will
 be the outline of the selected cells) and then click on
 **View -> Create Pattern Repeat** to create it. To change the color and
-line thickness of an existing repeat box or to delete a box move the mouse
-over the pattern repeat box, right click and select **Edit Pattern Repeat**
-to make visible a dialog for changing the box's properties.
+line thickness of an existing repeat box or to delete a repeat box 
+move the mouse anywhere within the pattern repeat box, right click and 
+select **Edit Pattern Repeat** to make visible a dialog for changing 
+the box's properties. Pattern repeat boxes by default have a legend
+entry consisting of a symbol showing a rectangular box of the same 
+color as the pattern repeat and a text box whose content can be changed. 
+The visibility of the legend entry for a repeat box can be toggled
+on or off in its **Edit Pattern Repeat** dialog.  
 
 To move a pattern repeat box hold down the **Control Key**
 (the **Command Key** on Mac OSX) and **Left Mouse Click** on the
@@ -199,17 +205,40 @@ desired item. The cursor should change to a cross shape and the
 repeat box can now be moved.
 
 
+Adding Row Repeats
+~~~~~~~~~~~~~~~~~~
+
+You can add any number of row repeats to your chart. Sconcho
+will automatically adjust the row labels for you in this case.
+To add a row repeat select any number of **consecutive** rows
+Then right mouse click
+anywhere outside the pattern to bring up the 
+**Row And Column Management Menu**. Select *add row repeat*
+and then the number of repeats in the appearing
+repeat dialog.
+
+A row repeat can be deleted by selecting at least one
+complete row within the repeat. Selecting *delete row repeat* in the 
+**Row And Column Management Menu** will then delete 
+the repeat. 
+
+
 Inserting and Deleting Columns and Rows in the Chart
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Additional rows and columns can be inserted into and deleted from an 
-already existing chart using the *Insert/Delete Rows and Columns* dialog 
-(**Grid -> Insert/Delete Rows and Columns**). Here, it is important to keep 
-in mind that while it is always possible to add and remove rows, columns 
-can be added only if the new column does not appear within an already 
-existing multi-cell symbol. Similarly, a column can be removed only if 
-it is not part of a multi-cell symbol.
+Deleting rows and columns is simple. Select the rows or columns you
+would like to delete.
+Next, open up the **Row And Column Management Menu** by right mouse 
+clicking outside the pattern area and then selecting 
+"delete selected rows" or "delete selected columns". 
 
+To add rows and columns mark a **single** row/column.
+Next, open up the **Row And Column Management Menu** by 
+right mouse clicking outside the pattern area and then selecting 
+the desired proper add row/column selection.
+
+**NOTE:** For inserting/deleting columns and rows to work
+only complete rows or columns have to be selected.
 
 
 Saving and Opening Sconcho Projects

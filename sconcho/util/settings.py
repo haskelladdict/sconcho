@@ -51,11 +51,23 @@ class DefaultSettings(QSettings):
     DEFAULT_GRID_CELL_HEIGHT = "30"
     DEFAULT_FONT = "Arial,10,-1,5,50,0,0,0,0,0"
 
-    # options are LABEL_ALL_ROWS, LABEL_ODD_ROWS, LABEL_EVEN_ROWS,
+    DEFAULT_SHOW_COLUMN_LABELS = "1"
+    DEFAULT_SHOW_ROW_LABELS = "1"
+
+    # options are LABEL_ALL_ROWS, SHOW_ROWS_WITH_INTERVAL,
     # SHOW_ODD_ROWS, SHOW_EVEN_ROWS
     DEFAULT_ROW_LABEL_MODE = "LABEL_ALL_ROWS"
     DEFAULT_ROW_LABEL_START = "1"
     DEFAULT_EVEN_ROW_LABEL_LOCATION = "RIGHT_OF"
+    DEFAULT_ODD_ROW_LABEL_LOCATION = "RIGHT_OF"
+    DEFAULT_ROW_LABELS_SHOW_INTERVAL = "1"
+    DEFAULT_ROW_LABELS_SHOW_INTERVAL_START = "1"
+
+    # options are LABEL_ALL_COLUMNS, SHOW_COLUMNS_WITH_INTERVAL,
+    DEFAULT_COLUMN_LABEL_MODE = "LABEL_ALL_COLUMNS"
+    DEFAULT_COLUMN_LABELS_SHOW_INTERVAL = "1"
+    DEFAULT_COLUMN_LABELS_SHOW_INTERVAL_START = "1"
+
     DEFAULT_HIGHLIGHT_ROWS = "1"     # 1 corresponds to selected
     DEFAULT_HIGHLIGHT_ROWS_COLOR = "gray"
     DEFAULT_HIGHLIGHT_ROWS_OPACITY = "10"
@@ -83,9 +95,25 @@ class DefaultSettings(QSettings):
                 DefaultSettings.DEFAULT_GRID_CELL_HEIGHT,
                 "cellHeight", "Int")
 
-        self.rowLabelInterval = PreferenceSetting(self, 
+        self.showColumnLabels = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_SHOW_COLUMN_LABELS,
+                "showColumnLabels", "Int")
+
+        self.showRowLabels = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_SHOW_ROW_LABELS,
+                "showRowLabels", "Int")
+
+        self.rowLabelsShowInterval = PreferenceSetting(self,
+                DefaultSettings.DEFAULT_ROW_LABELS_SHOW_INTERVAL,
+                "rowLabelsShowInterval", "Int")
+
+        self.rowLabelsShowIntervalStart = PreferenceSetting(self,
+                DefaultSettings.DEFAULT_ROW_LABELS_SHOW_INTERVAL_START,
+                "rowLabelsShowIntervalStart", "Int")
+
+        self.rowLabelMode = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_ROW_LABEL_MODE,
-                "rowLabelInterval", "QString")
+                "rowLabelMode", "QString")
 
         self.rowLabelStart = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_ROW_LABEL_START,
@@ -94,6 +122,22 @@ class DefaultSettings(QSettings):
         self.evenRowLabelLocation = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_EVEN_ROW_LABEL_LOCATION,
                 "evenRowLabelLocation", "QString")
+
+        self.oddRowLabelLocation = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_ODD_ROW_LABEL_LOCATION,
+                "oddRowLabelLocation", "QString")
+
+        self.columnLabelsShowInterval = PreferenceSetting(self,
+                DefaultSettings.DEFAULT_COLUMN_LABELS_SHOW_INTERVAL,
+                "columnLabelsShowInterval", "Int")
+
+        self.columnLabelsShowIntervalStart = PreferenceSetting(self,
+                DefaultSettings.DEFAULT_COLUMN_LABELS_SHOW_INTERVAL_START,
+                "columnLabelsShowIntervalStart", "Int")
+
+        self.columnLabelMode = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_COLUMN_LABEL_MODE,
+                "columnLabelMode", "QString")
 
         self.labelFont = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_FONT,
@@ -239,6 +283,12 @@ class PreferenceSetting(object):
             if not newValue.fromString(value):
                 status = False
             value = newValue
+        elif self.returnType == "QString":
+            pass
+        else:
+            errorLogger.write("Unknown return type %s encountered when "
+                              "retrieving settings." % self.returnType)
+
 
         if not status:
             if not self.errorMsg:
