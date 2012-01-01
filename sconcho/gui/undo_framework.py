@@ -202,8 +202,12 @@ class InsertRows(QUndoCommand):
         for row in range(0, self.rowShift):
             self.canvas._create_row(self.pivot + row)
 
-        shift_legend_vertically(self.canvas.gridLegend, self.rowShift, 
-                                self.unitHeight, self.numColumns, 
+        legendList = self.canvas.gridLegend.values() \
+            + self.canvas.repeatLegend.values()
+        shift_legend_vertically(legendList,
+                                self.rowShift, 
+                                self.unitHeight, 
+                                self.numColumns, 
                                 self.unitWidth)
 
         self.canvas._selectedCells = \
@@ -230,8 +234,12 @@ class InsertRows(QUndoCommand):
         rowUpShift = -1 * self.rowShift
 
         # shift first then remove
-        shift_legend_vertically(self.canvas.gridLegend, rowUpShift, 
-                                self.unitHeight, self.numColumns, 
+        legendList = self.canvas.gridLegend.values() \
+            + self.canvas.repeatLegend.values()
+        shift_legend_vertically(legendList,
+                                rowUpShift, 
+                                self.unitHeight, 
+                                self.numColumns, 
                                 self.unitWidth)
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells, 
@@ -463,8 +471,12 @@ class DeleteRows(QUndoCommand):
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
 
-        shift_legend_vertically(self.canvas.gridLegend, rowUpShift, 
-                                self.unitHeight, self.numColumns, 
+        legendList = self.canvas.gridLegend.values() \
+            + self.canvas.repeatLegend.values()
+        shift_legend_vertically(legendList,
+                                rowUpShift, 
+                                self.unitHeight, 
+                                self.numColumns, 
                                 self.unitWidth)
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells, 
@@ -476,8 +488,12 @@ class DeleteRows(QUndoCommand):
         """ Shift elements on canvas back to shifting done in redo. """
 
         # make sure to shift legend and selection first
-        shift_legend_vertically(self.canvas.gridLegend, rowDownShift, 
-                                self.unitHeight, self.numColumns, 
+        legendList = self.canvas.gridLegend.values() \
+            + self.canvas.repeatLegend.values()
+        shift_legend_vertically(legendList,
+                                rowDownShift, 
+                                self.unitHeight, 
+                                self.numColumns, 
                                 self.unitWidth)
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells, 
@@ -579,9 +595,12 @@ class InsertColumns(QUndoCommand):
         for column in range(0, self.columnShift):
             self.canvas._create_column(self.pivot + column)
 
-        shift_legend_horizontally(self.canvas.gridLegend, 
+        legendList = self.canvas.gridLegend.values() \
+            + self.canvas.repeatLegend.values()
+        shift_legend_horizontally(legendList,
                                   self.columnShift, 
-                                  self.unitWidth, self.numRows, 
+                                  self.unitWidth, 
+                                  self.numRows, 
                                   self.unitHeight)
         self.canvas._selectedCells = \
                 shift_selection_horizontally(self.canvas._selectedCells, 
@@ -606,8 +625,12 @@ class InsertColumns(QUndoCommand):
         columnLeftShift = -1 * self.columnShift
 
         # shift first then remove
-        shift_legend_horizontally(self.canvas.gridLegend, columnLeftShift, 
-                                  self.unitWidth, self.numRows, 
+        legendList = self.canvas.gridLegend.values() \
+            + self.canvas.repeatLegend.values()
+        shift_legend_horizontally(legendList, 
+                                  columnLeftShift, 
+                                  self.unitWidth, 
+                                  self.numRows, 
                                   self.unitHeight)
         self.canvas._selectedCells = \
                 shift_selection_horizontally(self.canvas._selectedCells, 
@@ -781,8 +804,12 @@ class DeleteColumns(QUndoCommand):
         for item in selection:
             shift_item_column_wise(item, columnLeftShift, self.unitWidth)
 
-        shift_legend_horizontally(self.canvas.gridLegend, columnLeftShift, 
-                                  self.unitWidth, self.numRows, 
+        legendList = self.canvas.gridLegend.values() \
+            + self.canvas.repeatLegend.values()
+        shift_legend_horizontally(legendList, 
+                                  columnLeftShift, 
+                                  self.unitWidth, 
+                                  self.numRows, 
                                   self.unitHeight)
         self.canvas._selectedCells = \
                 shift_selection_horizontally(self.canvas._selectedCells,
@@ -794,9 +821,12 @@ class DeleteColumns(QUndoCommand):
         """ Shift elements on canvas back to shifting done in redo. """
 
         # make sure to shift legend and selection first
-        shift_legend_horizontally(self.canvas.gridLegend, 
+        legendList = self.canvas.gridLegend.values() \
+            + self.canvas.repeatLegend.values()
+        shift_legend_horizontally(legendList,
                                   columnRightShift, 
-                                  self.unitWidth, self.numRows,
+                                  self.unitWidth, 
+                                  self.numRows,
                                   self.unitHeight)
         self.canvas._selectedCells = \
                 shift_selection_horizontally(self.canvas._selectedCells,
@@ -1250,7 +1280,7 @@ class AddPatternRepeatLegend(QUndoCommand):
         self.legendTextItem.update()
         
         self.canvas.repeatLegend[self.pathItem.itemID] = \
-            (self.legendItem, self.legendTextItem)
+            (1, self.legendItem, self.legendTextItem)
         
          
 
@@ -1280,8 +1310,7 @@ class DeletePatternRepeatLegend(QUndoCommand):
         self.canvas = canvas
         self.pathItem = pathItem 
 
-        #if self.pathItem.hasLegend:
-        (self.legendItem, self.legendTextItem) = \
+        (dummy, self.legendItem, self.legendTextItem) = \
                 self.canvas.repeatLegend[self.pathItem.itemID]
 
 
@@ -1312,7 +1341,7 @@ class DeletePatternRepeatLegend(QUndoCommand):
         self.legendTextItem.update()
 
         self.canvas.repeatLegend[self.pathItem.itemID] = \
-            (self.legendItem, self.legendTextItem)
+            (1, self.legendItem, self.legendTextItem)
 
 
 
@@ -1357,7 +1386,7 @@ class EditPatternRepeatLegend(QUndoCommand):
 
         """
 
-        (self.legendItem, self.legendTextItem) = \
+        (dummy, self.legendItem, self.legendTextItem) = \
             self.canvas.repeatLegend[self.pathItem.itemID]
 
         self.oldColor = self.legendItem.color

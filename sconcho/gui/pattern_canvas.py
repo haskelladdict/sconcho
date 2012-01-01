@@ -1811,7 +1811,8 @@ class PatternCanvas(QGraphicsScene):
         repeatItem.setPos(itemInfo["position"])
 
         # connect repeat box and legend
-        self.repeatLegend[repeatItem.itemID] = (legendItem, legendTextItem)
+        self.repeatLegend[repeatItem.itemID] = \
+            (1, legendItem, legendTextItem)
 
             
 
@@ -1943,19 +1944,16 @@ class PatternCanvas(QGraphicsScene):
         """
 
         if status:
-            for item in self.gridLegend.values():
+            for item in (self.gridLegend.values() + 
+                         self.repeatLegend.values()):
                 legendItem_symbol(item).show()
                 legendItem_text(item).show()
-            for item in self.repeatLegend.values():
-                repeatLegendItem_symbol(item).show()
-                repeatLegendItem_text(item).show()
         else:
-            for item in self.gridLegend.values():
+            for item in (self.gridLegend.values() +
+                         self.repeatLegend.values()):
                 legendItem_symbol(item).hide()
                 legendItem_text(item).hide()
-            for item in self.repeatLegend.values():
-                repeatLegendItem_symbol(item).hide()
-                repeatLegendItem_text(item).hide()
+
 
 
     def legend_font_changed(self):
@@ -1965,10 +1963,8 @@ class PatternCanvas(QGraphicsScene):
         """
         
         legendFont = self.settings.legendFont.value
-        for item in self.gridLegend.values():
+        for item in (self.gridLegend.values() + self.repeatLegend.values()):
             legendItem_text(item).setFont(legendFont)
-        for item in self.repeatLegend.values():
-            repeatLegendItem_text(item).setFont(legendFont)
 
 
 

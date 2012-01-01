@@ -112,7 +112,7 @@ def shift_legend_vertically(legendList, rowShift, unitCellHeight,
 
     yShift = rowShift * unitCellHeight
 
-    for item in legendList.values():
+    for item in legendList:
         symbol = legendItem_symbol(item)
         text   = legendItem_text(item)
 
@@ -160,7 +160,7 @@ def shift_legend_horizontally(legendList, columnShift, unitCellWidth,
 
     xShift = columnShift * unitCellWidth
 
-    for item in legendList.values():
+    for item in legendList:
         symbol = legendItem_symbol(item)
         text = legendItem_text(item)
 
@@ -259,26 +259,6 @@ def legendItem_text(item):
     """
 
     return item[2]
-
-
-
-def repeatLegendItem_symbol(item):
-    """ Convenience wrapper returning the current symbol for a
-    particular repeat legend item.
-
-    """
-
-    return item[0]
-
-
-
-def repeatLegendItem_text(item):
-    """ Convenience wrapper returning the current description text
-    for a particular legend item.
-
-    """
-
-    return item[1]
 
 
 
