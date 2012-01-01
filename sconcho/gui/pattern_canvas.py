@@ -740,8 +740,6 @@ class PatternCanvas(QGraphicsScene):
         rowColMenu = QMenu()
 
         # row options
-        rowColMenu.addAction("Row Tasks")
-        rowColMenu.addSeparator()
         deleteRowsAction = rowColMenu.addAction("delete selected &rows")
         self.connect(deleteRowsAction, SIGNAL("triggered()"),
                      self.delete_marked_rows)
@@ -759,7 +757,7 @@ class PatternCanvas(QGraphicsScene):
             addRowBelowAction.setEnabled(False)
             addRowAboveAction.setEnabled(False)
 
-        #rowColMenu.addSeparator()
+        rowColMenu.addSeparator()
         addRowRepeatAction = rowColMenu.addAction("&add row repeat")
         self.connect(addRowRepeatAction, SIGNAL("triggered()"),
                      self.add_row_repeat)
@@ -773,8 +771,6 @@ class PatternCanvas(QGraphicsScene):
             deleteRowRepeatAction.setEnabled(False)
         
 
-        rowColMenu.addSeparator()
-        rowColMenu.addAction("Column Tasks")
         rowColMenu.addSeparator()
         # column options
         deleteColsAction = rowColMenu.addAction("delete selected &columns")
