@@ -330,7 +330,7 @@ def write_repeatLegends(stream, repeatLegends):
 
     """
 
-    for (legendID, (item, textItem)) in repeatLegends.iteritems():
+    for (legendID, (dummy, item, textItem)) in repeatLegends.iteritems():
     
         if item.isVisible():
             isVisible = 1

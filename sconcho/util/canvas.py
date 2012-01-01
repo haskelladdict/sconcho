@@ -209,13 +209,9 @@ def compute_max_legend_y_coordinate(gridLegend, repeatLegend):
     """
 
     yList = [0]
-    for item in gridLegend.values():
+    for item in (gridLegend.values() + repeatLegend.values()):
         yList.append(legendItem_symbol(item).scenePos().y())
         yList.append(legendItem_text(item).scenePos().y())
-
-    for item in repeatLegend.values():
-        yList.append(repeatLegendItem_symbol(item).scenePos().y())
-        yList.append(repeatLegendItem_text(item).scenePos().y())
 
     return max(yList)
 
