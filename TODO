@@ -1,11 +1,7 @@
-- colors in color widget don't update right away when
-  loading a new sconcho project.
 - add option for heavier lines every 10x10 boxes for 
   highlighting purposes
 - editable row labels
 - more sophisticated print dialog
-- colors in color widget don't update right away when
-  loading a new sconcho project.
 - at some point we should move to a new file format version
   to fix up some of the cruft that has build up over time
 - allow selecting a group of legend items and move them

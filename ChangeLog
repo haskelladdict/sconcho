@@ -6,6 +6,18 @@ XXXXXXXXXX: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 	* Generalize selection of whole rows/columns.
 	  These can now be selected by clicking anywhere on the
 	  left/right/top/bottom edge.
+	* Completely reworked inserting/deleting of rows/columns.
+	  These are now inserted/deleted by selecting the appropriate
+	  rows/columns within the pattern and then invoking the 
+	  row-column menu via right mouse clicking outside the pattern.
+	* Make sure colors in color widget update right away when
+	  loading spf files
+	* Improved the ability to label columns and rows in the
+	  preferences dialog.
+	* Added ability to add row repeats (see manual)
+	* Added ability to add legends for pattern repeats.
+	* Improved speed of inserting/deleting rows/columns. 
+	  This should help especially for large charts.
 	
 
 11-03-2011: Markus Dittrich <haskelladdict@users.sourceforge.net>:
