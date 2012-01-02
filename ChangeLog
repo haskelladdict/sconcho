@@ -1,3 +1,9 @@
+01-02-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Fixed bugs in insert/delete row/column code
+	
+
+
 01-01-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Properly implemented recently used file capability
