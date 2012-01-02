@@ -772,7 +772,7 @@ class PatternCanvas(QGraphicsScene):
                      self.delete_row_repeat)
         if (not markedRows) or (not self.can_delete_row_repeat()):
             deleteRowRepeatAction.setEnabled(False)
-        
+
         rowColMenu.addSeparator()
         # column options
         deleteColsAction = rowColMenu.addAction("delete selected &columns")
@@ -796,6 +796,7 @@ class PatternCanvas(QGraphicsScene):
             addColLeftAction.setEnabled(False)
 
         rowColMenu.exec_(screenPos)
+        rowColMenu.raise_()
 
 
 
@@ -1314,8 +1315,8 @@ class PatternCanvas(QGraphicsScene):
         cellHeight = self._unitCellDim.height()
         allItems = self.items((colStart + 0.25) * cellWidth,
                               (rowStart + 0.25) * cellHeight,
-                              (colEnd - colStart - 0.5) * cellWidth,
-                              (rowEnd - rowStart - 0.5) * cellHeight)
+                              (colEnd - colStart + 0.25) * cellWidth,
+                              (rowEnd - rowStart + 0.25) * cellHeight)
 
         selection = set()
         for item in allItems:
@@ -1550,18 +1551,45 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
+        if not self._selectedCells:
+            return
+
+        orderedByColumn = \
+            order_selection_by_columns(self._selectedCells.values())
+
+        colIDs = orderedByColumn.keys()
+        colIDs.sort()
+
+        columnChunks = []
+        previousCol = colIDs[0]
+        chunk = orderedByColumn[previousCol]
+        for column in colIDs[1:]:
+            if column - previousCol == 1:
+                chunk += orderedByColumn[column]
+                previousCol = column
+            else:
+                columnChunks.append(chunk)
+                chunk = orderedByColumn[column]
+                previousCol = column
+        columnChunks.append(chunk)
+        
         # check if selection is rectangular 
-        (status, (colDim, rowDim)) = \
-            is_active_selection_rectangular(self._selectedCells.values())
+        print(len(columnChunks))
+        for chunk in columnChunks:
 
-        if status:
-           
+            print(self._selectedCells.values())
+            print(chunk)
+            (status, (colDim, rowDim)) = \
+                is_active_selection_rectangular(chunk)
+
             # check if we have complete columns
-            deadColumns = self.marked_columns()
-            if deadColumns:
-                return True
+            deadColumns = get_marked_columns(chunk, self._numRows)
 
-        return False
+            print(status, deadColumns)
+            if not status or not deadColumns:
+                return False
+
+        return True
 
 
 

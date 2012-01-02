@@ -248,7 +248,7 @@ class InsertRows(QUndoCommand):
         selection = \
             self.canvas._items_in_col_row_range(0, self.numColumns,
                                                 self.pivot, 
-                                                self.pivot + self.rowShift)
+                                                self.pivot + self.rowShift - 1)
         for item in selection:
             self.canvas.removeItem(item)
             del item
@@ -429,7 +429,7 @@ class DeleteRows(QUndoCommand):
 
         selection = self.canvas._items_in_col_row_range(0, self.numColumns,
                                                         pivot, 
-                                                        pivot + rowShift)
+                                                        pivot + rowShift - 1)
 
         for item in selection:
             self.deletedCells.append(PatternCanvasEntry(item.column, 
@@ -550,6 +550,7 @@ class DeleteRows(QUndoCommand):
 
 
 
+
 class InsertColumns(QUndoCommand):
     """ This class encapsulates the insertion of columns. """
 
@@ -638,7 +639,7 @@ class InsertColumns(QUndoCommand):
 
         selection = self.canvas._items_in_col_row_range( \
                           self.pivot, 
-                          self.pivot + self.columnShift,
+                          self.pivot + self.columnShift - 1,
                           0, self.numRows)
 
         for item in selection:
@@ -759,7 +760,7 @@ class DeleteColumns(QUndoCommand):
         """ Delete the requested items. """
         
         selection = self.canvas._items_in_col_row_range(pivot, 
-                                                        pivot + columnShift,
+                                                        pivot + columnShift - 1,
                                                         0,  self.numRows)
                                                         
 
