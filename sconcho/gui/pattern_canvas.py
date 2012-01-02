@@ -1574,18 +1574,14 @@ class PatternCanvas(QGraphicsScene):
         columnChunks.append(chunk)
         
         # check if selection is rectangular 
-        print(len(columnChunks))
         for chunk in columnChunks:
 
-            print(self._selectedCells.values())
-            print(chunk)
             (status, (colDim, rowDim)) = \
                 is_active_selection_rectangular(chunk)
 
             # check if we have complete columns
             deadColumns = get_marked_columns(chunk, self._numRows)
 
-            print(status, deadColumns)
             if not status or not deadColumns:
                 return False
 
