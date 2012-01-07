@@ -795,6 +795,8 @@ class RepeatLegendItem(QGraphicsRectItem):
 
         self.setRect(0, 0, self.itemWidth, self.itemHeight)
 
+        self.setAcceptsHoverEvents(True)
+        self._outline = None 
 
 
     @property
@@ -824,6 +826,38 @@ class RepeatLegendItem(QGraphicsRectItem):
         self.penColor = newColor
         self._pen.setColor(self.penColor)
         self.setPen(self._pen)
+
+
+
+    def hoverEnterEvent(self, event):
+        """ Stuff related to hover enter events.
+
+        For now we just show a rectangular outline.
+
+        """
+
+        if not self._outline:
+            self._outline = QGraphicsRectItem(\
+                self.boundingRect().adjusted(-1,-1,1,1), self)
+            highlightColor = QColor(Qt.blue)
+            highlightColor.setAlpha(30)
+            self._outline.setBrush(highlightColor)
+            highlightPen = QPen(Qt.blue)
+            highlightPen.setWidth(2)
+            self._outline.setPen(highlightPen)
+        else:
+            self._outline.show()
+        
+
+
+    def hoverLeaveEvent(self, event):
+        """ Stuff related to hover leave events.
+
+        For now we just show a rectangular outline.
+
+        """
+
+        self._outline.hide()
 
 
 
