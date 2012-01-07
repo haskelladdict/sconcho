@@ -252,6 +252,41 @@ class PatternLegendItem(QGraphicsSvgItem):
         self._pen.setJoinStyle(Qt.MiterJoin)
         self._pen.setColor(Qt.black)
 
+        self.setAcceptsHoverEvents(True)       
+        self._outline = None 
+
+
+
+    def hoverEnterEvent(self, event):
+        """ Stuff related to hover enter events.
+
+        For now we just show a rectangular outline.
+
+        """
+
+        if not self._outline:
+            self._outline = QGraphicsRectItem(\
+                self.boundingRect().adjusted(-1,-1,1,1), self)
+            highlightColor = QColor(Qt.blue)
+            highlightColor.setAlpha(30)
+            self._outline.setBrush(highlightColor)
+            highlightPen = QPen(Qt.blue)
+            highlightPen.setWidth(2)
+            self._outline.setPen(highlightPen)
+        else:
+            self._outline.show()
+        
+
+
+    def hoverLeaveEvent(self, event):
+        """ Stuff related to hover leave events.
+
+        For now we just show a rectangular outline.
+
+        """
+
+        self._outline.hide()
+
 
 
     def mousePressEvent(self, event):
@@ -340,9 +375,9 @@ class PatternLegendItem(QGraphicsSvgItem):
         brush = QBrush(self.color)
         painter.setBrush(brush)
         halfPen = self._penSize * 0.5
-        painter.drawRect(QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
-                                                                 halfPen, halfPen))
-
+        painter.drawRect(\
+            QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
+                                                    halfPen, halfPen))
         self.renderer().render(painter, QRectF(self.origin, self.size))
 
 
@@ -375,6 +410,49 @@ class PatternLegendText(QGraphicsTextItem):
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
 
         self._position = self.pos()
+        self._outline = None 
+
+
+    def hoverEnterEvent(self, event):
+        """ Stuff related to hover enter events.
+
+        For now we just show a rectangular outline.
+
+        """
+
+        if not self._outline:
+            self._outline = QGraphicsRectItem(self.boundingRect(), self)
+            highlightColor = QColor(Qt.blue)
+            highlightColor.setAlpha(30)
+            self._outline.setBrush(highlightColor)
+            highlightPen = QPen(Qt.blue)
+            highlightPen.setWidth(2)
+            self._outline.setPen(highlightPen)
+        else:
+            self._outline.show()
+        
+
+
+    def hoverLeaveEvent(self, event):
+        """ Stuff related to hover leave events.
+
+        For now we just show a rectangular outline.
+
+        """
+
+        self._outline.hide()
+
+
+
+    def keyPressEvent(self, event):
+        """ Stuff to do during key press events.
+
+        For now we have to adjust the outline box.
+
+        """
+        
+        QGraphicsTextItem.keyPressEvent(self, event)
+        self._outline.setRect(self.boundingRect())
 
 
 
