@@ -26,7 +26,7 @@ from __future__ import absolute_import
 
 
 # version and release date of current sconcho
-__version__ = "0.1.0_b8"
+__version__ = "0.1.0_b9"
 __releaseDate__ = "2012-01-02"
 
 
