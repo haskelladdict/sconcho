@@ -898,6 +898,122 @@ class RepeatLegendItem(QGraphicsRectItem):
 
 
 
+#########################################################
+## 
+## class for managing a text item on the canvas
+##
+#########################################################
+class PatternTextItem(QGraphicsTextItem):
+
+    Type = 70000 + 8
+
+
+    def __init__(self, text, parent = None):
+
+        super(PatternTextItem, self).__init__(text, parent)
+
+        # NOTE: need this distinction for cache mode based on
+        # the Qt version otherwise rendering is broken
+        if QT_VERSION < 0x040703:
+            self.setCacheMode(QGraphicsItem.NoCache)
+        else:
+            self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+
+        self.setZValue(2)
+        self.setFlag(QGraphicsItem.ItemIsMovable)
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
+
+        self._position = self.pos()
+        self._outline = None 
+
+
+
+    def hoverEnterEvent(self, event):
+        """ Stuff related to hover enter events.
+
+        For now we just show a rectangular outline.
+
+        """
+
+        if not self._outline:
+            self._outline = QGraphicsRectItem(self.boundingRect(), self)
+            highlightColor = QColor(Qt.blue)
+            highlightColor.setAlpha(30)
+            self._outline.setBrush(highlightColor)
+            highlightPen = QPen(Qt.blue)
+            highlightPen.setWidth(2)
+            self._outline.setPen(highlightPen)
+        else:
+            self._outline.show()
+        
+
+
+    def hoverLeaveEvent(self, event):
+        """ Stuff related to hover leave events.
+
+        For now we just show a rectangular outline.
+
+        """
+
+        self._outline.hide()
+
+
+
+    def keyPressEvent(self, event):
+        """ Stuff to do during key press events.
+
+        For now we have to adjust the outline box.
+
+        """
+        
+        QGraphicsTextItem.keyPressEvent(self, event)
+        self._outline.setRect(self.boundingRect())
+
+
+
+    def mousePressEvent(self, event):
+        """ We reimplement this function to store the position of
+        the item when a user issues a mouse press.
+
+        """
+
+        self._position = self.pos()
+
+        if (event.modifiers() & Qt.ControlModifier):
+            QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
+            self.setTextInteractionFlags(Qt.NoTextInteraction)
+        elif event.button() == Qt.RightButton:
+            print("button pressed")
+            foo = QMenu()
+            foo.addAction("some")
+            foo.exec_()
+        else:
+            event.ignore()
+
+        return QGraphicsTextItem.mousePressEvent(self, event)
+
+
+
+    def mouseReleaseEvent(self, event):
+        """ We reimplement this function to check if its position
+        has changed since the last mouse click. If yes we
+        let the canvas know so it can store the action as
+        a Redo/Undo event.
+
+        """
+
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
+        QApplication.restoreOverrideCursor()
+
+        # this is needed for undo/redo
+        if self._position != self.pos():
+           self.scene().canvas_item_position_changed(self, self._position,
+                                                     self.pos()) 
+
+        return QGraphicsTextItem.mouseReleaseEvent(self, event)
+
+
+
 ######################################################################
 # 
 # context manager taking care of hiding nostitch symbols and

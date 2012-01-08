@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/row_repeat_number_dialog.ui'
 #
-# Created: Sat Dec 31 12:49:35 2011
+# Created: Sun Jan  8 13:19:00 2012
 #      by: PyQt4 UI code generator 4.9
 #
 # WARNING! All changes made in this file will be lost!

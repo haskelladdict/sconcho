@@ -732,6 +732,22 @@ class PatternCanvas(QGraphicsScene):
            
         return rowItems
 
+   
+
+    def show_delete_text_item_menu(self, screenPos, textItem):
+        """ Menu for deleting PatternTextItems.
+
+        This menu appears when the user right clicks on a
+        PatternTextItem.
+
+        """
+        
+        deleteTextMenu = QMenu()
+        deleteAction = deleteTextMenu.addAction("delete text box")
+        self.connect(deleteAction, SIGNAL("triggered()"),
+                     partial(self.delete_text_item, textItem))
+        deleteTextMenu.exec_(screenPos)
+
 
 
     def insert_delete_columns_rows_menu(self, screenPos, col, row):
@@ -809,7 +825,14 @@ class PatternCanvas(QGraphicsScene):
 
         clickInGrid = is_click_in_grid(col, row, self._numColumns,
                                        self._numRows)
-        if clickInGrid:
+
+        # check if the click was on a text label
+        items = self.items(event.scenePos())
+        textItems = filter(lambda x: isinstance(x, PatternTextItem), items)
+
+        if textItems:
+            self.show_delete_text_item_menu(event.screenPos(), textItems[0])
+        elif clickInGrid:
             self.show_grid_menu(event, col, row)
         else:
             self.insert_delete_columns_rows_menu(event.screenPos(),
@@ -1982,6 +2005,23 @@ class PatternCanvas(QGraphicsScene):
                 else:
                     item.hide()
 
+
+
+    def add_text_item(self):
+        """ Adds a text item to the canvas. """
+
+        print("adding text item")
+        foo = PatternTextItem("some text")
+        self.addItem(foo)
+
+
+
+    def delete_text_item(self, deadItem):
+        """ Removes a text item to the canvas. """
+
+        print("deleting text item")
+        self.removeItem(deadItem)
+        del deadItem
 
 
 

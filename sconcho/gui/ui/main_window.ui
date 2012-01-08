@@ -72,7 +72,7 @@
          <x>0</x>
          <y>0</y>
          <width>742</width>
-         <height>90</height>
+         <height>71</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -91,7 +91,7 @@
      <x>0</x>
      <y>0</y>
      <width>1048</width>
-     <height>28</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -136,6 +136,7 @@
     <addaction name="actionUnselect_All"/>
     <addaction name="actionCreate_Pattern_Repeat"/>
     <addaction name="actionApply_Color_to_Selection"/>
+    <addaction name="actionAdd_Text"/>
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>
     <addaction name="actionShow_legend"/>
@@ -312,6 +313,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionApply_Color_to_Selection"/>
+   <addaction name="actionAdd_Text"/>
   </widget>
   <action name="actionAbout_sconcho">
    <property name="icon">
@@ -698,6 +700,15 @@
    </property>
    <property name="text">
     <string>Show &amp;Column Labels</string>
+   </property>
+  </action>
+  <action name="actionAdd_Text">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/letter_T.png</normaloff>:/icons/letter_T.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Text</string>
    </property>
   </action>
  </widget>

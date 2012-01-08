@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Dec 31 12:49:33 2011
+# Created: Sun Jan  8 13:18:59 2012
 #      by: PyQt4 UI code generator 4.9
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 742, 90))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 742, 71))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
@@ -60,7 +60,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.scrollArea)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1048, 28))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1048, 26))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -280,6 +280,11 @@ class Ui_MainWindow(object):
         self.actionShow_column_labels.setCheckable(True)
         self.actionShow_column_labels.setChecked(True)
         self.actionShow_column_labels.setObjectName(_fromUtf8("actionShow_column_labels"))
+        self.actionAdd_Text = QtGui.QAction(MainWindow)
+        icon15 = QtGui.QIcon()
+        icon15.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/letter_T.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionAdd_Text.setIcon(icon15)
+        self.actionAdd_Text.setObjectName(_fromUtf8("actionAdd_Text"))
         self.menuRecent_Files.addAction(self.action_Clear_Recently_Used_Files)
         self.menuRecent_Files.addSeparator()
         self.menuFile.addAction(self.actionNew)
@@ -303,6 +308,7 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.actionUnselect_All)
         self.menuView.addAction(self.actionCreate_Pattern_Repeat)
         self.menuView.addAction(self.actionApply_Color_to_Selection)
+        self.menuView.addAction(self.actionAdd_Text)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionShow_pattern_grid)
         self.menuView.addAction(self.actionShow_legend)
@@ -337,6 +343,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionUnselect_All)
         self.toolBar.addAction(self.actionCreate_Pattern_Repeat)
         self.toolBar_2.addAction(self.actionApply_Color_to_Selection)
+        self.toolBar_2.addAction(self.actionAdd_Text)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -423,6 +430,7 @@ class Ui_MainWindow(object):
         self.action_Clear_Recently_Used_Files.setStatusTip(QtGui.QApplication.translate("MainWindow", "Clear the list of recent items.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAdd_Row_Repeat.setText(QtGui.QApplication.translate("MainWindow", "&Add Row Repeat", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_column_labels.setText(QtGui.QApplication.translate("MainWindow", "Show &Column Labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAdd_Text.setText(QtGui.QApplication.translate("MainWindow", "Add Text", None, QtGui.QApplication.UnicodeUTF8))
 
 from active_symbol_widget import ActiveSymbolWidget
 from color_widget import ColorWidget

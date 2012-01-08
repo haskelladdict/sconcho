@@ -34,9 +34,9 @@ import platform, os
 from functools import partial
 
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
-                          QString, Qt, QSize, QFile, QTimer, QVariant,
+                          Qt, QSize, QFile, QTimer, QVariant,
                           QPoint, PYQT_VERSION_STR, qVersion, 
-                          QStringList, QObject, QFileInfo)
+                          QObject, QFileInfo, QString, QStringList)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
                          QFrame, QColor, QApplication, QDialog, QAction,
@@ -244,6 +244,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionApply_Color_to_Selection, 
                      SIGNAL("triggered()"),
                      self.canvas.apply_color_to_selection)
+
+        self.connect(self.actionAdd_Text, SIGNAL("triggered()"),
+                     self.canvas.add_text_item)
 
         self.connect(self.action_Undo, SIGNAL("triggered()"),
                      self.canvas.undo)
