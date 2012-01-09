@@ -186,8 +186,8 @@ def write_patternGridItems(stream, items):
     """ Write all patternGridItems to our output stream """
 
     for item in items:
-        stream << QString(item.symbol["category"])  \
-               << QString(item.symbol["name"])
+        stream.writeQString(item.symbol["category"]) 
+        stream.writeQString(item.symbol["name"])
         stream.writeInt32(item.column)
         stream.writeInt32(item.row)
         stream.writeInt32(item.width)
@@ -204,14 +204,14 @@ def write_legendItems(stream, items):
         symbolItem = legendItem_symbol(item)
         textItem   = legendItem_text(item)
 
-        stream << QString(symbolItem.symbol["category"]) \
-               << QString(symbolItem.symbol["name"])
+        stream.writeQString(symbolItem.symbol["category"])
+        stream.writeQString(symbolItem.symbol["name"])
         stream.writeDouble(symbolItem.pos().x())
         stream.writeDouble(symbolItem.pos().y())
         stream.writeDouble(textItem.pos().x())
         stream.writeDouble(textItem.pos().y())
         stream << symbolItem.color                        
-        stream << QString(textItem.toPlainText())
+        stream.writeQString(textItem.toPlainText())
 
 
 
@@ -228,10 +228,11 @@ def write_active_symbol(stream, activeSymbol):
     """ Write the info regarding the active symbol """
 
     if activeSymbol:
-        stream << QString(activeSymbol["category"])
-        stream << QString(activeSymbol["name"])
+        stream.writeQString(activeSymbol["category"])
+        stream.writeQString(activeSymbol["name"])
     else:
-        stream << QString("None") << QString("None")
+        stream.writeQString("None") 
+        stream.writeQString("None")
 
 
 
@@ -257,7 +258,7 @@ def write_settings(stream, settings):
     stream.writeInt32(settings.highlightRows.value)
     stream.writeInt32(settings.highlightRowsOpacity.value)
     stream.writeInt32(settings.highlightRowsStart.value)
-    stream << QString(settings.highlightRowsColor.value)
+    stream.writeQString(settings.highlightRowsColor.value)
 
     # write rest of row/column settings
     # NOTE: The row settings aren't combined with the rest to
@@ -346,7 +347,7 @@ def write_repeatLegends(stream, repeatLegends):
         stream.writeUInt16(isVisible)
         stream << item.pos()
         stream << textItem.pos()
-        stream << QString(textItem.toPlainText())
+        stream.writeQString(textItem.toPlainText())
 
 
 
@@ -443,12 +444,8 @@ def read_patternGridItems(stream, numItems):
 
     patternGridItems = []
     for count in range(numItems):
-        category = QString()
-        stream >> category
-
-        name = QString()
-        stream >> name
-
+        category = stream.readQString() 
+        name = stream.readQString() 
         column = stream.readInt32()
         row    = stream.readInt32()
         width  = stream.readInt32()
@@ -476,12 +473,8 @@ def read_legendItems(stream, numItems):
 
     legendItems = []
     for count in range(numItems):
-        category = QString()
-        stream >> category
-
-        name = QString()
-        stream >> name
-
+        category = stream.readQString() 
+        name = stream.readQString() 
         itemXPos  = stream.readDouble()
         itemYPos  = stream.readDouble()
         labelXPos = stream.readDouble()
@@ -490,9 +483,7 @@ def read_legendItems(stream, numItems):
         color  = QColor()
         stream >> color
 
-        description = QString()
-        stream >> description
-
+        description = stream.readQString() 
         newItem = { "category"    : category,
                     "name"        : name,
                     "itemXPos"    : itemXPos,
@@ -526,12 +517,8 @@ def read_colors(stream, numItems):
 def read_active_symbol(stream):
     """ Read the previously active symbol if any """
 
-    category = QString()
-    stream >> category
-
-    name = QString()
-    stream >> name
-
+    category = stream.readQString()
+    name = stream.readQString() 
     activeSymbol = {}
     if category != "None":
         activeSymbol ["category"] = category
@@ -601,8 +588,7 @@ def read_settings(stream, settings, version):
         if highlightRowsStart:
             settings.highlightRowsStart.value = highlightRowsStart
 
-        highlightRowsColor = QString()
-        stream >> highlightRowsColor
+        highlightRowsColor = stream.readQString()
         if highlightRowsColor:
             settings.highlightRowsColor.value = highlightRowsColor
 
@@ -704,9 +690,7 @@ def read_patternRepeatLegends(stream, numRepeatLegends):
         textItemPos = QPointF()
         stream >> textItemPos 
 
-        itemText = QString()
-        stream >> itemText 
-
+        itemText = stream.readQString() 
  
         newItem = { "legendID"    : legendID,
                     "isVisible"   : isVisible,

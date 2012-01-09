@@ -147,7 +147,7 @@ errorLoadingGridText = ("Could not load pattern grid from "
                         "by a missing symbol. Maybe you are trying "
                         "to open a project file with a custom symbol "
                         "which is not installed on your computer.\n"
-                        "<p>sconcho encountered the following "
+                        "sconcho encountered the following "
                         "error: KeyError: %s.")
 
 errorLoadingLegendTitle = "sconcho: Error Loading Legend"

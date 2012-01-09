@@ -374,7 +374,7 @@ def get_marked_columns(selectedCells, numRows):
 
         values = set(len(col) for col in cellsByColumn.values())
         if len(values) == 1 and values.pop() == numRows:
-            return cellsByColumn.keys()
+            return list(cellsByColumn.keys())
 
     return []
 

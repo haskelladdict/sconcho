@@ -207,8 +207,8 @@ class InsertRows(QUndoCommand):
         for row in range(0, self.rowShift):
             self.canvas._create_row(self.pivot + row)
 
-        legendList = self.canvas.gridLegend.values() \
-            + self.canvas.repeatLegend.values()
+        legendList = list(self.canvas.gridLegend.values()) \
+            + list(self.canvas.repeatLegend.values())
         shift_legend_vertically(legendList,
                                 self.rowShift, 
                                 self.unitHeight, 
@@ -239,8 +239,8 @@ class InsertRows(QUndoCommand):
         rowUpShift = -1 * self.rowShift
 
         # shift first then remove
-        legendList = self.canvas.gridLegend.values() \
-            + self.canvas.repeatLegend.values()
+        legendList = list(self.canvas.gridLegend.values()) \
+            + list(self.canvas.repeatLegend.values())
         shift_legend_vertically(legendList,
                                 rowUpShift, 
                                 self.unitHeight, 
@@ -601,8 +601,8 @@ class InsertColumns(QUndoCommand):
         for column in range(0, self.columnShift):
             self.canvas._create_column(self.pivot + column)
 
-        legendList = self.canvas.gridLegend.values() \
-            + self.canvas.repeatLegend.values()
+        legendList = list(self.canvas.gridLegend.values()) \
+            + list(self.canvas.repeatLegend.values())
         shift_legend_horizontally(legendList,
                                   self.columnShift, 
                                   self.unitWidth, 
@@ -631,8 +631,8 @@ class InsertColumns(QUndoCommand):
         columnLeftShift = -1 * self.columnShift
 
         # shift first then remove
-        legendList = self.canvas.gridLegend.values() \
-            + self.canvas.repeatLegend.values()
+        legendList = list(self.canvas.gridLegend.values()) \
+            + list(self.canvas.repeatLegend.values())
         shift_legend_horizontally(legendList, 
                                   columnLeftShift, 
                                   self.unitWidth, 
