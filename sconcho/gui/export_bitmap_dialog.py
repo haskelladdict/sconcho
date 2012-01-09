@@ -26,7 +26,12 @@ from __future__ import absolute_import
 
 import math
 
-from PyQt4.QtCore import (Qt, SIGNAL, QString, QDir, QFileInfo, QFile)
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+
+from PyQt4.QtCore import (Qt, SIGNAL, QDir, QFileInfo, QFile)
 from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
                          QImageReader, QDialogButtonBox)
 
@@ -143,8 +148,8 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         
         """
 
-        self.formats = ["*.%s" % unicode(format).lower() for \
-                            format in QImageReader.supportedImageFormats()]
+        self.formats = ["*.%s" % formating.lower() for \
+                        formating in QImageReader.supportedImageFormats()]
 
         self.formats.remove("*.gif")
 

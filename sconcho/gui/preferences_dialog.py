@@ -26,7 +26,12 @@ from __future__ import absolute_import
 
 from functools import partial
 
-from PyQt4.QtCore import (SIGNAL, QString, QDir, QT_VERSION)
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+ 
+from PyQt4.QtCore import (SIGNAL, QDir, QT_VERSION)
 from PyQt4.QtGui import (QDialog, QFontDatabase, QFileDialog,
                          QColorDialog, QColor)
 
@@ -213,7 +218,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         targetSizeIndex = 0
         self.legendSizeComboBox.clear()
         for (index, size) in enumerate(availableSizes):
-            self.legendSizeComboBox.addItem(QString(unicode(size)))
+            self.legendSizeComboBox.addItem(QString(size))
 
             if targetSize == size:
                 targetSizeIndex = index
@@ -236,7 +241,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         fontFamily = self.legendFontComboBox.currentFont().family()
         fontStyle  = self.legendStyleComboBox.currentText()
-        (fontSize, status) = self.legendSizeComboBox.currentText().toInt()
+        if self.legendSizeComboBox.currentText():
+            fontSize = int(self.legendSizeComboBox.currentText())
+        else: 
+            fontSize = 20
 
         fontDataBase  = QFontDatabase()
         newLegendFont = fontDataBase.font(fontFamily, fontStyle, fontSize)
@@ -292,13 +300,12 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         self.labelStyleComboBox.setCurrentIndex(targetStyleIndex)
 
-
         availableSizes  = fontDatabase.pointSizes(fontFamily)
         targetSize      = newLabelFont.pointSize()
         targetSizeIndex = 0
         self.labelSizeComboBox.clear()
         for (index, size) in enumerate(availableSizes):
-            self.labelSizeComboBox.addItem(QString(unicode(size)))
+            self.labelSizeComboBox.addItem(QString(size))
 
             if targetSize == size:
                 targetSizeIndex = index
@@ -321,7 +328,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
         fontFamily = self.labelFontComboBox.currentFont().family()
         fontStyle  = self.labelStyleComboBox.currentText()
-        (fontSize, status) = self.labelSizeComboBox.currentText().toInt()
+        if self.labelSizeComboBox.currentText():
+            fontSize = int(self.labelSizeComboBox.currentText())
+        else:
+            fontSize = 20
 
         fontDataBase  = QFontDatabase()
         newLabelFont = fontDataBase.font(fontFamily, fontStyle, fontSize)

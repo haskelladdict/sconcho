@@ -27,8 +27,14 @@ from __future__ import absolute_import
 from functools import partial
 from tempfile import mkdtemp
 
-from PyQt4.QtCore import (QStringList, SIGNAL, Qt, QDir, QByteArray,
-                          QString, QRegExp, QVariant)
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+
+# QStringlist
+
+from PyQt4.QtCore import (SIGNAL, Qt, QDir, QByteArray, QRegExp, QVariant)
 from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog, 
                          QMessageBox, QInputDialog, QLineEdit)
 from PyQt4.QtSvg import (QSvgWidget)
@@ -189,7 +195,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         """ This slot deals with changes to the selected category """
 
         itemText = self.categoryChooser.itemText(index)
-        (itemData, status) = self.categoryChooser.itemData(index).toInt()
+        itemData = int(self.categoryChooser.itemData(index))
 
         if itemText == QString("other...") and itemData == 1:
               
@@ -274,10 +280,9 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         categoryIndex = self.categoryChooser.findText(symbol["category"])
         self.categoryChooser.setCurrentIndex(categoryIndex)
         
-        width, status = symbol["width"].toInt()
-        if status:
-            self.symbolWidthSpinner.setValue(width)
-            self.rescale_svg_item(self.svgWidget, width)
+        width = int(symbol["width"])
+        self.symbolWidthSpinner.setValue(width)
+        self.rescale_svg_item(self.svgWidget, width)
 
         self.symbolDescriptionEntry.setText(symbol["description"])
 

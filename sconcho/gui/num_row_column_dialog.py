@@ -26,7 +26,12 @@ from __future__ import absolute_import
 
 from functools import partial
 
-from PyQt4.QtCore import (SIGNAL, QString, QDir)
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+                          
+from PyQt4.QtCore import (SIGNAL, QDir)
 from PyQt4.QtGui import (QDialog)
 
 from sconcho.gui.ui_num_row_column_dialog import Ui_NumRowColumnDialog

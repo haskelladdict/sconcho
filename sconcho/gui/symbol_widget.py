@@ -24,7 +24,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QString, QSize, QObject, SIGNAL, Qt)
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+ 
+from PyQt4.QtCore import (QSize, QObject, SIGNAL, Qt)
 from PyQt4.QtGui import (QFrame, QGridLayout, QWidgetItem, QWidget, 
                          QHBoxLayout, QLabel, QScrollArea, QMenu,
                          QColor)
@@ -58,9 +63,10 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
         # sort symbols in requested order
         rawList = []
         for symbol in symbols:
-            rawList.append((symbol["category_pos"].toInt()[0], symbol))
+            rawList.append((int(symbol["category_pos"]), symbol))
 
-        rawList.sort(lambda x,y: cmp(x[0], y[0])) 
+        #rawList.sort(lambda x,y: cmp(x[0], y[0])) 
+        rawList.sort(key=(lambda x: x[0]))
        
         # add them to the tab
         for (row, symbolEntry) in enumerate(rawList):
@@ -108,9 +114,10 @@ def add_symbols_to_widget(symbols, widget, synchronizer):
         # sort symbols in requested order
         rawList = []
         for symbol in symbols:
-            rawList.append((symbol["category_pos"].toInt()[0], symbol))
+            rawList.append((int(symbol["category_pos"]), symbol))
 
-        rawList.sort(lambda x,y: cmp(x[0], y[0])) 
+        #rawList.sort(lambda x,y: cmp(x[0], y[0])) 
+        rawList.sort(key=(lambda x: x[0]))
        
         # add them to the tab
         for (row, symbolEntry) in enumerate(rawList):
@@ -166,7 +173,8 @@ def sort_symbols_by_category(symbols):
     for (key, value) in rawSortedSymbols.items():
         sortedSymbols.append((key,value))
 
-    sortedSymbols.sort(lambda x,y: cmp(x[0],y[0]))
+    #sortedSymbols.sort(lambda x,y: cmp(x[0],y[0]))
+    sortedSymbols.sort(key=(lambda x: x[0]))
 
     return sortedSymbols
 
@@ -193,7 +201,7 @@ class SymbolSelectorItem(QFrame):
         
         # add the symbol's svg
         svgWidget = QSvgWidget(symbol["svgPath"]) 
-        svgWidth = symbol["width"].toInt()[0]
+        svgWidth = int(symbol["width"]) #.toInt()[0]
         svgWidget.setMaximumSize(QSize(svgWidth * 30, 30))
 
         self.setMinimumSize(30,30)

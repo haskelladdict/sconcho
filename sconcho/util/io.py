@@ -26,7 +26,12 @@ from __future__ import absolute_import
 
 from functools import partial
 
-from PyQt4.QtCore import (QFile, QTextStream, QIODevice, QString,
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+
+from PyQt4.QtCore import (QFile, QTextStream, QIODevice, 
                           Qt, QRectF, QDataStream, QSize, QRect, 
                           QFileInfo, QLineF, QPointF, QThread,
                           QReadWriteLock, QWriteLocker, SIGNAL)
@@ -119,7 +124,7 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
     try:
         handle = QFile(saveFileName)
         if not handle.open(QIODevice.WriteOnly | QIODevice.Truncate):
-            raise IOError, unicode(handle.errorString())
+            raise IOError(unicode(handle.errorString()))
 
         stream = QDataStream(handle)
 
@@ -370,7 +375,7 @@ def read_project(settings, openFileName):
     try:
         handle = QFile(openFileName)
         if not handle.open(QIODevice.ReadOnly):
-            raise IOError, handle.errorString()
+            raise IOError(handle.errorString())
 
         stream = QDataStream(handle)
 
@@ -379,7 +384,7 @@ def read_project(settings, openFileName):
         if magic != MAGIC_NUMBER:
             status = ("Unrecognized file type - \n{0}\nis not "
                            "a sconcho spf file!").format(openFileName)
-            raise IOError, status
+            raise IOError(status)
 
         version = stream.readInt32()
         stream.setVersion(QDataStream.Qt_4_5)
@@ -416,7 +421,7 @@ def read_project(settings, openFileName):
             repeatLegends = read_patternRepeatLegends(stream, numRepeatLegends)
             rowRepeats = read_rowRepeats(stream, numRowRepeats)
         else:
-            raise IOError, "unsupported API version"
+            raise IOError("unsupported API version")
             
 
     except (IOError, OSError) as e:

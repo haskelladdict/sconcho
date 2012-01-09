@@ -209,7 +209,11 @@ def compute_max_legend_y_coordinate(gridLegend, repeatLegend):
     """
 
     yList = [0]
-    for item in (gridLegend.values() + repeatLegend.values()):
+    for item in gridLegend.values(): 
+        yList.append(legendItem_symbol(item).scenePos().y())
+        yList.append(legendItem_text(item).scenePos().y())
+
+    for item in repeatLegend.values():
         yList.append(legendItem_symbol(item).scenePos().y())
         yList.append(legendItem_text(item).scenePos().y())
 
@@ -323,7 +327,7 @@ def is_active_selection_rectangular(selectedCells):
 
     # look for "holes"
     for row in cellsByRow.values():
-        row.sort(lambda x, y: cmp(x.column, y.column))
+        row.sort(key=(lambda x: x.column))
         if not are_consecutive([row]):
             return (False, (0,0))
     
@@ -345,7 +349,7 @@ def get_marked_rows(selectedCells, numColumns):
         cellsByRow = order_selection_by_rows(selectedCells) 
         values = set(num_unitcells(row) for row in cellsByRow.values())
         if len(values) == 1 and values.pop() == numColumns:
-            return cellsByRow.keys()
+            return list(cellsByRow.keys())
 
     return []
 
@@ -398,7 +402,7 @@ def can_outline_selection(selection):
 
     # check that each row has no holes
     for row in cellsByRow.values():
-        row.sort(lambda x, y: cmp(x.column, y.column))
+        row.sort(key=(lambda x: x.column))
         if not are_consecutive([row]):
             return False
 
@@ -473,7 +477,7 @@ def chunk_all_rows(width, cellsByRow):
     
     chunkList = []
     for row in cellsByRow.values():
-        row.sort(lambda x, y: cmp(x.column, y.column))
+        row.sort(key=(lambda x: x.column))
 
         chunks = []
         chunk = []

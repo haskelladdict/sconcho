@@ -24,10 +24,15 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (Qt, 
-                          QPointF, 
-                          SIGNAL, 
-                          QString) 
+
+from copy import copy
+
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+
+from PyQt4.QtCore import (Qt, QPointF, SIGNAL) 
 from PyQt4.QtGui import (QUndoCommand, QColor)
 
 from sconcho.util.canvas import (get_item_id, 
@@ -471,8 +476,8 @@ class DeleteRows(QUndoCommand):
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
 
-        legendList = self.canvas.gridLegend.values() \
-            + self.canvas.repeatLegend.values()
+        legendList = list(self.canvas.gridLegend.values()) \
+            + list(self.canvas.repeatLegend.values())
         shift_legend_vertically(legendList,
                                 rowUpShift, 
                                 self.unitHeight, 
@@ -488,8 +493,8 @@ class DeleteRows(QUndoCommand):
         """ Shift elements on canvas back to shifting done in redo. """
 
         # make sure to shift legend and selection first
-        legendList = self.canvas.gridLegend.values() \
-            + self.canvas.repeatLegend.values()
+        legendList = list(self.canvas.gridLegend.values()) \
+            + list(self.canvas.repeatLegend.values())
         shift_legend_vertically(legendList,
                                 rowDownShift, 
                                 self.unitHeight, 
@@ -999,8 +1004,15 @@ class PaintCells(QUndoCommand):
         self.oldSelection = {}
         self.newSelection = {}
 
-        self.selectedCells = selectedCells
-        self.unselectedCells = unselectedCells 
+        if selectedCells:
+            self.selectedCells = list(selectedCells)
+        else:
+            self.selectedCells = None
+
+        if unselectedCells:
+            self.unselectedCells = list(unselectedCells)
+        else:
+            self.unselectedCells = None
 
         self.activeSymbol = canvas._activeSymbol
         self.activeColor = canvas._activeColorObject.color
@@ -1436,7 +1448,7 @@ class AddPatternRepeat(QUndoCommand):
 
         self.canvas = canvas
         self.pathItem = pathItem 
-        self.unselectedCells = canvas._selectedCells.values()
+        self.unselectedCells = list(canvas._selectedCells.values())
 
 
 

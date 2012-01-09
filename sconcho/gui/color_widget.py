@@ -24,7 +24,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from PyQt4.QtCore import (QString, QObject, Qt, SIGNAL)
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+
+from PyQt4.QtCore import (QObject, Qt, SIGNAL)
 from PyQt4.QtGui import (QFrame, QWidget, QColor, QPushButton, 
                          QHBoxLayout, QColorDialog)
 

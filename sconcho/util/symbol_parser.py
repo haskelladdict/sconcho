@@ -28,7 +28,14 @@ from tempfile import mkdtemp
 from os import path
 from shutil import (rmtree, move)
 
-from PyQt4.QtCore import (QDir, QFile, QString, QStringList, QIODevice,
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+
+# QStringList
+
+from PyQt4.QtCore import (QDir, QFile, QIODevice,
                           QTextStream, QTemporaryFile, Qt)
 from PyQt4.QtGui import QMessageBox
 from PyQt4.QtXml import QDomDocument
@@ -154,11 +161,11 @@ def parse_symbol_description(node):
         if item.toElement().tagName() == "category":
             splitEntry = entry.split(":")
             if len(splitEntry) == 1:
-                content["category"] = QString(splitEntry.first())
+                content["category"] = QString(splitEntry[0])
                 content["category_pos"] = QString("%d" % __LARGE_INT__)
             elif len(splitEntry) == 2:
-                content["category"] = QString(splitEntry.first())
-                content["category_pos"] = QString(splitEntry.last())
+                content["category"] = QString(splitEntry[0])
+                content["category_pos"] = QString(splitEntry[-1])
             else:
                 return None
 
@@ -338,7 +345,7 @@ class SymbolTempDir(object):
     def __enter__(self):
         """ Create the temporary directory. """
 
-        self.tempDir = mkdtemp(dir=unicode(self.topDir + "/"))
+        self.tempDir = mkdtemp(dir=self.topDir + "/")
         return self.tempDir
 
 

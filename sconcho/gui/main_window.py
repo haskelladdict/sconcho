@@ -33,10 +33,17 @@ __releaseDate__ = "2012-01-02"
 import platform, os
 from functools import partial
 
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+
+# QStringlist
+
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           Qt, QSize, QFile, QTimer, QVariant,
                           QPoint, PYQT_VERSION_STR, qVersion, 
-                          QObject, QFileInfo, QString, QStringList)
+                          QObject, QFileInfo)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
                          QFrame, QColor, QApplication, QDialog, QAction,
@@ -577,11 +584,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.columnCounter = QLabel("NA")
         self.connect(self.canvas, SIGNAL("col_count_changed"),
-                     (lambda x: self.columnCounter.setText(x)))
+                     (lambda x: self.columnCounter.setText(str(x))))
 
         self.rowCounter = QLabel("NA")
         self.connect(self.canvas, SIGNAL("row_count_changed"),
-                     (lambda x: self.rowCounter.setText(x)))
+                     (lambda x: self.rowCounter.setText(str(x))))
         
         layout = QHBoxLayout()
         layout.addWidget(colLabel)
@@ -741,7 +748,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 while len(files) > 10:
                     files.takeFirst()
 
-        self.settings.recently_used_files = files.join("%")
+        self.settings.recently_used_files = "%".join(files)
         self.clear_recently_used_files_menu()
 
         # the actual path is stored as data since the text
@@ -751,7 +758,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             newPathAction = \
                 QAction(QString("&%d.  %s" % (index+1, fileName)),
                         self.menuRecent_Files)
-            newPathAction.setData(QVariant(path))
+            newPathAction.setData(path)
             self.menuRecent_Files.addAction(newPathAction)
 
 
@@ -765,7 +772,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         allPaths = self.menuRecent_Files.actions()
         for path in allPaths:
-            dontKeep = path.data().toString()
+            dontKeep = path.data()
             if dontKeep:
                 self.menuRecent_Files.removeAction(path)
 
@@ -834,13 +841,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # make sure we ignore menu clicks on non-filename
         # items (like the clear button)
-        isFile = action.data().toString()
+        isFile = action.data()
         if not isFile:
             return
 
         # the actual filename is in the data *not* the
         # text of the item
-        readFilePath = action.data().toString()
+        readFilePath = action.data()
         
         if not self._ok_to_continue_without_saving():
             return

@@ -26,7 +26,12 @@ from __future__ import absolute_import
 
 from functools import partial
 
-from PyQt4.QtCore import (Qt, SIGNAL, QString, QDir)
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+ 
+from PyQt4.QtCore import (Qt, SIGNAL, QDir)
 from PyQt4.QtGui import (QDialog, QColorDialog)
 
 from sconcho.gui.ui_pattern_repeat_box_dialog import Ui_PatternRepeatDialog

@@ -26,7 +26,12 @@ from __future__ import absolute_import
 
 import os, sys
 
-from PyQt4.QtCore import (QString, QSettings)
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+
+from PyQt4.QtCore import (QSettings)
 from PyQt4.QtGui import QApplication
 from sconcho.gui.main_window import MainWindow
 import sconcho.util.symbol_parser as parser

@@ -146,7 +146,7 @@ class SymbolDisplayItem(QFrame):
 
         # add the symbol's svg
         svgWidget = QSvgWidget(symbol["svgPath"]) 
-        svgWidth = symbol["width"].toInt()[0]
+        svgWidth = int(symbol["width"])
         self.setMinimumWidth(svgWidth * 25)
         self.setMaximumWidth(svgWidth * 25)
         self.setMinimumHeight(25)

@@ -26,14 +26,18 @@ from __future__ import absolute_import
 
 from functools import partial
 
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+ 
 from PyQt4.QtCore import (Qt, 
                           QRectF, 
                           QPointF, 
                           QSizeF, 
                           QLineF,
                           SIGNAL, 
-                          QT_VERSION,
-                          QString) 
+                          QT_VERSION)
 from PyQt4.QtGui import (QGraphicsScene, 
                          QGraphicsObject, 
                          QPen, 
@@ -217,11 +221,11 @@ class PatternCanvas(QGraphicsScene):
             if not rowLabels:
                 continue
 
-            labelText = unicode(rowLabels[0])
+            labelText = str(rowLabels[0])
             for label in rowLabels[1:]:
-                labelText += ", " + unicode(label)
+                labelText += ", " + str(label)
             
-            item = PatternLabelItem(labelText, isRowLabel = True)
+            item = PatternLabelItem(str(labelText), isRowLabel = True)
             yPos = self._unitCellDim.height() * (self._numRows - row - 1)
             if rowLabels[0] % 2 == 0:
                 item.setPos(evenXPos(labelText), yPos)
@@ -246,7 +250,7 @@ class PatternCanvas(QGraphicsScene):
             if not colLabel:
                 continue
 
-            labelText = QString(unicode(colLabel))
+            labelText = QString(colLabel)
             textWidth = fontMetric.width(labelText)
             item = PatternLabelItem(labelText, isRowLabel = False)
             
@@ -602,14 +606,14 @@ class PatternCanvas(QGraphicsScene):
                                               self._unitCellDim.height())
 
         if column >= 0 and column <= self._numColumns:
-            columnString = unicode(self._numColumns - column)
+            columnString = self._numColumns - column
         else:
             columnString = "NA"
         self.emit(SIGNAL("col_count_changed"), columnString)
 
         rowLabelOffset = self.settings.rowLabelStart.value - 1
         if row >= 0 and row <= self._numRows:
-            rowString = unicode(self._numRows - row + rowLabelOffset)
+            rowString = self._numRows - row + rowLabelOffset
         else:
             rowString = "NA"
         self.emit(SIGNAL("row_count_changed"), rowString)
@@ -828,7 +832,8 @@ class PatternCanvas(QGraphicsScene):
 
         # check if the click was on a text label
         items = self.items(event.scenePos())
-        textItems = filter(lambda x: isinstance(x, PatternTextItem), items)
+        textItems = \
+            list(filter(lambda x: isinstance(x, PatternTextItem), items))
 
         if textItems:
             self.show_delete_text_item_menu(event.screenPos(), textItems[0])
@@ -1965,13 +1970,17 @@ class PatternCanvas(QGraphicsScene):
         """
 
         if status:
-            for item in (self.gridLegend.values() + 
-                         self.repeatLegend.values()):
+            for item in self.gridLegend.values():
+                legendItem_symbol(item).show()
+                legendItem_text(item).show()
+            for item in self.repeatLegend.values():
                 legendItem_symbol(item).show()
                 legendItem_text(item).show()
         else:
-            for item in (self.gridLegend.values() +
-                         self.repeatLegend.values()):
+            for item in self.gridLegend.values():
+                legendItem_symbol(item).hide()
+                legendItem_text(item).hide()
+            for item in self.repeatLegend.values():
                 legendItem_symbol(item).hide()
                 legendItem_text(item).hide()
 
@@ -1984,7 +1993,9 @@ class PatternCanvas(QGraphicsScene):
         """
         
         legendFont = self.settings.legendFont.value
-        for item in (self.gridLegend.values() + self.repeatLegend.values()):
+        for item in self.gridLegend.values(): 
+            legendItem_text(item).setFont(legendFont)
+        for item in self.repeatLegend.values():
             legendItem_text(item).setFont(legendFont)
 
 
