@@ -324,7 +324,7 @@ class DeleteRows(QUndoCommand):
         self.canvas = canvas
         self.numRows = canvas._numRows
 
-        self.deadRows = deadRows
+        self.deadRows = list(deadRows)
         self.deadRows.sort()
         self.deadRows.reverse()
         self.deadRanges = self.compute_dead_ranges()
@@ -692,7 +692,7 @@ class DeleteColumns(QUndoCommand):
         self.unitHeight = self.canvas._unitCellDim.height()
         self.unitWidth = self.canvas._unitCellDim.width()
 
-        self.deadColumns = deadColumns
+        self.deadColumns = list(deadColumns)
         self.deadColumns.sort()
         self.deadColumns.reverse()
         self.deadRanges = self.compute_dead_ranges()
@@ -810,8 +810,8 @@ class DeleteColumns(QUndoCommand):
         for item in selection:
             shift_item_column_wise(item, columnLeftShift, self.unitWidth)
 
-        legendList = self.canvas.gridLegend.values() \
-            + self.canvas.repeatLegend.values()
+        legendList = list(self.canvas.gridLegend.values()) \
+            + list(self.canvas.repeatLegend.values())
         shift_legend_horizontally(legendList, 
                                   columnLeftShift, 
                                   self.unitWidth, 
@@ -827,8 +827,8 @@ class DeleteColumns(QUndoCommand):
         """ Shift elements on canvas back to shifting done in redo. """
 
         # make sure to shift legend and selection first
-        legendList = self.canvas.gridLegend.values() \
-            + self.canvas.repeatLegend.values()
+        legendList = list(self.canvas.gridLegend.values()) \
+            + list(self.canvas.repeatLegend.values())
         shift_legend_horizontally(legendList,
                                   columnRightShift, 
                                   self.unitWidth, 

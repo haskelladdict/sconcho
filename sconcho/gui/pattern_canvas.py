@@ -1277,7 +1277,7 @@ class PatternCanvas(QGraphicsScene):
             if len(items) > 1:
                 # we remove the item with the smallest width
                 # to avoid leaving holes
-                items.sort(lambda x,y: cmp(x.width, y.width))
+                items.sort(key=(lambda x: x.width))
 
                 # remove all but the last one
                 for index in range(0, len(items)-1):
@@ -1585,7 +1585,7 @@ class PatternCanvas(QGraphicsScene):
         orderedByColumn = \
             order_selection_by_columns(self._selectedCells.values())
 
-        colIDs = orderedByColumn.keys()
+        colIDs = list(orderedByColumn.keys())
         colIDs.sort()
 
         columnChunks = []

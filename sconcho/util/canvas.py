@@ -314,7 +314,7 @@ def is_active_selection_rectangular(selectedCells):
     cellsByRow = order_selection_by_rows(selectedCells)
    
     # make sure the rows are consecutive
-    rowIDs = cellsByRow.keys()
+    rowIDs = list(cellsByRow.keys())
     rowIDs.sort()
     for item in range(1, len(rowIDs)):
         if (rowIDs[item] - rowIDs[item-1]) != 1:
@@ -392,7 +392,7 @@ def can_outline_selection(selection):
 
     # check that rows are consecutive
     cellsByRow = order_selection_by_rows(selection)
-    keys = cellsByRow.keys()
+    keys = list(cellsByRow.keys())
     keys.sort()
     differences = set([(j-i) for (i,j) in zip(keys, keys[1:])])
     if len(differences) > 1: 
