@@ -1284,6 +1284,13 @@ class RowRepeatTracker(object):
         return self
 
 
+
+    def __next__(self):
+        """ python3 iterator version of next. """
+
+        return self.next()
+
+
     
     def next(self):
         """ Simple next function to allow iteration over content. """
