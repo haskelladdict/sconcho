@@ -45,6 +45,8 @@ class PatternView(QGraphicsView):
 
         self.setRenderHint(QPainter.Antialiasing)
         self.setRenderHint(QPainter.TextAntialiasing)
+        self.setCacheMode(QGraphicsView.CacheBackground)
+        self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
 
         # initialize the rubberBand
         self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
@@ -122,7 +124,7 @@ class PatternView(QGraphicsView):
 
         sceneRect = self.scene().sceneRect()
         sceneRect.adjust(-100, -100, 100, 100)
-        self.setSceneRect(sceneRect)
+        #self.setSceneRect(sceneRect)
 
 
     def zoom_in(self):
@@ -131,16 +133,19 @@ class PatternView(QGraphicsView):
         self.scale(1.1, 1.1)
 
 
+
     def zoom_out(self):
         """ Zoom out by 10% """
 
         self.scale(0.9, 0.9)
 
 
+
     def fit_scene(self):
         """ Fit scene into canvas. """
 
         self.fitInView(self.scene().sceneRect(), Qt.KeepAspectRatio)
+
 
 
     def normal_view(self):

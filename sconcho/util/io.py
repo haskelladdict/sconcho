@@ -757,8 +757,9 @@ def export_scene(canvas, width, height, dpi, hideNostitchSymbols,
             generator.setSize(QSize(width, height))
             generator.setViewBox(QRect(0, 0, width, height))
             generator.setTitle("sconcho generated SVG image")
-            generator.setDescription("this svg image was exported from"
+            generator.setDescription("this svg image was exported from "
                                      "a sconcho project")
+            generator.setResolution(dpi)
         else:
             generator = QImage(width+2*margin, height+2*margin, 
                                QImage.Format_ARGB32_Premultiplied)

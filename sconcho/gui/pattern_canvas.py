@@ -108,6 +108,7 @@ class PatternCanvas(QGraphicsScene):
         self._textLabels = []
         self.gridLegend = {}
         self.repeatLegend = {}
+        self.canvasTextBoxes = {}
 
         self.set_up_main_grid()
         self.set_up_labels()
@@ -184,7 +185,7 @@ class PatternCanvas(QGraphicsScene):
 
         self._set_up_row_labels(labelFont, fm)
 
-        # hide row labels agin if they are turned off
+        # hide row labels again if they are turned off
         # FIXME: This seems a little clunky - we need it
         # only because of the row repeats
         if not self.settings.showRowLabels.value:
@@ -401,7 +402,6 @@ class PatternCanvas(QGraphicsScene):
                 graphicsItem.setPos(origin)
 
             elif isinstance(graphicsItem, PatternLegendItem):
-                graphicsItem.prepareGeometryChange()
                 graphicsItem.change_geometry(self._unitCellDim)
 
 
@@ -419,9 +419,7 @@ class PatternCanvas(QGraphicsScene):
         legendYmax = compute_max_legend_y_coordinate(self.gridLegend,
                                                      self.repeatLegend)
         canvasYmax = (self._numRows + 1) * self._unitCellDim.height()
-
         yMax = max(legendYmax, canvasYmax)
-
         return yMax
         
 
@@ -1995,8 +1993,13 @@ class PatternCanvas(QGraphicsScene):
         legendFont = self.settings.legendFont.value
         for item in self.gridLegend.values(): 
             legendItem_text(item).setFont(legendFont)
+            legendItem_text(item).adjust_size()
         for item in self.repeatLegend.values():
             legendItem_text(item).setFont(legendFont)
+            legendItem_text(item).adjust_size()
+        for item in self.canvasTextBoxes.values():
+            item.setFont(legendFont)
+            item.adjust_size()
 
 
 
@@ -2019,19 +2022,30 @@ class PatternCanvas(QGraphicsScene):
 
 
     def add_text_item(self):
-        """ Adds a text item to the canvas. """
+        """ Adds a text item to the canvas. 
 
-        print("adding text item")
-        foo = PatternTextItem("some text")
-        self.addItem(foo)
+        NOTE: The main reason for keeping track of text boxes in
+        self.canvasTextBoxes is that it allows faster access when
+        changing, e.g., the font size and when saving. Since there
+        probably aren't that many the memory cost is probably small.
+        
+        """
+
+        textItem = PatternTextItem("Star Cruiser Crash Crash.")
+        yMax = self._get_legend_y_coordinate_for_placement()
+        itemLocation = QPointF(0, yMax + self._unitCellDim.height() + 10)
+        textItem.setPos(itemLocation)
+        textItem.setFont(self.settings.legendFont.value)
+        self.addItem(textItem)
+        self.canvasTextBoxes[textItem] = textItem
 
 
 
     def delete_text_item(self, deadItem):
         """ Removes a text item to the canvas. """
 
-        print("deleting text item")
         self.removeItem(deadItem)
+        del self.canvasTextBoxes[deadItem]
         del deadItem
 
 

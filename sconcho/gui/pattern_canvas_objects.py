@@ -456,7 +456,20 @@ class PatternLegendText(QGraphicsTextItem):
         """
         
         QGraphicsTextItem.keyPressEvent(self, event)
-        self._outline.setRect(self.boundingRect())
+        self.adjust_size()
+
+
+
+    def adjust_size(self):
+        """ This function takes care of changing the size of the
+
+        outline rectangle, e.g., when text is added or removed or
+        during font size changes.
+
+        """
+
+        if self._outline:
+            self._outline.setRect(self.boundingRect())
 
 
 
@@ -904,7 +917,7 @@ class RepeatLegendItem(QGraphicsRectItem):
 
 #########################################################
 ## 
-## class for managing a text item on the canvas
+## class for managing a text label on the canvas
 ##
 #########################################################
 class PatternTextItem(QGraphicsTextItem):
@@ -971,7 +984,20 @@ class PatternTextItem(QGraphicsTextItem):
         """
         
         QGraphicsTextItem.keyPressEvent(self, event)
-        self._outline.setRect(self.boundingRect())
+        self.adjust_size()
+
+
+
+    def adjust_size(self):
+        """ This function takes care of changing the size of the
+
+        outline rectangle, e.g., when text is added or removed or
+        during font size changes.
+
+        """
+
+        if self._outline:
+            self._outline.setRect(self.boundingRect())
 
 
 
@@ -1011,8 +1037,9 @@ class PatternTextItem(QGraphicsTextItem):
 
         # this is needed for undo/redo
         if self._position != self.pos():
-           self.scene().canvas_item_position_changed(self, self._position,
-                                                     self.pos()) 
+            self.prepareGeometryChange()
+            self.scene().canvas_item_position_changed(self, self._position,
+                                                      self.pos()) 
 
         return QGraphicsTextItem.mouseReleaseEvent(self, event)
 

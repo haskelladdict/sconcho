@@ -33,7 +33,7 @@ except ImportError:
 
 from PyQt4.QtCore import (Qt, SIGNAL, QDir, QFileInfo, QFile)
 from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
-                         QImageReader, QDialogButtonBox)
+                         QImageWriter, QDialogButtonBox)
 
 from sconcho.gui.ui_export_bitmap_dialog import Ui_ExportBitmapDialog
 import sconcho.util.messages as msg
@@ -148,10 +148,8 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         
         """
 
-        self.formats = ["*.%s" % formating.lower() for \
-                        formating in QImageReader.supportedImageFormats()]
-
-        self.formats.remove("*.gif")
+        self.formats = ["*.%s" % str(formating, 'utf8') for \
+                        formating in QImageWriter.supportedImageFormats()]
 
         # we support svg format as well
         self.formats.append("*.svg")
