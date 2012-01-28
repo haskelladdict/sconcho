@@ -118,15 +118,6 @@ class PatternView(QGraphicsView):
             QGraphicsView.wheelEvent(self, event)
 
 
-
-    def adjust_scene(self):
-        """ Make sure we have some space around the grid. """
-
-        sceneRect = self.scene().sceneRect()
-        sceneRect.adjust(-100, -100, 100, 100)
-        #self.setSceneRect(sceneRect)
-
-
     def zoom_in(self):
         """ Zoom in by 10% """
 

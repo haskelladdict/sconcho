@@ -117,6 +117,7 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
     patternRepeats = get_patternRepeats(canvas)
     repeatLegends = canvas.repeatLegend
     rowRepeats = canvas.rowRepeatTracker
+    textItems = canvas.canvasTextBoxes
     assert(len(patternRepeats) == len(repeatLegends))
 
     status = None
@@ -139,10 +140,11 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         stream.writeInt32(len(patternRepeats))
         stream.writeInt32(len(repeatLegends))
         stream.writeInt32(len(rowRepeats))
+        stream.writeInt32(len(textItems))
         
-        # the next are 4 dummy entries so we can add more
+        # the next is 1 dummy entry so we can add more
         # output within the same API
-        for count in range(2):
+        for count in range(1):
             stream.writeInt32(0)
 
         # write content
@@ -154,6 +156,7 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         write_settings(stream, settings)
         write_repeatLegends(stream, repeatLegends)
         write_rowRepeats(stream, rowRepeats)
+        write_textItems(stream, textItems)
 
 
     except (IOError, OSError) as e:
@@ -362,6 +365,17 @@ def write_rowRepeats(stream, rowRepeats):
 
 
 
+def write_textItems(stream, textItems):
+    """ write the text items """
+
+    for item in textItems.values():
+        stream << item.pos()
+        stream.writeQString(item.toPlainText())
+
+
+
+
+
 #############################################################################
 #
 # routines for writing a project.
@@ -397,9 +411,10 @@ def read_project(settings, openFileName):
         numRepeats = stream.readInt32()
         numRepeatLegends = stream.readInt32()
         numRowRepeats = stream.readInt32()
+        numTextItems = stream.readInt32()
 
         # the next are 4 dummy entries we just skip
-        for count in range(2):
+        for count in range(1):
             stream.readInt32()
 
         # read elements
@@ -416,11 +431,13 @@ def read_project(settings, openFileName):
             # repeats and rowRepeats
             repeatLegends = {}
             rowRepeats = []
+            textItems = []
         elif version == 2:
             patternRepeats = read_patternRepeats(stream, numRepeats)
             read_settings(stream, settings, version)
             repeatLegends = read_patternRepeatLegends(stream, numRepeatLegends)
             rowRepeats = read_rowRepeats(stream, numRowRepeats)
+            textItems = read_textItems(stream, numTextItems)
         else:
             raise IOError("unsupported API version")
             
@@ -435,7 +452,8 @@ def read_project(settings, openFileName):
             return (False, status, None, None, None, None, None, None, None)
 
     return (True, None, patternGridItems, legendItems, colors, 
-            activeSymbol, patternRepeats, repeatLegends, rowRepeats)
+            activeSymbol, patternRepeats, repeatLegends, rowRepeats,
+            textItems)
 
 
 
@@ -721,6 +739,24 @@ def read_rowRepeats(stream, numRowRepeats):
         rowRepeatList.append((rowList, multiplicity))
 
     return rowRepeatList
+
+
+
+def read_textItems(stream, numTextItems):
+    """ Read in the list of text items """
+
+    textItemList = []
+    for count in range(numTextItems):
+        itemPos = QPointF()
+        stream >> itemPos
+        itemText = stream.readQString()
+
+        newItem = { "itemPos" : itemPos,
+                    "itemText" : itemText }
+
+        textItemList.append(newItem)
+
+    return textItemList
 
 
 

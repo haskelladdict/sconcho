@@ -450,7 +450,6 @@ class PatternCanvas(QGraphicsScene):
         textItem.setFont(self.settings.legendFont.value)
         self.addItem(textItem)
 
-        self.emit(SIGNAL("adjust_view"))
         return (item, textItem)
 
 
@@ -1729,14 +1728,12 @@ class PatternCanvas(QGraphicsScene):
         self.set_up_main_grid()
         self.finalize_grid_change()
 
-        self.emit(SIGNAL("adjust_view"))
-        
 
 
     @wait_cursor
     def load_previous_pattern(self, knittingSymbols, patternGridItemInfo,
                               legendItemInfo, patternRepeats, 
-                              repeatLegends, rowRepeats):
+                              repeatLegends, rowRepeats, textItems):
         """ Clear curent canvas and establishes a new canvas
         based on the passed canvas items. Returns True on success
         and False otherwise.
@@ -1746,18 +1743,14 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
-        (status, allPatternGridItems) = \
-                 self._load_pattern_grid_items(patternGridItemInfo,
-                                               knittingSymbols)
-        if not status:
-            return status
+        allPatternGridItems = self._load_pattern_grid_items(patternGridItemInfo,
+                                                            knittingSymbols)
+        if not allPatternGridItems:
+            return False
 
-        (status, allLegendItems) = \
-                 self._load_legend_items(legendItemInfo)
-
-        if not status:
-            return status
-        
+        allLegendItems = self._load_legend_items(legendItemInfo)
+        if not allLegendItems:
+            return False
 
         # now that we have all canvas items, let's put them back in place
         self._clear_canvas()
@@ -1780,6 +1773,9 @@ class PatternCanvas(QGraphicsScene):
         for rowRepeat in rowRepeats:
             self.rowRepeatTracker.add_repeat(rowRepeat[0], rowRepeat[1])
 
+        for textItem in textItems:
+            self.add_text_item(textItem["itemText"], textItem["itemPos"])
+
         # need to clear our caches, otherwise we'll try 
         # to remove non-existing items
         self._textLabels = []
@@ -1787,7 +1783,6 @@ class PatternCanvas(QGraphicsScene):
         self.change_grid_cell_dimensions()
         self.clear_undo_stack()
 
-        self.emit(SIGNAL("adjust_view"))
         return True
 
 
@@ -1868,7 +1863,6 @@ class PatternCanvas(QGraphicsScene):
 
                 #if name == "nostitch":
                 #    color = QColor("#6a6a6a")
-                
                 allPatternGridItems.append((location, self._unitCellDim, 
                                             colID, rowID, width, 
                                             height, symbol, color))
@@ -1882,13 +1876,13 @@ class PatternCanvas(QGraphicsScene):
             QMessageBox.critical(None, msg.errorLoadingGridTitle,
                                  msg.errorLoadingGridText % e,
                                  QMessageBox.Close)
-            return (False, [])
+            return None
 
         # set limits
         self._numRows    = maxRow + 1
         self._numColumns = maxCol + 1
         
-        return (True, allPatternGridItems)
+        return allPatternGridItems
 
 
 
@@ -1910,9 +1904,9 @@ class PatternCanvas(QGraphicsScene):
             QMessageBox.critical(None, msg.errorLoadingLegendTitle,
                                  msg.errorLoadingLegendText % e,
                                  QMessageBox.Close)
-            return (False, [])
+            return None
 
-        return (True, allLegendItems)
+        return allLegendItems
 
 
 
@@ -2021,7 +2015,8 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def add_text_item(self):
+    def add_text_item(self, itemText = "Star Cruiser Crash Crash.",
+                      itemPos = None):
         """ Adds a text item to the canvas. 
 
         NOTE: The main reason for keeping track of text boxes in
@@ -2031,10 +2026,11 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
-        textItem = PatternTextItem("Star Cruiser Crash Crash.")
-        yMax = self._get_legend_y_coordinate_for_placement()
-        itemLocation = QPointF(0, yMax + self._unitCellDim.height() + 10)
-        textItem.setPos(itemLocation)
+        textItem = PatternTextItem(itemText)
+        if not itemPos:
+            yMax = self._get_legend_y_coordinate_for_placement()
+            itemPos = QPointF(0, yMax + self._unitCellDim.height() + 10)
+        textItem.setPos(itemPos)
         textItem.setFont(self.settings.legendFont.value)
         self.addItem(textItem)
         self.canvasTextBoxes[textItem] = textItem

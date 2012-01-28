@@ -104,9 +104,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # we set a manual scene rectangle for our view. we
         # should be a little smarter about this in the future
         self.graphicsView.setScene(self.canvas)
-        self.connect(self.canvas, SIGNAL("adjust_view"),
-                     self.graphicsView.adjust_scene)
-        self.graphicsView.adjust_scene()
 
         self._readFileDialogPath = QDir.homePath()
         self._set_up_recently_used_files_menu()
@@ -889,8 +886,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         (status, errMsg, patternGridItems, legendItems, colors,
-         activeItem, patternRepeats, repeatLegends, rowRepeats) = \
-         io.read_project(self.settings, readFilePath)
+         activeItem, patternRepeats, repeatLegends, rowRepeats,
+         textItems) = io.read_project(self.settings, readFilePath)
         
 
         if not status:
@@ -904,7 +901,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                  legendItems,
                                                  patternRepeats,
                                                  repeatLegends,
-                                                 rowRepeats):
+                                                 rowRepeats,
+                                                 textItems):
             return
 
         set_up_colors(self.colorWidget, colors)
