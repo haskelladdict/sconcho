@@ -39,7 +39,7 @@ sconchoDescription = (
     "<b>sconcho</b> v. %s"
     "<p>sconcho is a design software for creating print quality "
     " knitting charts."
-    "<p>Copyright &copy; 2009-2011 Markus Dittrich"
+    "<p>Copyright &copy; 2009-2012 Markus Dittrich"
     "<p>Many thanks to Susan Dittrich for continued testing, advice, "
     "support, and generation of the SVG knitting symbols."
     "<p>Please help make sconcho better by reporting problems or "
