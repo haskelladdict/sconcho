@@ -533,15 +533,14 @@ class PatternCanvas(QGraphicsScene):
 
         
 
-    def create_pattern_grid_item(self, origin, unitDim, col, row,
-                                 width, height, knittingSymbol,
-                                 color):
+    def create_pattern_grid_item(self, origin, col, row, width, height, 
+                                 knittingSymbol, color):
         """ Creates a new PatternGridItem of the specified dimension
         at the given location.
         
         """
 
-        item = PatternGridItem(unitDim, col, row, width, height,
+        item = PatternGridItem(self._unitCellDim, col, row, width, height,
                                knittingSymbol, color)
         item.setPos(origin)
         self.connect(item, SIGNAL("cell_selected"), self.grid_cell_activated)
@@ -1670,10 +1669,9 @@ class PatternCanvas(QGraphicsScene):
         for column in range(0, self._numColumns):
             location = QPointF(column * self._unitCellDim.width(),
                                 rowID * self._unitCellDim.height())
-            item = self.create_pattern_grid_item(location, self._unitCellDim,
-                                                    column, rowID, 1, 1,
-                                                    self._defaultSymbol,
-                                                    self._defaultColor)
+            item = self.create_pattern_grid_item(location, column, rowID, 1, 1,
+                                                 self._defaultSymbol,
+                                                 self._defaultColor)
             self.addItem(item)
 
 
@@ -1689,9 +1687,7 @@ class PatternCanvas(QGraphicsScene):
         for row in range(0, self._numRows):
             location = QPointF(columnID * self._unitCellDim.width(),
                                 row * self._unitCellDim.height())
-            item = self.create_pattern_grid_item(location, 
-                                                 self._unitCellDim,
-                                                 columnID, row, 1, 1,
+            item = self.create_pattern_grid_item(location, columnID, row, 1, 1,
                                                  self._defaultSymbol,
                                                  self._defaultColor)
             self.addItem(item)
@@ -1709,6 +1705,7 @@ class PatternCanvas(QGraphicsScene):
         # clear all caches
         self.gridLegend.clear()
         self.repeatLegend.clear()
+        self.canvasTextBoxes.clear()
         self._selectedCells = {}                                          
         self._undoStack.clear()
         self._copySelection = {}
@@ -1743,12 +1740,17 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
-        allPatternGridItems = self._load_pattern_grid_items(patternGridItemInfo,
-                                                            knittingSymbols)
+        allPatternGridItems = load_pattern_grid_items(patternGridItemInfo,
+                                                      knittingSymbols,
+                                                      self._unitCellDim.width(),
+                                                      self._unitCellDim.height())
         if not allPatternGridItems:
             return False
+        (self._numRows, self._numColumns) = \
+            extract_num_rows_columns(allPatternGridItems)
 
-        allLegendItems = self._load_legend_items(legendItemInfo)
+
+        allLegendItems = load_legend_items(legendItemInfo)
         if not allLegendItems:
             return False
 
@@ -1774,7 +1776,7 @@ class PatternCanvas(QGraphicsScene):
             self.rowRepeatTracker.add_repeat(rowRepeat[0], rowRepeat[1])
 
         for textItem in textItems:
-            self.add_text_item(textItem["itemText"], textItem["itemPos"])
+            self.add_text_item(**textItem) 
 
         # need to clear our caches, otherwise we'll try 
         # to remove non-existing items
@@ -1833,82 +1835,8 @@ class PatternCanvas(QGraphicsScene):
         self.repeatLegend[repeatItem.itemID] = \
             (1, legendItem, legendTextItem)
 
+
             
-
-
-    def _load_pattern_grid_items(self, patternGridItemInfo, 
-                                 knittingSymbols):
-        """ Re-create all patternGridItems based on loaded
-        sconcho project.
-
-        """
-
-        # need this to determine the number of columns and rows
-        maxCol = 0
-        maxRow = 0
-        allPatternGridItems = []
-        
-        try:
-            for newItem in patternGridItemInfo:
-                colID    = newItem["column"]
-                rowID    = newItem["row"]
-                width    = newItem["width"]
-                height   = newItem["height"]
-                name     = newItem["name"]
-                color    = QColor(newItem["color"])
-                category = newItem["category"]
-                location = QPointF(colID * self._unitCellDim.width(),
-                                    rowID * self._unitCellDim.height())
-                symbol   = knittingSymbols[name]
-
-                #if name == "nostitch":
-                #    color = QColor("#6a6a6a")
-                allPatternGridItems.append((location, self._unitCellDim, 
-                                            colID, rowID, width, 
-                                            height, symbol, color))
-
-                # update trackers
-                maxCol = max(maxCol, colID)
-                maxRow = max(maxRow, rowID)
-
-
-        except KeyError as e:
-            QMessageBox.critical(None, msg.errorLoadingGridTitle,
-                                 msg.errorLoadingGridText % e,
-                                 QMessageBox.Close)
-            return None
-
-        # set limits
-        self._numRows    = maxRow + 1
-        self._numColumns = maxCol + 1
-        
-        return allPatternGridItems
-
-
-
-    def _load_legend_items(self, legendItemInfo):
-        """ Re-create all legend items based on loaded sconcho project. """       
-
-        allLegendItems = []
-        try:
-            for item in legendItemInfo:
-                legendID  = generate_legend_id(item, item["color"])
-                itemXPos  = item["itemXPos"]
-                itemYPos  = item["itemYPos"]
-                labelXPos = item["labelXPos"]
-                labelYPos = item["labelYPos"]
-                description = item["description"]
-                allLegendItems.append((legendID, itemXPos, itemYPos, 
-                                       labelXPos, labelYPos, description))
-        except KeyError as e:
-            QMessageBox.critical(None, msg.errorLoadingLegendTitle,
-                                 msg.errorLoadingLegendText % e,
-                                 QMessageBox.Close)
-            return None
-
-        return allLegendItems
-
-
 
     def toggle_rowLabel_visibility(self, status):
         """ Per request from main window toggle

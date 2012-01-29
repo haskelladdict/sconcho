@@ -730,20 +730,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # need this check to avoid interpreting a nonexisting entry
         # as an empty filename
         if len(fileString) == 0:
-            files = QStringList()
+            files = list()
         else:
             files = fileString.split("%")
 
         # whithout a path we simply update the menu without
         # adding any filename
         if path:
-            if path in files:
+            fullPath = QFileInfo(path).absoluteFilePath()
+            if fullPath in files:
                 return
             else:
-                fullPath = QFileInfo(path).absoluteFilePath()
                 files.append(fullPath)
                 while len(files) > 10:
-                    files.takeFirst()
+                    files.pop(0)
 
         self.settings.recently_used_files = "%".join(files)
         self.clear_recently_used_files_menu()

@@ -28,7 +28,7 @@ from __future__ import absolute_import
 import math
 
 from PyQt4.QtCore import (QPointF)
-from PyQt4.QtGui import (QMessageBox)
+from PyQt4.QtGui import (QMessageBox, QColor)
 
 import sconcho.util.messages as msg 
 
@@ -563,6 +563,78 @@ def get_row_repeat_id(entry):
     """ Returns the pattern repeat id of a patter row repeat. """
 
     return entry[2]
+
+
+
+
+def load_pattern_grid_items(patternGridItemInfo, knittingSymbols,
+                            unitCellWidth, unitCellHeight):
+    """ Re-create all patternGridItems based on loaded sconcho project. """
+
+    allPatternGridItems = []
+    try:
+        for newItem in patternGridItemInfo:
+            colID    = newItem["column"]
+            rowID    = newItem["row"]
+            width    = newItem["width"]
+            height   = newItem["height"]
+            name     = newItem["name"]
+            color    = QColor(newItem["color"])
+            category = newItem["category"]
+            location = QPointF(colID * unitCellWidth, rowID * unitCellHeight)
+            symbol   = knittingSymbols[name]
+
+            #if name == "nostitch":
+            #    color = QColor("#6a6a6a")
+            allPatternGridItems.append((location, colID, rowID, width, height, 
+                                        symbol, color))
+
+    except KeyError as e:
+        QMessageBox.critical(None, msg.errorLoadingGridTitle,
+                             msg.errorLoadingGridText % e,
+                             QMessageBox.Close)
+        return None
+
+    return allPatternGridItems
+
+
+
+def  extract_num_rows_columns(allPatternGridItems):
+    """ From a list of new PatternGridItems extract the number of rows and 
+    columns.
+    """
+
+    numColumns = max([x[1] for x in allPatternGridItems]) + 1
+    numRows = max([x[2] for x in allPatternGridItems]) + 1
+
+    return (numRows, numColumns)
+
+
+
+def load_legend_items(legendItemInfo):
+    """ Re-create all legend items based on loaded sconcho project. """       
+
+    allLegendItems = []
+    try:
+        for item in legendItemInfo:
+            legendID  = generate_legend_id(item, item["color"])
+            itemXPos  = item["itemXPos"]
+            itemYPos  = item["itemYPos"]
+            labelXPos = item["labelXPos"]
+            labelYPos = item["labelYPos"]
+            description = item["description"]
+            allLegendItems.append((legendID, itemXPos, itemYPos, 
+                                   labelXPos, labelYPos, description))
+    except KeyError as e:
+        QMessageBox.critical(None, msg.errorLoadingLegendTitle,
+                             msg.errorLoadingLegendText % e,
+                             QMessageBox.Close)
+        return None
+
+    return allLegendItems
+
+
+    
 
 
 ############################################################################
