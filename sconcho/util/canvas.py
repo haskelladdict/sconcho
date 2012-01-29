@@ -569,7 +569,7 @@ def get_row_repeat_id(entry):
 
 def load_pattern_grid_items(patternGridItemInfo, knittingSymbols,
                             unitCellWidth, unitCellHeight):
-    """ Re-create all patternGridItems based on loaded sconcho project. """
+    """ extract all patternGridItems from a loaded sconcho project. """
 
     allPatternGridItems = []
     try:
@@ -612,7 +612,7 @@ def  extract_num_rows_columns(allPatternGridItems):
 
 
 def load_legend_items(legendItemInfo):
-    """ Re-create all legend items based on loaded sconcho project. """       
+    """ extract all legend items from a loaded sconcho project. """       
 
     allLegendItems = []
     try:
@@ -635,6 +635,73 @@ def load_legend_items(legendItemInfo):
 
 
     
+def load_patternRepeat_items(repeatItemInfo):
+    """ extract all pattern repeat items from a loaded sconcho project. """
+
+    allPatternRepeatItems = {}
+    try:
+        for item in repeatItemInfo:
+            itemID = item["legendID"]
+            itemLineInfo = item["lines"]
+            itemLineWidth = item["width"]
+            itemPosition = item["position"]
+            itemColor = item["color"]
+            allPatternRepeatItems[itemID] = ((itemLineInfo, itemLineWidth,
+                                              itemPosition, itemColor))
+    except KeyError as e:
+        QMessageBox.critical(None, msg.errorLoadingRepeatBoxTitle,
+                             msg.errorLoadingRepeatBoxText % e,
+                             QMessageBox.Close)
+        return None
+
+    return allPatternRepeatItems
+
+
+
+def load_patternRepeatLegend_items(repeatLegendInfo):
+    """ extract all pattern repeat item legends from a loaded sconcho 
+    project. """
+
+    allPatternRepeatLegendItems = {}
+    try:
+        for (key, item) in repeatLegendInfo.items():
+            itemIsVisible = item["isVisible"]
+            itemPosition = item["itemPos"]
+            textItemPosition = item["textItemPos"]
+            itemText = item["itemText"]
+            allPatternRepeatLegendItems[key] = ((itemIsVisible,
+                                                 itemPosition, 
+                                                 textItemPosition,
+                                                 itemText))
+    except KeyError as e:
+        QMessageBox.critical(None, msg.errorLoadingRepeatBoxLegendTitle,
+                             msg.errorLoadingRepeatBoxLegendText % e,
+                             QMessageBox.Close)
+        return None
+
+    return allPatternRepeatLegendItems
+
+
+
+
+def load_text_items(textItemInfo):
+    """ extract all canvas text items from a loaded sconcho project. """
+
+    allTextItems = []
+    try:
+        for item in textItemInfo:
+            itemPosition = item["itemPos"]
+            itemText = item["itemText"]
+            allTextItems.append((itemPosition, itemText))
+
+    except KeyError as e:
+        QMessageBox.critical(None, msg.errorLoadingTextItemsTitle,
+                             msg.errorLoadingTextItemsText % e,
+                             QMessageBox.Close)
+        return None
+
+    return allTextItems
+
 
 
 ############################################################################

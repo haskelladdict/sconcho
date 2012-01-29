@@ -1738,24 +1738,43 @@ class PatternCanvas(QGraphicsScene):
         NOTE: We have to be able to deal with bogus data (from a
         corrupted file perhaps).
         
+        NOTE1: No checking is done for rowRepeats since it is not a dictionary
+        but a list of tuples so there won't be a key error.
+
+        NOTE2: In the tests below do NOT replace "X == NONE" with "not X" since
+        X can be legally [], for example.
+        
         """
 
         allPatternGridItems = load_pattern_grid_items(patternGridItemInfo,
                                                       knittingSymbols,
                                                       self._unitCellDim.width(),
                                                       self._unitCellDim.height())
-        if not allPatternGridItems:
+        if allPatternGridItems == None:
             return False
-        (self._numRows, self._numColumns) = \
-            extract_num_rows_columns(allPatternGridItems)
-
 
         allLegendItems = load_legend_items(legendItemInfo)
-        if not allLegendItems:
+        if allLegendItems == None:
+            return False
+
+        allRepeatBoxes = load_patternRepeat_items(patternRepeats)
+        if allRepeatBoxes == None:
+            return False
+
+        allRepeatBoxLegends = load_patternRepeatLegend_items(repeatLegends)
+        if allRepeatBoxLegends == None:
+            return False
+
+        allTextItems = load_text_items(textItems)
+        if allTextItems == None:
             return False
 
         # now that we have all canvas items, let's put them back in place
         self._clear_canvas()
+
+        (self._numRows, self._numColumns) = \
+            extract_num_rows_columns(allPatternGridItems)
+
         for entry in allPatternGridItems:
             item = self.create_pattern_grid_item(*entry)
             self.addItem(item)
@@ -1763,20 +1782,21 @@ class PatternCanvas(QGraphicsScene):
         for entry in allLegendItems:
             arrange_label_item(self.gridLegend, *entry)
 
-        for entry in patternRepeats:
+        for (repeatID, entry) in allRepeatBoxes.items():
 
             # also retrieve the proper legend
-            repeatID = entry["legendID"]
-            if repeatID in repeatLegends:
-                self._load_patternRepeatItem(entry, repeatLegends[repeatID])
+            if repeatID in allRepeatBoxLegends:
+                self.add_patternRepeatItem(*entry, legendInfo = \
+                                                allRepeatBoxLegends[repeatID])
             else:
-                self._load_patternRepeatItem(entry, None)
+                self.add_patternRepeatItem(*entry, 
+                                            legendInfo = None)
             
         for rowRepeat in rowRepeats:
-            self.rowRepeatTracker.add_repeat(rowRepeat[0], rowRepeat[1])
+            self.rowRepeatTracker.add_repeat(*rowRepeat)
 
-        for textItem in textItems:
-            self.add_text_item(**textItem) 
+        for textItem in allTextItems:
+            self.add_text_item(*textItem)
 
         # need to clear our caches, otherwise we'll try 
         # to remove non-existing items
@@ -1789,18 +1809,16 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def _load_patternRepeatItem(self, itemInfo, legendInfo):
+    def add_patternRepeatItem(self, itemLineInfo, itemLineWidth, itemPosition,
+                              itemColor, legendInfo):
         """ Recreates a pattern repeat item and its legend based on 
         itemInfo and legendInfo. """
 
         # create the legend entry
-        legendItem = RepeatLegendItem(itemInfo["color"])
+        legendItem = RepeatLegendItem(itemColor)
 
         if legendInfo:
-            legendItemPos = legendInfo["itemPos"]
-            legendTextPos = legendInfo["textItemPos"]
-            legendText    = legendInfo["itemText"]
-            legendIsVisible = legendInfo["isVisible"]
+            (legendIsVisible, legendItemPos, legendTextPos, legendText) = legendInfo
         else:
             legendText = QString("pattern repeat")
             yCoord = self._get_legend_y_coordinate_for_placement()
@@ -1822,21 +1840,17 @@ class PatternCanvas(QGraphicsScene):
         self.addItem(legendItem)
         self.addItem(legendTextItem)
 
-        
         # create the actual pattern repeat
-        repeatItem = PatternRepeatItem(itemInfo["lines"],
-                                       itemInfo["width"],
-                                       itemInfo["color"],
+        repeatItem = PatternRepeatItem(itemLineInfo, itemLineWidth, itemColor,
                                        legendIsVisible)
+        repeatItem.setPos(itemPosition)
         self.addItem(repeatItem)
-        repeatItem.setPos(itemInfo["position"])
 
         # connect repeat box and legend
         self.repeatLegend[repeatItem.itemID] = \
             (1, legendItem, legendTextItem)
 
 
-            
 
     def toggle_rowLabel_visibility(self, status):
         """ Per request from main window toggle
@@ -1943,8 +1957,8 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def add_text_item(self, itemText = "Star Cruiser Crash Crash.",
-                      itemPos = None):
+    def add_text_item(self, itemPos = None,
+                      itemText = "Star Cruiser Crash Crash."):
         """ Adds a text item to the canvas. 
 
         NOTE: The main reason for keeping track of text boxes in

@@ -157,6 +157,31 @@ errorLoadingLegendText = ("Could not load legend from "
                           "<p>sconcho encountered the following "
                           "error: KeyError: %s.")
 
+
+errorLoadingRepeatBoxTitle = "sconcho: Error Loading Repeat Box"
+errorLoadingRepeatBoxText = ("Could not load repeat box from "
+                             "opened project file. This indicates that "
+                             "your file may be corrupted."
+                             "<p>sconcho encountered the following "
+                             "error: KeyError: %s.")
+
+
+errorLoadingRepeatBoxLegendTitle = "sconcho: Error Loading Repeat Box Legend"
+errorLoadingRepeatBoxLegendText = ("Could not load repeat box legend from "
+                                   "opened project file. This indicates that "
+                                   "your file may be corrupted."
+                                   "<p>sconcho encountered the following "
+                                   "error: KeyError: %s.")
+
+
+errorLoadingTextItemsTitle = "sconcho: Error Loading Text Items"
+errorLoadingTextItemsText = ("Could not load text item from "
+                             "opened project file. This indicates that "
+                             "your file may be corrupted."
+                             "<p>sconcho encountered the following "
+                             "error: KeyError: %s.")
+
+
 errorOpeningKnittingSymbols = ("sconcho: Failed to open knitting symbol "
                                "database.\n"
                                "Please check that you have valid symbols "
