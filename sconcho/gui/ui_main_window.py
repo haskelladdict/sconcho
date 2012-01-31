@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sun Jan  8 13:35:49 2012
+# Created: Mon Jan 30 23:25:21 2012
 #      by: PyQt4 UI code generator 4.9
 #
 # WARNING! All changes made in this file will be lost!
@@ -432,8 +432,8 @@ class Ui_MainWindow(object):
         self.actionShow_column_labels.setText(QtGui.QApplication.translate("MainWindow", "Show &Column Labels", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAdd_Text.setText(QtGui.QApplication.translate("MainWindow", "Add Text", None, QtGui.QApplication.UnicodeUTF8))
 
-from sconcho.gui.active_symbol_widget import ActiveSymbolWidget
-from sconcho.gui.color_widget import ColorWidget
-from sconcho.gui.pattern_view import PatternView
-from sconcho.gui.recently_used_symbol_widget import RecentlyUsedSymbolWidget
+from active_symbol_widget import ActiveSymbolWidget
+from color_widget import ColorWidget
+from pattern_view import PatternView
+from recently_used_symbol_widget import RecentlyUsedSymbolWidget
 from . import icons_rc
