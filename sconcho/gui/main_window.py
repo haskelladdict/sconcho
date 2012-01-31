@@ -745,7 +745,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 while len(files) > 10:
                     files.pop(0)
 
-        self.settings.recently_used_files = "%".join(files)
+        self.settings.recently_used_files = files.join("%")
         self.clear_recently_used_files_menu()
 
         # the actual path is stored as data since the text
@@ -844,7 +844,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # the actual filename is in the data *not* the
         # text of the item
-        readFilePath = action.data()
+        readFilePath = action.data().toString()
         
         if not self._ok_to_continue_without_saving():
             return

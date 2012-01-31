@@ -345,7 +345,7 @@ class SymbolTempDir(object):
     def __enter__(self):
         """ Create the temporary directory. """
 
-        self.tempDir = mkdtemp(dir=self.topDir + "/")
+        self.tempDir = mkdtemp(dir=unicode(self.topDir + "/"))
         return self.tempDir
 
 

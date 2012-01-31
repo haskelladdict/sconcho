@@ -218,7 +218,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         targetSizeIndex = 0
         self.legendSizeComboBox.clear()
         for (index, size) in enumerate(availableSizes):
-            self.legendSizeComboBox.addItem(QString(size))
+            self.legendSizeComboBox.addItem(QString(unicode(size)))
 
             if targetSize == size:
                 targetSizeIndex = index
@@ -242,7 +242,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         fontFamily = self.legendFontComboBox.currentFont().family()
         fontStyle  = self.legendStyleComboBox.currentText()
         if self.legendSizeComboBox.currentText():
-            fontSize = int(self.legendSizeComboBox.currentText())
+            (fontSize, status) = self.legendSizeComboBox.currentText().toInt()
         else: 
             fontSize = 20
 
@@ -305,7 +305,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         targetSizeIndex = 0
         self.labelSizeComboBox.clear()
         for (index, size) in enumerate(availableSizes):
-            self.labelSizeComboBox.addItem(QString(size))
+            self.labelSizeComboBox.addItem(QString(unicode(size)))
 
             if targetSize == size:
                 targetSizeIndex = index
@@ -329,7 +329,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         fontFamily = self.labelFontComboBox.currentFont().family()
         fontStyle  = self.labelStyleComboBox.currentText()
         if self.labelSizeComboBox.currentText():
-            fontSize = int(self.labelSizeComboBox.currentText())
+            (fontSize, status) = self.labelSizeComboBox.currentText().toInt()
         else:
             fontSize = 20
 
