@@ -1968,23 +1968,17 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
-        textItem = PatternTextItem(itemText)
-        if not itemPos:
-            yMax = self._get_legend_y_coordinate_for_placement()
-            itemPos = QPointF(0, yMax + self._unitCellDim.height() + 10)
-        textItem.setPos(itemPos)
-        textItem.setFont(self.settings.legendFont.value)
-        self.addItem(textItem)
-        self.canvasTextBoxes[textItem] = textItem
+        addTextBoxCommand = AddTextBox(self, itemPos, itemText)
+        self._undoStack.push(addTextBoxCommand)      
 
 
 
     def delete_text_item(self, deadItem):
         """ Removes a text item to the canvas. """
 
-        self.removeItem(deadItem)
-        del self.canvasTextBoxes[deadItem]
-        del deadItem
+        deleteTextBoxCommand = DeleteTextBox(self, deadItem)
+        self._undoStack.push(deleteTextBoxCommand)
+
 
 
 

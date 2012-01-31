@@ -49,7 +49,8 @@ from sconcho.util.canvas import (get_item_id,
 
 from sconcho.util.misc import (errorLogger)
 from sconcho.gui.pattern_canvas_objects import (RepeatLegendItem,
-                                                PatternLegendText) 
+                                                PatternLegendText,
+                                                PatternTextItem) 
 
 
 ###########################################################################
@@ -121,7 +122,6 @@ class PasteCells(QUndoCommand):
             location = QPointF(column * self.canvas._unitCellDim.width(),
                                row * self.canvas._unitCellDim.height())
             item = self.canvas.create_pattern_grid_item(location, 
-                                                     self.canvas._unitCellDim, 
                                                      column, row,
                                                      entry.width, 1,
                                                      entry.symbol, 
@@ -151,7 +151,6 @@ class PasteCells(QUndoCommand):
             location = QPointF(column * self.canvas._unitCellDim.width(),
                                row * self.canvas._unitCellDim.height())
             item = self.canvas.create_pattern_grid_item(location, 
-                                                     self.canvas._unitCellDim, 
                                                      column, row,
                                                      entry.width, 1,
                                                      entry.symbol, 
@@ -527,7 +526,6 @@ class DeleteRows(QUndoCommand):
             location = QPointF(entry.column * self.unitWidth,
                                entry.row * self.unitHeight)
             item = self.canvas.create_pattern_grid_item(location, 
-                                                    self.canvas._unitCellDim,
                                                     entry.column, 
                                                     entry.row, 
                                                     entry.width, 
@@ -862,7 +860,6 @@ class DeleteColumns(QUndoCommand):
                                entry.row * self.unitHeight)
             item = \
                  self.canvas.create_pattern_grid_item(location, 
-                                                      self.canvas._unitCellDim,
                                                       entry.column, 
                                                       entry.row, 
                                                       entry.width, 
@@ -1132,8 +1129,8 @@ class PaintCells(QUndoCommand):
                 numNewItems = int(totalWidth/self.width)
                 for i in range(0, numNewItems):
                     item = self.canvas.create_pattern_grid_item(origin,
-                                self.canvas._unitCellDim, column, row, self.width,
-                                1, self.activeSymbolContent, itemColor)
+                                column, row, self.width, 1, 
+                                self.activeSymbolContent, itemColor)
                     self.canvas.addItem(item)
 
                     itemID = get_item_id(column, row)
@@ -1209,7 +1206,6 @@ class PaintCells(QUndoCommand):
                             row * self.canvas._unitCellDim.height())
 
             item = self.canvas.create_pattern_grid_item(location, 
-                                                    self.canvas._unitCellDim, 
                                                     column, row,
                                                     entry.width,
                                                     1,
@@ -1698,3 +1694,75 @@ class DeleteRowRepeat(QUndoCommand):
         self.rowRepeatTracker.add_repeat(self.rows, self.multiplicity)
         self.canvas.set_up_labels()
 
+
+
+
+class AddTextBox(QUndoCommand):
+    """ This class encapsulates the addition of a text box 
+    item on the canvas.
+
+    """
+
+    def __init__(self, canvas, itemPos, itemText, parent = None):
+
+        super(AddTextBox, self).__init__(parent)
+
+        self.canvas = canvas
+        self.itemPos = itemPos
+        self.itemText = itemText
+
+        self.textItem = PatternTextItem(self.itemText)
+        if not self.itemPos:
+            yMax = self.canvas._get_legend_y_coordinate_for_placement()
+            self.itemPos = QPointF(0, yMax + self.canvas._unitCellDim.height() + 10)
+        self.textItem.setPos(self.itemPos)
+        self.textItem.setFont(self.canvas.settings.legendFont.value)
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        self.canvas.addItem(self.textItem)
+        self.canvas.canvasTextBoxes[self.textItem] = self.textItem
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        if self.textItem:
+            self.canvas.removeItem(self.textItem)
+            del self.canvas.canvasTextBoxes[self.textItem]
+
+
+
+class DeleteTextBox(QUndoCommand):
+    """ This class encapsulates the deletion of a text box 
+    item on the canvas.
+
+    """
+
+    def __init__(self, canvas, deadTextBox, parent = None):
+
+        super(DeleteTextBox, self).__init__(parent)
+
+        self.canvas = canvas
+        self.textItem = deadTextBox
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        if self.textItem:
+            self.canvas.removeItem(self.textItem)
+            del self.canvas.canvasTextBoxes[self.textItem]
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        self.canvas.addItem(self.textItem)
+        self.canvas.canvasTextBoxes[self.textItem] = self.textItem
