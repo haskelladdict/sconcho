@@ -124,6 +124,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.canvas.clear_undo_stack()
             if not was_recovered:
                 self.mark_project_clean()
+        else:
+            self.set_project_save_file("Untitled")
 
         # set up timers
         # NOTE: Needs to be last, otherwise some signals may not
@@ -922,7 +924,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """ This function opens and export pattern dialog. """
 
         if not self.exportBitmapDialog:
-            self.exportBitmapDialog = ExportBitmapDialog(self.canvas, self)
+            self.exportBitmapDialog = \
+                ExportBitmapDialog(self.canvas, self._saveFilePath, self)
 
             self.connect(self.exportBitmapDialog, SIGNAL("export_pattern"),
                          partial(io.export_scene, self.canvas),

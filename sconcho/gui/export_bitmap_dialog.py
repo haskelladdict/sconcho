@@ -42,6 +42,19 @@ import sconcho.util.messages as msg
 # global conversion
 inToCm = 1/0.393700787
 
+# dictionary with description of most common image file formats
+imageFileFormats = { "bmp" : "Bitmap Image File",
+                     "ico" : "Ico File Format",
+                     "jpeg" : "Joint Photographic Experts Group Format",
+                     "jpg" : "Joint Photographic Experts Group Format",
+                     "png" : "Portable Networks Graphic",
+                     "ppm" : "Netpbm Color Image Format",
+                     "tif" : "Tagged Image File Format",
+                     "tiff" : "Tagged Image File Format",
+                     "xbm" : "X Bitmap Format",
+                     "xpm" : "X PixMap Format",
+                     "svg" : "Scalable Vector Graphics" }
+
 
 ##########################################################################
 #
@@ -52,7 +65,7 @@ inToCm = 1/0.393700787
 class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
-    def __init__(self, canvas, parent = None):
+    def __init__(self, canvas, fileName = "Unknown", parent = None):
         """ Initialize the dialog. """
 
         super(ExportBitmapDialog, self).__init__(parent)
@@ -73,8 +86,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.dpiSpinner.setValue(self.defaultDPI)
 
         self.hideNostitchSymbols = False
-
-        self.fileNameEdit.setText(QDir.homePath() + "/")
+        self.fileNameEdit.setText(QDir.homePath() + "/" + fileName)
 
 
     def _set_up_connections(self):
@@ -142,17 +154,14 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
     def _determine_image_formats(self):
         """ Determine and store all image formats we can
         support. 
-
-        NOTE: qt-4.7 seems to offer gif format even if it
-        doesn't support it always so we manually punt it.
         
         """
 
-        self.formats = ["*.%s" % str(formating, 'utf8') for \
+        self.formats = ["%s" % unicode(formating) for \
                         formating in QImageWriter.supportedImageFormats()]
 
         # we support svg format as well
-        self.formats.append("*.svg")
+        self.formats.append("svg")
 
 
 
@@ -303,11 +312,20 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
     def open_file_selector(self):
         """ Open a file selector and ask for the name """
 
-        formatsString = " ".join(self.formats)
+        formatStr = "All Files (*.*)"
+        for aFormat in self.formats:
+            if aFormat in imageFileFormats:
+                description = imageFileFormats[aFormat]
+            else:
+                description = "Image Format"
+            
+            formatStr = ("%s;; %s ( *.%s)" % (formatStr, description, 
+                                              aFormat))
+
         exportFilePath = QFileDialog.getSaveFileName(self,
                                         msg.exportPatternTitle,
                                         QDir.homePath(),
-                                        "Image files (%s)" % formatsString,
+                                        formatStr,
                                         None,
                                         QFileDialog.DontConfirmOverwrite) 
 
@@ -332,7 +350,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
         # check the extension; if none is present fire up warnint
-        extension = "*.%s" % QFileInfo(exportFilePath).completeSuffix()
+        extension = QFileInfo(exportFilePath).completeSuffix()
         if extension not in self.formats:
             QMessageBox.warning(self, msg.unknownImageFormatTitle,
                                 msg.unknownImageFormatText,
