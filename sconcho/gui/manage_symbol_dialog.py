@@ -195,7 +195,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         """ This slot deals with changes to the selected category """
 
         itemText = self.categoryChooser.itemText(index)
-        itemData = int(self.categoryChooser.itemData(index))
+        (itemData, dummy) = self.categoryChooser.itemData(index).toInt()
 
         if itemText == QString("other...") and itemData == 1:
               
