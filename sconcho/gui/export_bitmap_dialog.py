@@ -86,7 +86,10 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.dpiSpinner.setValue(self.defaultDPI)
 
         self.hideNostitchSymbols = False
-        self.fileNameEdit.setText(QDir.homePath() + "/" + fileName)
+        fullPath = QDir.homePath() + "/" + fileName
+        self.fileNameEdit.setText(fullPath)
+        self.fileNameEdit.setSelection(len(fullPath), -len(fileName))
+
 
 
     def _set_up_connections(self):
@@ -166,11 +169,27 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
     def _add_image_formats_to_gui(self):
-        """ This function lists all available formats on the gui """
+        """ This function lists all available formats on the gui 
 
-        self.availableFormatsLabel.setText("available formats: " +
-                                           "; ".join(self.formats))
+        NOTE: We set png as the default for now.
 
+        """
+        defaultIndex = 0
+        for (index, aFormat) in enumerate(self.formats):
+            if aFormat in imageFileFormats:
+                description = imageFileFormats[aFormat]
+            else:
+                description = "Image Format"
+
+            if aFormat == "png":
+                defaultIndex = index
+            
+            formatStr = ("%s (*.%s)" % (description, aFormat))
+            self.availableFormatsChooser.insertItem(index, formatStr, aFormat)
+
+        # set the default
+        self.availableFormatsChooser.setCurrentIndex(defaultIndex)
+            
 
 
     def imageWidth_update(self, newWidth):
@@ -349,14 +368,15 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
             return
 
 
-        # check the extension; if none is present fire up warnint
-        extension = QFileInfo(exportFilePath).completeSuffix()
+        # check the extension; if none is present we use the one
+        # selected in the format combo box
+        extension = QFileInfo(exportFilePath).suffix()
         if extension not in self.formats:
-            QMessageBox.warning(self, msg.unknownImageFormatTitle,
-                                msg.unknownImageFormatText,
-                                QMessageBox.Close)
-            return
-
+            extensionID = \
+                self.availableFormatsChooser.currentIndex()
+            selectedExtension = \
+                self.availableFormatsChooser.itemData(extensionID).toString()
+            exportFilePath += ("." + selectedExtension)
 
         # if file exists issue a warning as well
         if QFile(exportFilePath).exists():
