@@ -32,7 +32,8 @@ try:
 except ImportError:
     QString = str
 
-from PyQt4.QtCore import (SIGNAL, Qt, QDir, QByteArray, QRegExp, QVariant)
+from PyQt4.QtCore import (SIGNAL, Qt, QDir, QByteArray, QRegExp, QVariant,
+                          QFileInfo)
 from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog, 
                          QMessageBox, QInputDialog, QLineEdit)
 from PyQt4.QtSvg import (QSvgWidget)
@@ -131,6 +132,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
     def cancel_or_delete_action(self):
         """ This slot cancels the current input action. """
 
+        self.symbolEntryFrame.setVisible(False)
         if self._activeAction == ManageSymbolDialog.ADD_CANCEL_ACTION:
             self.availableSymbolsWidget.setDisabled(False)
             
@@ -144,7 +146,6 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         elif self._activeAction == ManageSymbolDialog.UPDATE_DELETE_ACTION:
             self.delete_symbol()
             self.clear_symbol_info()
-            self.symbolEntryFrame.setVisible(False)
 
 
 
@@ -421,24 +422,6 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         
         """
         
-        self._add_symbol_worker(self._svgFilePath,
-                                self.symbolNameEntry,
-                                self.categoryChooser,
-                                self.symbolDescriptionEntry,
-                                self.symbolWidthSpinner)
-
-        self.availableSymbolsWidget.setDisabled(False)
-
-
-    
-    def _add_symbol_worker(self, svgPathName, nameWidget, categoryWidget,
-                           descriptionWidget, widthWidget):
-        """ This function checks that all widgets have valid entries
-        and if so creates the symbol.
-        
-        """
-
-
         data = self._get_data_from_interface()
         if not data:
             return
@@ -450,11 +433,11 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                                  QMessageBox.Close)
             return 
 
-        if data:
-            if create_new_symbol(self._symbolPath, data):
-                self._update_dict(data)
-                self._add_symbol_to_tree_widget(data)
+        if create_new_symbol(self._symbolPath, data):
+            self._update_dict(data)
+            self._add_symbol_to_tree_widget(data)
 
+            self.availableSymbolsWidget.setDisabled(False)
 
 
 
@@ -500,7 +483,8 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         data = {}
 
         svgPathName = self.svgPathEdit.text()
-        if not svgPathName:
+        svgFileInfo = QFileInfo(svgPathName)
+        if not svgFileInfo.isFile():
             QMessageBox.critical(None, msg.noSvgFileErrorTitle,
                                  msg.noSvgFileErrorText,
                                  QMessageBox.Close)
