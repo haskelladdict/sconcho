@@ -32,8 +32,6 @@ try:
 except ImportError:
     QString = str
 
-# QStringlist
-
 from PyQt4.QtCore import (SIGNAL, Qt, QDir, QByteArray, QRegExp, QVariant)
 from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog, 
                          QMessageBox, QInputDialog, QLineEdit)
@@ -48,6 +46,7 @@ import sconcho.util.messages as msg
 import sconcho.gui.symbol_widget as symbolWidget
 
 
+
 ##########################################################################
 #
 # This Dialog allows users to manage their own knitting symbols for
@@ -56,9 +55,9 @@ import sconcho.gui.symbol_widget as symbolWidget
 ##########################################################################
 class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
-    SYMBOL_SIZE   = 30
-    ADD_ACTION    = 1
-    UPDATE_ACTION = 2
+    SYMBOL_SIZE = 30
+    ADD_CANCEL_ACTION = 1
+    UPDATE_DELETE_ACTION = 2
 
 
     def __init__(self, symbolPath, symbolCategories, parent = None):
@@ -86,52 +85,6 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         
 
 
-    def add_new_symbol(self):
-        """ This slot make the symbolEntryFrame visible and marks it
-        as an 'add-symbol-frame'.
-        
-        """
-
-        self.symbolEntryFrame.setVisible(True)
-        self.actionButton.setText("Add Symbol")
-        self._activeAction = ManageSymbolDialog.ADD_ACTION
-        self.disable_selection_buttons()
-
-
-
-    def done_with_input(self):
-        """ This slot cancels the current input action. """
-
-        self.symbolEntryFrame.setVisible(False)
-        self.clear_symbol_info()
-        self.enable_selection_buttons()
-        self.availableSymbolsWidget.setDisabled(False)
-
-
-
-    def disable_selection_buttons(self):
-        """ Disables all selection buttons. """
-
-        self.addSymbolButton.setEnabled(False)
-        self.updateSymbolButton.setEnabled(False)
-        self.deleteSymbolButton.setEnabled(False)
-
-
-
-    def enable_selection_buttons(self):
-        """ Enables all selection buttons that should be enabled. 
-        Definitely the 'Add New Symbol' button and the update/delete
-        button depending if a symbol is currently selected.
-        
-        """
-
-        self.addSymbolButton.setEnabled(True)
-        if self._selectedSymbol:
-            self.updateSymbolButton.setEnabled(True)
-            self.deleteSymbolButton.setEnabled(True)
-
-
-
     def _add_connections(self):
         """ Add all main gui connections. """
 
@@ -143,26 +96,55 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self.connect(self.symbolWidthSpinner, SIGNAL("valueChanged(int)"),
                      partial(self.rescale_svg_item, self.svgWidget))
 
-        self.connect(self.cancelButton, SIGNAL("clicked()"),
-                     self.done_with_input)
+        self.connect(self.cancelOrDeleteButton, SIGNAL("clicked()"),
+                     self.cancel_or_delete_action)
 
         self.connect(self.addSymbolButton, SIGNAL("clicked()"),
                      self.add_new_symbol)
 
-        self.connect(self.actionButton, SIGNAL("clicked()"),
-                     self.take_action)
+        self.connect(self.addOrUpdateButton, SIGNAL("clicked()"),
+                     self.add_or_update_action)
 
         self.connect(self.browseSymbolButton, SIGNAL("clicked()"),
                      self.load_svg)
 
-        self.connect(self.updateSymbolButton, SIGNAL("clicked()"),
-                     self.show_selected_symbol_info)
-
-        self.connect(self.deleteSymbolButton, SIGNAL("clicked()"),
-                     self.delete_symbol)
-
         self.connect(self.categoryChooser, SIGNAL("currentIndexChanged(int)"),
                      self.category_changed)
+
+
+
+    def add_new_symbol(self):
+        """ This slot make the symbolEntryFrame visible and marks it
+        as an 'add-symbol-frame'.
+        
+        """
+
+        self.symbolEntryFrame.setVisible(True)
+        self.availableSymbolsWidget.setDisabled(True)
+        self.clear_symbol_info()
+        self.addOrUpdateButton.setText("Add Symbol")
+        self.cancelOrDeleteButton.setText("Cancel")
+        self._activeAction = ManageSymbolDialog.ADD_CANCEL_ACTION
+
+
+
+    def cancel_or_delete_action(self):
+        """ This slot cancels the current input action. """
+
+        if self._activeAction == ManageSymbolDialog.ADD_CANCEL_ACTION:
+            self.availableSymbolsWidget.setDisabled(False)
+            
+            # reset widget to currently selected item if any
+            item = self.availableSymbolsWidget.currentItem()
+            if item:
+                self.selected_symbol_changed(item)
+            else:
+                self.clear_symbol_info()
+
+        elif self._activeAction == ManageSymbolDialog.UPDATE_DELETE_ACTION:
+            self.delete_symbol()
+            self.clear_symbol_info()
+            self.symbolEntryFrame.setVisible(False)
 
 
 
@@ -214,15 +196,15 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
 
-    def take_action(self):
+    def add_or_update_action(self):
         """ Dispatches the proper function depending if the
         user is adding or updating a symbol.
         
         """
 
-        if self._activeAction == ManageSymbolDialog.ADD_ACTION:
+        if self._activeAction == ManageSymbolDialog.ADD_CANCEL_ACTION:
             self.add_symbol()
-        elif self._activeAction == ManageSymbolDialog.UPDATE_ACTION:
+        elif self._activeAction == ManageSymbolDialog.UPDATE_DELETE_ACTION:
             self.update_symbol()
 
 
@@ -252,12 +234,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if symbolID in self._symbolDict:
             symbol = self._symbolDict[symbolID]
             self._selectedSymbol = symbol
-            self.updateSymbolButton.setEnabled(True)
-            self.deleteSymbolButton.setEnabled(True)
-        else:
-            self._selectedSymbol = None
-            self.updateSymbolButton.setEnabled(False)
-            self.deleteSymbolButton.setEnabled(False)
+            self.show_selected_symbol_info()
 
 
 
@@ -267,8 +244,6 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if not self._selectedSymbol:
             return
 
-        self.availableSymbolsWidget.setDisabled(True)
-        self.disable_selection_buttons()
         symbol = self._selectedSymbol
 
         pathToSvgImage = generate_svg_path(self._symbolPath, symbol)
@@ -287,8 +262,9 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self.symbolDescriptionEntry.setText(symbol["description"])
 
         self.symbolEntryFrame.setVisible(True)
-        self.actionButton.setText("Update Symbol")
-        self._activeAction = ManageSymbolDialog.UPDATE_ACTION
+        self.addOrUpdateButton.setText("Update Symbol")
+        self.cancelOrDeleteButton.setText("Delete Symbol")
+        self._activeAction = ManageSymbolDialog.UPDATE_DELETE_ACTION
 
 
 
@@ -331,6 +307,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if status:
             self._delete_symbol_from_database(self._selectedSymbol)
             self._delete_symbol_from_tree_widget(self._selectedSymbol)
+
 
 
 
@@ -406,8 +383,6 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                     self._update_tree_widget(oldSymbol, data)
                     self._update_frame_data(data)
 
-        self.done_with_input()
-
 
 
     def _update_dict(self, data):
@@ -452,6 +427,8 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                                 self.symbolDescriptionEntry,
                                 self.symbolWidthSpinner)
 
+        self.availableSymbolsWidget.setDisabled(False)
+
 
     
     def _add_symbol_worker(self, svgPathName, nameWidget, categoryWidget,
@@ -478,7 +455,6 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                 self._update_dict(data)
                 self._add_symbol_to_tree_widget(data)
 
-        self.done_with_input()
 
 
 

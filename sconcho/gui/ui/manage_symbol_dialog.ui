@@ -32,7 +32,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0">
+         <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
           <property name="sizeConstraint">
            <enum>QLayout::SetMinimumSize</enum>
           </property>
@@ -69,26 +69,6 @@ p, li { white-space: pre-wrap; }
            <widget class="QPushButton" name="addSymbolButton">
             <property name="text">
              <string>&amp;Add New Symbol</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="updateSymbolButton">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Update Selected Symbol </string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="deleteSymbolButton">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>&amp;Delete Selected Symbol</string>
             </property>
            </widget>
           </item>
@@ -303,14 +283,14 @@ p, li { white-space: pre-wrap; }
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="cancelButton">
+             <widget class="QPushButton" name="cancelOrDeleteButton">
               <property name="text">
                <string>Cancel</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="actionButton">
+             <widget class="QPushButton" name="addOrUpdateButton">
               <property name="text">
                <string>Add</string>
               </property>
