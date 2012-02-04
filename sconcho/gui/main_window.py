@@ -116,16 +116,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # read project if we received a filename but first check
         # if we have a recovery file.
+        self.set_project_save_file(QDir.homePath() + "/Untitled.spf")
         if fileName:
             (was_recovered, readFileName) = check_for_recovery_file(fileName)
-            self._read_project(readFileName)
-            self.set_project_save_file(fileName)
-            self.update_recently_used_files(fileName)
-            self.canvas.clear_undo_stack()
-            if not was_recovered:
-                self.mark_project_clean()
-        else:
-            self.set_project_save_file("Untitled")
+            if self._read_project(readFileName):
+                self.set_project_save_file(fileName)
+                self.update_recently_used_files(fileName)
+                self.canvas.clear_undo_stack()
+                if not was_recovered:
+                    self.mark_project_clean()
 
         # set up timers
         # NOTE: Needs to be last, otherwise some signals may not
@@ -851,9 +850,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self._ok_to_continue_without_saving():
             return
 
-        self._read_project(readFilePath)
-        self.set_project_save_file(readFilePath)
-        self.mark_project_clean()
+        if self._read_project(readFilePath):
+            self.set_project_save_file(readFilePath)
+            self.mark_project_clean()
 
 
 
@@ -874,10 +873,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         self._readFileDialogPath = QFileInfo(readFilePath).absoluteFilePath()
-        self._read_project(readFilePath)
-        self.set_project_save_file(readFilePath)
-        self.update_recently_used_files(readFilePath)
-        self.mark_project_clean()
+        if self._read_project(readFilePath):
+            self.set_project_save_file(readFilePath)
+            self.update_recently_used_files(readFilePath)
+            self.mark_project_clean()
 
         
 
@@ -895,7 +894,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not status:
             QMessageBox.critical(self, msg.errorOpeningProjectTitle,
                                  errMsg, QMessageBox.Close)
-            return
+            return False
 
         # add newly loaded project
         if not self.canvas.load_previous_pattern(self._knittingSymbols, 
@@ -905,7 +904,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                  repeatLegends,
                                                  rowRepeats,
                                                  textItems):
-            return
+            return False
 
         set_up_colors(self.colorWidget, colors)
         self.recentlyUsedSymbolWidget.clear()
@@ -917,6 +916,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.emit(SIGNAL("update_preferences"))
         self.statusBar().showMessage("successfully opened " + readFileName,
                                      3000)
+        return True
 
 
 
@@ -987,7 +987,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         manager = ManageSymbolDialog(personalSymbolPath, 
                                              symbolCategories, self)
         manager.exec_()
-
 
 
 

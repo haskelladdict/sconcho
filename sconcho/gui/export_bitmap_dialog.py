@@ -86,7 +86,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.dpiSpinner.setValue(self.defaultDPI)
 
         self.hideNostitchSymbols = False
-        fullPath = QDir.homePath() + "/" + fileName
+        fullPath = QDir.homePath() + "/" + QFileInfo(fileName).baseName()
         self.fileNameEdit.setText(fullPath)
         self.fileNameEdit.setSelection(len(fullPath), -len(fileName))
 
