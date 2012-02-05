@@ -551,7 +551,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         """
 
-        print(newName, newCategory, oldName, oldCategory)
         self.refresh_symbol_widget_after_deletion(synchronizer, oldName,
                                                   oldCategory)
         self.refresh_symbol_widget_after_addition(synchronizer, newName,
@@ -567,7 +566,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         """
 
-        print(symbolName, categoryName)
         symbolPaths = misc.set_up_symbol_paths(self._topLevelPath, 
                                                self.settings)
         knittingSymbols = parser.parse_all_symbols(symbolPaths)
@@ -582,7 +580,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             symbols = symbolsByCategory[categoryName]
             (widget, wList) = \
                 generate_category_widget(categoryName, symbols, synchronizer)
-            # NOTE: this crucial otherwise we have dangling pointers
+            # NOTE: this crucial otherwise we may end up with dangling pointers
             synchronizer.unselect()   
 
             del self.symbolSelector[categoryName]
@@ -604,6 +602,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         previousEntry = (symbolName, categoryName)
         if previousEntry in self.symbolSelectorWidgets:
+
+            # remove from recently used and active symbols widget
+            item = self.symbolSelectorWidgets[previousEntry]
+            self.recentlyUsedSymbolWidget.remove_symbol(item)
+            self.activeSymbolWidget.remove_symbol(item)
             del self.symbolSelectorWidgets[previousEntry]
 
 
@@ -616,7 +619,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         """
 
-        print(symbolName, categoryName)
         symbolPaths = misc.set_up_symbol_paths(self._topLevelPath, 
                                                self.settings)
         knittingSymbols = parser.parse_all_symbols(symbolPaths)
@@ -626,6 +628,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             symbols = symbolsByCategory[categoryName]
             (widget, wList) = \
                 generate_category_widget(categoryName, symbols, synchronizer)
+            # NOTE: this crucial otherwise we may end up with dangling pointers
             synchronizer.unselect()
                 
             if categoryName in self.symbolSelector:

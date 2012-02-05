@@ -68,11 +68,6 @@ class RecentlyUsedSymbolWidget(QWidget):
 
 
 
-#    def get_symbol(self):
-#        """ Returns the current active symbol. """
-#
-#        return self.widget.get_symbol() if self.widget else None
-
     def clear(self):
         """ Removes all widgets and re-inializes the widget. """
 
@@ -94,6 +89,21 @@ class RecentlyUsedSymbolWidget(QWidget):
         self.recentSymbolsDict[symbol] += 1
 
         self.widgetToSymbol[widget].click_me()
+
+
+
+    def remove_symbol(self, symbol):
+        """ Remove a symbol from the current widget. 
+
+        This will be used if the user removes one of his custom
+        symbols.
+
+        """
+
+        if symbol in self.recentSymbolsDict:
+            del self.recentSymbolsDict[symbol]
+            
+        self.update_widget(symbol)
 
 
 
@@ -124,24 +134,31 @@ class RecentlyUsedSymbolWidget(QWidget):
             # makes sure we always keep the most recent item
             self.recentSymbolsDict[symbol] = 1
 
-            # remove previous symbols
-            for widget in self.recentSymbols:
-                self.layout.removeWidget(widget)
-                widget.setParent(None)
-            self.recentSymbols = []
+            self.update_widget(symbol)
 
-            # add new ones
-            self.widgetToSymbol = {}
-            for (index, item) in enumerate(self.recentSymbolsDict.keys()):
-                widget = SymbolDisplayItem(item.get_content(), 
-                                           self._synchronizer)
-                self.connect(widget, SIGNAL("widget_pressed"), 
-                             self.widget_clicked)
-                self.widgetToSymbol[widget] = item 
-                self.layout.addWidget(widget, 0, index, Qt.AlignVCenter)
-                self.recentSymbols.append(widget)
 
-            self.click_on_a_symbols_widget(symbol)
+
+    def update_widget(self, symbol):
+        """ Update the widget, e.g. after adding/deleting a symbol. """
+
+        # remove previous symbols
+        for widget in self.recentSymbols:
+            self.layout.removeWidget(widget)
+            widget.setParent(None)
+        self.recentSymbols = []
+
+        # add new ones
+        self.widgetToSymbol = {}
+        for (index, item) in enumerate(self.recentSymbolsDict.keys()):
+            widget = SymbolDisplayItem(item.get_content(), 
+                                       self._synchronizer)
+            self.connect(widget, SIGNAL("widget_pressed"), 
+                         self.widget_clicked)
+            self.widgetToSymbol[widget] = item 
+            self.layout.addWidget(widget, 0, index, Qt.AlignVCenter)
+            self.recentSymbols.append(widget)
+
+        self.click_on_a_symbols_widget(symbol)
 
 
 

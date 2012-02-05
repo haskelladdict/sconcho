@@ -54,6 +54,7 @@ class ActiveSymbolWidget(QWidget):
         self.setMaximumHeight(40)
         
         self.widget = None
+        self.currentSymbol = None
         self.label  = self.inactiveSymbolLabel
         self.layout.addWidget(self.label,0,0, Qt.AlignVCenter)
         self.setLayout(self.layout)
@@ -67,11 +68,21 @@ class ActiveSymbolWidget(QWidget):
         
 
 
+    def remove_symbol(self, symbol):
+        """ Remove symbol from widget in case it is active. """
+
+        if symbol == self.currentSymbol:
+            self.active_symbol_changed(None)
+        
+
+
     def active_symbol_changed(self, symbolObject):
         """ Update the displayed active Widget after
         the user selected a new one.
         
         """
+
+        self.currentSymbol = symbolObject 
 
         if self.widget:
             self.layout.removeWidget(self.widget)
