@@ -144,9 +144,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                 self.clear_symbol_info()
 
         elif self._activeAction == ManageSymbolDialog.UPDATE_DELETE_ACTION:
-            #self.clear_symbol_info()
             self.delete_symbol()
-            self.symbolEntryFrame.setVisible(False)
 
 
 
@@ -310,12 +308,12 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         # lets remove it from the interface and cached database as well
         if status:
             self._delete_symbol_from_database(self._selectedSymbol)
+            self.symbolEntryFrame.setVisible(False)
             self._delete_symbol_from_tree_widget(self._selectedSymbol)
 
             # signal main window so it can update the symbol widget to
             # make new symbol available
             self.emit(SIGNAL("symbol_deleted"), oldName, oldCategory)
-
 
 
 
