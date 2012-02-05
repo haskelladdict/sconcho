@@ -37,6 +37,7 @@ from sconcho.gui.main_window import MainWindow
 import sconcho.util.symbol_parser as parser
 import sconcho.util.messages as msg
 import sconcho.util.settings as settings
+import sconcho.util.misc as misc
 
 
 ORGANIZATION        = "Sconcho"
@@ -49,7 +50,7 @@ def sconcho_gui_launcher(fileName = None):
 
     defaultSettings = settings.DefaultSettings(ORGANIZATION, APPLICATION)
     currPath = os.path.dirname(__file__)
-    symbolPaths = set_up_symbol_paths(currPath, defaultSettings)
+    symbolPaths = misc.set_up_symbol_paths(currPath, defaultSettings)
 
     # We attempt to read all available knitting symbols 
     # before firing up the MainWindow. At the very least we
@@ -74,17 +75,4 @@ def sconcho_gui_launcher(fileName = None):
 
 
 
-def set_up_symbol_paths(path, settings):
-    """ Creates the list with paths where symbols should
-    be loaded from. """
-
-    symbolPaths = [os.path.join(path, "symbols")]
-    customSymbolPath = settings.personalSymbolPath.value
-    symbolPaths.append(customSymbolPath)
-
-    # FIXME: For now this is a hardcoded path needed
-    # for the app bundle on MacOSX
-    symbolPaths.append("/Applications/Sconcho.app/Contents/Resources/symbols")
-
-    return symbolPaths
 

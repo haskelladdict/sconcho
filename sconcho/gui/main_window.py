@@ -58,7 +58,8 @@ import sconcho.util.io as io
 import sconcho.util.symbol_parser as parser
 from sconcho.gui.symbol_widget import (generate_symbolWidgets, 
                                        SymbolSynchronizer,
-                                       symbols_by_category)
+                                       symbols_by_category,
+                                       generate_category_widget)
 from sconcho.gui.color_widget import (ColorWidget, ColorSynchronizer)
 from sconcho.gui.pattern_canvas import PatternCanvas
 from sconcho.gui.export_bitmap_dialog import ExportBitmapDialog
@@ -68,7 +69,6 @@ from sconcho.gui.sconcho_manual import SconchoManual
 from sconcho.gui.update_dialog import UpdateDialog
 from sconcho.gui.manage_symbol_dialog import ManageSymbolDialog
 from sconcho.util.exceptions import PatternReadError
-
 
 
 #######################################################################
@@ -97,6 +97,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._knittingSymbols = knittingSymbols
         self.canvas = PatternCanvas(self.settings, 
                                     knittingSymbols[QString("knit")], self)
+
+        self.manageSymbolsDialog = None
+        self.create_manage_knitting_symbols_dialog()
+
         self.initialize_symbol_widget(knittingSymbols)
         self.initialize_color_widget()
         self.initialize_row_col_widget()
@@ -518,6 +522,141 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("currentIndexChanged(QString)"),
                      partial(self.canvas.set_active_symbol, None))
         
+        # catch signals from custom symbol dialog in case a symbol
+        # changed
+        self.connect(self.manageSymbolsDialog,
+                     SIGNAL("symbol_added"),
+                     partial(self.refresh_symbol_widget_after_addition, 
+                             symbolTracker))
+
+
+        self.connect(self.manageSymbolsDialog,
+                     SIGNAL("symbol_updated"),
+                     partial(self.refresh_symbol_widget_after_update, 
+                             symbolTracker))
+
+
+        self.connect(self.manageSymbolsDialog,
+                     SIGNAL("symbol_deleted"),
+                     partial(self.refresh_symbol_widget_after_deletion, 
+                             symbolTracker))
+    
+
+
+    def refresh_symbol_widget_after_update(self, synchronizer, newName, 
+                                           newCategory, oldName, oldCategory):
+        """ This slot is called when a symbol in oldCategory was updated.
+
+        This only happens if the user updates a custom symbol.
+
+        """
+
+        print(newName, newCategory, oldName, oldCategory)
+        self.refresh_symbol_widget_after_deletion(synchronizer, oldName,
+                                                  oldCategory)
+        self.refresh_symbol_widget_after_addition(synchronizer, newName,
+                                                  newCategory)
+
+
+
+    def refresh_symbol_widget_after_deletion(self, synchronizer, symbolName, 
+                                             categoryName):
+        """ This slot is called when a symbol in categoryName was deleted.
+
+        This only happens if the user adds a custom symbol.
+
+        """
+
+        print(symbolName, categoryName)
+        symbolPaths = misc.set_up_symbol_paths(self._topLevelPath, 
+                                               self.settings)
+        knittingSymbols = parser.parse_all_symbols(symbolPaths)
+        symbolsByCategory = symbols_by_category(knittingSymbols)
+
+        if self.selectedSymbol == self.symbolSelector[categoryName]:
+            self.symbolSelectorLayout.removeWidget(self.selectedSymbol)
+            self.selectedSymbol.setParent(None)
+            self.selectedSymbol = None       
+
+        if categoryName in symbolsByCategory:
+            symbols = symbolsByCategory[categoryName]
+            (widget, wList) = \
+                generate_category_widget(categoryName, symbols, synchronizer)
+            # NOTE: this crucial otherwise we have dangling pointers
+            synchronizer.unselect()   
+
+            del self.symbolSelector[categoryName]
+                
+            self.symbolSelector[categoryName] = widget
+            if not self.selectedSymbol:
+                self.selectedSymbol = self.symbolSelector[categoryName]
+                self.symbolSelectorLayout.addWidget(self.selectedSymbol)
+
+        else:
+            del self.symbolSelector[categoryName]
+            if not self.selectedSymbol:
+                self.selectedSymbol = self.symbolSelector[QString("basic")]
+                self.symbolSelectorLayout.addWidget(self.selectedSymbol)
+                index = self.symbolCategoryChooser.findText("basic")
+                self.symbolCategoryChooser.setCurrentIndex(index)
+            index = self.symbolCategoryChooser.findText(categoryName)
+            self.symbolCategoryChooser.removeItem(index)
+            
+        previousEntry = (symbolName, categoryName)
+        if previousEntry in self.symbolSelectorWidgets:
+            del self.symbolSelectorWidgets[previousEntry]
+
+
+
+    def refresh_symbol_widget_after_addition(self, synchronizer, symbolName, 
+                                             categoryName):
+        """ This slot is called when a symbol in categoryName was added.
+
+        This only happens if the user adds a custom symbol.
+
+        """
+
+        print(symbolName, categoryName)
+        symbolPaths = misc.set_up_symbol_paths(self._topLevelPath, 
+                                               self.settings)
+        knittingSymbols = parser.parse_all_symbols(symbolPaths)
+        symbolsByCategory = symbols_by_category(knittingSymbols)
+        
+        if categoryName in symbolsByCategory:
+            symbols = symbolsByCategory[categoryName]
+            (widget, wList) = \
+                generate_category_widget(categoryName, symbols, synchronizer)
+            synchronizer.unselect()
+                
+            if categoryName in self.symbolSelector:
+                # update screen if we're currently viewing this category
+                # phase 1
+                if self.selectedSymbol == self.symbolSelector[categoryName]:
+                    self.symbolSelectorLayout.removeWidget(self.selectedSymbol)
+                    self.selectedSymbol.setParent(None)
+                    self.selectedSymbol = None
+                del self.symbolSelector[categoryName]
+            else:
+                self.symbolCategoryChooser.addItem(categoryName)
+
+            self.symbolSelector[categoryName] = widget
+
+            # update screen phase 2
+            if not self.selectedSymbol:
+                self.selectedSymbol = self.symbolSelector[categoryName]
+                self.symbolSelectorLayout.addWidget(self.selectedSymbol)
+
+            self.symbolSelectorWidgets = \
+                dict(self.symbolSelectorWidgets.items() +
+                     wList.items())
+
+        else:
+            message = ("MainWindow: Problem updating symbol dialog\n"
+                       "after custom symbol change. "
+                       "It is highly recommended to save your\n"
+                       "current project and restart sconcho.")
+            misc.errorLogger.write(message)   
+
 
 
     def update_symbol_widget(self, categoryName):
@@ -981,12 +1120,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         """
 
-        sortedSymbols = symbols_by_category(self._knittingSymbols)
-        symbolCategories = sortedSymbols.keys()
-        personalSymbolPath = self.settings.personalSymbolPath.value
-        manager = ManageSymbolDialog(personalSymbolPath, 
-                                             symbolCategories, self)
-        manager.exec_()
+        self.manageSymbolsDialog.raise_()
+        self.manageSymbolsDialog.show()
+
+    
+
+    def create_manage_knitting_symbols_dialog(self):
+        """ Create the manage knitting symbols dialog. 
+
+        NOTE: We create this widget at program startup so we can
+        install a signal between it and the main window for updating
+        the symbols widget. 
+
+        """
+
+        if not self.manageSymbolsDialog:
+            sortedSymbols = symbols_by_category(self._knittingSymbols)
+            symbolCategories = sortedSymbols.keys()
+            personalSymbolPath = self.settings.personalSymbolPath.value
+            self.manageSymbolsDialog = \
+                ManageSymbolDialog(personalSymbolPath, symbolCategories, self)
 
 
 

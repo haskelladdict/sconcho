@@ -204,7 +204,7 @@ noCategoryErrorTitle = "sconcho: Add Symbol Error"
 noCategoryErrorText  = "Error: Please enter a category for your symbol."
 
 symbolExistsTitle    = "sconcho: Add Symbol Error"
-symbolExistsText     = ("Error: The category/name combination %s/%s you "
+symbolExistsText     = ("Error: The symbol with name %s you "
                         "entered already exists.")
 
 failedToCopySvgTitle = "sconcho: Add Symbol Error"

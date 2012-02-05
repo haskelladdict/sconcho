@@ -37,6 +37,7 @@ from PyQt4.QtSvg import QSvgWidget
 
 
 
+
 def generate_symbolWidgets(symbols, chooser, symbolLayout,
                            synchronizer):
     """ Generate all symbolSelectorWidgets.
@@ -53,38 +54,11 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
     widgetList = {}
     symbolsByCategory = sort_symbols_by_category(symbols)
     for (symbolCategory, symbols) in symbolsByCategory:
-
         chooser.addItem(symbolCategory)
-
-        # layout for current tab
-        currentWidget = QWidget()
-        layout        = QGridLayout()
-
-        # sort symbols in requested order
-        rawList = []
-        for symbol in symbols:
-            rawList.append((int(symbol["category_pos"]), symbol))
-
-        #rawList.sort(lambda x,y: cmp(x[0], y[0])) 
-        rawList.sort(key=(lambda x: x[0]))
-       
-        # add them to the tab
-        for (row, symbolEntry) in enumerate(rawList):
-            symbol = symbolEntry[1]
-            newItem = SymbolSelectorItem(symbol, synchronizer)
-            newLabel = SymbolSelectorLabel(symbol)
-            layout.addWidget(newItem, row, 0)
-            layout.addWidget(newLabel, row, 1)
-
-            QObject.connect(newLabel, SIGNAL("label_clicked()"),
-                            newItem.click_me)
-
-            widgetList[(symbol["name"], symbol["category"])] = newItem
-
-        currentWidget.setLayout(layout)
-        scrollArea = QScrollArea()
-        scrollArea.setWidget(currentWidget)
-        selectorWidgets[symbolCategory] = scrollArea
+        (widget, wList) = \
+            generate_category_widget(symbolCategory, symbols, synchronizer)
+        widgetList = dict(widgetList.items() + wList.items())
+        selectorWidgets[symbolCategory] = widget
 
     # make "basic" the top item if it exists, otherwise
     # we pick whatever happens to be top
@@ -98,6 +72,42 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
     symbolLayout.addWidget(activeWidget)
 
     return (activeWidget, selectorWidgets, widgetList)
+
+
+
+def generate_category_widget(symbolCategory, symbols, synchronizer):
+    """ Generate the widget for a single symbolCategory. """
+
+    # layout for current tab
+    currentWidget = QWidget()
+    layout        = QGridLayout()
+
+    # sort symbols in requested order
+    rawList = []
+    for symbol in symbols:
+        rawList.append((int(symbol["category_pos"]), symbol))
+
+    #rawList.sort(lambda x,y: cmp(x[0], y[0])) 
+    rawList.sort(key=(lambda x: x[0]))
+
+    # add them to the tab
+    widgetList = {}
+    for (row, symbolEntry) in enumerate(rawList):
+        symbol = symbolEntry[1]
+        newItem = SymbolSelectorItem(symbol, synchronizer)
+        newLabel = SymbolSelectorLabel(symbol)
+        layout.addWidget(newItem, row, 0)
+        layout.addWidget(newLabel, row, 1)
+
+        QObject.connect(newLabel, SIGNAL("label_clicked()"),
+                        newItem.click_me)
+
+        widgetList[(symbol["name"], symbol["category"])] = newItem
+
+    currentWidget.setLayout(layout)
+    scrollArea = QScrollArea()
+    scrollArea.setWidget(currentWidget)
+    return (scrollArea, widgetList)
 
     
 
@@ -162,7 +172,6 @@ def symbols_by_category(symbols):
 def sort_symbols_by_category(symbols):
     """ Given a dictionary of knitting symbols returns a list with
     tuples of category names and list of corresponding symbols.
-    The category names are sorted with basic coming first.
 
     """
 

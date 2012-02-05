@@ -45,7 +45,7 @@ from sconcho.util.symbol_parser import (parse_all_symbols,
                                         SymbolTempDir)
 import sconcho.util.messages as msg
 import sconcho.gui.symbol_widget as symbolWidget
-
+import sconcho.util.misc as misc
 
 
 ##########################################################################
@@ -132,10 +132,10 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
     def cancel_or_delete_action(self):
         """ This slot cancels the current input action. """
 
-        self.symbolEntryFrame.setVisible(False)
         if self._activeAction == ManageSymbolDialog.ADD_CANCEL_ACTION:
             self.availableSymbolsWidget.setDisabled(False)
-            
+            self.symbolEntryFrame.setVisible(False)
+           
             # reset widget to currently selected item if any
             item = self.availableSymbolsWidget.currentItem()
             if item:
@@ -144,8 +144,9 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                 self.clear_symbol_info()
 
         elif self._activeAction == ManageSymbolDialog.UPDATE_DELETE_ACTION:
+            #self.clear_symbol_info()
             self.delete_symbol()
-            self.clear_symbol_info()
+            self.symbolEntryFrame.setVisible(False)
 
 
 
@@ -301,6 +302,8 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             return
 
         svgName = self._selectedSymbol["svgName"]
+        oldName = self._selectedSymbol["name"]
+        oldCategory = self._selectedSymbol["category"]
         status = remove_symbol(self._symbolPath, svgName)
 
         # if we succeeded to remove the symbol from disk 
@@ -308,6 +311,10 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if status:
             self._delete_symbol_from_database(self._selectedSymbol)
             self._delete_symbol_from_tree_widget(self._selectedSymbol)
+
+            # signal main window so it can update the symbol widget to
+            # make new symbol available
+            self.emit(SIGNAL("symbol_deleted"), oldName, oldCategory)
 
 
 
@@ -335,7 +342,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if len(categoryItems) != 1:
             message = ("ManageSymbolDialog._delete_symbol_from_tree_widget:"
                        " there are duplicate categories.")
-            errorLogger.write(message)
+            misc.errorLogger.write(message)
             return
         
         item = categoryItems[0]
@@ -384,6 +391,11 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                     self._update_tree_widget(oldSymbol, data)
                     self._update_frame_data(data)
 
+            # signal main window so it can update the symbol widget to
+            # make new symbol available
+            self.emit(SIGNAL("symbol_updated"), data["name"], data["category"],
+                      oldSymbol["name"], oldSymbol["category"])
+
 
 
     def _update_dict(self, data):
@@ -429,15 +441,18 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         # check that symbol is unique and new
         if data["name"] in self._symbolDict:
             QMessageBox.critical(None, msg.symbolExistsTitle,
-                                 msg.symbolExistsText % (name, category),
+                                 msg.symbolExistsText % data["name"], 
                                  QMessageBox.Close)
             return 
 
         if create_new_symbol(self._symbolPath, data):
             self._update_dict(data)
             self._add_symbol_to_tree_widget(data)
-
             self.availableSymbolsWidget.setDisabled(False)
+
+            # signal main window so it can update the symbol widget to
+            # make new symbol available
+            self.emit(SIGNAL("symbol_added"), data["name"], data["category"])
 
 
 

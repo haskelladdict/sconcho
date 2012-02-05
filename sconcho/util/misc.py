@@ -28,6 +28,7 @@ from __future__ import absolute_import
 import functools
 import random
 import sys
+import os
 
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (QApplication, QCursor)
@@ -64,6 +65,22 @@ def get_random_knitting_quote():
 
     num = len(msg.knittingQuotes)
     return (msg.knittingQuotes[random.randint(0, num-1)])
+
+
+
+def set_up_symbol_paths(path, settings):
+    """ Creates the list with paths where symbols should
+    be loaded from. """
+
+    symbolPaths = [os.path.join(path, "symbols")]
+    customSymbolPath = settings.personalSymbolPath.value
+    symbolPaths.append(customSymbolPath)
+
+    # FIXME: For now this is a hardcoded path needed
+    # for the app bundle on MacOSX
+    symbolPaths.append("/Applications/Sconcho.app/Contents/Resources/symbols")
+
+    return symbolPaths
 
 
 
