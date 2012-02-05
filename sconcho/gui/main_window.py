@@ -557,6 +557,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                   newCategory)
 
 
+    def canvas_has_symbol(self, symbolName):
+        """ This wrapper ask the canvas if it contains any symbols with 
+
+        symbol name
+        
+        """
+
+        return self.canvas.contains_symbol(symbolName)
+
+
 
     def refresh_symbol_widget_after_deletion(self, synchronizer, symbolName, 
                                              categoryName):
@@ -608,6 +618,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.recentlyUsedSymbolWidget.remove_symbol(item)
             self.activeSymbolWidget.remove_symbol(item)
             del self.symbolSelectorWidgets[previousEntry]
+
+        # NOTE: We have no choice but to clear the undo cache
+        # otherwise we're bound to have dangling pointers
+        self.canvas.clear_undo_stack()
 
 
 

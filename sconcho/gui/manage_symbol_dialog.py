@@ -290,6 +290,11 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if not self._selectedSymbol:
             return
 
+        # if the canvas contains this symbol we can't do it
+        if self.parent().canvas_has_symbol(self._selectedSymbol["name"]):
+            print("cant delete")
+
+
         name = self._selectedSymbol["name"]
         answer = QMessageBox.question(self,
                                       msg.deleteSymbolTitle, 

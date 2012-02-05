@@ -1980,6 +1980,22 @@ class PatternCanvas(QGraphicsScene):
         self._undoStack.push(deleteTextBoxCommand)
 
 
+        
+    def contains_symbol(self, symbolName):
+        """ Returns True if the canvas contains a PatternGridItem
+        
+        with symbol of symbolName and False otherwise.
+
+        """
+
+        for item in self.items():
+            if isinstance(item, PatternGridItem):
+                if item.name == symbolName:
+                    return True
+
+        return False
+
+
 
 
 ############################################################################
