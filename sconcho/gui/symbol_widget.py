@@ -98,6 +98,7 @@ def generate_category_widget(symbolCategory, symbols, synchronizer):
         newLabel = SymbolSelectorLabel(symbol)
         layout.addWidget(newItem, row, 0)
         layout.addWidget(newLabel, row, 1)
+        layout.setRowMinimumHeight(row, 30)
 
         QObject.connect(newLabel, SIGNAL("label_clicked()"),
                         newItem.click_me)
@@ -109,43 +110,23 @@ def generate_category_widget(symbolCategory, symbols, synchronizer):
     scrollArea.setWidget(currentWidget)
     return (scrollArea, widgetList)
 
+
     
+def add_to_category_widget(scrollWidget, symbol, synchronizer):
+    """ Adds new selector widget for symbol to scrollWidget. """
 
-def add_symbols_to_widget(symbols, widget, synchronizer):
-    """ Adds all passed knitting symbols to the tab widget. """
-
-    symbolsByCategory = sort_symbols_by_category(symbols)
-    for (symbolCategory, symbols) in symbolsByCategory:
-
-        # layout for current tab
-        tab    = QWidget()
-        layout = QGridLayout()
-
-        # sort symbols in requested order
-        rawList = []
-        for symbol in symbols:
-            rawList.append((int(symbol["category_pos"]), symbol))
-
-        #rawList.sort(lambda x,y: cmp(x[0], y[0])) 
-        rawList.sort(key=(lambda x: x[0]))
-       
-        # add them to the tab
-        for (row, symbolEntry) in enumerate(rawList):
-            symbol = symbolEntry[1]
-            newItem = SymbolSelectorItem(symbol, synchronizer)
-            layout.addWidget(newItem, row, 0)
-            layout.addWidget(QLabel(symbol["name"]), row, 1)
-
-        tab.setLayout(layout)
-        scrollArea = QScrollArea()
-        scrollArea.setWidget(tab)
-        widget.addTab(scrollArea, symbolCategory)
-
-        if symbolCategory == "basic":
-            widget.setCurrentWidget(scrollArea)
-
-    return synchronizer
-
+    widget = scrollWidget.widget()
+    layout = widget.layout()
+    rowCount = layout.rowCount()
+    newItem = SymbolSelectorItem(symbol, synchronizer)
+    layout.addWidget(newItem, rowCount, 0)
+    layout.addWidget(QLabel(symbol["name"]), rowCount, 1)
+    layout.setRowMinimumHeight(rowCount, 30)
+    widget.adjustSize()
+    
+    widgetList = {(symbol["name"], symbol["category"]) : newItem}
+    return widgetList
+                  
 
 
 def symbols_by_category(symbols):

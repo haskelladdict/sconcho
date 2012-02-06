@@ -59,6 +59,7 @@ import sconcho.util.symbol_parser as parser
 from sconcho.gui.symbol_widget import (generate_symbolWidgets, 
                                        SymbolSynchronizer,
                                        symbols_by_category,
+                                       add_to_category_widget,
                                        generate_category_widget)
 from sconcho.gui.color_widget import (ColorWidget, ColorSynchronizer)
 from sconcho.gui.pattern_canvas import PatternCanvas
@@ -636,6 +637,46 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         symbolsByCategory = symbols_by_category(knittingSymbols)
         
         if categoryName in symbolsByCategory:
+            symbol = knittingSymbols[symbolName]
+            synchronizer.unselect()
+
+            if categoryName in self.symbolSelector:
+                widget = self.symbolSelector[categoryName]
+                wList = add_to_category_widget(widget, symbol, synchronizer)
+            else:
+                symbols = symbolsByCategory[categoryName]
+                (widget, wList) = \
+                    generate_category_widget(categoryName, symbols, synchronizer)
+                self.symbolCategoryChooser.addItem(categoryName)
+                self.symbolSelector[categoryName] = widget
+
+            self.symbolSelectorWidgets = \
+                dict(self.symbolSelectorWidgets.items() +
+                     wList.items())
+
+        else:
+            message = ("MainWindow: Problem updating symbol dialog\n"
+                       "after custom symbol change. "
+                       "It is highly recommended to save your\n"
+                       "current project and restart sconcho.")
+            misc.errorLogger.write(message)   
+
+
+
+    def n_refresh_symbol_widget_after_addition(self, synchronizer, symbolName, 
+                                             categoryName):
+        """ This slot is called when a symbol in categoryName was added.
+
+        This only happens if the user adds a custom symbol.
+
+        """
+
+        symbolPaths = misc.set_up_symbol_paths(self._topLevelPath, 
+                                               self.settings)
+        knittingSymbols = parser.parse_all_symbols(symbolPaths)
+        symbolsByCategory = symbols_by_category(knittingSymbols)
+        
+        if categoryName in symbolsByCategory:
             symbols = symbolsByCategory[categoryName]
             (widget, wList) = \
                 generate_category_widget(categoryName, symbols, synchronizer)
@@ -677,7 +718,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.canvas.set_active_symbol(None)
         self.recentlyUsedSymbolWidget.clear() 
         self.canvas.clear_undo_stack()
-
 
 
     def update_symbol_widget(self, categoryName):
