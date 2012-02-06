@@ -612,15 +612,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         previousEntry = (symbolName, categoryName)
         if previousEntry in self.symbolSelectorWidgets:
-
-            # remove from recently used and active symbols widget
-            item = self.symbolSelectorWidgets[previousEntry]
-            self.recentlyUsedSymbolWidget.remove_symbol(item)
-            self.activeSymbolWidget.remove_symbol(item)
             del self.symbolSelectorWidgets[previousEntry]
 
         # NOTE: We have no choice but to clear the undo cache
         # otherwise we're bound to have dangling pointers
+        self.canvas.set_active_symbol(None)
+        self.recentlyUsedSymbolWidget.clear() 
         self.canvas.clear_undo_stack()
 
 
@@ -673,6 +670,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                        "It is highly recommended to save your\n"
                        "current project and restart sconcho.")
             misc.errorLogger.write(message)   
+
+        # NOTE: We have no choice but to clear the undo cache
+        # and clear the recently used SymbolWidget
+        # otherwise we're bound to have dangling pointers
+        self.canvas.set_active_symbol(None)
+        self.recentlyUsedSymbolWidget.clear() 
+        self.canvas.clear_undo_stack()
 
 
 

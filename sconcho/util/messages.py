@@ -219,20 +219,20 @@ noNameErrorTitle     = "sconcho: Add Symbol Error"
 noNameErrorText      = "Error: Please enter a name for your symbol."
 
 deleteSymbolTitle    = "sconcho: Delete Symbol"
-deleteSymbolText     = ("Are you sure you would like to delete symbol %s?\n"
+deleteSymbolText     = ("Are you sure you would like to delete symbol <b>%s</b>?\n"
                         "Warning: This will clear your undo history.")
 
 cannotDeleteSymbolTitle = "sconcho: Can Not Delete Symbol"
-cannotDeleteSymbolText = ("You cannot delete symbol %s since your pattern currently"
-                          "contains this symbol")
+cannotDeleteSymbolText = ("You cannot delete symbol <b>%s</b> since your chart "
+                          "currently contains this symbol.")
 
 updateSymbolTitle    = "sconcho: Update Symbol"
-updateSymbolText     = ("Are you sure you would like to update symbol %s?\n"
+updateSymbolText     = ("Are you sure you would like to update symbol <b>%s</b>?\n"
                         "Warning: This will clear your undo history.")
 
 cannotUpdateSymbolTitle = "sconcho: Can Not Update Symbol"
-cannotUpdateSymbolText = ("You cannot update symbol %s since your pattern currently"
-                          "contains this symbol")
+cannotUpdateSymbolText = ("You cannot update symbol <b>%s</b> since your pattern "
+                          "currently contains this symbol")
 
 recoveryFilePresentTitle = "sconcho: Pattern File Recovery"
 recoveryFilePresentText = ("A recovery file for pattern <b>{0}</b> has "

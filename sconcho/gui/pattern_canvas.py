@@ -283,7 +283,7 @@ class PatternCanvas(QGraphicsScene):
         """ This function receives the currently active symbol
         and stores it so we know what to paint selected cells
         with. In order to have consistent undo/redo bahaviour
-        this has to be full reversible.
+        this has to be fully reversible.
 
         """
 

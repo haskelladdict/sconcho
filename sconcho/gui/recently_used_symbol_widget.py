@@ -74,7 +74,8 @@ class RecentlyUsedSymbolWidget(QWidget):
         for widget in self.recentSymbols:
             self.layout.removeWidget(widget)
             widget.setParent(None)
-        
+
+        self._synchronizer.unselect()
         self.recentSymbols = []
         self.recentSymbolsDict = {}
         self.widgetToSymbol = {}
@@ -89,21 +90,6 @@ class RecentlyUsedSymbolWidget(QWidget):
         self.recentSymbolsDict[symbol] += 1
 
         self.widgetToSymbol[widget].click_me()
-
-
-
-    def remove_symbol(self, symbol):
-        """ Remove a symbol from the current widget. 
-
-        This will be used if the user removes one of his custom
-        symbols.
-
-        """
-
-        if symbol in self.recentSymbolsDict:
-            del self.recentSymbolsDict[symbol]
-            
-        self.update_widget(symbol)
 
 
 

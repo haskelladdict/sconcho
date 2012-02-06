@@ -290,19 +290,23 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if not self._selectedSymbol:
             return
 
-        # if the canvas contains this symbol we can't do it
-        if self.parent().canvas_has_symbol(self._selectedSymbol["name"]):
-            print("cant delete")
-
-
         name = self._selectedSymbol["name"]
-        answer = QMessageBox.question(self,
-                                      msg.deleteSymbolTitle, 
-                                      msg.deleteSymbolText % name,
-                                      QMessageBox.Ok | QMessageBox.Cancel)
-
-        if answer == QMessageBox.Cancel:
+        # if the canvas contains this symbol we can't delete it
+        # otherwise warn the user
+        if self.parent().canvas_has_symbol(name):
+            QMessageBox.question(self,
+                                 msg.cannotDeleteSymbolTitle, 
+                                 msg.cannotDeleteSymbolText % name,
+                                 QMessageBox.Ok)
             return
+        else:
+            answer = QMessageBox.question(self,
+                                          msg.deleteSymbolTitle, 
+                                          msg.deleteSymbolText % name,
+                                          QMessageBox.Ok | QMessageBox.Cancel)
+
+            if answer == QMessageBox.Cancel:
+                return
 
         svgName = self._selectedSymbol["svgName"]
         oldName = self._selectedSymbol["name"]
@@ -381,6 +385,25 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         oldSymbol = self._selectedSymbol
         oldName = self._selectedSymbol["svgName"]
+
+
+        name = self._selectedSymbol["name"]
+        # if the canvas contains this symbol we can't delete it
+        # otherwise warn the user
+        if self.parent().canvas_has_symbol(name):
+            QMessageBox.question(self,
+                                 msg.cannotUpdateSymbolTitle, 
+                                 msg.cannotUpdateSymbolText % name,
+                                 QMessageBox.Ok)
+            return
+        else:
+            answer = QMessageBox.question(self,
+                                          msg.updateSymbolTitle, 
+                                          msg.updateSymbolText % name,
+                                          QMessageBox.Ok | QMessageBox.Cancel)
+
+            if answer == QMessageBox.Cancel:
+                return
 
         data = self._get_data_from_interface()
         if data:

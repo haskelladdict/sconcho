@@ -68,14 +68,6 @@ class ActiveSymbolWidget(QWidget):
         
 
 
-    def remove_symbol(self, symbol):
-        """ Remove symbol from widget in case it is active. """
-
-        if symbol == self.currentSymbol:
-            self.active_symbol_changed(None)
-        
-
-
     def active_symbol_changed(self, symbolObject):
         """ Update the displayed active Widget after
         the user selected a new one.
