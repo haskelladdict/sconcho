@@ -1958,7 +1958,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def add_text_item(self, itemPos = None,
-                      itemText = "Star Cruiser Crash Crash."):
+                      itemText = "My Label"):
         """ Adds a text item to the canvas. 
 
         NOTE: The main reason for keeping track of text boxes in
