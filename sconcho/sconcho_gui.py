@@ -143,6 +143,11 @@ def initialize_logger(logHandle):
                                 "=> %(message)s"),
                         datefmt='%m/%d/%Y %I:%M:%S %p')
 
+    # optimizations
+    logging.logThreads=0
+    logging.logProcesses=0
+
+
 
 def main():
     """ This is a simple wrapper for starting the main
