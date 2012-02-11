@@ -60,6 +60,7 @@ from sconcho.gui.symbol_widget import (generate_symbolWidgets,
                                        SymbolSynchronizer,
                                        symbols_by_category,
                                        add_to_category_widget,
+                                       remove_from_category_widget,
                                        generate_category_widget)
 from sconcho.gui.color_widget import (ColorWidget, ColorSynchronizer)
 from sconcho.gui.pattern_canvas import PatternCanvas
@@ -577,43 +578,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         """
 
-        symbolPaths = misc.set_up_symbol_paths(self._topLevelPath, 
-                                               self.settings)
-        knittingSymbols = parser.parse_all_symbols(symbolPaths)
-        symbolsByCategory = symbols_by_category(knittingSymbols)
+        synchronizer.unselect()
 
-        if self.selectedSymbol == self.symbolSelector[categoryName]:
-            self.symbolSelectorLayout.removeWidget(self.selectedSymbol)
-            self.selectedSymbol.setParent(None)
-            self.selectedSymbol = None       
+        widget = self.symbolSelector[categoryName]
+        numRowsLeft = remove_from_category_widget(widget, symbolName)
 
-        if categoryName in symbolsByCategory:
-            symbols = symbolsByCategory[categoryName]
-            (widget, wList) = \
-                generate_category_widget(categoryName, symbols, synchronizer)
-            # NOTE: this crucial otherwise we may end up with dangling pointers
-            synchronizer.unselect()   
+        wListEntry = (symbolName, categoryName)
+        if wListEntry in self.symbolSelectorWidgets:
+            del self.symbolSelectorWidgets[wListEntry]
 
-            del self.symbolSelector[categoryName]
-                
-            self.symbolSelector[categoryName] = widget
-            if not self.selectedSymbol:
-                self.selectedSymbol = self.symbolSelector[categoryName]
-                self.symbolSelectorLayout.addWidget(self.selectedSymbol)
-
+            # check if we just deleted the last entry on the widget
+            # if so delete it
+            if numRowsLeft == 0:
+                del self.symbolSelector[categoryName]
+                chooserEntry = self.symbolCategoryChooser.findText(categoryName)
+                self.symbolCategoryChooser.removeItem(chooserEntry)
         else:
-            del self.symbolSelector[categoryName]
-            if not self.selectedSymbol:
-                self.selectedSymbol = self.symbolSelector[QString("basic")]
-                self.symbolSelectorLayout.addWidget(self.selectedSymbol)
-                index = self.symbolCategoryChooser.findText("basic")
-                self.symbolCategoryChooser.setCurrentIndex(index)
-            index = self.symbolCategoryChooser.findText(categoryName)
-            self.symbolCategoryChooser.removeItem(index)
-            
-        previousEntry = (symbolName, categoryName)
-        if previousEntry in self.symbolSelectorWidgets:
-            del self.symbolSelectorWidgets[previousEntry]
+            message = ("Could not update symbolSelectorWidgets after "
+                       "deleting symbol.")
+            misc.errorLogger.write(message)   
 
         # NOTE: We have no choice but to clear the undo cache
         # otherwise we're bound to have dangling pointers
@@ -623,6 +606,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
+    
     def refresh_symbol_widget_after_addition(self, synchronizer, symbolName, 
                                              categoryName):
         """ This slot is called when a symbol in categoryName was added.
@@ -661,63 +645,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                        "current project and restart sconcho.")
             misc.errorLogger.write(message)   
 
-
-
-    def n_refresh_symbol_widget_after_addition(self, synchronizer, symbolName, 
-                                             categoryName):
-        """ This slot is called when a symbol in categoryName was added.
-
-        This only happens if the user adds a custom symbol.
-
-        """
-
-        symbolPaths = misc.set_up_symbol_paths(self._topLevelPath, 
-                                               self.settings)
-        knittingSymbols = parser.parse_all_symbols(symbolPaths)
-        symbolsByCategory = symbols_by_category(knittingSymbols)
-        
-        if categoryName in symbolsByCategory:
-            symbols = symbolsByCategory[categoryName]
-            (widget, wList) = \
-                generate_category_widget(categoryName, symbols, synchronizer)
-            # NOTE: this crucial otherwise we may end up with dangling pointers
-            synchronizer.unselect()
-                
-            if categoryName in self.symbolSelector:
-                # update screen if we're currently viewing this category
-                # phase 1
-                if self.selectedSymbol == self.symbolSelector[categoryName]:
-                    self.symbolSelectorLayout.removeWidget(self.selectedSymbol)
-                    self.selectedSymbol.setParent(None)
-                    self.selectedSymbol = None
-                del self.symbolSelector[categoryName]
-            else:
-                self.symbolCategoryChooser.addItem(categoryName)
-
-            self.symbolSelector[categoryName] = widget
-
-            # update screen phase 2
-            if not self.selectedSymbol:
-                self.selectedSymbol = self.symbolSelector[categoryName]
-                self.symbolSelectorLayout.addWidget(self.selectedSymbol)
-
-            self.symbolSelectorWidgets = \
-                dict(self.symbolSelectorWidgets.items() +
-                     wList.items())
-
-        else:
-            message = ("MainWindow: Problem updating symbol dialog\n"
-                       "after custom symbol change. "
-                       "It is highly recommended to save your\n"
-                       "current project and restart sconcho.")
-            misc.errorLogger.write(message)   
-
-        # NOTE: We have no choice but to clear the undo cache
-        # and clear the recently used SymbolWidget
-        # otherwise we're bound to have dangling pointers
-        self.canvas.set_active_symbol(None)
-        self.recentlyUsedSymbolWidget.clear() 
-        self.canvas.clear_undo_stack()
 
 
     def update_symbol_widget(self, categoryName):

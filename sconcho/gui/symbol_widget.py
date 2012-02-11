@@ -80,7 +80,7 @@ def generate_category_widget(symbolCategory, symbols, synchronizer):
 
     # layout for current tab
     currentWidget = QWidget()
-    layout        = QGridLayout()
+    layout        = SymbolSelectorGridLayout()
 
     # sort symbols in requested order
     rawList = []
@@ -96,9 +96,7 @@ def generate_category_widget(symbolCategory, symbols, synchronizer):
         symbol = symbolEntry[1]
         newItem = SymbolSelectorItem(symbol, synchronizer)
         newLabel = SymbolSelectorLabel(symbol)
-        layout.addWidget(newItem, row, 0)
-        layout.addWidget(newLabel, row, 1)
-        layout.setRowMinimumHeight(row, 30)
+        layout.append_row(newItem, newLabel)
 
         QObject.connect(newLabel, SIGNAL("label_clicked()"),
                         newItem.click_me)
@@ -119,14 +117,24 @@ def add_to_category_widget(scrollWidget, symbol, synchronizer):
     layout = widget.layout()
     rowCount = layout.rowCount()
     newItem = SymbolSelectorItem(symbol, synchronizer)
-    layout.addWidget(newItem, rowCount, 0)
-    layout.addWidget(QLabel(symbol["name"]), rowCount, 1)
-    layout.setRowMinimumHeight(rowCount, 30)
+    layout.append_row(newItem, QLabel(symbol["name"]))
     widget.adjustSize()
     
     widgetList = {(symbol["name"], symbol["category"]) : newItem}
     return widgetList
-                  
+    
+
+
+def remove_from_category_widget(scrollWidget, symbolName):
+    """ Deletes a selector widget for symbol from scrollWidget. """
+
+    widget = scrollWidget.widget()
+    layout = widget.layout()
+    itemsLeft = layout.remove_row_by_name(symbolName)
+    widget.adjustSize() 
+
+    return itemsLeft
+
 
 
 def symbols_by_category(symbols):
@@ -293,6 +301,83 @@ class SymbolSelectorItem(QFrame):
 
         self.setStyleSheet(self._unselectedStyleSheet)
 
+
+
+
+#########################################################
+## 
+## class providing a more suitable QGridLayout
+##
+## this class derives from QGridLayout and allows
+## for adding and deleting full rows without 
+## leaving holes
+##
+#########################################################
+class SymbolSelectorGridLayout(QGridLayout):
+
+    def __init__(self, parent = None):
+
+        super(SymbolSelectorGridLayout, self).__init__(parent)
+
+        self.numRows = 0
+        self.items = {}
+
+
+
+    def append_row(self, symbolItem, textItem):
+        """ Append a row consisting of an SymbolSelectorItem and a
+
+        text item to the widget.
+
+        """
+
+        row = self.numRows
+        self.addWidget(symbolItem, row, 0)
+        self.addWidget(textItem, row, 1)
+        self.setRowMinimumHeight(row, 30)
+        self.items[symbolItem.name] = (row, symbolItem, textItem)
+        self.numRows += 1
+
+
+       
+    def remove_row_by_name(self, symbolName):
+        """ Remove a the row containing the symbol of the given name.
+
+        NOTE: The function makes sure to adjust the layout so there
+        are not holes. For simplicity, we just fill the hole created
+        by deletion with a row that follows later instead of moving all
+        later rows one up.
+
+        NOTE1: This function assumes that the symbol of the given name
+        exists.
+
+        """
+
+        assert (symbolName in self.items), \
+               ("attempted to remove nonexisting symbol %s from symbol "
+                "selector widget." % symbolName)
+
+        (pivot, symbolItem, textItem) = self.items[symbolName]
+        
+        symbolItem.setParent(None)
+        del symbolItem
+        textItem.setParent(None)
+        del textItem
+
+        # shift one of the items below one up
+        sortedItems = self.items.values()
+        sortedItems.sort(key=(lambda x: x[0]))
+        (row, symbolItem, textItem) = sortedItems[-1]
+        if row > pivot:
+            symbolItem.setParent(None)
+            self.addWidget(symbolItem, pivot, 0)
+            textItem.setParent(None)
+            self.addWidget(textItem, pivot, 1)
+            self.items[symbolItem.name] = (pivot, symbolItem, textItem)
+
+        self.numRows -= 1
+
+        return self.numRows
 
 
 
