@@ -35,9 +35,9 @@ from PyQt4.QtCore import (SIGNAL, QDir, QT_VERSION)
 from PyQt4.QtGui import (QDialog, QFontDatabase, QFileDialog,
                          QColorDialog, QColor)
 
-import sconcho.util.misc as misc
-import sconcho.util.messages as msg
-from sconcho.gui.ui_preferences_dialog import Ui_PreferencesDialog
+import util.misc as misc
+import util.messages as msg
+from gui.ui_preferences_dialog import Ui_PreferencesDialog
 
 
 

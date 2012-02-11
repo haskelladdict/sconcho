@@ -24,6 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import logging
 import uuid
 
 try:
@@ -50,10 +51,11 @@ from PyQt4.QtGui import (QPen,
                          QCursor)
 from PyQt4.QtSvg import (QGraphicsSvgItem) 
 
-from sconcho.util.canvas import * 
-from sconcho.util.misc import errorLogger
-import sconcho.util.messages as msg
+from util.canvas import * 
+import util.messages as msg
 
+# module lever logger:
+logger = logging.getLogger(__name__)
 
 
 #########################################################
@@ -175,7 +177,7 @@ class PatternGridItem(QGraphicsSvgItem):
         if not self.renderer().load(svgPath):
             errorMessage = ("PatternGridItem._set_symbol: failed to load "
                            "symbol %s" % svgPath)
-            errorLogger.write(errorMessage)
+            logger.error(errorMessage)
             return
 
         # apply color if present
@@ -354,7 +356,7 @@ class PatternLegendItem(QGraphicsSvgItem):
         if not self.renderer().load(svgPath):
             errorMessage = ("PatternLegendItem._set_symbol: failed to load "
                            "symbol %s" % svgPath)
-            errorLogger.write(errorMessage)
+            logger.error(errorMessage)
             return
 
         # apply color if present

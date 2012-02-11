@@ -29,7 +29,7 @@ from __future__ import absolute_import
 __version__ = "0.1.0_b9"
 __releaseDate__ = "2012-01-02"
 
-
+import logging
 import platform, os
 from functools import partial
 
@@ -50,27 +50,30 @@ from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QPrinter, QPrintDialog, QPrintPreviewDialog,)
 from PyQt4.QtSvg import QSvgWidget
 
-from sconcho.gui.ui_main_window import Ui_MainWindow
-import sconcho.util.messages as msg
-import sconcho.util.settings as settings
-import sconcho.util.misc as misc
-import sconcho.util.io as io
-import sconcho.util.symbol_parser as parser
-from sconcho.gui.symbol_widget import (generate_symbolWidgets, 
+from gui.ui_main_window import Ui_MainWindow
+import util.messages as msg
+import util.settings as settings
+import util.misc as misc
+import util.io as io
+import util.symbol_parser as parser
+from gui.symbol_widget import (generate_symbolWidgets, 
                                        SymbolSynchronizer,
                                        symbols_by_category,
                                        add_to_category_widget,
                                        remove_from_category_widget,
                                        generate_category_widget)
-from sconcho.gui.color_widget import (ColorWidget, ColorSynchronizer)
-from sconcho.gui.pattern_canvas import PatternCanvas
-from sconcho.gui.export_bitmap_dialog import ExportBitmapDialog
-from sconcho.gui.new_pattern_dialog import NewPatternDialog
-from sconcho.gui.preferences_dialog import PreferencesDialog
-from sconcho.gui.sconcho_manual import SconchoManual
-from sconcho.gui.update_dialog import UpdateDialog
-from sconcho.gui.manage_symbol_dialog import ManageSymbolDialog
-from sconcho.util.exceptions import PatternReadError
+from gui.color_widget import (ColorWidget, ColorSynchronizer)
+from gui.pattern_canvas import PatternCanvas
+from gui.export_bitmap_dialog import ExportBitmapDialog
+from gui.new_pattern_dialog import NewPatternDialog
+from gui.preferences_dialog import PreferencesDialog
+from gui.sconcho_manual import SconchoManual
+from gui.update_dialog import UpdateDialog
+from gui.manage_symbol_dialog import ManageSymbolDialog
+from util.exceptions import PatternReadError
+
+# module lever logger:
+logger = logging.getLogger(__name__)
 
 
 #######################################################################
@@ -596,7 +599,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             message = ("Could not update symbolSelectorWidgets after "
                        "deleting symbol.")
-            misc.errorLogger.write(message)   
+            logger.error(message)   
 
         # NOTE: We have no choice but to clear the undo cache
         # otherwise we're bound to have dangling pointers
@@ -643,7 +646,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                        "after custom symbol change. "
                        "It is highly recommended to save your\n"
                        "current project and restart sconcho.")
-            misc.errorLogger.write(message)   
+            logger.error(message)   
 
 
 
@@ -951,6 +954,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not status:
             QMessageBox.critical(self, msg.errorSavingProjectTitle,
                                  errorMsg, QMessageBox.Close)
+            logger.error(errorMsg)
             return 
         
         self.statusBar().showMessage("successfully saved " + \
@@ -1021,6 +1025,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not status:
             QMessageBox.critical(self, msg.errorOpeningProjectTitle,
                                  errMsg, QMessageBox.Close)
+            logger.error(msg.errorOpeningProjectTitle)
             return False
 
         # add newly loaded project

@@ -33,7 +33,7 @@ import os
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (QApplication, QCursor)
 
-import sconcho.util.messages as msg
+import util.messages as msg
 
 
 
@@ -82,65 +82,3 @@ def set_up_symbol_paths(path, settings):
 
     return symbolPaths
 
-
-
-############################################################################
-#
-# framework for logging errors
-#
-############################################################################
-class SconchoError(object):
-    """ This class takes care of error logging. """
-
-
-    def __init__(self):
-
-        pass
-
-
-
-    def write(self, message, errorCode = None):
-        """ This member takes care of logging error messages. """
-
-        if errorCode:
-            print("[sconcho] ERROR: %s with error code %d" %
-                  (message, errorCode), file = sys.stderr)
-        else:
-             print("[sconcho] ERROR: %s" % message, file = sys.stderr)
-
-             
-# global error logging Object
-# NOTE: Is it a good idea to make this global? Seems ok for error
-#       logging purposes otherwise we have to pass it around a lot.
-errorLogger = SconchoError()
-
-
-
-############################################################################
-#
-# framework for logging warnings
-#
-############################################################################
-class SconchoWarning(object):
-    """ This class takes care of warnings logging. """
-
-
-    def __init__(self):
-
-        pass
-
-
-    def write(self, message, warningCode = None):
-        """ This member takes care of logging warning messages. """
-
-        if warningCode:
-            print("[sconcho] WARNING: %s with warning code %d" %
-                  (message, warningCode), file = sys.stderr)
-        else:
-             print("[sconcho] WARNING: %s" % message, file = sys.stdout)
-
-             
-# global warning logging Object
-# NOTE: Is it a good idea to make this global? Seems ok for warning
-#       logging purposes otherwise we have to pass it around a lot.
-warningLogger = SconchoWarning()

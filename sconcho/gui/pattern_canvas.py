@@ -24,6 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import logging
 from functools import partial
 
 try:
@@ -58,16 +59,17 @@ from PyQt4.QtGui import (QGraphicsScene,
                          QCursor)
 from PyQt4.QtSvg import (QGraphicsSvgItem) 
 
-from sconcho.util.canvas import * 
-from sconcho.util.misc import wait_cursor
-from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
-from sconcho.gui.row_repeat_number_dialog import RowRepeatNumDialog
-from sconcho.gui.num_row_column_dialog import NumRowColumnDialog
-from sconcho.util.misc import errorLogger
-from sconcho.gui.undo_framework import *
-from sconcho.gui.pattern_canvas_objects import *
-import sconcho.util.messages as msg
+from util.canvas import * 
+from util.misc import wait_cursor
+from gui.pattern_repeat_dialog import PatternRepeatDialog
+from gui.row_repeat_number_dialog import RowRepeatNumDialog
+from gui.num_row_column_dialog import NumRowColumnDialog
+from gui.undo_framework import *
+from gui.pattern_canvas_objects import *
+import util.messages as msg
 
+# module lever logger:
+logger = logging.getLogger(__name__)
 
 
 #########################################################
@@ -1039,7 +1041,7 @@ class PatternCanvas(QGraphicsScene):
         if len(patternGridItems) != 1:
             errorString = "grab_color_from_cell: expected 1 item, found %d" % \
                           len(patternGridItems)
-            errorLogger.write(errorString)
+            logger.error(errorString)
             return
 
         color = patternGridItems[0].color
@@ -1093,7 +1095,7 @@ class PatternCanvas(QGraphicsScene):
             if len(patternGridItems) > 1:
                 errorString = ("_item_at_row_col: expected <=1 item, "
                                "found %d" % len(patternGridItems))
-                errorLogger.write(errorString)
+                logger.error(errorString)
                 return 
             
             selectedItem = patternGridItems[0]
@@ -1219,7 +1221,7 @@ class PatternCanvas(QGraphicsScene):
             if not leftItem:
                 errorString = ("_rectangle_self_contained: trying to "
                                "access nonexistent leftItem.")
-                errorLogger.write(errorString)
+                logger.error(errorString)
                 return False
 
             if (leftItem.width > 1) and (leftItem.column < column):
@@ -1232,7 +1234,7 @@ class PatternCanvas(QGraphicsScene):
                 if not rightItem:
                     errorString = ("_rectangle_self_contained: trying to "
                                    "access nonexistent rightItem.")
-                    errorLogger.write(errorString)
+                    logger.error(errorString)
                     return False
                     
                 if (rightItem.width > 1) and \
@@ -1312,7 +1314,7 @@ class PatternCanvas(QGraphicsScene):
         if len(patternItems) > 1:
             errorString = "_item_at_row_col: expected <=1 item, found %d" %\
                           len(patternItems)
-            errorLogger.write(errorString)
+            logger.error(errorString)
             return None
         elif len(patternItems) == 0:
             return None

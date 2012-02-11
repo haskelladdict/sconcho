@@ -25,12 +25,18 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import logging
 import math
 
 from PyQt4.QtCore import (QPointF)
 from PyQt4.QtGui import (QMessageBox, QColor)
 
-import sconcho.util.messages as msg 
+import util.messages as msg 
+
+
+# module lever logger:
+logger = logging.getLogger(__name__)
+
 
 
 def convert_pos_to_col_row(mousePos, cellWidth, cellHeight):
@@ -296,6 +302,7 @@ def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos,
         QMessageBox.critical(None, msg.errorMatchingLegendItemTitle,   
                              msg.errorMatchingLegendItemText,
                              QMessageBox.Close)
+        logger.error(msg.errorMatchingLegendItemText)
 
 
 
@@ -593,6 +600,7 @@ def load_pattern_grid_items(patternGridItemInfo, knittingSymbols,
         QMessageBox.critical(None, msg.errorLoadingGridTitle,
                              msg.errorLoadingGridText % e,
                              QMessageBox.Close)
+        logger.error(msg.errorLoadingGridText % e)
         return None
 
     return allPatternGridItems
@@ -629,6 +637,7 @@ def load_legend_items(legendItemInfo):
         QMessageBox.critical(None, msg.errorLoadingLegendTitle,
                              msg.errorLoadingLegendText % e,
                              QMessageBox.Close)
+        logger.error(msg.errorLoadingLegendText % e)
         return None
 
     return allLegendItems
@@ -652,6 +661,7 @@ def load_patternRepeat_items(repeatItemInfo):
         QMessageBox.critical(None, msg.errorLoadingRepeatBoxTitle,
                              msg.errorLoadingRepeatBoxText % e,
                              QMessageBox.Close)
+        logger.error(msg.errorLoadingRepeatBoxText % e)
         return None
 
     return allPatternRepeatItems
@@ -677,6 +687,7 @@ def load_patternRepeatLegend_items(repeatLegendInfo):
         QMessageBox.critical(None, msg.errorLoadingRepeatBoxLegendTitle,
                              msg.errorLoadingRepeatBoxLegendText % e,
                              QMessageBox.Close)
+        logger.error(msg.errorLoadingRepeatBoxLegendText % e)
         return None
 
     return allPatternRepeatLegendItems
@@ -698,6 +709,7 @@ def load_text_items(textItemInfo):
         QMessageBox.critical(None, msg.errorLoadingTextItemsTitle,
                              msg.errorLoadingTextItemsText % e,
                              QMessageBox.Close)
+        logger.error(msg.errorLoadingTextItemsText % e)
         return None
 
     return allTextItems

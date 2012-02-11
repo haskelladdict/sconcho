@@ -24,12 +24,15 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import logging 
+
 from PyQt4.QtCore import (QSettings, QString, QSize, QDir, QVariant,
                           QPoint)
 from PyQt4.QtGui import (QFont, QFontDatabase)
 
-from sconcho.util.misc import errorLogger
 
+# module level logger:
+logger = logging.getLogger(__name__)
 
 
 class DefaultSettings(QSettings):
@@ -286,15 +289,15 @@ class PreferenceSetting(object):
         elif self.returnType == "QString":
             pass
         else:
-            errorLogger.write("Unknown return type %s encountered when "
-                              "retrieving settings." % self.returnType)
+            logger.error("Unknown return type %s encountered when "
+                          "retrieving settings." % self.returnType)
 
 
         if not status:
             if not self.errorMsg:
                 self.errorMsg = "Settings Error: Failed to retrieve " \
                                 "default values for " + self.defaultName
-            errorLogger.write(self.errorMsg)
+            logger.error(self.errorMsg)
 
         return value
 

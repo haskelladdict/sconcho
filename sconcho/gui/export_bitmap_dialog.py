@@ -35,8 +35,8 @@ from PyQt4.QtCore import (Qt, SIGNAL, QDir, QFileInfo, QFile)
 from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
                          QImageWriter, QDialogButtonBox)
 
-from sconcho.gui.ui_export_bitmap_dialog import Ui_ExportBitmapDialog
-import sconcho.util.messages as msg
+from gui.ui_export_bitmap_dialog import Ui_ExportBitmapDialog
+import util.messages as msg
 
 
 # global conversion
@@ -365,6 +365,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
             QMessageBox.warning(self, msg.noFilePathTitle,
                                 msg.noFilePathText,
                                 QMessageBox.Close)
+            logger.warn(msg.noFilePathText)
             return
 
 

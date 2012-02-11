@@ -28,7 +28,7 @@ from __future__ import absolute_import
 from PyQt4.QtCore  import QUrl
 from PyQt4.QtGui import QDialog 
 
-from sconcho.gui.ui_sconcho_manual import Ui_SconchoManual
+from gui.ui_sconcho_manual import Ui_SconchoManual
 
 
 ##########################################################################

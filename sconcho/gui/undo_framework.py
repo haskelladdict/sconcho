@@ -24,7 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-
+import logging
 from copy import copy
 
 try:
@@ -35,22 +35,24 @@ except ImportError:
 from PyQt4.QtCore import (Qt, QPointF, SIGNAL) 
 from PyQt4.QtGui import (QUndoCommand, QColor)
 
-from sconcho.util.canvas import (get_item_id, 
-                                 chunkify_cell_arrangement,
-                                 order_selection_by_rows,
-                                 order_selection_by_columns,
-                                 shift_item_row_wise,
-                                 shift_item_column_wise,
-                                 shift_legend_vertically,
-                                 shift_selection_vertically,
-                                 shift_legend_horizontally,
-                                 shift_selection_horizontally,
-                                 PatternCanvasEntry)
+from util.canvas import (get_item_id, 
+                         chunkify_cell_arrangement,
+                         order_selection_by_rows,
+                         order_selection_by_columns,
+                         shift_item_row_wise,
+                         shift_item_column_wise,
+                         shift_legend_vertically,
+                         shift_selection_vertically,
+                         shift_legend_horizontally,
+                         shift_selection_horizontally,
+                         PatternCanvasEntry)
 
-from sconcho.util.misc import (errorLogger)
-from sconcho.gui.pattern_canvas_objects import (RepeatLegendItem,
-                                                PatternLegendText,
-                                                PatternTextItem) 
+from gui.pattern_canvas_objects import (RepeatLegendItem,
+                                        PatternLegendText,
+                                        PatternTextItem) 
+
+# module lever logger:
+logger = logging.getLogger(__name__)
 
 
 ###########################################################################
@@ -1067,7 +1069,7 @@ class PaintCells(QUndoCommand):
                 else:
                     errorString = ("_redo_unselectedCells: trying to delete "
                                    "invalid selected cell.")
-                    errorLogger.write(errorString)
+                    logger.error(errorString)
 
                 item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:
@@ -1109,7 +1111,7 @@ class PaintCells(QUndoCommand):
                 else:
                     errorString = ("_redo_paintActiveSymbol: trying to find "
                                    "origin of nonexistent item.")
-                    errorLogger.write(errorString)
+                    logger.error(errorString)
                     
                 # compute total width and remove old items
                 for entry in chunk:
@@ -1122,7 +1124,7 @@ class PaintCells(QUndoCommand):
                     else:
                         errorString = ("_redo_paintActiveSymbol: trying to delete "
                                        "nonexistent item.")
-                        errorLogger.write(errorString)
+                        logger.error(errorString)
                         
 
                 # insert as many new items as we can fit
@@ -1161,7 +1163,7 @@ class PaintCells(QUndoCommand):
                 else:
                     errorString = ("_undo_unselectedCells: trying to delete "
                                    "invalid selected cell.")
-                    errorLogger.write(errorString)
+                    logger.error(errorString)
 
                 item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:
@@ -1195,7 +1197,7 @@ class PaintCells(QUndoCommand):
             else:
                 errorString = ("_undo_paintActiveSymbol: trying to delete "
                                "nonexistent item.")
-                errorLogger.write(errorString)
+                logger.error(errorString)
 
 
         # re-insert previous selection
@@ -1462,7 +1464,7 @@ class AddPatternRepeat(QUndoCommand):
                 else:
                     errString = ("AddPatternRepeat.redo: trying to delete "
                                    "invalid selected cell.")
-                    errorLogger.write(errString)
+                    logger.error(errString)
 
                 item = self.canvas._item_at_row_col(item.row, item.column)
                 if item:

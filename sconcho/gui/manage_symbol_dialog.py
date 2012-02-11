@@ -24,8 +24,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import logging
 from functools import partial
-from tempfile import mkdtemp
 
 try:
     from PyQt4.QtCore import QString
@@ -38,14 +38,16 @@ from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog,
                          QMessageBox, QInputDialog, QLineEdit)
 from PyQt4.QtSvg import (QSvgWidget)
 
-from sconcho.gui.ui_manage_symbol_dialog import Ui_ManageKnittingSymbolDialog
-from sconcho.util.symbol_parser import (parse_all_symbols, 
+from gui.ui_manage_symbol_dialog import Ui_ManageKnittingSymbolDialog
+from util.symbol_parser import (parse_all_symbols, 
                                         create_new_symbol,
                                         remove_symbol, move_symbol, 
                                         SymbolTempDir)
-import sconcho.util.messages as msg
-import sconcho.gui.symbol_widget as symbolWidget
-import sconcho.util.misc as misc
+import util.messages as msg
+import gui.symbol_widget as symbolWidget
+
+# module lever logger:
+logger = logging.getLogger(__name__)
 
 
 ##########################################################################
@@ -349,7 +351,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if len(categoryItems) != 1:
             message = ("ManageSymbolDialog._delete_symbol_from_tree_widget:"
                        " there are duplicate categories.")
-            misc.errorLogger.write(message)
+            logger.error(message)
             return
         
         item = categoryItems[0]
@@ -469,6 +471,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             QMessageBox.critical(None, msg.symbolExistsTitle,
                                  msg.symbolExistsText % data["name"], 
                                  QMessageBox.Close)
+            logger.error(msg.symbolExistsText % data["name"])
             return 
 
         if create_new_symbol(self._symbolPath, data):
@@ -529,6 +532,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             QMessageBox.critical(None, msg.noSvgFileErrorTitle,
                                  msg.noSvgFileErrorText,
                                  QMessageBox.Close)
+            logger.error(msg.noSvgFileErrorText)
             return None
         else:
             data["svgPath"] = svgPathName
@@ -538,6 +542,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             QMessageBox.critical(None, msg.noNameErrorTitle,
                                  msg.noNameErrorText,
                                  QMessageBox.Close)
+            logger.error(msg.noNameErrorText)
             return None
         else:
             data["name"] = name
@@ -551,6 +556,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             QMessageBox.critical(None, msg.noCategoryErrorTitle,
                                  msg.noCategoryErrorText,
                                  QMessageBox.Close)
+            logger.error(msg.noCategoryErrorText)
             return None
         else:
             data["category"] = category

@@ -30,8 +30,8 @@ from PyQt4.QtGui import (QWidget, QFrame, QGridLayout, QColor,
 from PyQt4.QtSvg import QSvgWidget
 
 
-from sconcho.gui.symbol_widget import (SymbolSelectorItem,
-                                       SymbolSynchronizer)
+from gui.symbol_widget import (SymbolSelectorItem,
+                               SymbolSynchronizer)
 
 
 MAX_RECENT_SYMBOLS = 5

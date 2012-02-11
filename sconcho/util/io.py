@@ -40,14 +40,14 @@ from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from PyQt4.QtSvg import QSvgGenerator
 
-from sconcho.gui.pattern_canvas_objects import (PatternGridItem, 
-                                                PatternLegendItem,
-                                                PatternRepeatItem, 
-                                                NostitchVisualizer)
-from sconcho.util.canvas import (legendItem_symbol, legendItem_text)
-from sconcho.util.misc import wait_cursor
-from sconcho.util.exceptions import PatternReadError
-import sconcho.util.messages as msg
+from gui.pattern_canvas_objects import (PatternGridItem, 
+                                        PatternLegendItem,
+                                        PatternRepeatItem, 
+                                        NostitchVisualizer)
+from util.canvas import (legendItem_symbol, legendItem_text)
+from util.misc import wait_cursor
+from util.exceptions import PatternReadError
+import util.messages as msg
 
 
 # magic number to specify binary API

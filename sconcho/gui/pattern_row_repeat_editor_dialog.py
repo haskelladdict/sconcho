@@ -29,9 +29,8 @@ from functools import partial
 from PyQt4.QtCore import (SIGNAL)
 from PyQt4.QtGui import (QDialog, QTableWidgetItem, QMessageBox)
 
-import sconcho.util.messages as msg
-from sconcho.util.misc import errorLogger
-from sconcho.gui.ui_pattern_row_repeat_editor_dialog import Ui_PatternRowRepeatEditor
+import util.messages as msg
+from gui.ui_pattern_row_repeat_editor_dialog import Ui_PatternRowRepeatEditor
 
 
 
@@ -146,8 +145,8 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
                       self.previousEnd)
 
         else:
-            errorLogger.write("Unknown mode in PatternRowRepeatEditor. "
-                              "Expected either ADD_MODE or UPDATE_MODE. ")
+            logger.error("Unknown mode in PatternRowRepeatEditor. "
+                         "Expected either ADD_MODE or UPDATE_MODE. ")
             return
             
         self.entryGrouper.setVisible(False)
@@ -182,6 +181,7 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
                 QMessageBox.critical(self, msg.badRepeatRowRangeTitle,
                                      msg.badRepeatRowRangeText, 
                                      QMessageBox.Close)
+                logger.error(msg.badRepeatRowRangeText)
                 return False
 
         return True

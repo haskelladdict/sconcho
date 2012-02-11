@@ -26,7 +26,7 @@ from __future__ import absolute_import
 
 from PyQt4.QtGui import QDialog 
 
-from sconcho.gui.ui_new_pattern_dialog import Ui_NewPatternDialog
+from gui.ui_new_pattern_dialog import Ui_NewPatternDialog
 
 
 

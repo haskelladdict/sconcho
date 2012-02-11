@@ -34,7 +34,7 @@ except ImportError:
 from PyQt4.QtCore import (Qt, SIGNAL, QDir)
 from PyQt4.QtGui import (QDialog, QColorDialog)
 
-from sconcho.gui.ui_pattern_repeat_box_dialog import Ui_PatternRepeatDialog
+from gui.ui_pattern_repeat_box_dialog import Ui_PatternRepeatDialog
 
 
 

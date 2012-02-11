@@ -24,6 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import logging
 from tempfile import mkdtemp
 from os import path
 from shutil import (rmtree, move)
@@ -40,14 +41,16 @@ from PyQt4.QtCore import (QDir, QFile, QIODevice,
 from PyQt4.QtGui import QMessageBox
 from PyQt4.QtXml import QDomDocument
 
-from sconcho.util.misc import (warningLogger, errorLogger)
-import sconcho.util.messages as msg
+import util.messages as msg
 
 
 # need this for sorting symbol entries
 # at the end of the category list
 __LARGE_INT__ = 100000
 
+
+# module lever logger:
+logger = logging.getLogger(__name__)
 
 
 def parse_all_symbols(symbolTopLevelPaths):
@@ -68,7 +71,7 @@ def parse_all_symbols(symbolTopLevelPaths):
             message = ("parse_all_symbols: Could not read symbol " + path +
                        "\nRemove the directory " + path + " to get rid of "
                        "this warning")
-            warningLogger.write(message)
+            logger.warn(message)
             continue
 
         # try to add symbol to symbol database
@@ -115,7 +118,7 @@ def parse_knitting_symbol(symbolPath):
         errorMessage = ("Failed reading pattern description in file %s -- "
                         "%s at line %d column %d" % 
                         (descriptionFile.fileName(), msg, line, col))
-        errorLogger.write(errorMessage)
+        logger.error(errorMessage)
         return None
 
     # make sure we're reading a sconcho pattern description 
@@ -202,6 +205,7 @@ def create_new_symbol(symbolPath, data):
                                  msg.failedToCreateDirectoryText % 
                                  symbolPath,
                                  QMessageBox.Close)
+            logger.error(msg.failedToCreateDirectoryText % symbolPath)
             return False
 
     # this should never happen since the manageKnittingSymbolDialog is
@@ -213,6 +217,7 @@ def create_new_symbol(symbolPath, data):
                              msg.symbolExistsText % (data["category"], 
                                                      data["name"]),
                              QMessageBox.Close)
+        logger.error(msg.symbolExistsText % (data["category"], data["name"]))
         return False
 
     symbolDir.mkdir(symbolDirPath)
@@ -231,7 +236,7 @@ def create_new_symbol(symbolPath, data):
                                 msg.failedToCopySvgText % 
                                 symbolTargetSvgPath,
                                 QMessageBox.Close)
-           
+            logger.error(msg.failedToCopySvgText % symbolTargetSvgPath) 
             raise IOError
 
         # write the description file
@@ -242,6 +247,8 @@ def create_new_symbol(symbolPath, data):
                                 msg.failedCreateDescriptionFileText % 
                                 (data["name"], data["category"]), 
                                 QMessageBox.Close)
+            logger.error(msg.failedCreateDescriptionFileText % 
+                         (data["name"], data["category"]))
             raise IOError
 
         # finally try to write the content of the file

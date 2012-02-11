@@ -30,8 +30,8 @@ import re
 from PyQt4.QtCore import (qVersion, SIGNAL, QThread)
 from PyQt4.QtGui import (QDialog) 
 
-from sconcho.gui.ui_update_dialog import Ui_UpdateDialog
-import sconcho.util.messages as msg
+from gui.ui_update_dialog import Ui_UpdateDialog
+import util.messages as msg
 
 LATEST_VERSION_FILE = "LATEST_VERSION.txt"
 LATEST_VERSION_URL = ("http://sourceforge.net/projects/sconcho/files/" +
