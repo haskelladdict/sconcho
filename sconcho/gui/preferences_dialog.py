@@ -60,7 +60,6 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.rowLabelsUnlocked = True
         self.populate_interface()
         self.establish_connections()
-        self.set_up_personal_symbol_path()
 
         self.connect(self.makeDefaultButton,
                      SIGNAL("pressed()"),
@@ -77,6 +76,8 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.set_up_row_label_selectors()
         self.set_up_column_label_selectors()
         self.set_up_grid_properties()
+        self.set_up_personal_symbol_path()
+        self.set_up_logging()
 
 
 
@@ -173,7 +174,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings.highlightRowsOpacity.make_settings_default()
         self.settings.highlightRowsStart.make_settings_default()
         self.settings.snapPatternRepeatToGrid.make_settings_default()
+
         self.settings.personalSymbolPath.make_settings_default()
+        self.settings.loggingPath.make_settings_default()
+        self.settings.doLogging.make_settings_default()
 
 
 
@@ -663,7 +667,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      self.show_symbol_path_fileSelector)
 
 
-
+        
     def update_personal_symbol_path(self, newPath):
         """ Update the path to a user's custom symbol location. """
 
@@ -684,6 +688,63 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         if customSymbolFilePath:
             self.settings.personalSymbolPath.value = customSymbolFilePath
             self.customSymbolPathEdit.setText(customSymbolFilePath)
+
+
+
+
+    def set_up_logging(self):
+        """ Sets up the widget items for enabling logging and setting
+        the logging path.
+        
+        """
+
+        loggingPath = self.settings.loggingPath.value
+        self.loggingPathEdit.setText(loggingPath)
+
+        self.connect(self.loggingPathEdit,
+                     SIGNAL("textChanged(QString)"),
+                     self.update_logging_path)
+
+        self.connect(self.loggingPathButton,
+                     SIGNAL("clicked()"),
+                     self.show_logging_path_fileSelector)
+
+        doLogging = self.settings.doLogging.value
+        self.enableLoggingChecker.setChecked(doLogging)
+
+        self.connect(self.enableLoggingChecker,
+                    SIGNAL("clicked(bool)"),
+                    self.update_logging_status)
+
+
+
+    def update_logging_path(self, newPath):
+        """ Update the path to where log files are stored. """
+
+        self.settings.loggingPath.value = newPath
+
+
+
+    def show_logging_path_fileSelector(self):
+        """ Open up a file selector dialog allowing a user to change
+        the path to where logfiles are stored.
+        
+        """
+
+        loggingPath = QFileDialog.getExistingDirectory(self,
+                                      msg.loggingPathDirectoryTitle,
+                                      QDir.homePath())
+
+        if loggingPath:
+            self.settings.loggingPath.value = loggingPath
+            self.loggingPathEdit.setText(loggingPath)
+
+
+
+    def update_logging_status(self, status):
+        """ Update the path to where log files are stored. """
+
+        self.settings.doLogging.value = int(status)
 
 
 

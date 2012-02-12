@@ -77,7 +77,10 @@ class DefaultSettings(QSettings):
     DEFAULT_HIGHLIGHT_ROWS_START = "0" # 0 corresponds to bottom row
     DEFAULT_SNAP_PATTERN_REPEAT_TO_GRID = "2"
     DEFAULT_PERSONAL_SYMBOL_PATH = QDir.convertSeparators(
-            QDir.homePath() + "/sconcho_symbols")
+            QDir.homePath() + "/.sconcho_symbols")
+    DEFAULT_LOGGING_PATH = QDir.convertSeparators(
+            QDir.homePath() + "/.sconcho_logs")
+    DEFAULT_DO_LOGGING = "0"
 
 
     def __init__(self, organization, application, parent = None):
@@ -173,6 +176,14 @@ class DefaultSettings(QSettings):
         self.snapPatternRepeatToGrid = PreferenceSetting(self,
                 DefaultSettings.DEFAULT_SNAP_PATTERN_REPEAT_TO_GRID,
                 "snapPatternRepeatToGrid", "Int")
+
+        self.loggingPath = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_LOGGING_PATH,
+                "loggingPath", "QString")
+
+        self.doLogging = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_DO_LOGGING,
+                "doLogging", "Int")
 
 
     @property

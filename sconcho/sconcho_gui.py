@@ -34,7 +34,7 @@ try:
 except ImportError:
     QString = str
 
-from PyQt4.QtCore import (QSettings)
+from PyQt4.QtCore import (QSettings, QVariant)
 from PyQt4.QtGui import QApplication
 from gui.main_window import MainWindow
 import util.symbol_parser as parser
@@ -42,30 +42,19 @@ import util.messages as msg
 import util.settings as settings
 import util.misc as misc
 
+# module level logger:
+logger = logging.getLogger(__name__)
+
 
 ORGANIZATION        = "Sconcho"
 ORGANIZATION_DOMAIN = "sconcho.sourceforge.net"
 APPLICATION         = "sconcho"
 
 
-def sconcho_gui_launcher(fileName = None):
+def sconcho_gui_launcher(currPath, defaultSettings, knittingSymbols, fileName):
     """ Main routine starting up the sconcho framework. """
 
 
-    defaultSettings = settings.DefaultSettings(ORGANIZATION, APPLICATION)
-    currPath = os.path.dirname(__file__)
-    symbolPaths = misc.set_up_symbol_paths(currPath, defaultSettings)
-
-    # We attempt to read all available knitting symbols 
-    # before firing up the MainWindow. At the very least we
-    # require to find a symbol for a "knit" stitch. If not, 
-    # we terminate right away.
-    knittingSymbols = parser.parse_all_symbols(symbolPaths)
-    try:
-        knittingSymbols[QString("knit")]
-    except KeyError:
-        sys.exit(msg.errorOpeningKnittingSymbols % symbolPaths)
-    
     # fire up the MainWindow
     app = QApplication(sys.argv)
     app.setOrganizationName(ORGANIZATION)
@@ -80,20 +69,19 @@ def sconcho_gui_launcher(fileName = None):
 
 
 
-
-def create_log_file():
+def create_log_file(logPath):
     """ Initialize the log file """
 
     timeStamp = strftime("%m%d%Y%H%M%S", gmtime())
 
     # open a log file for this session
-    logPath = os.path.expanduser("~/.sconcho_logs")
     if not os.path.exists(logPath):
         os.mkdir(logPath)
     logHandle = tempfile.NamedTemporaryFile(prefix="sconcho_" + timeStamp, 
                                             delete=False,
                                             dir=logPath)
     logHandle.write("sconcho started on " + timeStamp + "\n\n")
+    logHandle.flush()
 
     return logHandle
 
@@ -136,12 +124,17 @@ def initialize_logger(logHandle):
     """
 
     if logHandle:
-        logging.basicConfig(filename='example.log')
-    
-    logging.basicConfig(level=logging.DEBUG, 
-                        format=("%(asctime)s - %(name)s -  %(levelname)s "
-                                "=> %(message)s"),
-                        datefmt='%m/%d/%Y %I:%M:%S %p')
+        logging.basicConfig(filename=logHandle.name,
+                            filemode="a",
+                            level=logging.DEBUG, 
+                            format=("%(asctime)s - %(name)s -  %(levelname)s "
+                                    "=> %(message)s"),
+                            datefmt='%m/%d/%Y %I:%M:%S %p')
+    else:
+        logging.basicConfig(level=logging.DEBUG, 
+                            format=("%(asctime)s - %(name)s -  %(levelname)s "
+                                    "=> %(message)s"),
+                            datefmt='%m/%d/%Y %I:%M:%S %p')
 
     # optimizations
     logging.logThreads=0
@@ -159,8 +152,16 @@ def main():
     sconcho_gui_launcher().
     """
 
-    if sys.platform == "win32":
-        logHandle = create_log_file()
+    # load settings
+    defaultSettings = settings.DefaultSettings(ORGANIZATION, APPLICATION)
+    currPath = os.path.dirname(__file__)
+    symbolPaths = misc.set_up_symbol_paths(currPath, defaultSettings)
+
+    # set up logging if requested
+    doLogging = defaultSettings.doLogging.value
+    loggingPath = unicode(defaultSettings.loggingPath.value)
+    if doLogging and loggingPath:
+        logHandle = create_log_file(loggingPath)
     else:
         logHandle = None
 
@@ -174,9 +175,21 @@ def main():
     if not fileName and not os.path.isfile(fileName):
         fileName = None
 
-    sconcho_gui_launcher(fileName)
+    # We attempt to read all available knitting symbols 
+    # before firing up the MainWindow. At the very least we
+    # require to find a symbol for a "knit" stitch. If not, 
+    # we terminate right away.
+    knittingSymbols = parser.parse_all_symbols(symbolPaths)
+    try:
+        knittingSymbols[QString("knit")]
+    except KeyError:
+        sys.exit(msg.errorOpeningKnittingSymbols % symbolPaths)
+    
+    sconcho_gui_launcher(currPath, defaultSettings, knittingSymbols, fileName)
+
 
 
 if __name__ == "__main__":
 
     main()
+    logging.shutdown()

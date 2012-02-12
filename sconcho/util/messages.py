@@ -188,8 +188,12 @@ errorOpeningKnittingSymbols = ("sconcho: Failed to open knitting symbol "
                                "at\n%s.\nExiting ....")
 
 
-customSymbolPathDirectoryTitle = ("sconcho: Enter Location of Custom "
+customSymbolPathDirectoryTitle = ("sconcho: Please Enter Location of Custom "
                                   "Symbol database.")
+
+
+loggingPathDirectoryTitle = ("sconcho: Please Enter Location of Path for "
+                             "storing log files.")
 
 
 ########################################################################

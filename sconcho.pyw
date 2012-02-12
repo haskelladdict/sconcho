@@ -8,4 +8,7 @@ if len(sys.argv) > 1:
 else:
     fileName = ""
 
-subprocess.Popen(["python", "-O", "sconcho/sconcho_gui.py", fileName])
+if sys.platform == "win32":
+    subprocess.Popen(["pythonw", "-OO", "sconcho/sconcho_gui.py", fileName])
+else:
+    subprocess.Popen(["python", "-OO", "sconcho/sconcho_gui.py", fileName])

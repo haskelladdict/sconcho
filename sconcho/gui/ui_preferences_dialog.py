@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Sat Feb  4 13:18:47 2012
+# Created: Sun Feb 12 16:54:46 2012
 #      by: PyQt4 UI code generator 4.9
 #
 # WARNING! All changes made in this file will be lost!
@@ -302,20 +302,43 @@ class Ui_PreferencesDialog(object):
         self.customSymbolPathButton.setObjectName(_fromUtf8("customSymbolPathButton"))
         self.horizontalLayout_2.addWidget(self.customSymbolPathButton)
         self.verticalLayout_6.addLayout(self.horizontalLayout_2)
-        spacerItem13 = QtGui.QSpacerItem(20, 185, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        spacerItem13 = QtGui.QSpacerItem(20, 80, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
         self.verticalLayout_6.addItem(spacerItem13)
+        self.line = QtGui.QFrame(self.tab)
+        self.line.setFrameShape(QtGui.QFrame.HLine)
+        self.line.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line.setObjectName(_fromUtf8("line"))
+        self.verticalLayout_6.addWidget(self.line)
+        self.enableLoggingChecker = QtGui.QCheckBox(self.tab)
+        self.enableLoggingChecker.setObjectName(_fromUtf8("enableLoggingChecker"))
+        self.verticalLayout_6.addWidget(self.enableLoggingChecker)
+        self.label_14 = QtGui.QLabel(self.tab)
+        self.label_14.setObjectName(_fromUtf8("label_14"))
+        self.verticalLayout_6.addWidget(self.label_14)
+        self.horizontalLayout_9 = QtGui.QHBoxLayout()
+        self.horizontalLayout_9.setObjectName(_fromUtf8("horizontalLayout_9"))
+        self.loggingPathEdit = QtGui.QLineEdit(self.tab)
+        self.loggingPathEdit.setObjectName(_fromUtf8("loggingPathEdit"))
+        self.horizontalLayout_9.addWidget(self.loggingPathEdit)
+        self.loggingPathButton = QtGui.QPushButton(self.tab)
+        self.loggingPathButton.setAutoDefault(False)
+        self.loggingPathButton.setObjectName(_fromUtf8("loggingPathButton"))
+        self.horizontalLayout_9.addWidget(self.loggingPathButton)
+        self.verticalLayout_6.addLayout(self.horizontalLayout_9)
+        spacerItem14 = QtGui.QSpacerItem(20, 185, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_6.addItem(spacerItem14)
         self.tabWidget.addTab(self.tab, _fromUtf8(""))
         self.verticalLayout_10.addWidget(self.tabWidget)
-        spacerItem14 = QtGui.QSpacerItem(20, 29, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout_10.addItem(spacerItem14)
+        spacerItem15 = QtGui.QSpacerItem(20, 29, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_10.addItem(spacerItem15)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.makeDefaultButton = QtGui.QPushButton(PreferencesDialog)
         self.makeDefaultButton.setAutoDefault(False)
         self.makeDefaultButton.setObjectName(_fromUtf8("makeDefaultButton"))
         self.horizontalLayout.addWidget(self.makeDefaultButton)
-        spacerItem15 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem15)
+        spacerItem16 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem16)
         self.pushButton = QtGui.QPushButton(PreferencesDialog)
         self.pushButton.setAutoDefault(False)
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
@@ -340,10 +363,10 @@ class Ui_PreferencesDialog(object):
         self.label_11.setText(QtGui.QApplication.translate("PreferencesDialog", "Style", None, QtGui.QApplication.UnicodeUTF8))
         self.label_12.setText(QtGui.QApplication.translate("PreferencesDialog", "Size", None, QtGui.QApplication.UnicodeUTF8))
         self.showRowLabelChecker.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Show Row Labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelAllRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "label all rows", None, QtGui.QApplication.UnicodeUTF8))
+        self.labelAllRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show all  rows", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("PreferencesDialog", "row labels start with", None, QtGui.QApplication.UnicodeUTF8))
-        self.showOddRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "odd row labels only", None, QtGui.QApplication.UnicodeUTF8))
-        self.showEvenRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "even row labels only", None, QtGui.QApplication.UnicodeUTF8))
+        self.showOddRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show odd rows only", None, QtGui.QApplication.UnicodeUTF8))
+        self.showEvenRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show even rows only", None, QtGui.QApplication.UnicodeUTF8))
         self.showRowsWithIntervalButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show only every ", None, QtGui.QApplication.UnicodeUTF8))
         self.rowLabelsStartLabel.setText(QtGui.QApplication.translate("PreferencesDialog", "label starting at row", None, QtGui.QApplication.UnicodeUTF8))
         self.label_13.setText(QtGui.QApplication.translate("PreferencesDialog", "odd row label location", None, QtGui.QApplication.UnicodeUTF8))
@@ -369,10 +392,14 @@ class Ui_PreferencesDialog(object):
         self.label_4.setText(QtGui.QApplication.translate("PreferencesDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Location of Custom Knitting Symbols</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+"</style></head><body style=\" font-family:\'DejaVu LGC Sans\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\';\">Path to Custom Knitting Symbols Folder</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.customSymbolPathButton.setText(QtGui.QApplication.translate("PreferencesDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("PreferencesDialog", "Custom Symbol Location", None, QtGui.QApplication.UnicodeUTF8))
+        self.enableLoggingChecker.setToolTip(QtGui.QApplication.translate("PreferencesDialog", "Enable logging of internal sconcho warnings/errors to file at logging Path. *Note* This setting requires a sconcho restart to take effect.", None, QtGui.QApplication.UnicodeUTF8))
+        self.enableLoggingChecker.setText(QtGui.QApplication.translate("PreferencesDialog", "Enable logging", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_14.setText(QtGui.QApplication.translate("PreferencesDialog", "Logging Path", None, QtGui.QApplication.UnicodeUTF8))
+        self.loggingPathButton.setText(QtGui.QApplication.translate("PreferencesDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("PreferencesDialog", "Custom Symbols && Logging", None, QtGui.QApplication.UnicodeUTF8))
         self.makeDefaultButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Make &Default", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setText(QtGui.QApplication.translate("PreferencesDialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
 
