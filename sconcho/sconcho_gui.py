@@ -110,6 +110,7 @@ def sconcho_excepthook(logHandle, exceptType, value, tback):
     # log the exception here
     if logHandle:
         traceback.print_exception(exceptType, value, tback, file=logHandle)
+        logHandle.flush()
 
     # then call the default handler
     sys.__excepthook__(exceptType, value, tback) 

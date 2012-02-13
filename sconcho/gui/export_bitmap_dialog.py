@@ -25,6 +25,8 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import math
+import logging
+from functools import partial
 
 try:
     from PyQt4.QtCore import QString
@@ -37,6 +39,10 @@ from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
 
 from gui.ui_export_bitmap_dialog import Ui_ExportBitmapDialog
 import util.messages as msg
+
+
+# module lever logger:
+logger = logging.getLogger(__name__)
 
 
 # global conversion
@@ -71,6 +77,13 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         super(ExportBitmapDialog, self).__init__(parent)
         self.setupUi(self)
 
+        if fileName:
+            self.fullPath = QDir.homePath() + "/" + QFileInfo(fileName).baseName()
+        else:
+            self.fullPath = QDir.homePath() + "/" 
+        extension = self.selected_file_extension()
+        self.fileNameEdit.setText(self.fullPath + "." + extension) 
+
         # NOTE: This has to come first since we rely on them
         # to syncronize the widgets
         self._set_up_connections()
@@ -86,10 +99,6 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.dpiSpinner.setValue(self.defaultDPI)
 
         self.hideNostitchSymbols = False
-        fullPath = QDir.homePath() + "/" + QFileInfo(fileName).baseName()
-        self.fileNameEdit.setText(fullPath)
-        self.fileNameEdit.setSelection(len(fullPath), -len(fileName))
-
 
 
     def _set_up_connections(self):
@@ -126,6 +135,10 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
         self.connect(self.exportButton, SIGNAL("pressed()"),
                      self.accept)
+
+        self.connect(self.availableFormatsChooser, 
+                     SIGNAL("currentIndexChanged(int)"),
+                     self.update_path_extension)
 
 
 
@@ -327,6 +340,44 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
             self.hideNostitchSymbols = True
             
 
+    
+    def update_path_extension(self, selectionID):
+        """ This function updates the filename extension
+        if the user changes the image file format. 
+
+        """
+
+        selectedExtension = \
+                self.availableFormatsChooser.itemData(selectionID).toString()
+        self.fileNameEdit.setText(self.fullPath + "." + selectedExtension) 
+
+
+
+    def update_export_path(self, filePath):
+        """ This function is called if the export file 
+        name has changed.
+
+        If the filePath has a valid image file format extension
+        we keep it otherwise we use the currently selected one.
+
+        """
+
+        basename = QFileInfo(filePath).completeBaseName()
+        self.fullPath = \
+                QFileInfo(QDir.homePath() + "/" + basename).absoluteFilePath()
+        extension = QFileInfo(filePath).suffix()
+        if extension in self.formats:
+            for index in range(self.availableFormatsChooser.count()):
+                item = self.availableFormatsChooser.itemData(index).toString()
+                if item == extension:
+                    self.availableFormatsChooser.setCurrentIndex(index)
+                    break
+        else:
+            extension = self.selected_file_extension()
+
+        self.fileNameEdit.setText(self.fullPath + "." + extension) 
+
+
         
     def open_file_selector(self):
         """ Open a file selector and ask for the name """
@@ -349,7 +400,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
                                         QFileDialog.DontConfirmOverwrite) 
 
         if exportFilePath:
-            self.fileNameEdit.setText(exportFilePath)
+            self.update_export_path(exportFilePath)
 
 
 
@@ -368,16 +419,17 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
             logger.warn(msg.noFilePathText)
             return
 
+        # check if a filename was provided - if not we open the
+        # file dialog
+        if QFileInfo(exportFilePath).baseName().isEmpty():
+            self.open_file_selector()
+            return
 
         # check the extension; if none is present we use the one
         # selected in the format combo box
         extension = QFileInfo(exportFilePath).suffix()
         if extension not in self.formats:
-            extensionID = \
-                self.availableFormatsChooser.currentIndex()
-            selectedExtension = \
-                self.availableFormatsChooser.itemData(extensionID).toString()
-            exportFilePath += ("." + selectedExtension)
+            exportFilePath += ("." + self.selected_file_extension())
 
         # if file exists issue a warning as well
         if QFile(exportFilePath).exists():
@@ -399,6 +451,21 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
                   self.hideNostitchSymbols, exportFilePath)
 
         QDialog.accept(self)
+
+
+
+    def selected_file_extension(self):
+        """ Returns a string with the currently selected image file 
+        extension. 
+        
+        """
+
+        extensionID = \
+                self.availableFormatsChooser.currentIndex()
+        selectedExtension = \
+                self.availableFormatsChooser.itemData(extensionID).toString()
+
+        return selectedExtension
 
 
 

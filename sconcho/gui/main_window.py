@@ -125,7 +125,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # read project if we received a filename but first check
         # if we have a recovery file.
-        self.set_project_save_file(QDir.homePath() + "/Untitled.spf")
+        #self.set_project_save_file(QDir.homePath() + "/Untitled.spf")
         if fileName:
             (was_recovered, readFileName) = check_for_recovery_file(fileName)
             if self._read_project(readFileName):
@@ -1142,6 +1142,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._saveFilePath = fileName
         self.setWindowTitle(QApplication.applicationName() + ": " \
                             + QFileInfo(fileName).fileName() + "[*]")
+
+        if self.exportBitmapDialog:
+            self.exportBitmapDialog.update_export_path(fileName)
 
         # generate recovery file path
         self._recoveryFilePath = generate_recovery_filepath(fileName)
