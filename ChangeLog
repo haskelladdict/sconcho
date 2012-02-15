@@ -1,3 +1,17 @@
+02-14-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Release of 0.1.0_rc1
+	* Added ability to add text labels.
+	* Improved export bitmap dialog
+	* Added basic logging framework to help debugging of
+	  user errors
+	* Improved custom symbols functionality. Added symbols
+	  are now available immediately without the need to close
+	  and re-open sconcho.
+	* Many bug fixes, useability improvements and code refactoring.
+
+
+
 01-02-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Fixed bugs in insert/delete row/column code
