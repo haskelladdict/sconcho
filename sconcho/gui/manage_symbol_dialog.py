@@ -83,8 +83,8 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self._symbolPath = symbolPath
         self._symbolDict = parse_all_symbols([symbolPath])
         self._set_up_symbols_frame()
-        self._add_symbols_to_widget()
         self._populate_category_chooser()
+        self._add_symbols_to_widget()
         
 
 
@@ -241,7 +241,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
     def show_selected_symbol_info(self):
-        """ Show info for symbol so user can update it."""
+        """ Show info for symbol so user can update it. """
 
         if not self._selectedSymbol:
             return
@@ -386,32 +386,36 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             return
 
         oldSymbol = self._selectedSymbol
-        oldName = self._selectedSymbol["svgName"]
+        oldSvgName = self._selectedSymbol["svgName"]
+        oldName = self._selectedSymbol["name"]
+        oldWidth = int(self._selectedSymbol["width"])
 
+        data = self._get_data_from_interface()
 
-        name = self._selectedSymbol["name"]
-        # if the canvas contains this symbol we can't delete it
-        # otherwise warn the user
-        if self.parent().canvas_has_symbol(name):
-            QMessageBox.question(self,
+        # if the canvas contains this symbol we can only
+        # update if the user changed the category or description
+        canUpdate = (data["name"] == oldName) and \
+                    (data["svgName"] == oldSvgName) and \
+                    (data["width"] == oldWidth)
+        if self.parent().canvas_has_symbol(oldName) and not canUpdate:
+            QMessageBox.critical(self,
                                  msg.cannotUpdateSymbolTitle, 
-                                 msg.cannotUpdateSymbolText % name,
+                                 msg.cannotUpdateSymbolText % oldName,
                                  QMessageBox.Ok)
             return
         else:
             answer = QMessageBox.question(self,
                                           msg.updateSymbolTitle, 
-                                          msg.updateSymbolText % name,
+                                          msg.updateSymbolText % oldName,
                                           QMessageBox.Ok | QMessageBox.Cancel)
 
             if answer == QMessageBox.Cancel:
                 return
 
-        data = self._get_data_from_interface()
         if data:
             with SymbolTempDir(self._symbolPath) as tempDir:
                 if (create_new_symbol(tempDir, data) 
-                    and remove_symbol(self._symbolPath, oldName)
+                    and remove_symbol(self._symbolPath, oldSvgName)
                     and move_symbol(tempDir + "/" + data["svgName"], 
                                     self._symbolPath + "/" 
                                     + data["svgName"])):

@@ -234,9 +234,11 @@ updateSymbolTitle    = "sconcho: Update Symbol"
 updateSymbolText     = ("Are you sure you would like to update symbol <b>%s</b>?\n"
                         "Warning: This will clear your undo history.")
 
-cannotUpdateSymbolTitle = "sconcho: Can Not Update Symbol"
-cannotUpdateSymbolText = ("You cannot update symbol <b>%s</b> since your pattern "
-                          "currently contains this symbol")
+cannotUpdateSymbolTitle = "sconcho: Cannot Update Symbol"
+cannotUpdateSymbolText = ("You cannot change the name, width, or svg image of "
+                          "symbol <b>%s</b> since your chart currently contains "
+                          "this symbol. To change, open a new blank session "
+                          "and then modify.")
 
 recoveryFilePresentTitle = "sconcho: Pattern File Recovery"
 recoveryFilePresentText = ("A recovery file for pattern <b>{0}</b> has "
