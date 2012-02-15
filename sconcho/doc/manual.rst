@@ -1,7 +1,7 @@
 Sconcho Manual
 --------------
 
-*Author: Markus Dittrich (last change 01/01/2012)*
+*Author: Markus Dittrich (last change 02/14/2012)*
 
 Sconcho is a tool for creating knitting charts. Charts can be created by 
 placing stitch patterns into a rectangular grid. Sconcho has a large
@@ -295,26 +295,23 @@ You can cancel adding the symbol by pressing *Cancel* at any time.
 
 **Please Note:**: 
 
-1. You need to restart sconcho to make newly added symbols appear in the list of available symbols. 
-2. If you choose a symbol name and category identical to one provided by default with sconcho, your custom symbol will take precedence.
-3. Sconcho does not provide a facility for creating the SVG images needed for a new symbol. You can use the excellent program Inkscape <http://inkscape.org/> for this purpose. Inkscape was also used to create the symbols that come with sconcho.
+Sconcho does not provide a facility for creating the SVG images needed for a new symbol. You can use the excellent program Inkscape <http://inkscape.org/> for this purpose. Inkscape was also used to create the symbols that come with sconcho.
 
 By default, your new symbols are stored within your home directory 
 (*C:/Documents and Settings/Username* on Windows). You can change the location 
-in the *Symbol Location* tab of the *Preferences* Dialog.
+in the *Custom Symbols & Logging* tab of the *Preferences* Dialog.
 
-By pressing the *Update Selected Symbol* button you can update the information
-for the currently highlighted symbol in the list of *Available Symbols*.
-Updates take effect immediately.
-
-Finally, pressing *Delete Selected Symbol* will delete the currently highlighted
-symbol. 
+The currently selected custom symbol can be updated or deleted. Deletion is
+only possible if the symbol does not appear in the currently worked on chart. 
+Similarly, updating is only possible if the name, svg name, and width remain
+the same. Otherwise, close your current session, open a blank document and
+delete/update then which is always possible.
 
 **Please Note:**:
 
-If you delete a symbol any previously saved sconcho projects which include
-this symbol will cease to load properly. Thus, please think twice before 
-removing a symbol.
+If you delete (or update the name of) a symbol any previously saved sconcho 
+projects which include this symbol will cease to load properly. Thus, please 
+think twice before removing or updating a symbol.
 
 
 
