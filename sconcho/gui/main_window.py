@@ -27,7 +27,7 @@ from __future__ import absolute_import
 
 # version and release date of current sconcho
 __version__ = "0.1.0_rc1"
-__releaseDate__ = "2012-02-14"
+__releaseDate__ = "2012-02-20"
 
 import logging
 import platform, os
