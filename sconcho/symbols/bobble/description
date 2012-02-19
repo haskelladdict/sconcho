@@ -2,7 +2,7 @@
 <sconcho>
   <knittingSymbol>
     <svgName>bobble</svgName>  
-    <category>basic:5</category>
+    <category>special</category>
     <symbolName>bobble</symbolName>
     <symbolDescription>(k1, yo, k1, yo, k1) into next st, turn, p5 sts, turn, ssk, k1, k2tog, turn, p3, turn, sl 2 sts knitwise, k1, pass 2 slipped sts over</symbolDescription>
     <symbolWidth>1</symbolWidth>

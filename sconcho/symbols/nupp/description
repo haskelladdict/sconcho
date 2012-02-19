@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sconcho>
+  <knittingSymbol>
+    <svgName>nupp</svgName>
+    <category>special</category>
+    <symbolName>nupp</symbolName>
+    <symbolDescription>Nupp: knit into stitch, leaving it on left hand needle, * YO, knit into stitch again, rep from * until there are 7 sts from 1 st.  On next row, work 7 sts together back to 1 st.</symbolDescription>
+    <symbolWidth>1</symbolWidth>
+  </knittingSymbol>
+</sconcho>
