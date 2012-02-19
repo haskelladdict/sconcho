@@ -1,4 +1,4 @@
-02-14-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+02-20-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Release of 0.1.0_rc1
 	* Added ability to add text labels.
@@ -8,6 +8,7 @@
 	* Improved custom symbols functionality. Added symbols
 	  are now available immediately without the need to close
 	  and re-open sconcho.
+	* Added new symbols
 	* Many bug fixes, useability improvements and code refactoring.
 
 
