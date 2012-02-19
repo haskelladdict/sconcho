@@ -1,7 +1,7 @@
 Sconcho Manual
 --------------
 
-*Author: Markus Dittrich (last change 02/18/2012)*
+*Author: Markus Dittrich (last change 02/19/2012)*
 
 Sconcho is a tool for creating knitting charts. Charts can be created by 
 placing stitch patterns into a rectangular grid. Sconcho has a large
@@ -305,7 +305,11 @@ The currently selected custom symbol can be updated or deleted. Deletion is
 only possible if the symbol does not appear in the currently worked on chart. 
 Similarly, updating is only possible if the name, svg name, and width remain
 the same. Otherwise, close your current session, open a blank document and
-delete/update then which is always possible.
+delete/update then which is always possible. 
+
+Updating or deleting a symbol will cause your undo history to be lost. Thus,
+in general it is advisable to *not* add/update/delete new symbols while
+working on an important chart.
 
 **Please Note:**:
 
