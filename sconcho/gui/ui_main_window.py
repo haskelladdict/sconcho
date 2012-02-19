@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sun Feb 12 16:54:45 2012
-#      by: PyQt4 UI code generator 4.9
+# Created: Fri Feb 17 18:22:41 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -430,7 +430,7 @@ class Ui_MainWindow(object):
         self.action_Clear_Recently_Used_Files.setStatusTip(QtGui.QApplication.translate("MainWindow", "Clear the list of recent items.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAdd_Row_Repeat.setText(QtGui.QApplication.translate("MainWindow", "&Add Row Repeat", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_column_labels.setText(QtGui.QApplication.translate("MainWindow", "Show &Column Labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionAdd_Text.setText(QtGui.QApplication.translate("MainWindow", "Add Text", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAdd_Text.setText(QtGui.QApplication.translate("MainWindow", "Add &Text Box", None, QtGui.QApplication.UnicodeUTF8))
 
 from active_symbol_widget import ActiveSymbolWidget
 from color_widget import ColorWidget

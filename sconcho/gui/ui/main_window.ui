@@ -708,7 +708,7 @@
      <normaloff>:/icons/letter_T.png</normaloff>:/icons/letter_T.png</iconset>
    </property>
    <property name="text">
-    <string>Add Text</string>
+    <string>Add &amp;Text Box</string>
    </property>
   </action>
  </widget>
