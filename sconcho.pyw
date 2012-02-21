@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python 
 
 import sys
 import subprocess
@@ -9,6 +9,6 @@ else:
     fileName = ""
 
 if sys.platform == "win32":
-    subprocess.Popen(["pythonw", "-OO", "sconcho/sconcho_gui.py", fileName])
+    subprocess.Popen(["pythonw", "-O", "sconcho/sconcho_gui.py", fileName])
 else:
-    subprocess.Popen(["python", "-OO", "sconcho/sconcho_gui.py", fileName])
+    subprocess.Popen(["python", "-O", "sconcho/sconcho_gui.py", fileName])

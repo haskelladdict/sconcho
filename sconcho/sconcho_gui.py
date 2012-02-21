@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 ########################################################################
 #
@@ -172,9 +173,11 @@ def main():
     # check that file exists; this is required since Sconcho.app
     # on OS X seems to pass some bogus string that then causes
     # issues
-    fileName = sys.argv[1]
-    if not fileName and not os.path.isfile(fileName):
-        fileName = None
+    fileName = None
+    if len(sys.argv) > 1:
+        fileNameTmp = sys.argv[1]
+        if os.path.isfile(fileName):
+            fileName = fileNameTmp
 
     # We attempt to read all available knitting symbols 
     # before firing up the MainWindow. At the very least we
@@ -187,10 +190,9 @@ def main():
         sys.exit(msg.errorOpeningKnittingSymbols % symbolPaths)
     
     sconcho_gui_launcher(currPath, defaultSettings, knittingSymbols, fileName)
-
+    logging.shutdown()
 
 
 if __name__ == "__main__":
 
     main()
-    logging.shutdown()

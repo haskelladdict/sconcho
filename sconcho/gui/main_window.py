@@ -34,11 +34,9 @@ import platform, os
 from functools import partial
 
 try:
-    from PyQt4.QtCore import QString
+    from PyQt4.QtCore import QString, (QStringList)
 except ImportError:
     QString = str
-
-# QStringlist
 
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           Qt, QSize, QFile, QTimer, QVariant,
@@ -861,7 +859,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # need this check to avoid interpreting a nonexisting entry
         # as an empty filename
         if len(fileString) == 0:
-            files = list()
+            files = QStringList()
         else:
             files = fileString.split("%")
 
