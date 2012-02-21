@@ -81,6 +81,7 @@ def generate_category_widget(symbolCategory, symbols, synchronizer):
     # layout for current tab
     currentWidget = QWidget()
     layout        = SymbolSelectorGridLayout()
+    currentWidget.setLayout(layout)
 
     # sort symbols in requested order
     rawList = []
@@ -103,7 +104,6 @@ def generate_category_widget(symbolCategory, symbols, synchronizer):
 
         widgetList[(symbol["name"], symbol["category"])] = newItem
 
-    currentWidget.setLayout(layout)
     scrollArea = QScrollArea()
     scrollArea.setWidget(currentWidget)
     return (scrollArea, widgetList)
@@ -202,7 +202,7 @@ class SymbolSelectorItem(QFrame):
         svgWidth = int(symbol["width"]) #.toInt()[0]
         svgWidget.setMaximumSize(QSize(svgWidth * 30, 30))
 
-        self.setMinimumSize(30,30)
+        self.setMinimumSize(svgWidth * 30, 30)
         self.setMaximumSize(svgWidth * 30, 30)
 
         # finalize the layout
@@ -321,6 +321,7 @@ class SymbolSelectorGridLayout(QGridLayout):
 
         self.numRows = 0
         self.items = {}
+        self.itemWidths = []
 
 
 
@@ -332,11 +333,16 @@ class SymbolSelectorGridLayout(QGridLayout):
         """
 
         row = self.numRows
+        symbolWidth = int(symbolItem.get_content()["width"])
         self.addWidget(symbolItem, row, 0)
         self.addWidget(textItem, row, 1)
         self.setRowMinimumHeight(row, 30)
         self.items[symbolItem.name] = (row, symbolItem, textItem)
         self.numRows += 1
+
+        # adjust column width
+        self.itemWidths.append(symbolWidth)
+        self.setColumnMinimumWidth(0, 30 * max(self.itemWidths))
 
 
        
@@ -358,11 +364,16 @@ class SymbolSelectorGridLayout(QGridLayout):
                 "selector widget." % symbolName)
 
         (pivot, symbolItem, textItem) = self.items[symbolName]
-        
+        symbolWidth = int(symbolItem.get_content()["width"])
+
         symbolItem.setParent(None)
         del symbolItem
         textItem.setParent(None)
         del textItem
+
+        # adjust column width
+        self.itemWidths.remove(symbolWidth)
+        self.setColumnMinimumWidth(0, 30 * max(self.itemWidths))
 
         # shift one of the items below one up
         sortedItems = self.items.values()
