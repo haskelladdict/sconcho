@@ -34,7 +34,7 @@ import platform, os
 from functools import partial
 
 try:
-    from PyQt4.QtCore import QString, (QStringList)
+    from PyQt4.QtCore import (QString, QStringList)
 except ImportError:
     QString = str
 

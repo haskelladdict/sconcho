@@ -144,7 +144,7 @@ def initialize_logger(logHandle):
 
 
 
-def main():
+def main(fileName=None):
     """ This is a simple wrapper for starting the main
     sconcho gui. 
 
@@ -173,10 +173,9 @@ def main():
     # check that file exists; this is required since Sconcho.app
     # on OS X seems to pass some bogus string that then causes
     # issues
-    fileName = None
     if len(sys.argv) > 1:
         fileNameTmp = sys.argv[1]
-        if os.path.isfile(fileName):
+        if os.path.isfile(fileNameTmp):
             fileName = fileNameTmp
 
     # We attempt to read all available knitting symbols 
