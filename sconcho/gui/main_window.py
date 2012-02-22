@@ -731,7 +731,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_sconcho_manual(self):
         """ Show the sconcho manual. """
 
-        manualPath = os.path.join(self._topLevelPath, "doc/manual.html")
+        manualPath = os.path.join(self._topLevelPath, "doc/manual.html") 
+
+        # this is a hack needed for sconcho + pyinstaller on MacOSX
+        #manualPath = "/Applications/Sconcho.app/Contents/Resources/doc/manual.html"
         self.manualDialog = SconchoManual(manualPath)
         self.manualDialog.setAttribute(Qt.WA_DeleteOnClose)
         self.manualDialog.open()
