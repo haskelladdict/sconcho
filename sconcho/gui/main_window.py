@@ -123,7 +123,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # read project if we received a filename but first check
         # if we have a recovery file.
-        #self.set_project_save_file(QDir.homePath() + "/Untitled.spf")
         if fileName:
             (was_recovered, readFileName) = check_for_recovery_file(fileName)
             if self._read_project(readFileName):
@@ -978,7 +977,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # the actual filename is in the data *not* the
         # text of the item
         readFilePath = action.data().toString()
-        
+ 
+        if not QFile(readFilePath).exists():
+            QMessageBox.critical(self, msg.patternFileDoesNotExistTitle,
+                                 msg.patternFileDoesNotExistText % readFilePath, 
+                                 QMessageBox.Close)
+            logger.error(msg.patternFileDoesNotExistText % readFilePath)
+            return
+       
         if not self._ok_to_continue_without_saving():
             return
 

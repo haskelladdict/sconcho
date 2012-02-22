@@ -77,6 +77,9 @@ patternFileExistsTitle = "sconcho: Pattern File Exists"
 patternFileExistsText = ("The pattern file %s already exists.\n"
                         "Do you want to overwrite it?")
 
+patternFileDoesNotExistTitle = "sconcho: Pattern File Does Not Exists"
+patternFileDoesNotExistText = ("The pattern file %s does not exist.\n")
+
 imageFileExistsTitle = "sconcho: Image File Exists"
 imageFileExistsText = ("The image file %s already exists.\n"
                         "Do you want to overwrite it?")
