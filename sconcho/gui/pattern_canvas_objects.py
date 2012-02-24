@@ -571,6 +571,13 @@ class PatternRepeatItem(QGraphicsItemGroup):
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setZValue(1)
 
+        # NOTE: need this distinction for cache mode based on
+        # the Qt version otherwise rendering is broken
+        if QT_VERSION < 0x040703:
+            self.setCacheMode(QGraphicsItem.NoCache)
+        else:
+            self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+    
         # we keep track of some of our legends properties
         self.hasLegend = hasLegend
 
@@ -764,6 +771,13 @@ class PatternHighlightItem(QGraphicsRectItem):
         super(PatternHighlightItem, self).__init__(x, y, width, height, 
                                                    parent)
 
+        # NOTE: need this distinction for cache mode based on
+        # the Qt version otherwise rendering is broken
+        if QT_VERSION < 0x040703:
+            self.setCacheMode(QGraphicsItem.NoCache)
+        else:
+            self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+    
         # we don't want to show the outline so draw it
         # in white
         self._pen = QPen(Qt.NoPen) 
@@ -933,6 +947,13 @@ class PatternTextItem(PatternLegendText):
     def __init__(self, text, parent = None):
 
         super(PatternTextItem, self).__init__(text, parent)
+
+        # NOTE: need this distinction for cache mode based on
+        # the Qt version otherwise rendering is broken
+        if QT_VERSION < 0x040703:
+            self.setCacheMode(QGraphicsItem.NoCache)
+        else:
+            self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
 
 
