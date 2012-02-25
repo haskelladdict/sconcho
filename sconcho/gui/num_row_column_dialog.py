@@ -53,14 +53,35 @@ class NumRowColumnDialog(QDialog, Ui_NumRowColumnDialog):
         super(NumRowColumnDialog, self).__init__(parent)
         self.setupUi(self)
 
-        message = ("please select the number of\n" + requestType
-                   + " to add")
-        self.requestLabel.setText(message)
+        numMessage = ("number of " + requestType + " to add")
+        self.requestLabel.setText(numMessage)
         self.setWindowTitle("insert " + requestType)
-                                  
+       
+        preLocationMessage = "" 
+        postLocationMessage = ""
+        if requestType == "rows":
+            self.locationChooser.addItem("above")
+            self.locationChooser.addItem("below")
+            preLocationMessage = "insert rows"
+            postLocationMessage = "selected row."
+        elif requestType =="columns":
+            self.locationChooser.addItem("left of")
+            self.locationChooser.addItem("right of")
+            preLocationMessage = "insert columns"
+            postLocationMessage = "selected column."
+
+        self.preLocationLabel.setText(preLocationMessage)
+        self.postLocationLabel.setText(postLocationMessage)
+
 
 
     @property
     def num(self):
         
         return self.numSpinner.value()
+
+
+    @property 
+    def location(self):
+
+        return self.locationChooser.currentText()

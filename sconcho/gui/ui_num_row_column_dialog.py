@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/num_row_column_dialog.ui'
 #
-# Created: Fri Feb 17 18:22:42 2012
+# Created: Sat Feb 25 18:29:23 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -21,20 +21,28 @@ class Ui_NumRowColumnDialog(object):
         NumRowColumnDialog.setWindowTitle(_fromUtf8(""))
         self.verticalLayout = QtGui.QVBoxLayout(NumRowColumnDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.gridLayout = QtGui.QGridLayout()
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.numSpinner = QtGui.QSpinBox(NumRowColumnDialog)
         self.numSpinner.setMinimum(1)
         self.numSpinner.setMaximum(1000)
         self.numSpinner.setObjectName(_fromUtf8("numSpinner"))
-        self.horizontalLayout.addWidget(self.numSpinner)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
+        self.gridLayout.addWidget(self.numSpinner, 0, 0, 1, 1)
         self.requestLabel = QtGui.QLabel(NumRowColumnDialog)
-        self.requestLabel.setText(_fromUtf8(""))
         self.requestLabel.setObjectName(_fromUtf8("requestLabel"))
-        self.horizontalLayout.addWidget(self.requestLabel)
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.gridLayout.addWidget(self.requestLabel, 0, 3, 1, 1)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem, 0, 1, 1, 2)
+        self.postLocationLabel = QtGui.QLabel(NumRowColumnDialog)
+        self.postLocationLabel.setObjectName(_fromUtf8("postLocationLabel"))
+        self.gridLayout.addWidget(self.postLocationLabel, 2, 3, 1, 1)
+        self.locationChooser = QtGui.QComboBox(NumRowColumnDialog)
+        self.locationChooser.setObjectName(_fromUtf8("locationChooser"))
+        self.gridLayout.addWidget(self.locationChooser, 2, 2, 1, 1)
+        self.preLocationLabel = QtGui.QLabel(NumRowColumnDialog)
+        self.preLocationLabel.setObjectName(_fromUtf8("preLocationLabel"))
+        self.gridLayout.addWidget(self.preLocationLabel, 2, 0, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout)
         self.buttonBox = QtGui.QDialogButtonBox(NumRowColumnDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -47,5 +55,7 @@ class Ui_NumRowColumnDialog(object):
         QtCore.QMetaObject.connectSlotsByName(NumRowColumnDialog)
 
     def retranslateUi(self, NumRowColumnDialog):
-        pass
+        self.requestLabel.setText(QtGui.QApplication.translate("NumRowColumnDialog", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
+        self.postLocationLabel.setText(QtGui.QApplication.translate("NumRowColumnDialog", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
+        self.preLocationLabel.setText(QtGui.QApplication.translate("NumRowColumnDialog", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -757,61 +757,34 @@ class PatternCanvas(QGraphicsScene):
 
         rowColMenu = QMenu()
 
-        markedRows = self.marked_rows()
-        markedColumns = self.marked_columns()
-
         # row options
         deleteRowsAction = rowColMenu.addAction("delete selected &rows")
         self.connect(deleteRowsAction, SIGNAL("triggered()"),
                      self.delete_marked_rows)
-        if not markedRows:
-            deleteRowsAction.setEnabled(False)
 
-        addRowAboveAction = rowColMenu.addAction("&insert rows above")
-        self.connect(addRowAboveAction, SIGNAL("triggered()"),
-                     partial(self.insert_grid_rows, "above"))
-
-        addRowBelowAction = rowColMenu.addAction("insert rows &below")
-        self.connect(addRowBelowAction, SIGNAL("triggered()"),
-                     partial(self.insert_grid_rows, "below"))
-        if len(markedRows) != 1:
-            addRowBelowAction.setEnabled(False)
-            addRowAboveAction.setEnabled(False)
-
+        addRowAction = rowColMenu.addAction("&insert rows")
+        self.connect(addRowAction, SIGNAL("triggered()"),
+                     self.insert_grid_rows)
         rowColMenu.addSeparator()
-        addRowRepeatAction = rowColMenu.addAction("&add row repeat")
-        self.connect(addRowRepeatAction, SIGNAL("triggered()"),
-                     self.add_row_repeat)
-        if (not markedRows) or (not self.can_add_row_repeat()):
-            addRowRepeatAction.setEnabled(False)
         
-        deleteRowRepeatAction = rowColMenu.addAction("&delete row repeat")
-        self.connect(deleteRowRepeatAction, SIGNAL("triggered()"),
-                     self.delete_row_repeat)
-        if (not markedRows) or (not self.can_delete_row_repeat()):
-            deleteRowRepeatAction.setEnabled(False)
-
-        rowColMenu.addSeparator()
         # column options
         deleteColsAction = rowColMenu.addAction("delete selected &columns")
         self.connect(deleteColsAction, SIGNAL("triggered()"),
                      self.delete_marked_columns)
-        if not markedColumns or not self.can_delete_grid_columns():
-            deleteColsAction.setEnabled(False)
 
-        addColRightAction = rowColMenu.addAction("insert column right of")
+        addColRightAction = rowColMenu.addAction("insert column")
         self.connect(addColRightAction, SIGNAL("triggered()"),
-                     partial(self.insert_grid_columns, "right of"))
-        if len(markedColumns) != 1 or \
-           not self.can_insert_grid_columns("right of"):
-            addColRightAction.setEnabled(False)
+                     self.insert_grid_columns)
+        rowColMenu.addSeparator()
 
-        addColLeftAction = rowColMenu.addAction("insert column left of")
-        self.connect(addColLeftAction, SIGNAL("triggered()"),
-                     partial(self.insert_grid_columns, "left of"))
-        if len(markedColumns) != 1 or \
-           not self.can_insert_grid_columns("left of"):
-            addColLeftAction.setEnabled(False)
+        # row repeat actions
+        addRowRepeatAction = rowColMenu.addAction("&add row repeat")
+        self.connect(addRowRepeatAction, SIGNAL("triggered()"),
+                     self.add_row_repeat)
+        
+        deleteRowRepeatAction = rowColMenu.addAction("&delete row repeat")
+        self.connect(deleteRowRepeatAction, SIGNAL("triggered()"),
+                     self.delete_row_repeat)
 
         rowColMenu.exec_(screenPos)
         rowColMenu.raise_()
@@ -932,7 +905,12 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
+        # if noting is selected we are done but let the user now
         if not self._selectedCells:
+            QMessageBox.critical(None, msg.noSelectionTitle,
+                                 msg.noSelectionText,
+                                 QMessageBox.Close)
+            logger.error(msg.noSelectionText)
             return
 
         colorCommand = ColorSelectedCells(self, color)
@@ -944,8 +922,12 @@ class PatternCanvas(QGraphicsScene):
     def add_pattern_repeat(self):
         """ Adds a pattern repeat around the current selection. """
 
-        # if noting is selected we are done
+        # if noting is selected we are done but let the user now
         if not self._selectedCells:
+            QMessageBox.critical(None, msg.noSelectionTitle,
+                                 msg.noSelectionText,
+                                 QMessageBox.Close)
+            logger.error(msg.noSelectionText)
             return
 
         edges = {}
@@ -1385,6 +1367,14 @@ class PatternCanvas(QGraphicsScene):
         part of a single repeat.
         """
 
+        markedRows = self.marked_rows()
+        if (not markedRows) or (not self.can_delete_row_repeat()):
+            QMessageBox.critical(None, msg.cannotDeleteRowRepeatTitle,
+                                 msg.cannotDeleteRowRepeatText,
+                                 QMessageBox.Close)
+            logger.error(msg.cannotAddRowRepeatText)
+            return 
+
         assert(self.marked_rows())
         deleteRowRepeatCommand = DeleteRowRepeat(self) 
         self._undoStack.beginMacro("delete rows")
@@ -1414,6 +1404,14 @@ class PatternCanvas(QGraphicsScene):
 
     def add_row_repeat(self):
         """ Add a row repeat for all selected rows. """
+
+        markedRows = self.marked_rows()
+        if (not markedRows) or (not self.can_add_row_repeat()):
+            QMessageBox.critical(None, msg.cannotAddRowRepeatTitle,
+                                 msg.cannotAddRowRepeatText,
+                                 QMessageBox.Close)
+            logger.error(msg.cannotAddRowRepeatText)
+            return 
 
         # fire up dialog to ask for number of repeats
         repeatDialog = RowRepeatNumDialog()
@@ -1454,20 +1452,30 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def insert_grid_rows(self, mode):
-        """ Deals with requests to insert a row. This operation might
-        take some time so we switch to a wait cursor.
+    def insert_grid_rows(self):
+        """ Deals with requests to insert a row. 
 
         NOTE: Call clear_all_selected_cells() before messing with
         the grid layout in InsertRows.
 
         """
 
-        rowPivot = self.marked_rows()[0] 
+        # make sure that a single comple row is selected, otherwise
+        # tell the user
+        pivotRows = self.marked_rows() 
+        if len(pivotRows) != 1:
+            QMessageBox.critical(None, msg.selectSingleRowTitle,
+                                 msg.selectSingleRowText,
+                                 QMessageBox.Close)
+            logger.error(msg.selectSingleRowText)
+            return 
+
+        rowPivot = pivotRows[0] 
         numRowDialog = NumRowColumnDialog("rows")
         if numRowDialog.exec_():
             numRows = numRowDialog.num
-            insertRowCommand = InsertRows(self, numRows, rowPivot, mode)
+            location = numRowDialog.location
+            insertRowCommand = InsertRows(self, numRows, rowPivot, location)
             self._undoStack.beginMacro("insert rows")
             self.clear_all_selected_cells()
             self._undoStack.push(insertRowCommand)
@@ -1483,7 +1491,16 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
+        # make sure only complete rows are selected, otherwise
+        # tell the user
         deadRows = self.marked_rows() 
+        if not deadRows:
+            QMessageBox.critical(None, msg.selectCompleteRowsTitle,
+                                 msg.selectCompleteRowsText,
+                                 QMessageBox.Close)
+            logger.error(msg.selectCompleteRowsText)
+            return 
+
 
         deleteRowsCommand = DeleteRows(self, deadRows)
         self._undoStack.beginMacro("delete marked rows")
@@ -1548,7 +1565,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def insert_grid_columns(self, mode):
+    def insert_grid_columns(self):
         """ Deals with requests to insert a column. 
 
         NOTE: Call clear_all_selected_cells() before messing with
@@ -1556,11 +1573,38 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        pivot = self.marked_columns()[0]
+        # make sure the user selected only a single column
+        pivotColumns = self.marked_columns() 
+        if len(pivotColumns) != 1:
+            QMessageBox.critical(None, msg.selectSingleColumnTitle,
+                                 msg.selectSingleColumnText,
+                                 QMessageBox.Close)
+            logger.error(msg.selectSingleColumnText)
+            return 
+
+
+        pivot = pivotColumns[0]
         numColumnDialog = NumRowColumnDialog("columns")
         if numColumnDialog.exec_():
             numColumns = numColumnDialog.num
-            insertColCommand = InsertColumns(self, numColumns, pivot, mode)
+            location = numColumnDialog.location
+
+            # make sure we can insert the column given the current
+            # pattern geometry. If not, tell the user and
+            # return
+            # NOTE: I am pretty sure that this will never happen,
+            # i.e. if a user can insert a whole single row we
+            # should always be fine 
+            # XXX: target this for removal.
+            if not self.can_insert_grid_columns(location):
+                QMessageBox.critical(None, msg.noColInsertLayoutTitle,
+                                     msg.noColInsertLayoutText, 
+                                     QMessageBox.Close)
+                logger.error(msg.noColInsertLayoutText)
+                return 
+
+            insertColCommand = InsertColumns(self, numColumns, pivot, 
+                                             location)
             self._undoStack.beginMacro("insert columns")
             self.clear_all_selected_cells()
             self._undoStack.push(insertColCommand)
@@ -1623,7 +1667,16 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
+        # make sure only complete are selected, and we span
+        # complete columns
         deadColumns = self.marked_columns() 
+        if not deadColumns or not self.can_delete_grid_columns():
+            QMessageBox.critical(None, msg.noColDeleteLayoutTitle,
+                                 msg.noColDeleteLayoutText,
+                                 QMessageBox.Close)
+            logger.error(msg.noColDeleteLayoutText)
+            return 
+
         deleteColumnsCommand = DeleteColumns(self, deadColumns)
         self._undoStack.beginMacro("delete columns")
         self.clear_all_selected_cells()

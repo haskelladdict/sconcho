@@ -169,11 +169,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def _set_up_connections(self):
-        """ Set up all connections for MainWindow. """
-
-        self.connect(self.actionQuit, SIGNAL("triggered()"),
-                     self.close)
+    def _set_up_help_connections(self):
+        """ Set up all connections for help menu. """
 
         self.connect(self.actionAbout_sconcho, SIGNAL("triggered()"),
                      self.show_about_sconcho)
@@ -187,11 +184,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionSconcho_Manual, SIGNAL("triggered()"),
                      self.show_sconcho_manual)
 
+
+        
+    def _set_up_file_connections(self):
+        """ Set up all connections for file menu. """
+
+        self.connect(self.actionQuit, SIGNAL("triggered()"),
+                     self.close)
+
         self.connect(self.actionNew, SIGNAL("triggered()"),
                      self.new_pattern_dialog)
-
-        self.connect(self.actionPrefs, SIGNAL("triggered()"),
-                     self.open_preferences_dialog)
 
         self.connect(self.actionSave, SIGNAL("triggered()"),
                      partial(self.save_pattern_dialog, "save"))
@@ -214,24 +216,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPrint_Preview, SIGNAL("triggered()"),
                      self.open_print_preview_dialog)
 
+
+
+    def _set_up_edit_connections(self):
+        """ Set up all connections for edit menu. """
+
+        self.connect(self.actionPrefs, SIGNAL("triggered()"),
+                     self.open_preferences_dialog)
+
         self.connect(self.action_Manage_Knitting_Symbols,
                      SIGNAL("triggered()"),
                      self.open_manage_knitting_symbols_dialog)
+
+        self.connect(self.action_Undo, SIGNAL("triggered()"),
+                     self.canvas.undo)
+
+        self.connect(self.action_Redo, SIGNAL("triggered()"),
+                     self.canvas.redo)
+
+
+        
+    def _set_up_view_connections(self):
+        """ Set up all connections for view menu. """
 
         self.connect(self.actionShow_legend, SIGNAL("toggled(bool)"),
                      self.canvas.toggle_legend_visibility)
 
         self.connect(self.actionShow_pattern_grid, SIGNAL("toggled(bool)"),
                      self.canvas.toggle_pattern_grid_visibility)
-
-        self.connect(self.canvas, SIGNAL("scene_changed"),
-                     self.set_project_dirty)
-
-        self.connect(self.canvas, SIGNAL("row_repeat_added"),
-                     partial(self.preferencesDialog.allow_all_label_options, False))
-
-        self.connect(self.canvas, SIGNAL("no_more_row_labels"),
-                     partial(self.preferencesDialog.allow_all_label_options, True))
 
         self.connect(self.actionZoom_In, SIGNAL("triggered()"),
                      self.graphicsView.zoom_in)
@@ -245,12 +257,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.action_Normal, SIGNAL("triggered()"),
                      self.graphicsView.normal_view)
 
+
+        
+    def _set_up_tools_connections(self):
+        """ Set up all connections for view menu. """
+
+
         self.connect(self.actionUnselect_All, SIGNAL("triggered()"),
                      self.canvas.clear_all_selected_cells)
 
         self.connect(self.actionCreate_Pattern_Repeat, 
                      SIGNAL("triggered()"),
                      self.canvas.add_pattern_repeat)
+
+        self.connect(self.actionCreate_Row_Repeat, 
+                     SIGNAL("triggered()"),
+                     self.canvas.add_row_repeat)
 
         self.connect(self.actionApply_Color_to_Selection, 
                      SIGNAL("triggered()"),
@@ -259,13 +281,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionAdd_Text, SIGNAL("triggered()"),
                      self.canvas.add_text_item)
 
-        self.connect(self.action_Undo, SIGNAL("triggered()"),
-                     self.canvas.undo)
 
-        self.connect(self.action_Redo, SIGNAL("triggered()"),
-                     self.canvas.redo)
 
-        # connections for preferences dialog
+
+    def _set_up_resize_grid_connections(self):
+        """ Set up all connections for resize grid menu. """
+
+        self.connect(self.actionDelete_rows, 
+                     SIGNAL("triggered()"),
+                     self.canvas.delete_marked_rows)
+
+        self.connect(self.actionInsert_rows, 
+                     SIGNAL("triggered()"),
+                     self.canvas.insert_grid_rows)
+
+        self.connect(self.actionDelete_columns, 
+                     SIGNAL("triggered()"),
+                     self.canvas.delete_marked_columns)
+
+        self.connect(self.actionInsert_columns, 
+                     SIGNAL("triggered()"),
+                     self.canvas.insert_grid_columns)
+
+
+
+    def _set_up_preferences_connections(self):
+        """ Set up all connections for preferences dialog. """
+
         self.connect(self.preferencesDialog, 
                      SIGNAL("label_font_changed"),
                      self.canvas.label_font_changed)
@@ -347,6 +389,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.preferencesDialog.populate_interface)
 
 
+    
+    def _set_up_misc_connections(self):
+        """ Set up misc connections. """
+
+        self.connect(self.canvas, SIGNAL("scene_changed"),
+                     self.set_project_dirty)
+
+        self.connect(self.canvas, SIGNAL("row_repeat_added"),
+                     partial(self.preferencesDialog.allow_all_label_options, False))
+
+        self.connect(self.canvas, SIGNAL("no_more_row_labels"),
+                     partial(self.preferencesDialog.allow_all_label_options, True))
+
+    
+
+    def _set_up_connections(self):
+        """ Set up all connections for MainWindow. """
+
+        # connections for main UI 
+        self._set_up_file_connections()
+        self._set_up_edit_connections()
+        self._set_up_view_connections()
+        self._set_up_tools_connections()
+        self._set_up_resize_grid_connections()
+        self._set_up_help_connections()
+
+        # internal connections
+        self._set_up_preferences_connections()
+        self._set_up_misc_connections()
+
+
+
+       
     def keyPressEvent(self, event):
         """ Catch some key press events. """
 

@@ -103,34 +103,48 @@ numColTooSmallText = ("There has to be at least one column remaining.\n"
 
 
 noColInsertLayoutTitle = "sconcho: Cannot Insert Column"
-noColInsertLayoutText = ("Cannot insert requested columns at the specified "
+noColInsertLayoutText = ("Sorry, cannot insert requested columns at the specified "
                          "location due to the current layout.")
 
 
-noColDeleteLayoutTitle = "sconcho: Cannot Delete Column"
-noColDeleteLayoutText = ("Cannot delete requested column at the specified "
-                         "location due to the current layout.")
+noColDeleteLayoutTitle = "sconcho: Cannot Delete Columns"
+noColDeleteLayoutText = ("Sorry, cannot delete requested columns. Make sure \n"
+                         "that only complete columns are selected, i.e. there \n"
+                         "are no jagged edges.")
 
 
-canNotDeleteRowAboveTitle = "sconcho: Cannot Delete Rows"
-canNotDeleteRowAboveText  = ("Cannot delete requested number of rows above "
-                             "selection.")
+selectCompleteRowsTitle = "sconcho: Cannot Delete Rows"
+selectCompleteRowsText = ("Sorry, cannot delete rows. To delete rows, \n"
+                         "please select complete rows only.")
 
 
-canNotDeleteRowBelowTitle = "sconcho: Cannot Delete Rows"
-canNotDeleteRowBelowText  = ("Cannot delete requested number of rows at "
-                             "or below selection.")
+selectSingleColumnTitle = "sconcho: Cannot Insert Columns"
+selectSingleColumnText = ("Sorry, cannot insert columns. To insert new \n"
+                          "columns, please select a single existing \n"
+                          "column as pivot first.")
 
 
-canNotDeleteColumnLeftOfTitle = "sconcho: Cannot Delete Columns"
-canNotDeleteColumnLeftOfText  = ("Cannot delete requested number of columns "
-                                 "left of selection.")
+selectSingleRowTitle = "sconcho: Cannot Insert Rows"
+selectSingleRowText = ("Sorry, cannot insert rows. To insert new rows, \n"
+                       "please select a single existing row as pivot first.")
 
 
-canNotDeleteColumnRightOfTitle = "sconcho: Cannot Delete Columns"
-canNotDeleteColumnRightOfText  = ("Cannot delete requested number of "
-                                  "columns right of and including "
-                                  "selection.")
+noSelectionTitle = "sconcho: No Cells Selected"
+noSelectionText = ("Sorry, nothing to do. Please select some cells first.")
+
+
+cannotAddRowRepeatTitle = "sconcho: Cannot Add Row Repeat"
+cannotAddRowRepeatText = ("Sorry, cannot add row repeat. To insert a\n"
+                          "row repeat please select complete rows which form\n"
+                          "a contiguous block, and do not overlap with\n"
+                          "with already existing row repeats.")
+
+
+cannotDeleteRowRepeatTitle = "sconcho: Cannot Delete Row Repeat"
+cannotDeleteRowRepeatText = ("Sorry, cannot delete row repeat. To delete a \n"
+                          "row repeat please make sure that complete rows \n"
+                          "are selected and are all inside the row repeat you \n"
+                          "would like to delete.")
 
 
 errorSavingProjectTitle = "sconcho: Error Saving Project"

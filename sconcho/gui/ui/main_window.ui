@@ -71,7 +71,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>742</width>
+         <width>726</width>
          <height>71</height>
         </rect>
        </property>
@@ -133,10 +133,6 @@
     </widget>
     <addaction name="separator"/>
     <addaction name="menu_Zoom"/>
-    <addaction name="actionUnselect_All"/>
-    <addaction name="actionCreate_Pattern_Repeat"/>
-    <addaction name="actionApply_Color_to_Selection"/>
-    <addaction name="actionAdd_Text"/>
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>
     <addaction name="actionShow_legend"/>
@@ -163,9 +159,30 @@
     <addaction name="separator"/>
     <addaction name="actionPrefs"/>
    </widget>
+   <widget class="QMenu" name="menu_Resize_Grid">
+    <property name="title">
+     <string>&amp;Resize Grid</string>
+    </property>
+    <addaction name="actionDelete_rows"/>
+    <addaction name="actionInsert_rows"/>
+    <addaction name="actionDelete_columns"/>
+    <addaction name="actionInsert_columns"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionUnselect_All"/>
+    <addaction name="actionCreate_Pattern_Repeat"/>
+    <addaction name="actionApply_Color_to_Selection"/>
+    <addaction name="actionAdd_Text"/>
+    <addaction name="actionCreate_Row_Repeat"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuGrid"/>
    <addaction name="menuView"/>
+   <addaction name="menuTools"/>
+   <addaction name="menu_Resize_Grid"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -178,7 +195,7 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>278</width>
+     <width>294</width>
      <height>212</height>
     </size>
    </property>
@@ -238,7 +255,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>232</width>
+               <width>248</width>
                <height>86</height>
               </rect>
              </property>
@@ -294,13 +311,13 @@
    <addaction name="separator"/>
    <addaction name="actionPrint"/>
    <addaction name="separator"/>
+   <addaction name="action_Redo"/>
+   <addaction name="action_Undo"/>
+   <addaction name="separator"/>
    <addaction name="actionZoom_In"/>
    <addaction name="actionZoom_Out"/>
    <addaction name="actionFit"/>
    <addaction name="action_Normal"/>
-   <addaction name="separator"/>
-   <addaction name="actionUnselect_All"/>
-   <addaction name="actionCreate_Pattern_Repeat"/>
   </widget>
   <widget class="QToolBar" name="toolBar_2">
    <property name="windowTitle">
@@ -312,8 +329,15 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionUnselect_All"/>
+   <addaction name="actionCreate_Pattern_Repeat"/>
    <addaction name="actionApply_Color_to_Selection"/>
    <addaction name="actionAdd_Text"/>
+   <addaction name="separator"/>
+   <addaction name="actionDelete_rows"/>
+   <addaction name="actionInsert_rows"/>
+   <addaction name="actionDelete_columns"/>
+   <addaction name="actionInsert_columns"/>
   </widget>
   <action name="actionAbout_sconcho">
    <property name="icon">
@@ -571,7 +595,7 @@
   <action name="actionUnselect_All">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/gtk-clear.png</normaloff>:/icons/gtk-clear.png</iconset>
+     <normaloff>:/icons/radiobutton.png</normaloff>:/icons/radiobutton.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Deselect All</string>
@@ -608,6 +632,10 @@
    </property>
   </action>
   <action name="action_Undo">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/undo.png</normaloff>:/icons/undo.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Undo</string>
    </property>
@@ -616,6 +644,10 @@
    </property>
   </action>
   <action name="action_Redo">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/redo.png</normaloff>:/icons/redo.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Redo</string>
    </property>
@@ -637,7 +669,7 @@
   <action name="actionCreate_Pattern_Repeat">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/pattern_repeat.png</normaloff>:/icons/pattern_repeat.png</iconset>
+     <normaloff>:/icons/insert_frame.png</normaloff>:/icons/insert_frame.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Create Pattern Repeat</string>
@@ -705,10 +737,55 @@
   <action name="actionAdd_Text">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/letter_T.png</normaloff>:/icons/letter_T.png</iconset>
+     <normaloff>:/icons/text.png</normaloff>:/icons/text.png</iconset>
    </property>
    <property name="text">
     <string>Add &amp;Text Box</string>
+   </property>
+  </action>
+  <action name="actionDelete_rows">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/delete_row.png</normaloff>:/icons/delete_row.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Delete Selected Rows</string>
+   </property>
+  </action>
+  <action name="actionInsert_rows">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/insert_row.png</normaloff>:/icons/insert_row.png</iconset>
+   </property>
+   <property name="text">
+    <string>Insert &amp;Rows</string>
+   </property>
+  </action>
+  <action name="actionDelete_columns">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/delete_column.png</normaloff>:/icons/delete_column.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete &amp;Selected Columns</string>
+   </property>
+  </action>
+  <action name="actionInsert_columns">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/insert_column.png</normaloff>:/icons/insert_column.png</iconset>
+   </property>
+   <property name="text">
+    <string>Insert &amp;Columns</string>
+   </property>
+  </action>
+  <action name="actionCreate_Row_Repeat">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/togglelegend.png</normaloff>:/icons/togglelegend.png</iconset>
+   </property>
+   <property name="text">
+    <string>Create &amp;Row Repeat</string>
    </property>
   </action>
  </widget>

@@ -1,6 +1,8 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
   <file>icons/down.png</file>
+  <file>icons/delete_row.png</file>
+  <file>icons/delete_column.png</file>
   <file>icons/exit.png</file>
   <file>icons/fileexport.png</file>
   <file>icons/fileopen.png</file>
@@ -10,19 +12,27 @@
   <file>icons/gtk-preferences.png</file>
   <file>icons/gtk-clear.png</file>
   <file>icons/histogram.png</file>
+  <file>icons/insert_frame.png</file>
+  <file>icons/insert_row.png</file>
+  <file>icons/insert_column.png</file>
   <file>icons/key.png</file>
   <file>icons/kcontrol.png</file>
   <file>icons/labels.png</file>
   <file>icons/left.png</file>
+  <file>icons/letter_T.png</file>
   <file>icons/pattern_repeat.png</file>
+  <file>icons/radiobutton.png</file>
   <file>icons/rectangle.png</file>
+  <file>icons/redo.png</file>
   <file>icons/red_rect.png</file>
   <file>icons/reload.png</file>
   <file>icons/right.png</file>
   <file>icons/sconcho_icon.png</file>
   <file>icons/select_all.png</file>
   <file>icons/stop.png</file>
-  <file>icons/letter_T.png</file>
+  <file>icons/togglelegend.png</file>
+  <file>icons/text.png</file>
+  <file>icons/undo.png</file>
   <file>icons/up.png</file>
   <file>icons/zoom-in.svg</file>
   <file>icons/zoom-out.svg</file>
