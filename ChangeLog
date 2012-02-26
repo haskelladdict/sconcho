@@ -4,7 +4,10 @@
 	* Improved user interface.
 	* Fixed small bug in IO routine triggered when reading
 	  invalid spf files.
-	
+	* Disable right mouse click with Shift/Control held.
+	  Otherwise, this may interfere with the rubberband action.
+	  Thanks to nancycat@ravelry for pointing this out.
+
 
 
 02-20-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
