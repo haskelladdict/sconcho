@@ -626,15 +626,18 @@ class PatternCanvas(QGraphicsScene):
         (col, row) = convert_pos_to_col_row(event.scenePos(),
                                             self._unitCellDim.width(),
                                             self._unitCellDim.height())
-       
-        if event.button() == Qt.RightButton:
+      
+        shiftPressed = event.modifiers() & Qt.ShiftModifier
+        ctrlPressed = event.modifiers() & Qt.ControlModifier
+
+        if (event.button() == Qt.RightButton) and \
+            not (shiftPressed or ctrlPressed):
             self.handle_right_click_on_canvas(event, col, row)
 
             # don't propagate this event
             return
 
-        elif (event.button() == Qt.LeftButton) and \
-             (event.modifiers() & Qt.ShiftModifier):
+        elif (event.button() == Qt.LeftButton) and shiftPressed:
 
             if is_click_on_labels(col, row, self._numColumns, 
                                   self._numRows):
