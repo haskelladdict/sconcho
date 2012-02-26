@@ -449,7 +449,8 @@ def read_project(settings, openFileName):
         if handle is not None:
             handle.close()
         if status is not None:
-            return (False, status, None, None, None, None, None, None, None)
+            return (False, status, None, None, None, None, None, None, 
+                    None, None)
 
     return (True, None, patternGridItems, legendItems, colors, 
             activeSymbol, patternRepeats, repeatLegends, rowRepeats,
