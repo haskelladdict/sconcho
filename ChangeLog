@@ -2,6 +2,8 @@
 
 	* Release of 0.1.0_rc2
 	* Improved user interface.
+	* Fixed small bug in IO routine triggered when reading
+	  invalid spf files.
 	
 
 
