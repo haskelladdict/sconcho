@@ -108,24 +108,26 @@ noColInsertLayoutText = ("Sorry, cannot insert requested columns at the specifie
 
 
 noColDeleteLayoutTitle = "sconcho: Cannot Delete Columns"
-noColDeleteLayoutText = ("Sorry, cannot delete requested columns. Make sure \n"
-                         "that only complete columns are selected, i.e. there \n"
-                         "are no jagged edges.")
+noColDeleteLayoutText = ("Sorry, cannot delete requested columns. To "
+                         "delete columns please select the to be deleted "
+                         "complete columns (i.e. there can be no partially "
+                         "selected ones).")
 
 
 selectCompleteRowsTitle = "sconcho: Cannot Delete Rows"
-selectCompleteRowsText = ("Sorry, cannot delete rows. To delete rows, \n"
-                         "please select complete rows only.")
+selectCompleteRowsText = ("Sorry, cannot delete rows. To delete rows, "
+                         "please select the to be deleted complete rows "
+                         "(i.e. there can be no partially selected ones).")
 
 
 selectSingleColumnTitle = "sconcho: Cannot Insert Columns"
-selectSingleColumnText = ("Sorry, cannot insert columns. To insert new \n"
-                          "columns, please select a single existing \n"
+selectSingleColumnText = ("Sorry, cannot insert columns. To insert new "
+                          "columns, please select a single existing "
                           "column as pivot first.")
 
 
 selectSingleRowTitle = "sconcho: Cannot Insert Rows"
-selectSingleRowText = ("Sorry, cannot insert rows. To insert new rows, \n"
+selectSingleRowText = ("Sorry, cannot insert rows. To insert new rows, "
                        "please select a single existing row as pivot first.")
 
 
@@ -134,16 +136,16 @@ noSelectionText = ("Sorry, nothing to do. Please select some cells first.")
 
 
 cannotAddRowRepeatTitle = "sconcho: Cannot Add Row Repeat"
-cannotAddRowRepeatText = ("Sorry, cannot add row repeat. To insert a\n"
-                          "row repeat please select complete rows which form\n"
-                          "a contiguous block, and do not overlap with\n"
+cannotAddRowRepeatText = ("Sorry, cannot add row repeat. To insert a "
+                          "row repeat please select complete rows which form "
+                          "a contiguous block, and do not overlap with "
                           "with already existing row repeats.")
 
 
 cannotDeleteRowRepeatTitle = "sconcho: Cannot Delete Row Repeat"
-cannotDeleteRowRepeatText = ("Sorry, cannot delete row repeat. To delete a \n"
-                          "row repeat please make sure that complete rows \n"
-                          "are selected and are all inside the row repeat you \n"
+cannotDeleteRowRepeatText = ("Sorry, cannot delete row repeat. To delete a "
+                          "row repeat please make sure that complete rows "
+                          "are selected and are all inside the row repeat you "
                           "would like to delete.")
 
 

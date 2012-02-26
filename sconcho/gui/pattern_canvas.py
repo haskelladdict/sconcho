@@ -857,8 +857,7 @@ class PatternCanvas(QGraphicsScene):
         gridMenu.addSeparator()
 
         # add repeat box action
-        addRepeatAction = gridMenu.addAction("&Add Pattern Repeat "
-                                             "Around Selection")
+        addRepeatAction = gridMenu.addAction("&Create Pattern Repeat")
         self.connect(addRepeatAction, SIGNAL("triggered()"),
                      self.add_pattern_repeat)
         if not can_outline_selection(self._selectedCells.values()):
