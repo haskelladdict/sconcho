@@ -186,14 +186,16 @@ class PatternCanvas(QGraphicsScene):
         fm = QFontMetrics(labelFont)
 
         self._set_up_row_labels(labelFont, fm)
+        self._set_up_column_labels(labelFont, fm)
 
-        # hide row labels again if they are turned off
+        # hide row/column labels again if they are turned off
         # FIXME: This seems a little clunky - we need it
         # only because of the row repeats
         if not self.settings.showRowLabels.value:
             self.toggle_rowLabel_visibility(False)
 
-        self._set_up_column_labels(labelFont, fm)
+        if not self.settings.showColumnLabels.value:
+            self.toggle_columnLabel_visibility(False)
 
 
 
@@ -2012,6 +2014,10 @@ class PatternCanvas(QGraphicsScene):
                 else:
                     item.hide()
 
+        if status:
+            # need this to make sure the labels have the
+            # proper visibility
+            self.set_up_labels()
 
 
     def add_text_item(self, itemPos = None,
