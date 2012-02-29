@@ -363,8 +363,9 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         """
 
         basename = QFileInfo(filePath).completeBaseName()
+        path = QFileInfo(filePath).absolutePath()
         self.fullPath = \
-                QFileInfo(QDir.homePath() + "/" + basename).absoluteFilePath()
+                QFileInfo(path + "/" + basename).absoluteFilePath()
         extension = QFileInfo(filePath).suffix()
         if extension in self.formats:
             for index in range(self.availableFormatsChooser.count()):
