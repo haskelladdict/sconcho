@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Feb 25 18:29:22 2012
+# Created: Tue Feb 28 21:52:22 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -236,7 +236,7 @@ class Ui_MainWindow(object):
         self.action_Manage_Knitting_Symbols.setObjectName(_fromUtf8("action_Manage_Knitting_Symbols"))
         self.actionUnselect_All = QtGui.QAction(MainWindow)
         icon11 = QtGui.QIcon()
-        icon11.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/radiobutton.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon11.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/gtk-clear.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionUnselect_All.setIcon(icon11)
         self.actionUnselect_All.setObjectName(_fromUtf8("actionUnselect_All"))
         self.action_Copy = QtGui.QAction(MainWindow)
@@ -266,7 +266,7 @@ class Ui_MainWindow(object):
         self.actionShow_nostitch_symbols.setObjectName(_fromUtf8("actionShow_nostitch_symbols"))
         self.actionCreate_Pattern_Repeat = QtGui.QAction(MainWindow)
         icon15 = QtGui.QIcon()
-        icon15.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/insert_frame.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon15.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/pattern_repeat.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionCreate_Pattern_Repeat.setIcon(icon15)
         self.actionCreate_Pattern_Repeat.setObjectName(_fromUtf8("actionCreate_Pattern_Repeat"))
         self.actionApply_Color_to_Selection = QtGui.QAction(MainWindow)

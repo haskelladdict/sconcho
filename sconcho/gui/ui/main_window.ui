@@ -595,7 +595,7 @@
   <action name="actionUnselect_All">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/radiobutton.png</normaloff>:/icons/radiobutton.png</iconset>
+     <normaloff>:/icons/gtk-clear.png</normaloff>:/icons/gtk-clear.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Deselect All</string>
@@ -669,7 +669,7 @@
   <action name="actionCreate_Pattern_Repeat">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/insert_frame.png</normaloff>:/icons/insert_frame.png</iconset>
+     <normaloff>:/icons/pattern_repeat.png</normaloff>:/icons/pattern_repeat.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Create Pattern Repeat</string>
