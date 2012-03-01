@@ -975,7 +975,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         allPaths = self.menuRecent_Files.actions()
         for path in allPaths:
-            dontKeep = path.data()
+            dontKeep = path.data().toString()
             if dontKeep:
                 self.menuRecent_Files.removeAction(path)
 
@@ -1045,7 +1045,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # make sure we ignore menu clicks on non-filename
         # items (like the clear button)
-        isFile = action.data()
+        isFile = action.data().toString()
         if not isFile:
             return
 
