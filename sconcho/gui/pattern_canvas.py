@@ -887,13 +887,6 @@ class PatternCanvas(QGraphicsScene):
         pasteAction = gridMenu.addAction("&Paste Rectangular Selection")
         self.connect(pasteAction, SIGNAL("triggered()"),
                      partial(self.paste_selection, col, row))
-        pasteAction.setEnabled(False)
-        if self._copySelectionDim:
-            pasteColDim = self._copySelectionDim[0]
-            pasteRowDim = self._copySelectionDim[1]
-            if self._rectangle_self_contained(col, row, pasteColDim,
-                                              pasteRowDim):
-                pasteAction.setEnabled(True)
 
         gridMenu.exec_(event.screenPos())
 
@@ -1120,7 +1113,7 @@ class PatternCanvas(QGraphicsScene):
             QMessageBox.critical(None, msg.noCopyRectangularSelectionTitle,
                                  msg.noCopyRectangularSelectionText,
                                  QMessageBox.Close)
-            logger.error(msg.cannotAddRowRepeatText)
+            logger.error(msg.noCopyRectangularSelectionText)
             return 
 
         self._copySelection.clear()
@@ -1162,10 +1155,29 @@ class PatternCanvas(QGraphicsScene):
 
     def paste_selection(self, column, row):
         """ This slot pastes the current copy selection at column
-        and row.
+        and row if possible given the target location and layout.
         
         """
 
+        # check first if we can paste at all
+        if not self._copySelectionDim:
+            QMessageBox.critical(None, msg.noPasteSelectionTitle,
+                                 msg.noPasteSelectionText,
+                                 QMessageBox.Close)
+            logger.error(msg.noPasteSelectionText)
+            return 
+
+        pasteColDim = self._copySelectionDim[0]
+        pasteRowDim = self._copySelectionDim[1]
+        if not self._rectangle_self_contained(column, row, pasteColDim,
+                                              pasteRowDim):
+            QMessageBox.critical(None, msg.badPasteSelectionTitle,
+                                 msg.badPasteSelectionText,
+                                 QMessageBox.Close)
+            logger.error(msg.badPasteSelectionText)
+            return 
+
+        # we can paste - go ahead
         # remove each row completely first, then insert the 
         # selection
         deadItems = self._get_pattern_grid_items_in_rectangle(column, row,

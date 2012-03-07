@@ -140,6 +140,21 @@ noCopyRectangularSelectionText = ("Sorry, only rectangular selections can be "
                                   "copied. Please make sure to select a "
                                   "rectangular selection, then copy.")
 
+
+noPasteSelectionTitle = "sconcho: Cannot Paste Selection"
+noPasteSelectionText = ("Sorry, there is no selection to be pasted. " 
+                        "Please copy a rectangular selection first, "
+                        "then paste.")
+
+
+badPasteSelectionTitle = "sconcho: Cannot Paste Selection"
+badPasteSelectionText = ("Sorry, your copied selection can not be pasted. Make " 
+                         "sure your copied selection fits into the current chart "
+                         "(the cell you clicked on when pasting will be the upper "
+                         "left hand corner) and will not cover an existing symbol "
+                         "partially (e.g. cover half a 2 stitch cable).")
+
+
 cannotAddRowRepeatTitle = "sconcho: Cannot Add Row Repeat"
 cannotAddRowRepeatText = ("Sorry, cannot add row repeat. To insert a "
                           "row repeat please select complete rows which form "
