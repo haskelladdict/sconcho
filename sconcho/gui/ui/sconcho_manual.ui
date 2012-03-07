@@ -3,7 +3,7 @@
  <class>SconchoManual</class>
  <widget class="QDialog" name="SconchoManual">
   <property name="windowModality">
-   <enum>Qt::NonModal</enum>
+   <enum>Qt::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -15,6 +15,16 @@
   </property>
   <property name="windowTitle">
    <string>Sconcho Manual</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../icons/sconcho_icon.png</normaloff>../icons/sconcho_icon.png</iconset>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

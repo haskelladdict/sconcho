@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 
-from PyQt4.QtCore  import QUrl
+from PyQt4.QtCore  import (QUrl, Qt)
 from PyQt4.QtGui import QDialog 
 
 from gui.ui_sconcho_manual import Ui_SconchoManual
@@ -46,6 +46,10 @@ class SconchoManual(QDialog, Ui_SconchoManual):
 
         super(SconchoManual, self).__init__(parent)
         self.setupUi(self)
+
+        self.setWindowFlags(Qt.WindowMinimizeButtonHint
+                            | Qt.WindowCloseButtonHint
+                            | Qt.WindowMaximizeButtonHint)
 
         url = QUrl.fromLocalFile(manualPath)
         self.helpBrowser.setSource(url)
