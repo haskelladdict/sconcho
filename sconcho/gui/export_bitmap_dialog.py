@@ -393,9 +393,13 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
             formatStr = ("%s;; %s ( *.%s)" % (formatStr, description, 
                                               aFormat))
 
+        defaultPath = self.fileNameEdit.text()
+        if not defaultPath:
+            defaultPath = QDir.homePath()
+
         exportFilePath = QFileDialog.getSaveFileName(self,
                                         msg.exportPatternTitle,
-                                        QDir.homePath(),
+                                        defaultPath,
                                         formatStr,
                                         None,
                                         QFileDialog.DontConfirmOverwrite) 
