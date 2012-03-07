@@ -135,6 +135,11 @@ noSelectionTitle = "sconcho: No Cells Selected"
 noSelectionText = ("Sorry, nothing to do. Please select some cells first.")
 
 
+noCopyRectangularSelectionTitle = "sconcho: Cannot Copy Selection"
+noCopyRectangularSelectionText = ("Sorry, only rectangular selections can be " 
+                                  "copied. Please make sure to select a "
+                                  "rectangular selection, then copy.")
+
 cannotAddRowRepeatTitle = "sconcho: Cannot Add Row Repeat"
 cannotAddRowRepeatText = ("Sorry, cannot add row repeat. To insert a "
                           "row repeat please select complete rows which form "

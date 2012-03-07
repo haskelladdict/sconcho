@@ -880,12 +880,8 @@ class PatternCanvas(QGraphicsScene):
 
         # copy action
         copyAction = gridMenu.addAction("&Copy Rectangular Selection")
-        (status, (colDim, rowDim)) = \
-                is_active_selection_rectangular(self._selectedCells.values())
         self.connect(copyAction, SIGNAL("triggered()"),
-                     partial(self.copy_selection, colDim, rowDim))
-        if not status:
-            copyAction.setEnabled(False)
+                     self.copy_selection)
 
         # paste action
         pasteAction = gridMenu.addAction("&Paste Rectangular Selection")
@@ -1114,11 +1110,18 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def copy_selection(self, colDim, rowDim):
-        """ This slot copies the current selection. """
+    def copy_selection(self): 
+        """ This slot copies the current selection if rectangular. """
 
-        if not self._selectedCells:
-            return
+        (status, (colDim, rowDim)) = \
+            is_active_selection_rectangular(self._selectedCells.values())
+
+        if not status:
+            QMessageBox.critical(None, msg.noCopyRectangularSelectionTitle,
+                                 msg.noCopyRectangularSelectionText,
+                                 QMessageBox.Close)
+            logger.error(msg.cannotAddRowRepeatText)
+            return 
 
         self._copySelection.clear()
         self._copySelection = self._selectedCells.copy()
