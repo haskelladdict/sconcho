@@ -1216,7 +1216,7 @@ class PatternCanvas(QGraphicsScene):
 
         # without selection or user mouse clicking on canvas we can't
         # paste
-        if not status and not (column or row):
+        if not status and (column == None or row == None):
             logger.error(msg.noPasteSelectionText)
             QMessageBox.critical(None, msg.noPasteSelectionTitle,
                                  msg.noPasteSelectionText,
