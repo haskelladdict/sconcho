@@ -39,24 +39,25 @@ from PyQt4.QtCore import (Qt,
                           QLineF,
                           SIGNAL, 
                           QT_VERSION)
-from PyQt4.QtGui import (QGraphicsScene, 
-                         QGraphicsObject, 
-                         QPen, 
-                         QAction,
-                         QColor, 
-                         QBrush, 
-                         QGraphicsTextItem, 
-                         QFontMetrics, 
-                         QMenu, 
-                         QGraphicsItem, 
-                         QGraphicsRectItem,
-                         QMessageBox, 
-                         QGraphicsLineItem, 
-                         QPainterPath, 
-                         QUndoStack, 
-                         QGraphicsItemGroup,
+from PyQt4.QtGui import (QAction,
                          QApplication, 
-                         QCursor)
+                         QBrush, 
+                         QColor, 
+                         QCursor,
+                         QFontMetrics, 
+                         QGraphicsItem, 
+                         QGraphicsItemGroup,
+                         QGraphicsLineItem, 
+                         QGraphicsObject, 
+                         QGraphicsRectItem,
+                         QGraphicsScene, 
+                         QGraphicsTextItem, 
+                         QIcon,
+                         QMenu, 
+                         QMessageBox, 
+                         QPen, 
+                         QPainterPath, 
+                         QUndoStack)
 from PyQt4.QtSvg import (QGraphicsSvgItem) 
 
 from util.canvas import * 
@@ -879,12 +880,14 @@ class PatternCanvas(QGraphicsScene):
         gridMenu.addSeparator()
 
         # copy action
-        copyAction = gridMenu.addAction("&Copy Rectangular Selection")
+        copyIcon = QIcon(":/icons/copy.png")
+        copyAction = gridMenu.addAction(copyIcon, "&Copy Rectangular Selection")
         self.connect(copyAction, SIGNAL("triggered()"),
                      self.copy_selection)
 
         # paste action
-        pasteAction = gridMenu.addAction("&Paste Rectangular Selection")
+        pasteIcon = QIcon(":/icons/paste.png")
+        pasteAction = gridMenu.addAction(pasteIcon, "&Paste Rectangular Selection")
         self.connect(pasteAction, SIGNAL("triggered()"),
                      partial(self.paste_selection, col, row))
 

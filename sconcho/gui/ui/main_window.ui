@@ -155,6 +155,9 @@
     <addaction name="action_Undo"/>
     <addaction name="action_Redo"/>
     <addaction name="separator"/>
+    <addaction name="action_Copy_Rectangular_Selection"/>
+    <addaction name="action_Paste_Rectangular_Selection"/>
+    <addaction name="separator"/>
     <addaction name="action_Manage_Knitting_Symbols"/>
     <addaction name="separator"/>
     <addaction name="actionPrefs"/>
@@ -786,6 +789,30 @@
    </property>
    <property name="text">
     <string>Create &amp;Row Repeat</string>
+   </property>
+  </action>
+  <action name="action_Copy_Rectangular_Selection">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Copy Rectangular Selection</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="action_Paste_Rectangular_Selection">
+   <property name="icon">
+    <iconset resource="../icons.qrc">
+     <normaloff>:/icons/paste.png</normaloff>:/icons/paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Paste Rectangular Selection</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>

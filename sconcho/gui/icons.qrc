@@ -1,5 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+  <file>icons/copy.png</file>
+  <file>icons/cut.png</file>
   <file>icons/down.png</file>
   <file>icons/delete_row.png</file>
   <file>icons/delete_column.png</file>
@@ -20,6 +22,7 @@
   <file>icons/labels.png</file>
   <file>icons/left.png</file>
   <file>icons/letter_T.png</file>
+  <file>icons/paste.png</file>
   <file>icons/pattern_repeat.png</file>
   <file>icons/radiobutton.png</file>
   <file>icons/rectangle.png</file>

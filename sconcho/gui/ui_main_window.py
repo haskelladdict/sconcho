@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Thu Mar  8 21:46:22 2012
+# Created: Fri Mar  9 10:42:53 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -320,6 +320,16 @@ class Ui_MainWindow(object):
         icon22.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/togglelegend.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionCreate_Row_Repeat.setIcon(icon22)
         self.actionCreate_Row_Repeat.setObjectName(_fromUtf8("actionCreate_Row_Repeat"))
+        self.action_Copy_Rectangular_Selection = QtGui.QAction(MainWindow)
+        icon23 = QtGui.QIcon()
+        icon23.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/copy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.action_Copy_Rectangular_Selection.setIcon(icon23)
+        self.action_Copy_Rectangular_Selection.setObjectName(_fromUtf8("action_Copy_Rectangular_Selection"))
+        self.action_Paste_Rectangular_Selection = QtGui.QAction(MainWindow)
+        icon24 = QtGui.QIcon()
+        icon24.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/paste.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.action_Paste_Rectangular_Selection.setIcon(icon24)
+        self.action_Paste_Rectangular_Selection.setObjectName(_fromUtf8("action_Paste_Rectangular_Selection"))
         self.menuRecent_Files.addAction(self.action_Clear_Recently_Used_Files)
         self.menuRecent_Files.addSeparator()
         self.menuFile.addAction(self.actionNew)
@@ -351,6 +361,9 @@ class Ui_MainWindow(object):
         self.menuGrid.addSeparator()
         self.menuGrid.addAction(self.action_Undo)
         self.menuGrid.addAction(self.action_Redo)
+        self.menuGrid.addSeparator()
+        self.menuGrid.addAction(self.action_Copy_Rectangular_Selection)
+        self.menuGrid.addAction(self.action_Paste_Rectangular_Selection)
         self.menuGrid.addSeparator()
         self.menuGrid.addAction(self.action_Manage_Knitting_Symbols)
         self.menuGrid.addSeparator()
@@ -487,6 +500,10 @@ class Ui_MainWindow(object):
         self.actionDelete_columns.setText(QtGui.QApplication.translate("MainWindow", "Delete &Selected Columns", None, QtGui.QApplication.UnicodeUTF8))
         self.actionInsert_columns.setText(QtGui.QApplication.translate("MainWindow", "Insert &Columns", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCreate_Row_Repeat.setText(QtGui.QApplication.translate("MainWindow", "Create &Row Repeat", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Copy_Rectangular_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Copy Rectangular Selection", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Copy_Rectangular_Selection.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+C", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Paste_Rectangular_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Paste Rectangular Selection", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Paste_Rectangular_Selection.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+V", None, QtGui.QApplication.UnicodeUTF8))
 
 from active_symbol_widget import ActiveSymbolWidget
 from color_widget import ColorWidget
