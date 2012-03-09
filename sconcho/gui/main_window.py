@@ -234,6 +234,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.action_Redo, SIGNAL("triggered()"),
                      self.canvas.redo)
 
+        self.connect(self.action_Copy_Rectangular_Selection,
+                     SIGNAL("triggered()"),
+                     self.canvas.copy_selection)
+
+        self.connect(self.action_Paste_Rectangular_Selection,
+                     SIGNAL("triggered()"),
+                     self.canvas.paste_selection)
+
 
         
     def _set_up_view_connections(self):

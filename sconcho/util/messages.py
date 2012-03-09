@@ -141,10 +141,23 @@ noCopyRectangularSelectionText = ("Sorry, only rectangular selections can be "
                                   "rectangular selection, then copy.")
 
 
-noPasteSelectionTitle = "sconcho: Cannot Paste Selection"
-noPasteSelectionText = ("Sorry, there is no selection to be pasted. " 
+noCopySelectionTitle = "sconcho: Cannot Paste Selection"
+noCopySelectionText = ("Sorry, there is no selection to be pasted. " 
                         "Please copy a rectangular selection first, "
                         "then paste.")
+
+
+noPasteSelectionTitle = "sconcho: Cannot Paste Selection"
+noPasteSelectionText = ("Sorry, can not paste. Either select a region "
+                        "which is a multiple of the size of your copied "
+                        "selection first or directly right click on the pattern "
+                        "grid and then paste.")
+
+
+noPasteGeometryTitle = "sconcho: Cannot Paste Selection"
+noPasteGeometryText = ("Sorry, can not paste. Your selected region is not a "
+                       "multiple (either row or column wise) or you copied "
+                       "selection.")
 
 
 badPasteSelectionTitle = "sconcho: Cannot Paste Selection"

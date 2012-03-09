@@ -27,6 +27,7 @@ from __future__ import absolute_import
 
 import logging
 import math
+from sys import maxint
 
 from PyQt4.QtCore import (QPointF)
 from PyQt4.QtGui import (QMessageBox, QColor)
@@ -305,6 +306,26 @@ def arrange_label_item(legendItems, legendID, itemXPos, itemYPos, labelXPos,
         logger.error(msg.errorMatchingLegendItemText)
 
 
+def get_upper_left_hand_corner(selectedCells):
+    """ Returns the column and row of the upper left hand corner
+    of selection.
+
+    """
+
+    if not selectedCells:
+        return (None, None)
+
+    cellsByRow = order_selection_by_rows(selectedCells)
+    minRow = min(cellsByRow.keys())
+    
+    minCol = maxint
+    for item in cellsByRow[minRow]:
+        if item.column < minCol:
+            minCol = item.column
+
+    return (minRow, minCol)
+
+
 
 def is_active_selection_rectangular(selectedCells):
     """ This function checks if the currently active selection 
@@ -340,6 +361,11 @@ def is_active_selection_rectangular(selectedCells):
     
     numCols = values.pop()
     numRows = len(cellsByRow)
+
+    # should never happen
+    assert(numCols != 0)
+    assert(numRows != 0)
+
     return (True, (numCols, numRows))
 
 

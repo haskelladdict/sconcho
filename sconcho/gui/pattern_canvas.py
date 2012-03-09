@@ -1155,38 +1155,12 @@ class PatternCanvas(QGraphicsScene):
         return patternGridItems
 
 
+    def _get_pattern_canvas_entries_in_rectangle(self, xPos, yPos, xDim, yDim):
+        """ Returns the canvas items under the given rectangle
+        as PatternCanvasEntries. """
 
-    def paste_selection(self, column, row):
-        """ This slot pastes the current copy selection at column
-        and row if possible given the target location and layout.
-        
-        """
-
-        # check first if we can paste at all
-        if not self._copySelectionDim:
-            QMessageBox.critical(None, msg.noPasteSelectionTitle,
-                                 msg.noPasteSelectionText,
-                                 QMessageBox.Close)
-            logger.error(msg.noPasteSelectionText)
-            return 
-
-        pasteColDim = self._copySelectionDim[0]
-        pasteRowDim = self._copySelectionDim[1]
-        if not self._rectangle_self_contained(column, row, pasteColDim,
-                                              pasteRowDim):
-            QMessageBox.critical(None, msg.badPasteSelectionTitle,
-                                 msg.badPasteSelectionText,
-                                 QMessageBox.Close)
-            logger.error(msg.badPasteSelectionText)
-            return 
-
-        # we can paste - go ahead
-        # remove each row completely first, then insert the 
-        # selection
-        deadItems = self._get_pattern_grid_items_in_rectangle(column, row,
-                                                self._copySelectionDim[0],
-                                                self._copySelectionDim[1])
-
+        deadItems = self._get_pattern_grid_items_in_rectangle(xPos, yPos,
+                                                              xDim, yDim)
         deadSelection = {}
         for item in deadItems:
             itemID = get_item_id(item.column, item.row) 
@@ -1196,13 +1170,118 @@ class PatternCanvas(QGraphicsScene):
                                                        item.color, 
                                                        item.symbol)
 
-        if self._copySelection and deadSelection:
-            pasteCommand = PasteCells(self, self._copySelection,
-                                     deadSelection, column, row,
-                                     self._copySelectionDim[0],
-                                     self._copySelectionDim[1])
-            self._undoStack.push(pasteCommand)
-            self.clear_all_selected_cells()
+        return deadSelection
+
+
+
+
+    def paste_selection(self, column = None, row = None):
+        """ This slot pastes the current copy selection at column
+        and row if possible given the target location and layout.
+
+        Note: There are two ways for this function to be called,
+        with and without column/row info. Pasting proceeds according
+        to the following steps:
+
+        1) If cells are selected on the canvas try to paste the
+        selection into it. For this, the selection has to be
+        multiples of the size of the copy selection (rectangular
+        in particular) . Depending on the number of multiples sconcho 
+        will paste as many copies into the selection.
+        
+        2) If no cells are selected and the user pasted via a right
+        mouse click (in this case we will receive column/row info) 
+        on the canvas, sconcho will paste a single copy
+        of the selection on the canvas assuming it fits. 
+
+        3) Otherwise, we can't paste and let the user know.
+        
+        """
+
+        # check first if we can paste at all
+        if (not self._copySelectionDim) or (not self._copySelection):
+            QMessageBox.critical(None, msg.noCopySelectionTitle,
+                                 msg.noCopySelectionText,
+                                 QMessageBox.Close)
+            logger.error(msg.noCopySelectionText)
+            return 
+
+        # check if we have a selection and the pattern fits
+        pasteColDim = self._copySelectionDim[0]
+        pasteRowDim = self._copySelectionDim[1]
+        (status, (colDim, rowDim)) = \
+            is_active_selection_rectangular(self._selectedCells.values())
+        (upperLHRow, upperLHColumn) = \
+            get_upper_left_hand_corner(self._selectedCells.values())
+
+        # without selection or user mouse clicking on canvas we can't
+        # paste
+        if not status and not (column or row):
+            QMessageBox.critical(None, msg.noPasteSelectionTitle,
+                                 msg.noPasteSelectionText,
+                                 QMessageBox.Close)
+            logger.error(msg.noPasteSelectionText)
+            return 
+
+        # we have a selection
+        if status:
+            
+            (n_col, r_col) = divmod(colDim, pasteColDim)
+            (n_row, r_row) = divmod(rowDim, pasteRowDim)
+
+            # only paste if selection is a multiple of what's on the 
+            # clipboard
+            if r_col == 0 and r_row == 0:
+                
+                self._undoStack.beginMacro("paste selection")
+                self.clear_all_selected_cells()
+                for rowRepeat in range(0, n_row):
+                    
+                    rowID = upperLHRow + (rowRepeat * pasteRowDim)
+                    for colRepeat in range(0, n_col):
+                    
+                        colID = upperLHColumn + (colRepeat * pasteColDim) 
+                        deadSelection = \
+                            self._get_pattern_canvas_entries_in_rectangle(colID,
+                                                rowID, pasteColDim, pasteRowDim)
+
+                        pasteCommand = PasteCells(self, self._copySelection,
+                                                  deadSelection, colID,
+                                                  rowID, pasteColDim,
+                                                  pasteRowDim)
+                        self._undoStack.push(pasteCommand)
+
+                self._undoStack.endMacro()
+
+            else:
+                QMessageBox.critical(None, msg.noPasteGeometryTitle,
+                                    msg.noPasteGeometryText,
+                                    QMessageBox.Close)
+                logger.error(msg.noPasteGeometryText)
+                return 
+
+        # user clicked directly on canvas
+        else:
+            if not self._rectangle_self_contained(column, row, pasteColDim,
+                                                pasteRowDim):
+                QMessageBox.critical(None, msg.badPasteSelectionTitle,
+                                    msg.badPasteSelectionText,
+                                    QMessageBox.Close)
+                logger.error(msg.badPasteSelectionText)
+                return 
+
+            # we can paste - go ahead
+            deadSelection = \
+                self._get_pattern_canvas_entries_in_rectangle(column, row,
+                                                              pasteColDim, 
+                                                              pasteRowDim)
+
+            if deadSelection:
+                self.clear_all_selected_cells()
+                pasteCommand = PasteCells(self, self._copySelection,
+                                        deadSelection, column, row,
+                                        pasteColDim, pasteRowDim)
+                self._undoStack.push(pasteCommand)
 
 
 
