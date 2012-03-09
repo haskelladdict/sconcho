@@ -112,28 +112,26 @@ exactly.
 Copy and Pasting a Selection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can copy and paste any rectangular collection of cells by selecting 
-them first and then copying them via
-**Right Mouse Click -> Copy Selection**. The cells copied in this fashion
-can then be pasted via **Right Mouse Click -> Paste Selection** as 
-often as needed. 
+You can copy and paste any rectangular shaped selection on your chart.
+To copy, select a rectangular region and then 
+**Edit -> Copy Rectangular Selection** (or **Ctrl+C** hotkey). Next, you can
+paste this selection into your chart. To do so either
 
-**Note:** Before selecting cells for copying make sure no knitting
-symbol is currently active. Otherwise, sconcho will insert it into 
-the selection. In any case, if this happens to you, you can always undo 
-this action.
+  1) Select the region on the canvas you would like to paste into and then
+  **Edit -> Paste Regular Selection** (or **Ctrl-V** hotkey). This
+  region has to be same size or a multiple of (both row and column wise)
+  the original copied selection. In the latter case, sconcho will paste the
+  respective number of copies. E.g. if you paste a 3x4 block into a 6x12 
+  selection you get 6 copies of your original. 
 
-Pasting will insert the most recently copied rectangular selection such 
-that the grid cell under the mouse pointer will be at the upper left 
-hand corner. When pasting, the target area has to fit the copied selection 
-exactly, i.e., pasting can not leave cells half filled. If pasting is not
-possible at the requested location, the *Paste Selection* option is grayed 
-out.
+  2) Right click on the canvas and in the pop-up menu select 
+  **Paste Rectangular Selection**. Sconcho will try to paste a single
+  copy of your selection such that the cell you clicked on will become the 
+  upper left hand corner. This may fail if there is not enough space or
+  due to the layout (e.g. you can not paste partially over a stitch, such as 
+  half of a 2 stitch cable).
 
 **Note:** Presently, only rectangular selections can be copied and pasted. 
-If the current selection is not rectangular or consists of multiple 
-disconnected pieces it can not be copied and the *Copy Selection* option 
-is grayed out.
 
 
 

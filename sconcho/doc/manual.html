@@ -414,25 +414,25 @@ exactly.</p>
 </div>
 <div class="section" id="copy-and-pasting-a-selection">
 <h1>Copy and Pasting a Selection</h1>
-<p>You can copy and paste any rectangular collection of cells by selecting
-them first and then copying them via
-<strong>Right Mouse Click -&gt; Copy Selection</strong>. The cells copied in this fashion
-can then be pasted via <strong>Right Mouse Click -&gt; Paste Selection</strong> as
-often as needed.</p>
-<p><strong>Note:</strong> Before selecting cells for copying make sure no knitting
-symbol is currently active. Otherwise, sconcho will insert it into
-the selection. In any case, if this happens to you, you can always undo
-this action.</p>
-<p>Pasting will insert the most recently copied rectangular selection such
-that the grid cell under the mouse pointer will be at the upper left
-hand corner. When pasting, the target area has to fit the copied selection
-exactly, i.e., pasting can not leave cells half filled. If pasting is not
-possible at the requested location, the <em>Paste Selection</em> option is grayed
-out.</p>
-<p><strong>Note:</strong> Presently, only rectangular selections can be copied and pasted.
-If the current selection is not rectangular or consists of multiple
-disconnected pieces it can not be copied and the <em>Copy Selection</em> option
-is grayed out.</p>
+<p>You can copy and paste any rectangular shaped selection on your chart.
+To copy, select a rectangular region and then
+<strong>Edit -&gt; Copy Rectangular Selection</strong> (or <strong>Ctrl+C</strong> hotkey). Next, you can
+paste this selection into your chart. To do so either</p>
+<blockquote>
+<p>1) Select the region on the canvas you would like to paste into and then
+<strong>Edit -&gt; Paste Regular Selection</strong> (or <strong>Ctrl-V</strong> hotkey). This
+region has to be same size or a multiple of (both row and column wise)
+the original copied selection. In the latter case, sconcho will paste the
+respective number of copies. E.g. if you paste a 3x4 block into a 6x12
+selection you get 6 copies of your original.</p>
+<p>2) Right click on the canvas and in the pop-up menu select
+<strong>Paste Rectangular Selection</strong>. Sconcho will try to paste a single
+copy of your selection such that the cell you clicked on will become the
+upper left hand corner. This may fail if there is not enough space or
+due to the layout (e.g. you can not paste partially over a stitch, such as
+half of a 2 stitch cable).</p>
+</blockquote>
+<p><strong>Note:</strong> Presently, only rectangular selections can be copied and pasted.</p>
 </div>
 <div class="section" id="un-doing-re-doing-canvas-actions">
 <h1>Un-doing/Re-doing Canvas Actions</h1>
