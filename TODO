@@ -6,5 +6,5 @@
   to fix up some of the cruft that has build up over time
 - allow selecting a group of legend items and move them
   together.
-- instead of graying out paste provide text boxes with
-  feedback.
+- add copy and paste to edit menu?
+- make sure manual window dies if sconcho is closed.

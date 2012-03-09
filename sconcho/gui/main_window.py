@@ -521,6 +521,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self._recoveryFilePath:
                 recoveryFileHandle = QFile(self._recoveryFilePath)
                 recoveryFileHandle.remove()
+
+            # close manual 
+            if self.manualDialog:
+                self.manualDialog.close()
             
             event.accept()
 

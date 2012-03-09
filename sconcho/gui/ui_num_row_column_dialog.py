@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/num_row_column_dialog.ui'
 #
-# Created: Wed Mar  7 09:32:07 2012
+# Created: Thu Mar  8 21:46:23 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!

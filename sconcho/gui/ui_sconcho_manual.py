@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/sconcho_manual.ui'
 #
-# Created: Wed Mar  7 09:32:06 2012
+# Created: Thu Mar  8 21:46:22 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_SconchoManual(object):
     def setupUi(self, SconchoManual):
         SconchoManual.setObjectName(_fromUtf8("SconchoManual"))
-        SconchoManual.setWindowModality(QtCore.Qt.WindowModal)
+        SconchoManual.setWindowModality(QtCore.Qt.NonModal)
         SconchoManual.resize(925, 550)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("../icons/sconcho_icon.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
