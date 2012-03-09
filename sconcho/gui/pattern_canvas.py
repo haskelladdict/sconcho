@@ -1199,6 +1199,7 @@ class PatternCanvas(QGraphicsScene):
                                      self._copySelectionDim[0],
                                      self._copySelectionDim[1])
             self._undoStack.push(pasteCommand)
+            self.clear_all_selected_cells()
 
 
 
