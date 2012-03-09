@@ -1039,9 +1039,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """ This method is called after the SaveThread is finished. """
         
         if not status:
+            logger.error(errorMsg)
             QMessageBox.critical(self, msg.errorSavingProjectTitle,
                                  errorMsg, QMessageBox.Close)
-            logger.error(errorMsg)
             return 
         
         self.statusBar().showMessage("successfully saved " + \
@@ -1066,10 +1066,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         readFilePath = action.data().toString()
  
         if not QFile(readFilePath).exists():
+            logger.error(msg.patternFileDoesNotExistText % readFilePath)
             QMessageBox.critical(self, msg.patternFileDoesNotExistTitle,
                                  msg.patternFileDoesNotExistText % readFilePath, 
                                  QMessageBox.Close)
-            logger.error(msg.patternFileDoesNotExistText % readFilePath)
             return
        
         if not self._ok_to_continue_without_saving():
@@ -1117,9 +1117,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
         if not status:
+            logger.error(msg.errorOpeningProjectTitle)
             QMessageBox.critical(self, msg.errorOpeningProjectTitle,
                                  errMsg, QMessageBox.Close)
-            logger.error(msg.errorOpeningProjectTitle)
             return False
 
         # add newly loaded project

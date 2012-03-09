@@ -472,10 +472,10 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         # check that symbol is unique and new
         if data["name"] in self._symbolDict:
+            logger.error(msg.symbolExistsText % data["name"])
             QMessageBox.critical(None, msg.symbolExistsTitle,
                                  msg.symbolExistsText % data["name"], 
                                  QMessageBox.Close)
-            logger.error(msg.symbolExistsText % data["name"])
             return 
 
         if create_new_symbol(self._symbolPath, data):
@@ -533,20 +533,20 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         svgPathName = self.svgPathEdit.text()
         svgFileInfo = QFileInfo(svgPathName)
         if not svgFileInfo.isFile():
+            logger.error(msg.noSvgFileErrorText)
             QMessageBox.critical(None, msg.noSvgFileErrorTitle,
                                  msg.noSvgFileErrorText,
                                  QMessageBox.Close)
-            logger.error(msg.noSvgFileErrorText)
             return None
         else:
             data["svgPath"] = svgPathName
 
         name = self.symbolNameEntry.text()
         if not name:
+            logger.error(msg.noNameErrorText)
             QMessageBox.critical(None, msg.noNameErrorTitle,
                                  msg.noNameErrorText,
                                  QMessageBox.Close)
-            logger.error(msg.noNameErrorText)
             return None
         else:
             data["name"] = name
@@ -557,10 +557,10 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         category = self.categoryChooser.currentText()
         if not category:
+            logger.error(msg.noCategoryErrorText)
             QMessageBox.critical(None, msg.noCategoryErrorTitle,
                                  msg.noCategoryErrorText,
                                  QMessageBox.Close)
-            logger.error(msg.noCategoryErrorText)
             return None
         else:
             data["category"] = category

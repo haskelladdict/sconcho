@@ -903,10 +903,10 @@ class PatternCanvas(QGraphicsScene):
 
         # if noting is selected we are done but let the user now
         if not self._selectedCells:
+            logger.error(msg.noSelectionText)
             QMessageBox.critical(None, msg.noSelectionTitle,
                                  msg.noSelectionText,
                                  QMessageBox.Close)
-            logger.error(msg.noSelectionText)
             return
 
         colorCommand = ColorSelectedCells(self, color)
@@ -920,10 +920,10 @@ class PatternCanvas(QGraphicsScene):
 
         # if noting is selected we are done but let the user now
         if not self._selectedCells:
+            logger.error(msg.noSelectionText)
             QMessageBox.critical(None, msg.noSelectionTitle,
                                  msg.noSelectionText,
                                  QMessageBox.Close)
-            logger.error(msg.noSelectionText)
             return
 
         edges = {}
@@ -1113,10 +1113,10 @@ class PatternCanvas(QGraphicsScene):
             is_active_selection_rectangular(self._selectedCells.values())
 
         if not status:
+            logger.error(msg.noCopyRectangularSelectionText)
             QMessageBox.critical(None, msg.noCopyRectangularSelectionTitle,
                                  msg.noCopyRectangularSelectionText,
                                  QMessageBox.Close)
-            logger.error(msg.noCopyRectangularSelectionText)
             return 
 
         self._copySelection.clear()
@@ -1200,10 +1200,10 @@ class PatternCanvas(QGraphicsScene):
 
         # check first if we can paste at all
         if (not self._copySelectionDim) or (not self._copySelection):
+            logger.error(msg.noCopySelectionText)
             QMessageBox.critical(None, msg.noCopySelectionTitle,
                                  msg.noCopySelectionText,
                                  QMessageBox.Close)
-            logger.error(msg.noCopySelectionText)
             return 
 
         # check if we have a selection and the pattern fits
@@ -1217,10 +1217,10 @@ class PatternCanvas(QGraphicsScene):
         # without selection or user mouse clicking on canvas we can't
         # paste
         if not status and not (column or row):
+            logger.error(msg.noPasteSelectionText)
             QMessageBox.critical(None, msg.noPasteSelectionTitle,
                                  msg.noPasteSelectionText,
                                  QMessageBox.Close)
-            logger.error(msg.noPasteSelectionText)
             return 
 
         # we have a selection
@@ -1254,20 +1254,20 @@ class PatternCanvas(QGraphicsScene):
                 self._undoStack.endMacro()
 
             else:
+                logger.error(msg.noPasteGeometryText)
                 QMessageBox.critical(None, msg.noPasteGeometryTitle,
                                     msg.noPasteGeometryText,
                                     QMessageBox.Close)
-                logger.error(msg.noPasteGeometryText)
                 return 
 
         # user clicked directly on canvas
         else:
             if not self._rectangle_self_contained(column, row, pasteColDim,
                                                 pasteRowDim):
+                logger.error(msg.badPasteSelectionText)
                 QMessageBox.critical(None, msg.badPasteSelectionTitle,
                                     msg.badPasteSelectionText,
                                     QMessageBox.Close)
-                logger.error(msg.badPasteSelectionText)
                 return 
 
             # we can paste - go ahead
@@ -1471,10 +1471,10 @@ class PatternCanvas(QGraphicsScene):
 
         markedRows = self.marked_rows()
         if (not markedRows) or (not self.can_delete_row_repeat()):
+            logger.error(msg.cannotAddRowRepeatText)
             QMessageBox.critical(None, msg.cannotDeleteRowRepeatTitle,
                                  msg.cannotDeleteRowRepeatText,
                                  QMessageBox.Close)
-            logger.error(msg.cannotAddRowRepeatText)
             return 
 
         assert(self.marked_rows())
@@ -1509,10 +1509,10 @@ class PatternCanvas(QGraphicsScene):
 
         markedRows = self.marked_rows()
         if (not markedRows) or (not self.can_add_row_repeat()):
+            logger.error(msg.cannotAddRowRepeatText)
             QMessageBox.critical(None, msg.cannotAddRowRepeatTitle,
                                  msg.cannotAddRowRepeatText,
                                  QMessageBox.Close)
-            logger.error(msg.cannotAddRowRepeatText)
             return 
 
         # fire up dialog to ask for number of repeats
@@ -1566,10 +1566,10 @@ class PatternCanvas(QGraphicsScene):
         # tell the user
         pivotRows = self.marked_rows() 
         if len(pivotRows) != 1:
+            logger.error(msg.selectSingleRowText)
             QMessageBox.critical(None, msg.selectSingleRowTitle,
                                  msg.selectSingleRowText,
                                  QMessageBox.Close)
-            logger.error(msg.selectSingleRowText)
             return 
 
         rowPivot = pivotRows[0] 
@@ -1597,10 +1597,10 @@ class PatternCanvas(QGraphicsScene):
         # tell the user
         deadRows = self.marked_rows() 
         if not deadRows:
+            logger.error(msg.selectCompleteRowsText)
             QMessageBox.critical(None, msg.selectCompleteRowsTitle,
                                  msg.selectCompleteRowsText,
                                  QMessageBox.Close)
-            logger.error(msg.selectCompleteRowsText)
             return 
 
 
@@ -1678,10 +1678,10 @@ class PatternCanvas(QGraphicsScene):
         # make sure the user selected only a single column
         pivotColumns = self.marked_columns() 
         if len(pivotColumns) != 1:
+            logger.error(msg.selectSingleColumnText)
             QMessageBox.critical(None, msg.selectSingleColumnTitle,
                                  msg.selectSingleColumnText,
                                  QMessageBox.Close)
-            logger.error(msg.selectSingleColumnText)
             return 
 
 
@@ -1699,10 +1699,10 @@ class PatternCanvas(QGraphicsScene):
             # should always be fine 
             # XXX: target this for removal.
             if not self.can_insert_grid_columns(location):
+                logger.error(msg.noColInsertLayoutText)
                 QMessageBox.critical(None, msg.noColInsertLayoutTitle,
                                      msg.noColInsertLayoutText, 
                                      QMessageBox.Close)
-                logger.error(msg.noColInsertLayoutText)
                 return 
 
             insertColCommand = InsertColumns(self, numColumns, pivot, 
@@ -1773,10 +1773,10 @@ class PatternCanvas(QGraphicsScene):
         # complete columns
         deadColumns = self.marked_columns() 
         if not deadColumns or not self.can_delete_grid_columns():
+            logger.error(msg.noColDeleteLayoutText)
             QMessageBox.critical(None, msg.noColDeleteLayoutTitle,
                                  msg.noColDeleteLayoutText,
                                  QMessageBox.Close)
-            logger.error(msg.noColDeleteLayoutText)
             return 
 
         deleteColumnsCommand = DeleteColumns(self, deadColumns)

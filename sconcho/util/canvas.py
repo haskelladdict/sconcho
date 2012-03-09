@@ -623,10 +623,10 @@ def load_pattern_grid_items(patternGridItemInfo, knittingSymbols,
                                         symbol, color))
 
     except KeyError as e:
+        logger.error(msg.errorLoadingGridText % e)
         QMessageBox.critical(None, msg.errorLoadingGridTitle,
                              msg.errorLoadingGridText % e,
                              QMessageBox.Close)
-        logger.error(msg.errorLoadingGridText % e)
         return None
 
     return allPatternGridItems
@@ -660,10 +660,10 @@ def load_legend_items(legendItemInfo):
             allLegendItems.append((legendID, itemXPos, itemYPos, 
                                    labelXPos, labelYPos, description))
     except KeyError as e:
+        logger.error(msg.errorLoadingLegendText % e)
         QMessageBox.critical(None, msg.errorLoadingLegendTitle,
                              msg.errorLoadingLegendText % e,
                              QMessageBox.Close)
-        logger.error(msg.errorLoadingLegendText % e)
         return None
 
     return allLegendItems
@@ -684,10 +684,10 @@ def load_patternRepeat_items(repeatItemInfo):
             allPatternRepeatItems[itemID] = ((itemLineInfo, itemLineWidth,
                                               itemPosition, itemColor))
     except KeyError as e:
+        logger.error(msg.errorLoadingRepeatBoxText % e)
         QMessageBox.critical(None, msg.errorLoadingRepeatBoxTitle,
                              msg.errorLoadingRepeatBoxText % e,
                              QMessageBox.Close)
-        logger.error(msg.errorLoadingRepeatBoxText % e)
         return None
 
     return allPatternRepeatItems
@@ -710,10 +710,10 @@ def load_patternRepeatLegend_items(repeatLegendInfo):
                                                  textItemPosition,
                                                  itemText))
     except KeyError as e:
+        logger.error(msg.errorLoadingRepeatBoxLegendText % e)
         QMessageBox.critical(None, msg.errorLoadingRepeatBoxLegendTitle,
                              msg.errorLoadingRepeatBoxLegendText % e,
                              QMessageBox.Close)
-        logger.error(msg.errorLoadingRepeatBoxLegendText % e)
         return None
 
     return allPatternRepeatLegendItems
@@ -732,10 +732,10 @@ def load_text_items(textItemInfo):
             allTextItems.append((itemPosition, itemText))
 
     except KeyError as e:
+        logger.error(msg.errorLoadingTextItemsText % e)
         QMessageBox.critical(None, msg.errorLoadingTextItemsTitle,
                              msg.errorLoadingTextItemsText % e,
                              QMessageBox.Close)
-        logger.error(msg.errorLoadingTextItemsText % e)
         return None
 
     return allTextItems

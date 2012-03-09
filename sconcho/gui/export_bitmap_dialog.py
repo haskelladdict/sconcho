@@ -418,10 +418,10 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         exportFilePath = self.fileNameEdit.text()
 
         if not exportFilePath:
+            logger.warn(msg.noFilePathText)
             QMessageBox.warning(self, msg.noFilePathTitle,
                                 msg.noFilePathText,
                                 QMessageBox.Close)
-            logger.warn(msg.noFilePathText)
             return
 
         # check if a filename was provided - if not we open the
