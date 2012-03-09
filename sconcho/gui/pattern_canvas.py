@@ -1126,6 +1126,25 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    def _get_pattern_canvas_entries_in_rectangle(self, xPos, yPos, xDim, yDim):
+        """ Returns the canvas items under the given rectangle
+        as PatternCanvasEntries. """
+
+        deadItems = self._get_pattern_grid_items_in_rectangle(xPos, yPos,
+                                                              xDim, yDim)
+        deadSelection = {}
+        for item in deadItems:
+            itemID = get_item_id(item.column, item.row) 
+            deadSelection[itemID] = PatternCanvasEntry(item.column, 
+                                                       item.row, 
+                                                       item.width, 
+                                                       item.color, 
+                                                       item.symbol)
+
+        return deadSelection
+
+
+
     def _get_pattern_grid_items_in_rectangle(self, column, row, numCols,
                                              numRows):
         """ Given a (col, row) origin and the number of columns
@@ -1153,25 +1172,6 @@ class PatternCanvas(QGraphicsScene):
         patternGridItems = extract_patternItems(allItems, PatternGridItem)
 
         return patternGridItems
-
-
-    def _get_pattern_canvas_entries_in_rectangle(self, xPos, yPos, xDim, yDim):
-        """ Returns the canvas items under the given rectangle
-        as PatternCanvasEntries. """
-
-        deadItems = self._get_pattern_grid_items_in_rectangle(xPos, yPos,
-                                                              xDim, yDim)
-        deadSelection = {}
-        for item in deadItems:
-            itemID = get_item_id(item.column, item.row) 
-            deadSelection[itemID] = PatternCanvasEntry(item.column, 
-                                                       item.row, 
-                                                       item.width, 
-                                                       item.color, 
-                                                       item.symbol)
-
-        return deadSelection
-
 
 
 
