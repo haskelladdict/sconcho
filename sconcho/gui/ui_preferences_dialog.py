@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Fri Mar  9 10:42:53 2012
+# Created: Sat Mar 17 11:09:57 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -363,18 +363,18 @@ class Ui_PreferencesDialog(object):
         self.label_11.setText(QtGui.QApplication.translate("PreferencesDialog", "Style", None, QtGui.QApplication.UnicodeUTF8))
         self.label_12.setText(QtGui.QApplication.translate("PreferencesDialog", "Size", None, QtGui.QApplication.UnicodeUTF8))
         self.showRowLabelChecker.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Show Row Labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelAllRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show all  rows", None, QtGui.QApplication.UnicodeUTF8))
+        self.labelAllRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show all  row labels", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("PreferencesDialog", "row labels start with", None, QtGui.QApplication.UnicodeUTF8))
-        self.showOddRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show odd rows only", None, QtGui.QApplication.UnicodeUTF8))
-        self.showEvenRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show even rows only", None, QtGui.QApplication.UnicodeUTF8))
+        self.showOddRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show only odd row labels", None, QtGui.QApplication.UnicodeUTF8))
+        self.showEvenRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show only even row labels", None, QtGui.QApplication.UnicodeUTF8))
         self.showRowsWithIntervalButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show only every ", None, QtGui.QApplication.UnicodeUTF8))
         self.rowLabelsStartLabel.setText(QtGui.QApplication.translate("PreferencesDialog", "label starting at row", None, QtGui.QApplication.UnicodeUTF8))
         self.label_13.setText(QtGui.QApplication.translate("PreferencesDialog", "odd row label location", None, QtGui.QApplication.UnicodeUTF8))
-        self.oddRowLabelLocationComboBox.setItemText(0, QtGui.QApplication.translate("PreferencesDialog", "right of pattern", None, QtGui.QApplication.UnicodeUTF8))
-        self.oddRowLabelLocationComboBox.setItemText(1, QtGui.QApplication.translate("PreferencesDialog", "left of pattern", None, QtGui.QApplication.UnicodeUTF8))
+        self.oddRowLabelLocationComboBox.setItemText(0, QtGui.QApplication.translate("PreferencesDialog", "right of chart", None, QtGui.QApplication.UnicodeUTF8))
+        self.oddRowLabelLocationComboBox.setItemText(1, QtGui.QApplication.translate("PreferencesDialog", "left of chart", None, QtGui.QApplication.UnicodeUTF8))
         self.label_9.setText(QtGui.QApplication.translate("PreferencesDialog", "even row label location", None, QtGui.QApplication.UnicodeUTF8))
-        self.evenRowLabelLocationComboBox.setItemText(0, QtGui.QApplication.translate("PreferencesDialog", "right of pattern", None, QtGui.QApplication.UnicodeUTF8))
-        self.evenRowLabelLocationComboBox.setItemText(1, QtGui.QApplication.translate("PreferencesDialog", "left of pattern", None, QtGui.QApplication.UnicodeUTF8))
+        self.evenRowLabelLocationComboBox.setItemText(0, QtGui.QApplication.translate("PreferencesDialog", "right of chart", None, QtGui.QApplication.UnicodeUTF8))
+        self.evenRowLabelLocationComboBox.setItemText(1, QtGui.QApplication.translate("PreferencesDialog", "left of chart", None, QtGui.QApplication.UnicodeUTF8))
         self.showColumnLabelChecker.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Show Column Labels", None, QtGui.QApplication.UnicodeUTF8))
         self.labelAllColumnsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "label all columns", None, QtGui.QApplication.UnicodeUTF8))
         self.showColumnsWithIntervalButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show only every ", None, QtGui.QApplication.UnicodeUTF8))

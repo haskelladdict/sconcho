@@ -184,7 +184,7 @@
             <item>
              <widget class="QRadioButton" name="labelAllRowsButton">
               <property name="text">
-               <string>show all  rows</string>
+               <string>show all  row labels</string>
               </property>
               <property name="checked">
                <bool>true</bool>
@@ -236,7 +236,7 @@
           <item>
            <widget class="QRadioButton" name="showOddRowsButton">
             <property name="text">
-             <string>show odd rows only</string>
+             <string>show only odd row labels</string>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -246,7 +246,7 @@
           <item>
            <widget class="QRadioButton" name="showEvenRowsButton">
             <property name="text">
-             <string>show even rows only</string>
+             <string>show only even row labels</string>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -333,12 +333,12 @@
              <widget class="QComboBox" name="oddRowLabelLocationComboBox">
               <item>
                <property name="text">
-                <string>right of pattern</string>
+                <string>right of chart</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>left of pattern</string>
+                <string>left of chart</string>
                </property>
               </item>
              </widget>
@@ -374,12 +374,12 @@
              <widget class="QComboBox" name="evenRowLabelLocationComboBox">
               <item>
                <property name="text">
-                <string>right of pattern</string>
+                <string>right of chart</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>left of pattern</string>
+                <string>left of chart</string>
                </property>
               </item>
              </widget>
