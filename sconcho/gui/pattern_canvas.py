@@ -1858,12 +1858,12 @@ class PatternCanvas(QGraphicsScene):
         self.clear()
         self.update()
 
-
         # clear all caches
         self.gridLegend.clear()
         self.repeatLegend.clear()
         self.canvasTextBoxes.clear()
         self._selectedCells = {}                                          
+        self._textLabels = []
         self._undoStack.clear()
         self._copySelection = {}
 
@@ -1878,8 +1878,11 @@ class PatternCanvas(QGraphicsScene):
         self._numColumns = numColumns
         
         self._clear_canvas()
-        self._textLabels = []
         self.set_up_main_grid()
+        # NOTE: This is a windows hack, without it the view
+        # doesn't reset, no scrollbars appear and the canvas
+        # is partially hidden
+        self.setSceneRect(self.sceneRect())
         self.finalize_grid_change()
 
 
