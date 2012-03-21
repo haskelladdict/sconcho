@@ -32,7 +32,7 @@ from sys import maxint
 from PyQt4.QtCore import (QPointF)
 from PyQt4.QtGui import (QMessageBox, QColor)
 
-import util.messages as msg 
+import sconcho.util.messages as msg 
 
 
 # module lever logger:

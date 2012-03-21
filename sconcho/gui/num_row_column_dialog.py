@@ -34,7 +34,7 @@ except ImportError:
 from PyQt4.QtCore import (SIGNAL, QDir)
 from PyQt4.QtGui import (QDialog)
 
-from gui.ui_num_row_column_dialog import Ui_NumRowColumnDialog
+from sconcho.gui.ui_num_row_column_dialog import Ui_NumRowColumnDialog
 
 
 

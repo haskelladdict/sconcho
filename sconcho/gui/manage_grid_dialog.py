@@ -31,8 +31,8 @@ except ImportError:
 
 from PyQt4.QtCore import (Qt, SIGNAL)
 from PyQt4.QtGui import (QDialog, QMessageBox)
-from sconcho.gui.ui_manage_grid_dialog import Ui_ManageGridDialog
-import util.messages as msg
+from sconcho.sconcho.gui.ui_manage_grid_dialog import Ui_ManageGridDialog
+import sconcho.util.messages as msg
 
 
 ##########################################################################

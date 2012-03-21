@@ -60,14 +60,14 @@ from PyQt4.QtGui import (QAction,
                          QUndoStack)
 from PyQt4.QtSvg import (QGraphicsSvgItem) 
 
-from util.canvas import * 
-from util.misc import wait_cursor
-from gui.pattern_repeat_dialog import PatternRepeatDialog
-from gui.row_repeat_number_dialog import RowRepeatNumDialog
-from gui.num_row_column_dialog import NumRowColumnDialog
-from gui.undo_framework import *
-from gui.pattern_canvas_objects import *
-import util.messages as msg
+from sconcho.util.canvas import * 
+from sconcho.util.misc import wait_cursor
+from sconcho.gui.pattern_repeat_dialog import PatternRepeatDialog
+from sconcho.gui.row_repeat_number_dialog import RowRepeatNumDialog
+from sconcho.gui.num_row_column_dialog import NumRowColumnDialog
+from sconcho.gui.undo_framework import *
+from sconcho.gui.pattern_canvas_objects import *
+import sconcho.util.messages as msg
 
 # module lever logger:
 logger = logging.getLogger(__name__)

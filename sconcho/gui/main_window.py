@@ -48,27 +48,27 @@ from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QPrinter, QPrintDialog, QPrintPreviewDialog,)
 from PyQt4.QtSvg import QSvgWidget
 
-from gui.ui_main_window import Ui_MainWindow
-import util.messages as msg
-import util.settings as settings
-import util.misc as misc
-import util.io as io
-import util.symbol_parser as parser
-from gui.symbol_widget import (generate_symbolWidgets, 
+from sconcho.gui.ui_main_window import Ui_MainWindow
+import sconcho.util.messages as msg
+import sconcho.util.settings as settings
+import sconcho.util.misc as misc
+import sconcho.util.io as io
+import sconcho.util.symbol_parser as parser
+from sconcho.gui.symbol_widget import (generate_symbolWidgets, 
                                        SymbolSynchronizer,
                                        symbols_by_category,
                                        add_to_category_widget,
                                        remove_from_category_widget,
                                        generate_category_widget)
-from gui.color_widget import (ColorWidget, ColorSynchronizer)
-from gui.pattern_canvas import PatternCanvas
-from gui.export_bitmap_dialog import ExportBitmapDialog
-from gui.new_pattern_dialog import NewPatternDialog
-from gui.preferences_dialog import PreferencesDialog
-from gui.sconcho_manual import SconchoManual
-from gui.update_dialog import UpdateDialog
-from gui.manage_symbol_dialog import ManageSymbolDialog
-from util.exceptions import PatternReadError
+from sconcho.gui.color_widget import (ColorWidget, ColorSynchronizer)
+from sconcho.gui.pattern_canvas import PatternCanvas
+from sconcho.gui.export_bitmap_dialog import ExportBitmapDialog
+from sconcho.gui.new_pattern_dialog import NewPatternDialog
+from sconcho.gui.preferences_dialog import PreferencesDialog
+from sconcho.gui.sconcho_manual import SconchoManual
+from sconcho.gui.update_dialog import UpdateDialog
+from sconcho.gui.manage_symbol_dialog import ManageSymbolDialog
+from sconcho.util.exceptions import PatternReadError
 
 # module lever logger:
 logger = logging.getLogger(__name__)

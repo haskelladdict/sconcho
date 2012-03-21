@@ -37,11 +37,11 @@ except ImportError:
 
 from PyQt4.QtCore import (QSettings, QVariant)
 from PyQt4.QtGui import QApplication
-from gui.main_window import MainWindow
-import util.symbol_parser as parser
-import util.messages as msg
-import util.settings as settings
-import util.misc as misc
+from sconcho.gui.main_window import MainWindow
+import sconcho.util.symbol_parser as parser
+import sconcho.util.messages as msg
+import sconcho.util.settings as settings
+import sconcho.util.misc as misc
 
 # module level logger:
 logger = logging.getLogger(__name__)
@@ -146,7 +146,7 @@ def initialize_logger(logHandle):
 
 def main(fileName=None):
     """ This is a simple wrapper for starting the main
-    sconcho gui. 
+    sconcho sconcho.gui. 
 
     For now we check if any command line arguments were
     passed. If yes, we assume the first one was meant to

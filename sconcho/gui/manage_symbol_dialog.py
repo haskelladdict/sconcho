@@ -38,13 +38,13 @@ from PyQt4.QtGui import (QDialog, QTreeWidgetItem, QFileDialog,
                          QMessageBox, QInputDialog, QLineEdit)
 from PyQt4.QtSvg import (QSvgWidget)
 
-from gui.ui_manage_symbol_dialog import Ui_ManageKnittingSymbolDialog
-from util.symbol_parser import (parse_all_symbols, 
+from sconcho.gui.ui_manage_symbol_dialog import Ui_ManageKnittingSymbolDialog
+from sconcho.util.symbol_parser import (parse_all_symbols, 
                                         create_new_symbol,
                                         remove_symbol, move_symbol, 
                                         SymbolTempDir)
-import util.messages as msg
-import gui.symbol_widget as symbolWidget
+import sconcho.util.messages as msg
+import sconcho.gui.symbol_widget as symbolWidget
 
 # module lever logger:
 logger = logging.getLogger(__name__)

@@ -29,8 +29,8 @@ from functools import partial
 from PyQt4.QtCore import (SIGNAL)
 from PyQt4.QtGui import (QDialog, QTableWidgetItem, QMessageBox)
 
-import util.messages as msg
-from gui.ui_pattern_row_repeat_editor_dialog import Ui_PatternRowRepeatEditor
+import sconcho.util.messages as msg
+from sconcho.gui.ui_pattern_row_repeat_editor_dialog import Ui_PatternRowRepeatEditor
 
 
 

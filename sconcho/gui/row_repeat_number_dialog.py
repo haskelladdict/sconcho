@@ -34,7 +34,7 @@ except ImportError:
 from PyQt4.QtCore import (SIGNAL, QDir)
 from PyQt4.QtGui import (QDialog)
 
-from gui.ui_row_repeat_number_dialog import Ui_RowRepeatNumDialog
+from sconcho.gui.ui_row_repeat_number_dialog import Ui_RowRepeatNumDialog
 
 
 

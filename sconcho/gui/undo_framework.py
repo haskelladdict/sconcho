@@ -35,7 +35,7 @@ except ImportError:
 from PyQt4.QtCore import (Qt, QPointF, SIGNAL) 
 from PyQt4.QtGui import (QUndoCommand, QColor)
 
-from util.canvas import (get_item_id, 
+from sconcho.util.canvas import (get_item_id, 
                          chunkify_cell_arrangement,
                          order_selection_by_rows,
                          order_selection_by_columns,
@@ -47,7 +47,7 @@ from util.canvas import (get_item_id,
                          shift_selection_horizontally,
                          PatternCanvasEntry)
 
-from gui.pattern_canvas_objects import (RepeatLegendItem,
+from sconcho.gui.pattern_canvas_objects import (RepeatLegendItem,
                                         PatternLegendText,
                                         PatternTextItem) 
 

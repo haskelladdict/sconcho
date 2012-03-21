@@ -37,8 +37,8 @@ from PyQt4.QtCore import (Qt, SIGNAL, QDir, QFileInfo, QFile)
 from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
                          QImageWriter, QDialogButtonBox)
 
-from gui.ui_export_bitmap_dialog import Ui_ExportBitmapDialog
-import util.messages as msg
+from sconcho.gui.ui_export_bitmap_dialog import Ui_ExportBitmapDialog
+import sconcho.util.messages as msg
 
 
 # module lever logger:

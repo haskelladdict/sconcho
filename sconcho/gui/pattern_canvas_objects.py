@@ -51,8 +51,8 @@ from PyQt4.QtGui import (QPen,
                          QCursor)
 from PyQt4.QtSvg import (QGraphicsSvgItem) 
 
-from util.canvas import * 
-import util.messages as msg
+from sconcho.util.canvas import * 
+import sconcho.util.messages as msg
 
 # module lever logger:
 logger = logging.getLogger(__name__)

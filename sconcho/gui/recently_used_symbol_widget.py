@@ -30,7 +30,7 @@ from PyQt4.QtGui import (QWidget, QFrame, QGridLayout, QColor,
 from PyQt4.QtSvg import QSvgWidget
 
 
-from gui.symbol_widget import (SymbolSelectorItem,
+from sconcho.gui.symbol_widget import (SymbolSelectorItem,
                                SymbolSynchronizer)
 
 

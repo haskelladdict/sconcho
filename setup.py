@@ -45,8 +45,10 @@ def get_symbol_files():
 if __name__ == "__main__":
 
     check_dependencies()
-    symbolFiles = get_symbol_files()
-    symbolFiles.append('doc/manual.html')
+    dataFiles = get_symbol_files()
+
+    #make sure we copy the manual
+    dataFiles.append('doc/manual.html')
 
     setup(name='sconcho',
         version='0.1.0_rc4',
@@ -56,7 +58,6 @@ if __name__ == "__main__":
         url='http://sconcho.sourceforge.net/',
         license='GNU GPLv3',
         packages=['sconcho', 'sconcho.util', 'sconcho.gui'], 
-        package_data = {'sconcho': symbolFiles}, 
-        data_files = [('doc', 'doc/manual.html')],
+        package_data = {'sconcho': dataFiles}, 
         scripts=['sconcho.pyw']
         )
