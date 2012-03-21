@@ -46,6 +46,7 @@ if __name__ == "__main__":
 
     check_dependencies()
     symbolFiles = get_symbol_files()
+    symbolFiles.append('doc/manual.html')
 
     setup(name='sconcho',
         version='0.1.0_rc4',
@@ -56,5 +57,6 @@ if __name__ == "__main__":
         license='GNU GPLv3',
         packages=['sconcho', 'sconcho.util', 'sconcho.gui'], 
         package_data = {'sconcho': symbolFiles}, 
+        data_files = [('doc', 'doc/manual.html')],
         scripts=['sconcho.pyw']
         )
