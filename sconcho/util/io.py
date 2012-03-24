@@ -587,25 +587,20 @@ def read_settings(stream, settings, version):
     # same API we rely on stream.readInt32 and friends to return 0 on EOF
     if version > 1:
         labelStart = stream.readInt32()
-        if labelStart:
-            settings.rowLabelStart.value = labelStart
+        settings.rowLabelStart.value = labelStart
 
         evenRowLabelLocation = stream.readInt32()
-        if evenRowLabelLocation:
-            settings.evenRowLabelLocation.value = \
+        settings.evenRowLabelLocation.value = \
                 get_row_label_location_string(evenRowLabelLocation)
 
         highlightRows = stream.readInt32()
-        if highlightRows:
-            settings.highlightRows.value = highlightRows
+        settings.highlightRows.value = highlightRows
 
         highlightRowsOpacity = stream.readInt32()
-        if highlightRowsOpacity:
-            settings.highlightRowsOpacity.value = highlightRowsOpacity
+        settings.highlightRowsOpacity.value = highlightRowsOpacity
 
         highlightRowsStart = stream.readInt32()
-        if highlightRowsStart:
-            settings.highlightRowsStart.value = highlightRowsStart
+        settings.highlightRowsStart.value = highlightRowsStart
 
         highlightRowsColor = stream.readQString()
         if highlightRowsColor:
@@ -615,32 +610,26 @@ def read_settings(stream, settings, version):
         # NOTE: The row settings aren't combined with the rest to
         # remain backward compatible.
         oddRowLabelLocation = stream.readInt32()
-        if oddRowLabelLocation:
-            settings.oddRowLabelLocation.value = \
+        settings.oddRowLabelLocation.value = \
                 get_row_label_location_string(oddRowLabelLocation)
 
         rowLabelsShowInterval = stream.readInt32()
-        if rowLabelsShowInterval:
-            settings.rowLabelsShowInterval.value = rowLabelsShowInterval
+        settings.rowLabelsShowInterval.value = rowLabelsShowInterval
 
         rowLabelsShowIntervalStart = stream.readInt32()
-        if rowLabelsShowIntervalStart:
-            settings.rowLabelsShowIntervalStart.value = \
+        settings.rowLabelsShowIntervalStart.value = \
                 rowLabelsShowIntervalStart
 
         columnLabelMode = stream.readInt32()
-        if columnLabelMode:
-            settings.columnLabelMode.value = \
+        settings.columnLabelMode.value = \
                 get_column_label_identifier(columnLabelMode)
 
         columnLabelsShowInterval = stream.readInt32()
-        if columnLabelsShowInterval:
-            settings.columnLabelsShowInterval.value = \
+        settings.columnLabelsShowInterval.value = \
                 columnLabelsShowInterval
 
         columnLabelsShowIntervalStart = stream.readInt32()
-        if columnLabelsShowIntervalStart:
-            settings.columnLabelsShowIntervalStart.value = \
+        settings.columnLabelsShowIntervalStart.value = \
                 columnLabelsShowIntervalStart
 
         # reat 200 dummy bytes so we can add more items
