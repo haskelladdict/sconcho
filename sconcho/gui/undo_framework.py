@@ -308,7 +308,6 @@ class InsertRows(QUndoCommand):
         """
 
         self.canvas.finalize_grid_change()
-        self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
 
 
@@ -550,7 +549,6 @@ class DeleteRows(QUndoCommand):
         """
 
         self.canvas.finalize_grid_change()
-        self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
 
 
@@ -672,7 +670,6 @@ class InsertColumns(QUndoCommand):
         """
 
         self.canvas.finalize_grid_change()
-        self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
 
 
@@ -884,7 +881,6 @@ class DeleteColumns(QUndoCommand):
         """
 
         self.canvas.finalize_grid_change()
-        self.canvas.emit(SIGNAL("adjust_view"))
         self.canvas.emit(SIGNAL("scene_changed"))
 
 

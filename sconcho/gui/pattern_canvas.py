@@ -1909,9 +1909,9 @@ class PatternCanvas(QGraphicsScene):
         """
 
         allPatternGridItems = load_pattern_grid_items(patternGridItemInfo,
-                                                      knittingSymbols,
-                                                      self._unitCellDim.width(),
-                                                      self._unitCellDim.height())
+                                           knittingSymbols,
+                                           self._unitCellDim.width(),
+                                           self._unitCellDim.height())
         if allPatternGridItems == None:
             return False
 
