@@ -280,6 +280,12 @@ class PatternCanvas(QGraphicsScene):
 
         self.set_up_labels()
         self.set_up_highlighted_rows()
+
+        # NOTE: This is a windows hack, without it the view
+        # doesn't reset, no scrollbars appear and the canvas
+        # is partially hidden
+        self.setSceneRect(self.sceneRect())
+
         self.invalidate()
 
 
@@ -1879,10 +1885,6 @@ class PatternCanvas(QGraphicsScene):
         
         self._clear_canvas()
         self.set_up_main_grid()
-        # NOTE: This is a windows hack, without it the view
-        # doesn't reset, no scrollbars appear and the canvas
-        # is partially hidden
-        self.setSceneRect(self.sceneRect())
         self.finalize_grid_change()
 
 
