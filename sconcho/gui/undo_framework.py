@@ -60,6 +60,91 @@ logger = logging.getLogger(__name__)
 # the following classes encapsulate actions for the Undo/Redo framework
 #
 ###########################################################################
+class PasteCellsNew(QUndoCommand):
+    """ This class encapsulates the paste action. I.e. all
+    items in our copySelection are pasted into the dead Selection.
+
+    NOTE: The calling code has to make sure that deadSelection
+    has the proper dimension to fit copySelection.
+
+    """
+
+
+
+    def __init__(self, canvas, copySelection, deadSelection, 
+                 column, row, minCol, minRow, parent = None):
+
+        super(PasteCellsNew, self).__init__(parent)
+        self.setText("paste cells")
+        self.canvas = canvas
+        self.copySelection = copySelection.copy()
+        self.deadSelection = deadSelection.copy()
+        self.column = column
+        self.row = row
+        self.minColumn = minCol
+        self.minRow = minRow
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        # delete previous items
+        for entry in self.deadSelection.values():
+            item = self.canvas._item_at_row_col(entry.row, entry.column)
+            if item:
+                self.canvas.removeItem(item)
+                del item
+
+        # add new items; shift them to the proper column and row:
+        # we shift the upper left corner to (0,0) and then the 
+        # whole selection to the target location (self.column, self.row)
+        for entry in self.copySelection.values():
+            column = entry.column - self.minColumn + self.column
+            row    = entry.row - self.minRow + self.row
+
+            location = QPointF(column * self.canvas._unitCellDim.width(),
+                               row * self.canvas._unitCellDim.height())
+            item = self.canvas.create_pattern_grid_item(location, 
+                                                     column, row,
+                                                     entry.width, 1,
+                                                     entry.symbol, 
+                                                     entry.color)
+            self.canvas.addItem(item)
+
+
+
+    def undo(self):
+        """ The undo action. """
+       
+        # remove previously pasted cells
+        #for colID in range(self.column, self.column + self.numColumns):
+        #    for rowID in range(self.row, self.row + self.numRows):
+        for entry in self.copySelection.values():
+            column = entry.column - self.minColumn + self.column
+            row = entry.row - self.minRow + self.row
+            item = self.canvas._item_at_row_col(row, column)
+            if item:
+                self.canvas.removeItem(item)
+                del item
+
+
+        # re-add previously deleted cells
+        for entry in self.deadSelection.values():
+            column = entry.column
+            row = entry.row
+
+            location = QPointF(column * self.canvas._unitCellDim.width(),
+                               row * self.canvas._unitCellDim.height())
+            item = self.canvas.create_pattern_grid_item(location, 
+                                                     column, row,
+                                                     entry.width, 1,
+                                                     entry.symbol, 
+                                                     entry.color)
+            self.canvas.addItem(item)
+
+
+
 class PasteCells(QUndoCommand):
     """ This class encapsulates the paste action. I.e. all
     items in our copySelection are pasted into the dead Selection.
@@ -83,6 +168,7 @@ class PasteCells(QUndoCommand):
         self.row = row
         self.numColumns = numCols
         self.numRows = numRows
+
 
 
     def _get_upper_left(self, selection):

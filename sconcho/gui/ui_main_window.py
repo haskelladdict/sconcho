@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Mar 17 11:09:56 2012
+# Created: Sat Mar 24 17:43:51 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -500,9 +500,9 @@ class Ui_MainWindow(object):
         self.actionDelete_columns.setText(QtGui.QApplication.translate("MainWindow", "Delete &Selected Columns", None, QtGui.QApplication.UnicodeUTF8))
         self.actionInsert_columns.setText(QtGui.QApplication.translate("MainWindow", "Insert &Columns", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCreate_Row_Repeat.setText(QtGui.QApplication.translate("MainWindow", "Create &Row Repeat", None, QtGui.QApplication.UnicodeUTF8))
-        self.action_Copy_Rectangular_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Copy Rectangular Selection", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Copy_Rectangular_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Copy", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Copy_Rectangular_Selection.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+C", None, QtGui.QApplication.UnicodeUTF8))
-        self.action_Paste_Rectangular_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Paste Rectangular Selection", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Paste_Rectangular_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Paste ", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Paste_Rectangular_Selection.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+V", None, QtGui.QApplication.UnicodeUTF8))
 
 from active_symbol_widget import ActiveSymbolWidget

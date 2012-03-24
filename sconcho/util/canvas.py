@@ -313,7 +313,7 @@ def get_upper_left_hand_corner(selectedCells):
     """
 
     if not selectedCells:
-        return (None, None)
+        return (None, None, None)
 
     cellsByRow = order_selection_by_rows(selectedCells)
     minRow = min(cellsByRow.keys())
@@ -323,12 +323,12 @@ def get_upper_left_hand_corner(selectedCells):
         if item.column < minCol:
             minCol = item.column
 
-    return (minRow, minCol)
+    return (minRow, minCol, cellsByRow)
 
 
 
-def is_active_selection_rectangular(selectedCells):
-    """ This function checks if the currently active selection 
+def is_selection_rectangular(selectedCells):
+    """ This function checks if the provided selection 
     is rectangular (i.e., not jagged or disconnected).
     The function returns (True, (col, row)) if yes and (False, (0,0)) 
     otherwise. Here, col and row and the number of columns and rows

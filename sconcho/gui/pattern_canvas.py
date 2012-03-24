@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import logging
+from platform import system
 from functools import partial
 
 try:
@@ -106,7 +107,7 @@ class PatternCanvas(QGraphicsScene):
         self.columnLabelTracker = ColumnLabelTracker(self)
 
         self._copySelection = {}
-        self._copySelectionDim = None
+        #self._copySelectionDim = None
 
         self._textLabels = []
         self.gridLegend = {}
@@ -284,7 +285,9 @@ class PatternCanvas(QGraphicsScene):
         # NOTE: This is a windows hack, without it the view
         # doesn't reset, no scrollbars appear and the canvas
         # is partially hidden
-        dummy = self.sceneRect()
+        # WINDOWS
+        if system() == 'Windows':
+            self.sceneRect()
 
         self.invalidate()
 
@@ -887,13 +890,13 @@ class PatternCanvas(QGraphicsScene):
 
         # copy action
         copyIcon = QIcon(":/icons/copy.png")
-        copyAction = gridMenu.addAction(copyIcon, "&Copy Rectangular Selection")
+        copyAction = gridMenu.addAction(copyIcon, "&Copy")
         self.connect(copyAction, SIGNAL("triggered()"),
                      self.copy_selection)
 
         # paste action
         pasteIcon = QIcon(":/icons/paste.png")
-        pasteAction = gridMenu.addAction(pasteIcon, "&Paste Rectangular Selection")
+        pasteAction = gridMenu.addAction(pasteIcon, "&Paste")
         self.connect(pasteAction, SIGNAL("triggered()"),
                      partial(self.paste_selection, col, row))
 
@@ -1115,24 +1118,13 @@ class PatternCanvas(QGraphicsScene):
     def copy_selection(self): 
         """ This slot copies the current selection if rectangular. """
 
-        (status, (colDim, rowDim)) = \
-            is_active_selection_rectangular(self._selectedCells.values())
-
-        if not status:
-            logger.error(msg.noCopyRectangularSelectionText)
-            QMessageBox.critical(None, msg.noCopyRectangularSelectionTitle,
-                                 msg.noCopyRectangularSelectionText,
-                                 QMessageBox.Close)
-            return 
-
         self._copySelection.clear()
         self._copySelection = self._selectedCells.copy()
-        self._copySelectionDim = (colDim, rowDim)
         self.clear_all_selected_cells()
 
 
 
-    def _get_pattern_canvas_entries_in_rectangle(self, xPos, yPos, xDim, yDim):
+    def _patternCanvasEntries_in_rectangle(self, xPos, yPos, xDim, yDim):
         """ Returns the canvas items under the given rectangle
         as PatternCanvasEntries. """
 
@@ -1205,32 +1197,24 @@ class PatternCanvas(QGraphicsScene):
         """
 
         # check first if we can paste at all
-        if (not self._copySelectionDim) or (not self._copySelection):
+        #if (not self._copySelectionDim) or (not self._copySelection):
+        if not self._copySelection:
             logger.error(msg.noCopySelectionText)
             QMessageBox.critical(None, msg.noCopySelectionTitle,
                                  msg.noCopySelectionText,
                                  QMessageBox.Close)
             return 
 
-        # check if we have a selection and the pattern fits
-        pasteColDim = self._copySelectionDim[0]
-        pasteRowDim = self._copySelectionDim[1]
-        (status, (colDim, rowDim)) = \
-            is_active_selection_rectangular(self._selectedCells.values())
-        (upperLHRow, upperLHColumn) = \
+        # case 1: copy and paste selection are both rectangular
+        (status1, (colDim, rowDim)) = \
+            is_selection_rectangular(self._selectedCells.values())
+        (status2, (pasteColDim, pasteRowDim)) = \
+            is_selection_rectangular(self._copySelection.values())
+        (upperLHRow, upperLHColumn, dummy) = \
             get_upper_left_hand_corner(self._selectedCells.values())
 
-        # without selection or user mouse clicking on canvas we can't
-        # paste
-        if not status and (column == None or row == None):
-            logger.error(msg.noPasteSelectionText)
-            QMessageBox.critical(None, msg.noPasteSelectionTitle,
-                                 msg.noPasteSelectionText,
-                                 QMessageBox.Close)
-            return 
-
-        # we have a selection
-        if status:
+        # we have a rectangular copy and paste selection
+        if status1 and status2:
             
             (n_col, r_col) = divmod(colDim, pasteColDim)
             (n_row, r_row) = divmod(rowDim, pasteRowDim)
@@ -1248,8 +1232,8 @@ class PatternCanvas(QGraphicsScene):
                     
                         colID = upperLHColumn + (colRepeat * pasteColDim) 
                         deadSelection = \
-                            self._get_pattern_canvas_entries_in_rectangle(colID,
-                                                rowID, pasteColDim, pasteRowDim)
+                            self._patternCanvasEntries_in_rectangle(colID,
+                                    rowID, pasteColDim, pasteRowDim)
 
                         pasteCommand = PasteCells(self, self._copySelection,
                                                   deadSelection, colID,
@@ -1267,74 +1251,92 @@ class PatternCanvas(QGraphicsScene):
                 return 
 
         # user clicked directly on canvas
-        else:
-            if not self._rectangle_self_contained(column, row, pasteColDim,
-                                                pasteRowDim):
+        elif (column != None and row != None):
+            (minRow, minCol, deadSelection) = \
+                    self._check_for_partial_overlaps(column, row)
+            if not deadSelection:
                 logger.error(msg.badPasteSelectionText)
                 QMessageBox.critical(None, msg.badPasteSelectionTitle,
                                     msg.badPasteSelectionText,
                                     QMessageBox.Close)
                 return 
 
-            # we can paste - go ahead
-            deadSelection = \
-                self._get_pattern_canvas_entries_in_rectangle(column, row,
-                                                              pasteColDim, 
-                                                              pasteRowDim)
-
-            if deadSelection:
+            else:
                 self.clear_all_selected_cells()
-                pasteCommand = PasteCells(self, self._copySelection,
+                pasteCommand = PasteCellsNew(self, self._copySelection,
                                         deadSelection, column, row,
-                                        pasteColDim, pasteRowDim)
+                                        minCol, minRow)
                 self._undoStack.push(pasteCommand)
+        else:
+            # without selection or user mouse clicking on canvas we can't
+            # paste
+            logger.error(msg.noPasteSelectionText)
+            QMessageBox.critical(None, msg.noPasteSelectionTitle,
+                                 msg.noPasteSelectionText,
+                                 QMessageBox.Close)
+            return 
 
 
 
-    def _rectangle_self_contained(self, column, row, colDim, rowDim):
-        """ This function checks if the rectangle given by the upper
-        left hand corner at (column, row) and width, height of
-        (colDim, rowDim) is self contained, i.e., there are no cells 
-        of width >= 2 not fully contained within.
+
+    def _check_for_partial_overlaps(self, columnId, rowId):
+        """ This function checks if the current copy selection can
+        be pasted at the requested location without leaving symbols
+        partially covered.
 
         """
 
-        if (row + rowDim > self._numRows) or \
-           (column + colDim > self._numColumns):
-            return False
+        invalid = (None, None, None)
+        deadItems = set()
 
-        for rowCount in range(row, row + rowDim):
+        (minRow, minCol, cellsByRow) = \
+                get_upper_left_hand_corner(self._copySelection.values())
+        for (row, rowItems) in cellsByRow.items():
+            tempStorage = {}
+            
+            actRow = rowId + (row - minRow)
+            # make sure we don't copy outside of canvas
+            if (actRow >= self._numRows):
+                return invalid
 
-            # check item at left and past (!) right edge of rectangle
-            leftItem = self._item_at_row_col(rowCount, column)
+            for rowItem in rowItems:
+                actColStart = columnId + (rowItem.column - minCol)
+                
+                for col in range(0, rowItem.width):
+                    actColumn = actColStart + col
 
-            if not leftItem:
-                errorString = ("_rectangle_self_contained: trying to "
-                               "access nonexistent leftItem.")
-                logger.error(errorString)
-                return False
+                    # make sure we don't copy outside of canvas
+                    if (actColumn >= self._numColumns or actColumn < 0):
+                        return invalid
 
-            if (leftItem.width > 1) and (leftItem.column < column):
-                return False
+                    canvasItem = self._item_at_row_col(actRow, actColumn)
+                    deadItems.add(canvasItem)
+                    itemID = id(canvasItem)
+                    if itemID in tempStorage:
+                        (width, count) = tempStorage[itemID]
+                        tempStorage[itemID] = (width, count+1)
+                    else:
+                        tempStorage[itemID] = (canvasItem.width, 1)
 
-            # make sure we don't fall off at the right
-            if (column + colDim < self._numColumns):
-                rightItem = self._item_at_row_col(rowCount, column + colDim)
+            # check for item coverage
+            for (width, coverage) in tempStorage.values():
+                if coverage != width:
+                    return invalid
+            tempStorage.clear()
 
-                if not rightItem:
-                    errorString = ("_rectangle_self_contained: trying to "
-                                   "access nonexistent rightItem.")
-                    logger.error(errorString)
-                    return False
-                    
-                if (rightItem.width > 1) and \
-                   (rightItem.column < column + colDim):
-                    return False
+        # all good - assemble dead items now
+        deadSelection = {}
+        for item in deadItems:
+            itemID = get_item_id(item.column, item.row)
+            deadSelection[itemID] = PatternCanvasEntry(item.column,
+                                                       item.row,
+                                                       item.width,
+                                                       item.color,
+                                                       item.symbol)
+        return (minRow, minCol, deadSelection)
 
-        return True
 
 
-    
     def check_pattern_grid(self):
         """ NOTE: this is a temporary function which will be removed
         in the production version. It allows to query the pattern grid
@@ -1755,7 +1757,7 @@ class PatternCanvas(QGraphicsScene):
         for chunk in columnChunks:
 
             (status, (colDim, rowDim)) = \
-                is_active_selection_rectangular(chunk)
+                is_selection_rectangular(chunk)
 
             # check if we have complete columns
             deadColumns = get_marked_columns(chunk, self._numRows)
