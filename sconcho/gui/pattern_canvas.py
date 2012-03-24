@@ -284,7 +284,7 @@ class PatternCanvas(QGraphicsScene):
         # NOTE: This is a windows hack, without it the view
         # doesn't reset, no scrollbars appear and the canvas
         # is partially hidden
-        self.setSceneRect(self.sceneRect())
+        dummy = self.sceneRect()
 
         self.invalidate()
 
@@ -1832,7 +1832,8 @@ class PatternCanvas(QGraphicsScene):
         for column in range(0, self._numColumns):
             location = QPointF(column * self._unitCellDim.width(),
                                 rowID * self._unitCellDim.height())
-            item = self.create_pattern_grid_item(location, column, rowID, 1, 1,
+            item = self.create_pattern_grid_item(location, column, rowID, 
+                                                 1, 1,
                                                  self._defaultSymbol,
                                                  self._defaultColor)
             self.addItem(item)
