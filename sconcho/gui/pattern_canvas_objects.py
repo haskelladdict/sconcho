@@ -27,6 +27,7 @@ from __future__ import absolute_import
 import logging
 import uuid
 
+
 try:
     from PyQt4.QtCore import QString
 except ImportError:
@@ -50,6 +51,18 @@ from PyQt4.QtGui import (QPen,
                          QApplication, 
                          QCursor)
 from PyQt4.QtSvg import (QGraphicsSvgItem) 
+
+
+# determine if we can to caching of items
+# it seems screwed up for older QT versions
+# and Windows XP seems to choke as well so
+# we turn it off 
+from platform import system
+if QT_VERSION < 0x040703 or system() == 'Windows':
+    NO_ITEM_CACHING = True
+else:
+    NO_ITEM_CACHING = False
+
 
 from sconcho.util.canvas import * 
 import sconcho.util.messages as msg
@@ -77,7 +90,7 @@ class PatternGridItem(QGraphicsSvgItem):
       
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
-        if QT_VERSION < 0x040703:
+        if NO_ITEM_CACHING:
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
@@ -232,7 +245,7 @@ class PatternLegendItem(QGraphicsSvgItem):
 
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
-        if QT_VERSION < 0x040703:
+        if NO_ITEM_CACHING:
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
@@ -406,7 +419,7 @@ class PatternLegendText(QGraphicsTextItem):
 
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
-        if QT_VERSION < 0x040703:
+        if NO_ITEM_CACHING:
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
@@ -533,7 +546,7 @@ class PatternLabelItem(QGraphicsTextItem):
 
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
-        if QT_VERSION < 0x040703:
+        if NO_ITEM_CACHING:
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
@@ -573,7 +586,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
-        if QT_VERSION < 0x040703:
+        if NO_ITEM_CACHING:
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
@@ -773,7 +786,7 @@ class PatternHighlightItem(QGraphicsRectItem):
 
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
-        if QT_VERSION < 0x040703:
+        if NO_ITEM_CACHING:
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
@@ -807,7 +820,7 @@ class RepeatLegendItem(QGraphicsRectItem):
 
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
-        if QT_VERSION < 0x040703:
+        if NO_ITEM_CACHING:
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
@@ -950,7 +963,7 @@ class PatternTextItem(PatternLegendText):
 
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
-        if QT_VERSION < 0x040703:
+        if NO_ITEM_CACHING:
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
