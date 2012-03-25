@@ -327,6 +327,85 @@ def get_upper_left_hand_corner(selectedCells):
 
 
 
+def get_leftmost_column(selectedCells):
+    """ Returns the leftmost columns in the provided list of cells """
+
+    if not selectedCells:
+        return None
+
+    selectedCells.sort(key=(lambda x: x.column))
+
+    return selectedCells[0].column
+
+
+
+def match_selections(copySelection, pasteSelection):
+    """ This function checks if two selection match, i.e., 
+    overlay exactly.
+
+    """
+
+    invalid = (None, None, None, None, None)
+
+    (minCopyRow, minCopyCol, copyCellsByRow) = \
+            get_upper_left_hand_corner(copySelection.values())
+    (minPasteRow, minPasteCol, pasteCellsByRow) = \
+            get_upper_left_hand_corner(pasteSelection.values())
+    leftmostCopyCol = get_leftmost_column(copySelection.values())
+    leftmostPasteCol = get_leftmost_column(pasteSelection.values())
+
+    copyRows = copyCellsByRow.keys()
+    copyRows.sort()
+    pasteRows = pasteCellsByRow.keys()
+    pasteRows.sort()
+
+    if len(copyRows) != len(pasteRows):
+            return invalid
+
+    deadItems = set()
+    while len(copyRows) > 0:
+        copyRow = copyRows.pop(0)
+        copyRowItems = copyCellsByRow[copyRow]
+        copyRowItems.sort(key=(lambda x: x.column))
+        copyLength = copyRowItems[-1].column + copyRowItems[-1].width \
+                - leftmostCopyCol
+
+        pasteRow = pasteRows.pop(0)
+        pasteRowItems = pasteCellsByRow[pasteRow]
+        pasteRowItems.sort(key=(lambda x: x.column))
+        pasteLength = pasteRowItems[-1].column + pasteRowItems[-1].width \
+                - leftmostPasteCol
+
+        if (copyLength != pasteLength):
+            return invalid
+
+        # create bitmap and compare
+        offset = leftmostPasteCol - leftmostCopyCol
+        bitmap = [0]*copyLength
+        for item in copyRowItems:
+            for i in range(item.column, item.column + item.width):
+                bitmap[i-leftmostCopyCol] = 1
+
+        for item in pasteRowItems:
+            for i in range(item.column, item.column + item.width):
+                if bitmap[i-leftmostPasteCol] == 0:
+                    return invalid
+            deadItems.add(item)
+
+    # all good - assemble dead items now
+    deadSelection = {}
+    for item in deadItems:
+        itemID = get_item_id(item.column, item.row)
+        deadSelection[itemID] = PatternCanvasEntry(item.column,
+                                                    item.row,
+                                                    item.width,
+                                                    item.color,
+                                                    item.symbol)
+    return (minCopyCol, minCopyRow, minPasteCol, minPasteRow,
+            deadSelection)
+
+
+
 def is_selection_rectangular(selectedCells):
     """ This function checks if the provided selection 
     is rectangular (i.e., not jagged or disconnected).
