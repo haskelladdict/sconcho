@@ -149,23 +149,30 @@ noCopySelectionText = ("Sorry, there is no selection to be pasted. "
 
 noPasteSelectionTitle = "sconcho: Cannot Paste Selection"
 noPasteSelectionText = ("Sorry, can not paste. Either select a region "
-                        "which is a multiple of the size of your copied "
-                        "selection first or directly right click on the pattern "
+                        "which fits your copied selection exactly (or a "
+                        "multiple of it for rectangular selections) "
+                        "or directly right click on the pattern "
                         "grid and then paste.")
 
 
 noPasteGeometryTitle = "sconcho: Cannot Paste Selection"
-noPasteGeometryText = ("Sorry, can not paste. Your selected region is not a "
-                       "multiple (either row or column wise) or you copied "
-                       "selection.")
+noPasteGeometryText = ("Sorry, can not paste. Your region selected for "
+                       "pasting into does not fit your copied selection or "
+                       "a multiple of it.")
+
+
+noPasteGeometryTitle1 = "sconcho: Cannot Paste Selection"
+noPasteGeometryText1 = ("Sorry, can not paste. Your region selected for "
+                       "pasting into does not fit your copied selection.")
 
 
 badPasteSelectionTitle = "sconcho: Cannot Paste Selection"
-badPasteSelectionText = ("Sorry, your copied selection can not be pasted. Make " 
-                         "sure your copied selection fits into the current chart "
-                         "(the cell you clicked on when pasting will be the upper "
-                         "left hand corner) and will not cover an existing symbol "
-                         "partially (e.g. cover half a 2 stitch cable).")
+badPasteSelectionText = ("Sorry, your copied selection can not be pasted. "
+                         "Make sure your copied selection fits into the "
+                         "current chart (the cell you clicked on when pasting"
+                         "will be the upper left hand corner) and does not "
+                         "cover an existing symbol partially (e.g. cover "
+                         "half a 2 stitch cable).")
 
 
 cannotAddRowRepeatTitle = "sconcho: Cannot Add Row Repeat"

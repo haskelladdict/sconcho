@@ -1277,8 +1277,8 @@ class PatternCanvas(QGraphicsScene):
 
             if not deadSelection:
                 logger.error(msg.badPasteSelectionText)
-                QMessageBox.critical(None, msg.badPasteSelectionTitle,
-                                    msg.badPasteSelectionText,
+                QMessageBox.critical(None, msg.noPasteGeometryTitle1,
+                                    msg.noPasteGeometryText1,
                                     QMessageBox.Close)
                 return 
 
