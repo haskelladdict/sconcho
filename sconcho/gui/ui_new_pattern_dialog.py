@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/new_pattern_dialog.ui'
 #
-# Created: Sat Mar 24 17:43:52 2012
+# Created: Sun Mar 25 16:27:53 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!

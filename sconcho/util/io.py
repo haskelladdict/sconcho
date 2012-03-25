@@ -25,6 +25,8 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from functools import partial
+import zipfile
+import os
 
 try:
     from PyQt4.QtCore import QString
@@ -959,3 +961,41 @@ def get_column_label_interval(labelType):
 
     return intervalState
 
+
+
+def writezip(q_directory, q_zipFileName):
+    """ Generate a zipfile of name zipFileName recursively
+    of directory.
+
+    """
+
+    # convert to python strings
+    directory = str(q_directory)
+    zipFileName = str(q_zipFileName)
+
+    if not os.path.isdir(directory):
+        return False
+
+    try:
+        # gather all files
+        files = []
+        for dirpath, dirnames, filenames in os.walk(directory):
+            for filename in filenames:
+                filePath = os.path.join(dirpath, filename)
+                shortFilepath = \
+                    os.path.join("sconcho_symbols/",
+                            str(dirpath[len(directory)+1:]), filename)
+                files.append((filePath, shortFilepath))
+
+        # add them to the zipfile
+        zipper = zipfile.ZipFile(zipFileName, "w",)
+        for (filename, shortFilename) in files:
+            zipper.write(filename, shortFilename)
+        zipper.close()
+
+        return True
+
+    # if something goes wrong we just give up
+    except Exception as e:
+        print(e)
+        return False

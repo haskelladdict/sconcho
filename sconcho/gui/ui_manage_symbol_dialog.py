@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/manage_symbol_dialog.ui'
 #
-# Created: Sat Mar 24 17:43:52 2012
+# Created: Sun Mar 25 16:27:54 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,6 +18,9 @@ class Ui_ManageKnittingSymbolDialog(object):
     def setupUi(self, ManageKnittingSymbolDialog):
         ManageKnittingSymbolDialog.setObjectName(_fromUtf8("ManageKnittingSymbolDialog"))
         ManageKnittingSymbolDialog.resize(753, 660)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("../icons/sconcho_icon.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        ManageKnittingSymbolDialog.setWindowIcon(icon)
         self.verticalLayout_5 = QtGui.QVBoxLayout(ManageKnittingSymbolDialog)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -51,6 +54,17 @@ class Ui_ManageKnittingSymbolDialog(object):
         self.addSymbolButton = QtGui.QPushButton(self.frame)
         self.addSymbolButton.setObjectName(_fromUtf8("addSymbolButton"))
         self.verticalLayout.addWidget(self.addSymbolButton)
+        self.line = QtGui.QFrame(self.frame)
+        self.line.setFrameShape(QtGui.QFrame.HLine)
+        self.line.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line.setObjectName(_fromUtf8("line"))
+        self.verticalLayout.addWidget(self.line)
+        self.importSymbolsButton = QtGui.QPushButton(self.frame)
+        self.importSymbolsButton.setObjectName(_fromUtf8("importSymbolsButton"))
+        self.verticalLayout.addWidget(self.importSymbolsButton)
+        self.exportSymbolsButton = QtGui.QPushButton(self.frame)
+        self.exportSymbolsButton.setObjectName(_fromUtf8("exportSymbolsButton"))
+        self.verticalLayout.addWidget(self.exportSymbolsButton)
         self.verticalLayout_4.addLayout(self.verticalLayout)
         self.horizontalLayout.addWidget(self.frame)
         self.symbolEntryFrame = QtGui.QFrame(ManageKnittingSymbolDialog)
@@ -175,6 +189,8 @@ class Ui_ManageKnittingSymbolDialog(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Available Symbols</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.availableSymbolsWidget.headerItem().setText(0, QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Category/Symbol", None, QtGui.QApplication.UnicodeUTF8))
         self.addSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "&Add New Symbol", None, QtGui.QApplication.UnicodeUTF8))
+        self.importSymbolsButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Import Symbols", None, QtGui.QApplication.UnicodeUTF8))
+        self.exportSymbolsButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Export Symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

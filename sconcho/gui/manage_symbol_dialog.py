@@ -45,6 +45,7 @@ from sconcho.util.symbol_parser import (parse_all_symbols,
                                         SymbolTempDir)
 import sconcho.util.messages as msg
 import sconcho.gui.symbol_widget as symbolWidget
+from sconcho.util.io import writezip
 
 # module lever logger:
 logger = logging.getLogger(__name__)
@@ -79,8 +80,8 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self._symbolCategories.sort()
 
         # main setup
-        self._add_connections()
         self._symbolPath = symbolPath
+        self._add_connections()
         self._symbolDict = parse_all_symbols([symbolPath])
         self._set_up_symbols_frame()
         self._populate_category_chooser()
@@ -113,6 +114,10 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         self.connect(self.categoryChooser, SIGNAL("currentIndexChanged(int)"),
                      self.category_changed)
+
+        self.connect(self.exportSymbolsButton, 
+                     SIGNAL("clicked()"),
+                     self.export_custom_symbols)
 
 
 
@@ -605,7 +610,24 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         item.setFixedSize(ManageSymbolDialog.SYMBOL_SIZE * width,
                           ManageSymbolDialog.SYMBOL_SIZE)
 
-       
+    
+
+    def export_custom_symbols(self):
+        """ Helper function for saving custom symbols into a zip archive. """
+
+        saveFilePath = QFileDialog.getSaveFileName(self,
+                                            "Export Custom Symbols",
+                                            QDir.homePath(),
+                                            "zip files (*.zip)")
+        
+        if saveFilePath:
+            if not writezip(self._symbolPath, saveFilePath):
+                QMessageBox.critical(self,
+                                    msg.cannotExportSymbolsTitle, 
+                                    msg.cannotExportSymbolsText,
+                                    QMessageBox.Ok)
+
+
 
 
 
@@ -639,3 +661,6 @@ def sanitize_name(name):
     name.replace(QRegExp(r"[_]+"),"_")
 
     return name
+
+
+

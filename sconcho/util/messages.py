@@ -175,6 +175,11 @@ badPasteSelectionText = ("Sorry, your copied selection can not be pasted. "
                          "half a 2 stitch cable).")
 
 
+cannotExportSymbolsTitle = "sconcho: Cannot Export Custom Symbols"
+cannotExportSymbolsText = ("Sorry, I could not export your symbols for "
+                           "some reason.")
+
+
 cannotAddRowRepeatTitle = "sconcho: Cannot Add Row Repeat"
 cannotAddRowRepeatText = ("Sorry, cannot add row repeat. To insert a "
                           "row repeat please select complete rows which form "

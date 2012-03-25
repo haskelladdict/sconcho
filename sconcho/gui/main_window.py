@@ -41,7 +41,7 @@ except ImportError:
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           Qt, QSize, QFile, QTimer, QVariant,
                           QPoint, PYQT_VERSION_STR, qVersion, 
-                          QObject, QFileInfo)
+                          QObject)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel, 
                          QFrame, QColor, QApplication, QDialog, QAction,
