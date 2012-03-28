@@ -413,7 +413,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
             self.evenRowLabelLocationComboBox.setCurrentIndex(1)
     
         oddRowLabelLocation = self.settings.oddRowLabelLocation.value
-        if evenRowLabelLocation == "RIGHT_OF":
+        if oddRowLabelLocation == "RIGHT_OF":
             self.oddRowLabelLocationComboBox.setCurrentIndex(0)
         else:
             self.oddRowLabelLocationComboBox.setCurrentIndex(1)
