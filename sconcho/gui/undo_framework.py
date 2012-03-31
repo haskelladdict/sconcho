@@ -1371,9 +1371,13 @@ class AddPatternRepeatLegend(QUndoCommand):
         self.legendTextItem.setPos(self.textPos)
         self.legendTextItem.setFont(self.canvas.settings.legendFont.value)
         self.legendTextItem.update()
-        
+
+        if self.pathItem.hasLegend:
+            visible = 1
+        else:
+            visible = 0
         self.canvas.repeatLegend[self.pathItem.itemID] = \
-            (1, self.legendItem, self.legendTextItem)
+            (visible, self.legendItem, self.legendTextItem)
         
          
 
@@ -1403,7 +1407,7 @@ class DeletePatternRepeatLegend(QUndoCommand):
         self.canvas = canvas
         self.pathItem = pathItem 
 
-        (dummy, self.legendItem, self.legendTextItem) = \
+        (self.visibility, self.legendItem, self.legendTextItem) = \
                 self.canvas.repeatLegend[self.pathItem.itemID]
 
 
@@ -1434,7 +1438,7 @@ class DeletePatternRepeatLegend(QUndoCommand):
         self.legendTextItem.update()
 
         self.canvas.repeatLegend[self.pathItem.itemID] = \
-            (1, self.legendItem, self.legendTextItem)
+            (self.visibility, self.legendItem, self.legendTextItem)
 
 
 
@@ -1479,7 +1483,7 @@ class EditPatternRepeatLegend(QUndoCommand):
 
         """
 
-        (dummy, self.legendItem, self.legendTextItem) = \
+        (visbility, self.legendItem, self.legendTextItem) = \
             self.canvas.repeatLegend[self.pathItem.itemID]
 
         self.oldColor = self.legendItem.color
@@ -1490,12 +1494,17 @@ class EditPatternRepeatLegend(QUndoCommand):
             self.legendItem.hide()
             self.legendTextItem.hide()
             self.pathItem.hasLegend = False
+            self.canvas.repeatLegend[self.pathItem.itemID] = \
+                (0, self.legendItem, self.legendTextItem)
+            
         elif not self.shownInLegend and self.newLegendVisibility:
             self.legendItem.show()
             self.legendTextItem.show()
             self.pathItem.hasLegend = True
-            
+            self.canvas.repeatLegend[self.pathItem.itemID] = \
+                (1, self.legendItem, self.legendTextItem)
         
+
 
     def undo(self):
         """ See redo for an explanation of the possible actions. """
@@ -1508,10 +1517,14 @@ class EditPatternRepeatLegend(QUndoCommand):
             self.legendItem.show()
             self.legendTextItem.show()
             self.pathItem.hasLegend = True
+            self.canvas.repeatLegend[self.pathItem.itemID] = \
+                (1, self.legendItem, self.legendTextItem)
         elif not self.shownInLegend and self.newLegendVisibility:
             self.legendItem.hide()
             self.legendTextItem.hide()
             self.pathItem.hasLegend = False
+            self.canvas.repeatLegend[self.pathItem.itemID] = \
+                (0, self.legendItem, self.legendTextItem)
 
 
 
@@ -1585,10 +1598,8 @@ class EditPatternRepeat(QUndoCommand):
         self.patternRepeat = patternRepeat
         self.oldColor = patternRepeat.color
         self.oldWidth = patternRepeat.width
-        #self.oldLegendStatus = patternRepeat.hasLegend
         self.newColor = newColor
         self.newWidth = newWidth
-        #self.newLegendStatus = newLegendStatus
 
 
 

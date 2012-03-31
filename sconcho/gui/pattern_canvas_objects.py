@@ -706,6 +706,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         return QGraphicsItemGroup.mousePressEvent(self, event)
 
+
     
     def _snap_to_grid(self):
         """ Snap to nearest grid point. 
@@ -847,21 +848,18 @@ class RepeatLegendItem(QGraphicsRectItem):
 
     @property
     def height(self):
-        
         return self.itemHeight
 
 
 
     @property
     def width(self):
-        
         return self.itemWidth
 
 
 
     @property
     def color(self):
-        
         return self.penColor
 
 

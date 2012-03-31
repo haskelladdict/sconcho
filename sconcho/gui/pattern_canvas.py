@@ -2024,9 +2024,11 @@ class PatternCanvas(QGraphicsScene):
         legendItem.setPos(legendItemPos)
         legendTextItem.setPos(legendTextPos)
 
+        visible = 1
         if not legendIsVisible:
             legendItem.hide()
             legendTextItem.hide()
+            visible = 0
 
         self.addItem(legendItem)
         self.addItem(legendTextItem)
@@ -2039,7 +2041,7 @@ class PatternCanvas(QGraphicsScene):
 
         # connect repeat box and legend
         self.repeatLegend[repeatItem.itemID] = \
-            (1, legendItem, legendTextItem)
+            (visible, legendItem, legendTextItem)
 
 
 
@@ -2098,9 +2100,12 @@ class PatternCanvas(QGraphicsScene):
             for item in self.gridLegend.values():
                 legendItem_symbol(item).show()
                 legendItem_text(item).show()
+
+            # only show repeat legends which are visible
             for item in self.repeatLegend.values():
-                legendItem_symbol(item).show()
-                legendItem_text(item).show()
+                if legendItem_count(item):
+                    legendItem_symbol(item).show()
+                    legendItem_text(item).show()
         else:
             for item in self.gridLegend.values():
                 legendItem_symbol(item).hide()
