@@ -68,12 +68,6 @@ openSconchoProjectTitle = "sconcho: Open project"
 exportPatternTitle      = "sconcho: Export pattern"
 
 
-unknownImageFormatTitle = "sconcho: Unknown image format"
-unknownImageFormatText  = ("Unknown image format for exporting as bitmap. "
-                           "Please choose one of the supported image "
-                           "formats.")
-
-
 patternFileExistsTitle = "sconcho: Pattern File Exists"
 patternFileExistsText = ("The pattern file %s already exists.\n"
                         "Do you want to overwrite it?")
@@ -88,14 +82,35 @@ imageFileExistsText = ("The image file %s already exists.\n"
                         "Do you want to overwrite it?")
 
 
-noFilePathTitle = "sconcho: File Name Missing"
-noFilePathText = ("No filename was given. Please enter one.")
-
-
 wantToSavePatternTitle = "sconcho: Pattern File Not Saved"
 wantToSavePatternText = ("Your pattern has unsaved changes. You can either "
                          "save or ignore these changes or press cancel to "
                          "continue with editing your pattern.")
+
+
+recoveryFilePresentTitle = "sconcho: Pattern File Recovery"
+recoveryFilePresentText = ("A recovery file for pattern <b>{0}</b> has "
+                           "been detected.<p>"
+                           "This could have been caused by a system crash."
+                           "Would you like to recover this file now? " 
+                           "Selecting Cancel will deleted the recovery "
+                           "file and continue with loading {0}.")
+
+
+errorSavingProjectTitle = "sconcho: Error Saving Project"
+
+
+errorOpeningProjectTitle = "sconcho: Error Opening Project"
+
+
+########################################################################
+##
+## exportBitmapDialog messages
+##
+########################################################################
+noFilePathTitle = "sconcho: File Name Missing"
+noFilePathText = ("No filename was given. Please enter one.")
+
 
 
 ########################################################################
@@ -103,16 +118,6 @@ wantToSavePatternText = ("Your pattern has unsaved changes. You can either "
 ## patternCanvas messages
 ##
 ########################################################################
-numRowTooSmallTitle = "sconcho: Row Delete Error"
-numRowTooSmallText = ("There has to be at least one row remaining.\n"
-                      "Cannot delete the last row.")
-
-
-numColTooSmallTitle = "sconcho: Column Delete Error"
-numColTooSmallText = ("There has to be at least one column remaining.\n"
-                      "Cannot delete the last column.")
-
-
 noColInsertLayoutTitle = "sconcho: Cannot Insert Column"
 noColInsertLayoutText = ("Sorry, cannot insert requested columns at the "
                          "specified location due to the current layout.")
@@ -134,22 +139,16 @@ selectCompleteRowsText = ("Sorry, cannot delete rows. To delete rows, "
 selectSingleColumnTitle = "sconcho: Cannot Insert Columns"
 selectSingleColumnText = ("Sorry, cannot insert columns. To insert new "
                           "columns, please select a single and complete "
-                          "existing column as pivot first.")
+                          "column as pivot first.")
 
 
 selectSingleRowTitle = "sconcho: Cannot Insert Rows"
 selectSingleRowText = ("Sorry, cannot insert rows. To insert new rows, "
-                       "please select a single existing row as pivot first.")
+                       "please select a single row as pivot first.")
 
 
 noSelectionTitle = "sconcho: No Cells Selected"
 noSelectionText = ("Sorry, nothing to do. Please select some cells first.")
-
-
-noCopyRectangularSelectionTitle = "sconcho: Cannot Copy Selection"
-noCopyRectangularSelectionText = ("Sorry, only rectangular selections can be "
-                                  "copied. Please make sure to select a "
-                                  "rectangular selection, then copy.")
 
 
 noCopySelectionTitle = "sconcho: Cannot Paste Selection"
@@ -180,27 +179,16 @@ noPasteGeometryText1 = ("Sorry, can not paste. Your region selected for "
 badPasteSelectionTitle = "sconcho: Cannot Paste Selection"
 badPasteSelectionText = ("Sorry, your copied selection can not be pasted. "
                          "Make sure your copied selection fits into the "
-                         "current chart (the cell you clicked on when pasting"
-                         "will be the upper left hand corner) and does not "
-                         "cover an existing symbol partially (e.g. cover "
-                         "half a 2 stitch cable).")
-
-
-cannotExportSymbolsTitle = "sconcho: Cannot Export Custom Symbols"
-cannotExportSymbolsText = ("Sorry, I could not export your symbols for "
-                           "some reason.")
-
-
-cannotImportSymbolsTitle = "sconcho: Cannot Import Custom Symbols"
-cannotImportSymbolsText = ("Sorry, some or all of the symbols from the "
-                           "symbol archive could not be imported (please "
-                           "check logs for more detail)")
+                         "current chart (the cell you clicked on when "
+                         "pasting will be the upper left hand corner) and "
+                         "does not cover an existing symbol partially (e.g. "
+                         "cover half a 2 stitch cable).")
 
 
 cannotAddRowRepeatTitle = "sconcho: Cannot Add Row Repeat"
 cannotAddRowRepeatText = ("Sorry, cannot add row repeat. To insert a "
-                          "row repeat please select complete rows which form "
-                          "a contiguous block, and do not overlap with "
+                          "row repeat please select complete rows which "
+                          "form a contiguous block, and do not overlap with "
                           "with already existing row repeats.")
 
 
@@ -211,12 +199,47 @@ cannotDeleteRowRepeatText = ("Sorry, cannot delete row repeat. To delete a "
                           "you would like to delete.")
 
 
-errorSavingProjectTitle = "sconcho: Error Saving Project"
+
+errorLoadingTextItemsTitle = "sconcho: Error Loading Text Items"
+errorLoadingTextItemsText = ("Could not load text item from "
+                             "opened project file. This indicates that "
+                             "your file may be corrupted."
+                             "<p>sconcho encountered the following "
+                             "error: KeyError: %s.")
 
 
-errorOpeningProjectTitle = "sconcho: Error Opening Project"
+
+########################################################################
+#
+# messages for preferencesDialog
+#
+########################################################################
+customSymbolPathDirectoryTitle = ("sconcho: Please Enter Location of Custom "
+                                  "Symbol database.")
 
 
+loggingPathDirectoryTitle = ("sconcho: Please Enter Location of Path for "
+                             "storing log files.")
+
+
+
+########################################################################
+#
+# messages for sconcho_gui
+#
+########################################################################
+errorOpeningKnittingSymbols = ("sconcho: Failed to open knitting symbol "
+                               "database.\n"
+                               "Please check that you have valid symbols "
+                               "at\n%s.\nExiting ....")
+
+
+
+########################################################################
+#
+# messages for canvas
+#
+########################################################################
 errorMatchingLegendItemTitle = "sconcho: Error Loading Legend"
 errorMatchingLegendItemText = ("A legend item found in the opened project "
                                "does not match any in the pattern.")
@@ -249,37 +272,10 @@ errorLoadingRepeatBoxText = ("Could not load repeat box from "
 
 errorLoadingRepeatBoxLegendTitle = "sconcho: Error Loading Repeat Box Legend"
 errorLoadingRepeatBoxLegendText = ("Could not load repeat box legend from "
-                                   "opened project file. This indicates that "
-                                   "your file may be corrupted."
+                                   "opened project file. This indicates "
+                                   "that your file may be corrupted."
                                    "<p>sconcho encountered the following "
                                    "error: KeyError: %s.")
-
-
-errorLoadingTextItemsTitle = "sconcho: Error Loading Text Items"
-errorLoadingTextItemsText = ("Could not load text item from "
-                             "opened project file. This indicates that "
-                             "your file may be corrupted."
-                             "<p>sconcho encountered the following "
-                             "error: KeyError: %s.")
-
-
-restartAfterImportTitle = "sconcho: Please restart sconcho"
-restartAfterImportText = ("Please restart sconcho to make your newly "
-                          "imported symbols available within sconcho.")
-
-
-errorOpeningKnittingSymbols = ("sconcho: Failed to open knitting symbol "
-                               "database.\n"
-                               "Please check that you have valid symbols "
-                               "at\n%s.\nExiting ....")
-
-
-customSymbolPathDirectoryTitle = ("sconcho: Please Enter Location of Custom "
-                                  "Symbol database.")
-
-
-loggingPathDirectoryTitle = ("sconcho: Please Enter Location of Path for "
-                             "storing log files.")
 
 
 ########################################################################
@@ -295,14 +291,33 @@ failedToImportSymbolError = ("Failed to import custom symbols due to % ")
 
 
 
-directoryLayoutIncorrect = ("Directory layout of new symbol %s is incorrect ."
-                            "Skipping import of symbol.")
-
+directoryLayoutIncorrect = ("Directory layout of new symbol %s is incorrect."
+                            " Skipping import of symbol.")
 
 
 failedToUnpackZipFile = ("Failed to unpack zip archive with custom symbols "
                          "due to %s.")
  
+
+
+########################################################################
+#
+# messages for symbolParser
+#
+########################################################################
+failedToCopySvgTitle = "sconcho: Add Symbol Error"
+failedToCopySvgText  = ("Error: Failed to copy SVG image %s into sconcho "
+                        "database." )
+
+
+failedCreateDescriptionFileTitle = "sconcho: Add Symbol Error"
+failedCreateDescriptionFileText  = ("Error: Failed to create the "
+        "description file for the symbol %s in category %s.")
+
+
+failedToCreateDirectoryTitle = "sconcho: Failed to create directory"
+failedToCreateDirectoryText = "Error: Failed to create directory %s."
+
 
 
 ########################################################################
@@ -313,49 +328,58 @@ failedToUnpackZipFile = ("Failed to unpack zip archive with custom symbols "
 noSvgFileErrorTitle  = "sconcho: Add Symbol Error"
 noSvgFileErrorText   = "Error: Please add an svg image for your symbol."
 
+
 noCategoryErrorTitle = "sconcho: Add Symbol Error"
 noCategoryErrorText  = "Error: Please enter a category for your symbol."
+
 
 symbolExistsTitle    = "sconcho: Add Symbol Error"
 symbolExistsText     = ("Error: The symbol with name %s you "
                         "entered already exists.")
 
-failedToCopySvgTitle = "sconcho: Add Symbol Error"
-failedToCopySvgText  = ("Error: Failed to copy SVG image %s into sconcho "
-                        "database." )
-
-failedCreateDescriptionFileTitle = "sconcho: Add Symbol Error"
-failedCreateDescriptionFileText  = ("Error: Failed to create the "
-        "description file for the symbol %s in category %s.")
-
 noNameErrorTitle     = "sconcho: Add Symbol Error"
 noNameErrorText      = "Error: Please enter a name for your symbol."
 
+
 deleteSymbolTitle    = "sconcho: Delete Symbol"
-deleteSymbolText     = ("Are you sure you would like to delete symbol <b>%s</b>?\n"
+deleteSymbolText     = ("Are you sure you would like to delete symbol "
+                        "<b>%s</b>?\n"
                         "Warning: This will clear your undo history.")
+
 
 cannotDeleteSymbolTitle = "sconcho: Can Not Delete Symbol"
-cannotDeleteSymbolText = ("You cannot delete symbol <b>%s</b> since your chart "
-                          "currently contains this symbol.")
+cannotDeleteSymbolText = ("You cannot delete symbol <b>%s</b> since your "
+                          "char currently contains this symbol.")
+
 
 updateSymbolTitle    = "sconcho: Update Symbol"
-updateSymbolText     = ("Are you sure you would like to update symbol <b>%s</b>?\n"
+updateSymbolText     = ("Are you sure you would like to update symbol "
+                        "<b>%s</b>?\n"
                         "Warning: This will clear your undo history.")
 
-cannotUpdateSymbolTitle = "sconcho: Cannot Update Symbol"
-cannotUpdateSymbolText = ("You cannot change the name, width, or svg image of "
-                          "symbol <b>%s</b> since your chart currently contains "
-                          "this symbol. To change, open a new blank session "
-                          "and then modify.")
 
-recoveryFilePresentTitle = "sconcho: Pattern File Recovery"
-recoveryFilePresentText = ("A recovery file for pattern <b>{0}</b> has "
-                           "been detected.<p>"
-                           "This could have been caused by a system crash."
-                           "Would you like to recover this file now? " 
-                           "Selecting Cancel will deleted the recovery "
-                           "file and continue with loading {0}.")
+cannotUpdateSymbolTitle = "sconcho: Cannot Update Symbol"
+cannotUpdateSymbolText = ("You cannot change the name, width, or svg image "
+                          "of symbol <b>%s</b> since your chart currently "
+                          "contains this symbol. To change, open a new "
+                          "blank sconcho session and then modify.")
+
+
+cannotExportSymbolsTitle = "sconcho: Cannot Export Custom Symbols"
+cannotExportSymbolsText = ("Sorry, I could not export your symbols for "
+                           "some reason.")
+
+
+cannotImportSymbolsTitle = "sconcho: Cannot Import Custom Symbols"
+cannotImportSymbolsText = ("Sorry, some or all of the symbols from the "
+                           "symbol archive could not be imported (please "
+                           "check logs for more detail)")
+
+
+restartAfterImportTitle = "sconcho: Please restart sconcho"
+restartAfterImportText = ("Please restart sconcho to make your newly "
+                          "imported symbols available within sconcho.")
+
 
 
 ########################################################################
@@ -392,17 +416,6 @@ notUpToDate = ("Your version of sconcho is <b>out of date</b>. "
 
 
 ########################################################################
-#
-# general messages
-#
-########################################################################
-failedToCreateDirectoryTitle = "sconcho: Failed to create directory"
-failedToCreateDirectoryText = "Error: Failed to create directory %s."
-
-
-
-
-########################################################################
 ##
 ## list of possible main window titles
 ##
@@ -413,31 +426,4 @@ knittingQuotes = [QString("Oops, I charted ...."),
                   QString("Purls before swine"),
                   QString("Knit happens"),
                   QString("Knit or die!")]
-
-
-
-########################################################################
-##
-## sconchoIO/io.py messages
-##
-########################################################################
-domParserErrorTitle = "sconcho: DOM parser error"
-domParserErrorText  = ("Error parsing\n %s \nat line %d column %d; %s")
-
-patternGridItemParseErrorTitle = "sconcho: Failed to parse pattern grid"
-patternGridItemParseErrorText  = ("Failed to read pattern grid from "
-                                  "project file. The file may be damaged "
-                                  "and can not be read.")
-
-patternLegendItemParseErrorTitle = "sconcho: Failed to parse legend"
-patternLegendItemParseErrorText  = ("Failed to read legend from "
-                                    "project file. The file may be damaged "
-                                    "and can not be read.")
-
-
-patternColorParseErrorTitle = "sconcho: Failed to parse color information"
-patternColorParseErrorText  = ("Failed to read project colors from "
-                               "project file. The file may be damaged "
-                               "and can not be read.")
-
 

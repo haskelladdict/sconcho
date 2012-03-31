@@ -107,7 +107,6 @@ class PatternCanvas(QGraphicsScene):
         self.columnLabelTracker = ColumnLabelTracker(self)
 
         self._copySelection = {}
-        #self._copySelectionDim = None
 
         self._textLabels = []
         self.gridLegend = {}
@@ -1197,7 +1196,6 @@ class PatternCanvas(QGraphicsScene):
         """
 
         # check first if we can paste at all
-        #if (not self._copySelectionDim) or (not self._copySelection):
         if not self._copySelection:
             logger.error(msg.noCopySelectionText)
             QMessageBox.critical(None, msg.noCopySelectionTitle,
