@@ -475,18 +475,31 @@ def get_marked_columns(selectedCells, numRows):
 
     """
 
-    if selectedCells:
+    if selectedCells and (len(selectedCells) == numRows):
         cellsByColumn = {}
         for cell in selectedCells:
-            for col in range(cell.column, cell.column + 1): 
+            for col in range(cell.column, cell.column + cell.width): 
                 if not col in cellsByColumn:
                     cellsByColumn[col] = [cell]
                 else:
                     cellsByColumn[col].append(cell)
 
-        values = set(len(col) for col in cellsByColumn.values())
-        if len(values) == 1 and values.pop() == numRows:
+        # we can accept the selction if
+        # 1) each row contains only a single symbol
+        # 2) at least one of the columns spans the whole pattern
+        # 3) at most one of the edges of the complete column is jagged
+        entries = \
+            { colId:len(cols) for  (colId,cols) in cellsByColumn.items() }
+        # we have a single column - good to go
+        if len(entries) == 1 and entries.values()[0] == numRows:
             return list(cellsByColumn.keys())
+
+        # check if we have at least one full column with a non-jagged
+        # edge
+        for (col, length) in entries.items():
+            if length == numRows:
+                if not ((col-1) in entries and (col+1) in entries):
+                    return [col]
 
     return []
 
