@@ -478,7 +478,7 @@ def get_marked_columns(selectedCells, numRows):
     if selectedCells:
         cellsByColumn = {}
         for cell in selectedCells:
-            for col in range(cell.column, cell.column + cell.width):
+            for col in range(cell.column, cell.column + 1): 
                 if not col in cellsByColumn:
                     cellsByColumn[col] = [cell]
                 else:

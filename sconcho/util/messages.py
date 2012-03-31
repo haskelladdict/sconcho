@@ -97,6 +97,12 @@ wantToSavePatternText = ("Your pattern has unsaved changes. You can either "
                          "save or ignore these changes or press cancel to "
                          "continue with editing your pattern.")
 
+
+########################################################################
+##
+## patternCanvas messages
+##
+########################################################################
 numRowTooSmallTitle = "sconcho: Row Delete Error"
 numRowTooSmallText = ("There has to be at least one row remaining.\n"
                       "Cannot delete the last row.")
@@ -114,21 +120,21 @@ noColInsertLayoutText = ("Sorry, cannot insert requested columns at the "
 
 noColDeleteLayoutTitle = "sconcho: Cannot Delete Columns"
 noColDeleteLayoutText = ("Sorry, cannot delete requested columns. To "
-                         "delete columns please select the to be deleted "
-                         "complete columns (i.e. there can be no partially "
+                         "delete columns, please select complete columns "
+                         "only (i.e. there can be no partially "
                          "selected ones).")
 
 
 selectCompleteRowsTitle = "sconcho: Cannot Delete Rows"
 selectCompleteRowsText = ("Sorry, cannot delete rows. To delete rows, "
-                         "please select the to be deleted complete rows "
+                         "please select complete rows only"
                          "(i.e. there can be no partially selected ones).")
 
 
 selectSingleColumnTitle = "sconcho: Cannot Insert Columns"
 selectSingleColumnText = ("Sorry, cannot insert columns. To insert new "
-                          "columns, please select a single existing "
-                          "column as pivot first.")
+                          "columns, please select a single and complete "
+                          "existing column as pivot first.")
 
 
 selectSingleRowTitle = "sconcho: Cannot Insert Rows"
@@ -288,8 +294,10 @@ symbolAlreadyExistsText = ("Symbol %s already exists. Refused to import "
 failedToImportSymbolError = ("Failed to import custom symbols due to % ")
 
 
+
 directoryLayoutIncorrect = ("Directory layout of new symbol %s is incorrect ."
                             "Skipping import of symbol.")
+
 
 
 failedToUnpackZipFile = ("Failed to unpack zip archive with custom symbols "
