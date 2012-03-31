@@ -34,8 +34,6 @@ try:
 except ImportError:
     QString = str
 
-# QStringList
-
 from PyQt4.QtCore import (QDir, QFile, QIODevice,
                           QTextStream, QTemporaryFile, Qt)
 from PyQt4.QtGui import QMessageBox

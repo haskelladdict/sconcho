@@ -180,6 +180,11 @@ cannotExportSymbolsText = ("Sorry, I could not export your symbols for "
                            "some reason.")
 
 
+cannotImportSymbolsTitle = "sconcho: Cannot Import Custom Symbols"
+cannotImportSymbolsText = ("Sorry, I could not import the selected custom "
+                           "symbol archive for some reason.")
+
+
 cannotAddRowRepeatTitle = "sconcho: Cannot Add Row Repeat"
 cannotAddRowRepeatText = ("Sorry, cannot add row repeat. To insert a "
                           "row repeat please select complete rows which form "

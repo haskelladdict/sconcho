@@ -45,7 +45,7 @@ from sconcho.util.symbol_parser import (parse_all_symbols,
                                         SymbolTempDir)
 import sconcho.util.messages as msg
 import sconcho.gui.symbol_widget as symbolWidget
-from sconcho.util.io import writezip
+from sconcho.util.io import (writezip, readSymbolZip)
 
 # module lever logger:
 logger = logging.getLogger(__name__)
@@ -118,6 +118,10 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self.connect(self.exportSymbolsButton, 
                      SIGNAL("clicked()"),
                      self.export_custom_symbols)
+
+        self.connect(self.importSymbolsButton, 
+                     SIGNAL("clicked()"),
+                     self.import_custom_symbols)
 
 
 
@@ -623,9 +627,30 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if saveFilePath:
             if not writezip(self._symbolPath, saveFilePath):
                 QMessageBox.critical(self,
-                                    msg.cannotExportSymbolsTitle, 
-                                    msg.cannotExportSymbolsText,
-                                    QMessageBox.Ok)
+                                     msg.cannotExportSymbolsTitle,
+                                     msg.cannotExportSymbolsText,
+                                     QMessageBox.Ok)
+
+
+
+    def import_custom_symbols(self):
+        """ Helper function for importing custom symbols from a
+        zip archive.
+
+        """
+
+        importFilePath = QFileDialog.getOpenFileName(self,
+                                            "Import Custom Symbols",
+                                            QDir.homePath(),
+                                            "zip files (*.zip)")
+ 
+        if importFilePath:
+            if not readSymbolZip(self._symbolPath, importFilePath):
+
+                QMessageBox.critical(self,
+                                     msg.cannotImportSymbolsTitle,
+                                     msg.cannotImportSymbolsText,
+                                     QMessageBox.Ok)
 
 
 

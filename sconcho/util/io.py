@@ -24,9 +24,13 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from functools import partial
-import zipfile
+import logging
 import os
+import string
+import zipfile
+from tempfile import mkdtemp
+from functools import partial
+from shutil import (rmtree, move)
 
 try:
     from PyQt4.QtCore import QString
@@ -51,6 +55,9 @@ from sconcho.util.misc import wait_cursor
 from sconcho.util.exceptions import PatternReadError
 import sconcho.util.messages as msg
 
+
+# module lever logger:
+logger = logging.getLogger(__name__)
 
 # magic number to specify binary API
 MAGIC_NUMBER = 0xA3D1
@@ -997,5 +1004,141 @@ def writezip(q_directory, q_zipFileName):
 
     # if something goes wrong we just give up
     except Exception as e:
-        print(e)
+        #logger.error("Failed to package zip archive with custom symbols "
+        #             "due to ", e)
         return False
+
+
+
+def readSymbolZip(q_directory, q_zipFileName):
+    """ Read a zipped up archive of a custom sconcho symbols.
+
+    This function does sanity checking and will only
+    accept symbols that have the expected directory structure
+    and won't overwrite already existing symbols.
+
+    """
+
+    # convert to python strings
+    directory = str(q_directory)
+    zipFileName = str(q_zipFileName)
+
+    # make sure targetDirector exist
+    if not os.path.isdir(directory):
+        return False
+
+    # make sure zipfile exists
+    if not os.path.isfile(zipFileName):
+        return False
+
+    # if we encounter an exception we just give up
+    # we'll unpack things in a temp directory and then
+    # move it in place
+    with TempDir() as tempDir:
+
+        # unpack into tempdir
+        try:
+            with zipfile.ZipFile(zipFileName, "r") as zipper:
+                if zipper.testzip():
+                    return False
+
+                files = zipper.namelist()
+                for file in files:
+                    if string.find(file, "..") > 0:
+                        continue
+
+                    zipper.extract(file, tempDir)
+
+        except Exception as e:
+            logger.error("Failed to unpack zip archive with custom symbols "
+                         "due to ")
+            logger.error(e)
+            return False
+
+
+        # check each symbol directory for presence of a decription
+        # file and an svg image with the same name as the directory.
+        # Then check, that we can copy it into the custom symbol 
+        # directory without a collision. If all is well, move it there.
+        try:
+            topFiles = os.listdir(tempDir)
+            if len(topFiles) != 1 and topFiles[0] == "sconcho_symbols":
+                return False
+
+            allSymbolDirName = os.path.join(tempDir, "sconcho_symbols")
+            patternDirs = os.listdir(allSymbolDirName)
+            for dirName in patternDirs:
+
+                symbolDirName = os.path.join(allSymbolDirName, dirName)
+
+                # skip non-directories
+                if not os.path.isdir(symbolDirName):
+                    continue
+
+                dirContents = os.listdir(symbolDirName)
+                svgName = dirName + ".svg"
+                if not ("description" in dirContents and
+                        svgName in dirContents):
+                    logger.error("Directory layout of symbol is incorrect")
+                    logger.error(symbolDirName)
+                    continue
+
+                # at this point content looks ok. Now check if there are
+                # filename clashes
+                targetPath = os.path.join(directory, dirName)
+                if os.path.exists(targetPath):
+                    logger.error("Could not write to already existent symbol")
+                    logger.error(targetPath)
+                    continue
+
+                # no clashes - we're good to go, let's move the files
+                os.mkdir(targetPath)
+                descriptionSrc = os.path.join(symbolDirName, "description")
+                descriptionDest = os.path.join(targetPath, "description")
+                move(descriptionSrc, descriptionDest)
+
+                svgSrc = os.path.join(symbolDirName, svgName)
+                svgDest = os.path.join(targetPath, svgName)
+                move(svgSrc, svgDest)
+
+        except Exception as e:
+            logger.error("Failed to move imported custom symbols into "
+                         "place due to")
+            logger.error(s)
+            return False
+
+    # all ok
+    return True
+
+
+
+
+#################################################################
+#
+# simple helper class wrapping a temporary directory inside
+# a context manager so we don't have to worry about cleanup
+#
+#################################################################
+class TempDir(object):
+    """ Context manager for seamless creation and removal of
+    temporary directories.
+
+    """
+
+    def __enter__(self):
+        """ Create the temporary directory. """
+
+        self.tempDir = mkdtemp()
+        return self.tempDir
+
+
+    def __exit__(self, exc_class, exc_instance, traceback):
+        """ Remove temporary directory and everything underneath. 
+
+        NOTE: rmtree is dangerous. However, since we're creating
+        the temporary directory ourselves it should probably be
+        safe to do here.
+        """
+
+        if os.path.isdir(self.tempDir):
+            rmtree(self.tempDir)
