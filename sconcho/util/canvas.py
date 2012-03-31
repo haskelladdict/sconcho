@@ -27,9 +27,9 @@ from __future__ import absolute_import
 
 import logging
 import math
-from sys import maxint
+from sys import (maxint, float_info)
 
-from PyQt4.QtCore import (QPointF)
+from PyQt4.QtCore import (QPointF, QRectF)
 from PyQt4.QtGui import (QMessageBox, QColor)
 
 import sconcho.util.messages as msg 
@@ -831,6 +831,38 @@ def load_text_items(textItemInfo):
         return None
 
     return allTextItems
+
+
+
+def visible_bounding_rect(items):
+    """ Returns the bounding rectangle of all visible items. """
+
+    # initialize with 
+    min_x = float_info.max
+    min_y = float_info.max
+    max_x = -float_info.max
+    max_y = -float_info.max
+
+    for item in items:
+        if item.isVisible():
+            itemBounds = item.boundingRect()
+            itemTopLeft = item.mapToScene(itemBounds.topLeft())
+            itemBottomRight = item.mapToScene(itemBounds.bottomRight()) 
+
+            if (itemTopLeft.x() < min_x):
+                min_x = itemTopLeft.x()
+
+            if (itemTopLeft.y() < min_y):
+                min_y = itemTopLeft.y()
+
+            if (itemBottomRight.x() > max_x):
+                max_x = itemBottomRight.x()
+
+            if (itemBottomRight.y() > max_y):
+                max_y = itemBottomRight.y()
+
+    return QRectF(QPointF(min_x, min_y), QPointF(max_x, max_y))
+
 
 
 

@@ -91,7 +91,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings = settings
         self._restore_window_settings()
         self.preferencesDialog = PreferencesDialog(self.settings, self)
-        self.exportBitmapDialog = None
         self.manualDialog = None
 
         self.clear_project_save_file()
@@ -100,6 +99,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._knittingSymbols = knittingSymbols
         self.canvas = PatternCanvas(self.settings, 
                                     knittingSymbols[QString("knit")], self)
+
+        self.exportBitmapDialog = None
+        self.create_export_bitmap_dialog()
 
         self.manageSymbolsDialog = None
         self.create_manage_knitting_symbols_dialog()
@@ -253,6 +255,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionShow_pattern_grid, SIGNAL("toggled(bool)"),
                      self.canvas.toggle_pattern_grid_visibility)
 
+        self.connect(self.actionShow_legend, SIGNAL("toggled(bool)"),
+                     self.exportBitmapDialog.update_dimensions)
+
+        self.connect(self.actionShow_pattern_grid, SIGNAL("toggled(bool)"),
+                     self.exportBitmapDialog.update_dimensions)
+
         self.connect(self.actionZoom_In, SIGNAL("triggered()"),
                      self.graphicsView.zoom_in)
 
@@ -405,12 +413,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.set_project_dirty)
 
         self.connect(self.canvas, SIGNAL("row_repeat_added"),
-                     partial(self.preferencesDialog.allow_all_label_options, False))
+                     partial(self.preferencesDialog.allow_all_label_options,
+                             False))
 
         self.connect(self.canvas, SIGNAL("no_more_row_labels"),
-                     partial(self.preferencesDialog.allow_all_label_options, True))
+                     partial(self.preferencesDialog.allow_all_label_options,
+                             True))
 
+        self.connect(self.canvas, SIGNAL("canvas_dimensions_changed"),
+                     self.exportBitmapDialog.update_dimensions)
     
+
 
     def _set_up_connections(self):
         """ Set up all connections for MainWindow. """
@@ -1141,17 +1154,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return True
 
 
+    
+    def create_export_bitmap_dialog(self):
+        """ Create export bitmap dialog. """
+
+        self.exportBitmapDialog = \
+            ExportBitmapDialog(self.canvas, self._saveFilePath, self)
+
+        self.connect(self.exportBitmapDialog, SIGNAL("export_pattern"),
+                     partial(io.export_scene, self.canvas),
+                     Qt.QueuedConnection)
+
+        self.exportBitmapDialog.hide()
+
+
 
     def export_pattern_dialog(self):
         """ This function opens and export pattern dialog. """
-
-        if not self.exportBitmapDialog:
-            self.exportBitmapDialog = \
-                ExportBitmapDialog(self.canvas, self._saveFilePath, self)
-
-            self.connect(self.exportBitmapDialog, SIGNAL("export_pattern"),
-                         partial(io.export_scene, self.canvas),
-                         Qt.QueuedConnection)
 
         self.exportBitmapDialog.raise_()
         self.exportBitmapDialog.show()
@@ -1232,9 +1251,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._saveFilePath = fileName
         self.setWindowTitle(QApplication.applicationName() + ": " \
                             + QFileInfo(fileName).fileName() + "[*]")
-
-        if self.exportBitmapDialog:
-            self.exportBitmapDialog.update_export_path(fileName)
+        self.exportBitmapDialog.update_export_path(fileName)
 
         # generate recovery file path
         self._recoveryFilePath = generate_recovery_filepath(fileName)

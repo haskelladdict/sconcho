@@ -50,7 +50,8 @@ from sconcho.gui.pattern_canvas_objects import (PatternGridItem,
                                         PatternLegendItem,
                                         PatternRepeatItem, 
                                         NostitchVisualizer)
-from sconcho.util.canvas import (legendItem_symbol, legendItem_text)
+from sconcho.util.canvas import (legendItem_symbol, legendItem_text,
+                                 visible_bounding_rect)
 from sconcho.util.misc import wait_cursor
 from sconcho.util.exceptions import PatternReadError
 import sconcho.util.messages as msg
@@ -773,13 +774,13 @@ def export_scene(canvas, width, height, dpi, hideNostitchSymbols,
     # any currently selected legend items
     canvas.clearFocus()
 
-
     with NostitchVisualizer(canvas, hideNostitchSymbols):
 
         # NOTE: We seem to need the 1px buffer region to avoid
         # the image being cut off
         margin = 10
-        theScene = canvas.itemsBoundingRect()
+        #theScene = canvas.itemsBoundingRect()
+        theScene = visible_bounding_rect(canvas.items())
         theScene.adjust(-margin, -margin, margin, margin)
 
         # check if user requested an svg file

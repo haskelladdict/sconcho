@@ -90,6 +90,9 @@ class PatternCanvas(QGraphicsScene):
 
         self.settings = theSettings
 
+        # are we currently visible?
+        self.isVisible = True
+
         self._activeSymbol = None
         self._defaultSymbol = defaultSymbol
         self._activeColorObject = None
@@ -541,6 +544,7 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
+        self.emit(SIGNAL("canvas_dimensions_changed"))
         moveCommand = MoveCanvasItem(canvasItem, oldPosition, newPosition)
         self._undoStack.push(moveCommand)
 
@@ -2132,6 +2136,7 @@ class PatternCanvas(QGraphicsScene):
         
         """
 
+        self.isVisible = status
         for item in self.items():
             if isinstance(item, PatternGridItem) \
             or isinstance(item, PatternLabelItem) \
@@ -2146,6 +2151,7 @@ class PatternCanvas(QGraphicsScene):
             # need this to make sure the labels have the
             # proper visibility
             self.set_up_labels()
+
 
 
     def add_text_item(self, itemPos = None,

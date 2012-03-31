@@ -989,6 +989,7 @@ class NostitchVisualizer(object):
 
         """
 
+        self.isPatternVisible = canvas.isVisible
         self.isActive = active
         if self.isActive:
             self.highlightItems = []
@@ -1033,13 +1034,15 @@ class NostitchVisualizer(object):
     def __exit__(self, exc_class, exc_instance, traceback):
         """ Exit method of NostitchVisualizer context manager. """
 
-        if self.isActive:
+        # only show no-stitches if pattern grid is visible
+        if self.isActive and self.isPatternVisible:
              for item in self.nostitchItems:
                  item.show()
 
              for item in self.highlightItems:
                  item.show()
 
+        if self.isActive:
              if self.nostitchItems:
                  self.item.show()
                  self.textItem.show()

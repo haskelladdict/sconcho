@@ -38,7 +38,9 @@ from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
                          QImageWriter, QDialogButtonBox)
 
 from sconcho.gui.ui_export_bitmap_dialog import Ui_ExportBitmapDialog
+from sconcho.util.canvas import visible_bounding_rect
 import sconcho.util.messages as msg
+
 
 
 # module lever logger:
@@ -95,7 +97,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
         self._determine_image_formats()
         self._add_image_formats_to_gui()
-        self._update_dimensions()
+        self.update_dimensions()
         self.dpiSpinner.setValue(self.defaultDPI)
 
         self.hideNostitchSymbols = False
@@ -143,27 +145,30 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
     def showEvent(self, event):
-        """ We derive showEvent so we can make update
+        """ We derive showEvent so we can update
         the current canvas dimensions.
 
         """
 
-        self._update_dimensions()
+        self.update_dimensions()
         return QDialog.showEvent(self, event)
 
 
 
-    def _update_dimensions(self):
+    def update_dimensions(self):
         """ Update values with the current canvas dimensions """
 
-        
-        size = self.canvas.itemsBoundingRect()
-
-        self.imageWidth = math.floor(size.width())
-        self.imageHeight = math.floor(size.height())
-        self._aspectRatio = size.width()/size.height()
+        size = visible_bounding_rect(self.canvas.items()) 
+  
+        imageWidth = math.floor(size.width())
+        imageHeight = math.floor(size.height())
+        self.imageWidth = imageWidth
+        self.imageHeight = imageHeight
+        self._aspectRatio = imageWidth/imageHeight
         self.imageWidthSpinner.setValue(
             self._convert_pixels_to_length(self.imageWidth))
+        self.imageHeightSpinner.setValue(
+            self._convert_pixels_to_length(self.imageHeight))
 
 
     
@@ -227,12 +232,13 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.imageHeight = self._convert_length_to_pixels(newHeight)
         self.imageWidth = self.imageHeight * self._aspectRatio
         width = self._convert_pixels_to_length(self.imageWidth)
+        dpi = self.dpiSpinner.value()
 
         self._set_blocking_value(self.imageWidthSpinner, width)
         self._set_blocking_value(self.widthSpinner, 
-                                 self.imageWidth * self.dpi/self.defaultDPI)
+                                 self.imageWidth * dpi/self.defaultDPI)
         self._set_blocking_value(self.heightSpinner, 
-                                 self.imageHeight * self.dpi/self.defaultDPI)
+                                 self.imageHeight * dpi/self.defaultDPI)
 
 
 
