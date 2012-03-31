@@ -126,7 +126,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
     def add_new_symbol(self):
-        """ This slot make the symbolEntryFrame visible and marks it
+        """ This slot makes the symbolEntryFrame visible and marks it
         as an 'add-symbol-frame'.
         
         """
@@ -160,7 +160,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
 
     def _add_symbols_to_widget(self):
-        """ This function add all private knitting symbols to the list
+        """ This function adds all custom knitting symbols to the list
         widget. Store the symbol id ('category::name') as UserDate so
         we can later more easily retrieve it from the database.
         
@@ -203,7 +203,6 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                 self._populate_category_chooser()
                 newCategoryIndex = self.categoryChooser.findText(newCategory)
                 self.categoryChooser.setCurrentIndex(newCategoryIndex)
-    
 
 
 
@@ -651,6 +650,11 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
                                      msg.cannotImportSymbolsTitle,
                                      msg.cannotImportSymbolsText,
                                      QMessageBox.Ok)
+            else:
+                QMessageBox.information(self,
+                                        msg.restartAfterImportTitle,
+                                        msg.restartAfterImportText,
+                                        QMessageBox.Ok)
 
 
 

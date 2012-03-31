@@ -1023,9 +1023,13 @@ def readSymbolZip(q_directory, q_zipFileName):
     directory = str(q_directory)
     zipFileName = str(q_zipFileName)
 
-    # make sure targetDirector exist
+    # make sure the symbolPath exist, if not, we
+    # create it
     if not os.path.isdir(directory):
-        return False
+        try:
+            os.mkdir(directory)
+        except Exception as e:
+            return False
 
     # make sure zipfile exists
     if not os.path.isfile(zipFileName):
@@ -1050,9 +1054,7 @@ def readSymbolZip(q_directory, q_zipFileName):
                     zipper.extract(file, tempDir)
 
         except Exception as e:
-            logger.error("Failed to unpack zip archive with custom symbols "
-                         "due to ")
-            logger.error(e)
+            logger.error(msg.failedToUnpackZipFile % e)
             return False
 
 
@@ -1060,6 +1062,7 @@ def readSymbolZip(q_directory, q_zipFileName):
         # file and an svg image with the same name as the directory.
         # Then check, that we can copy it into the custom symbol 
         # directory without a collision. If all is well, move it there.
+        status = True
         try:
             topFiles = os.listdir(tempDir)
             if len(topFiles) != 1 and topFiles[0] == "sconcho_symbols":
@@ -1079,16 +1082,16 @@ def readSymbolZip(q_directory, q_zipFileName):
                 svgName = dirName + ".svg"
                 if not ("description" in dirContents and
                         svgName in dirContents):
-                    logger.error("Directory layout of symbol is incorrect")
-                    logger.error(symbolDirName)
+                    logger.error(msg.directoryLayoutIncorrect % symbolDirName)
+                    status = False
                     continue
 
                 # at this point content looks ok. Now check if there are
                 # filename clashes
                 targetPath = os.path.join(directory, dirName)
                 if os.path.exists(targetPath):
-                    logger.error("Could not write to already existent symbol")
-                    logger.error(targetPath)
+                    logger.error(msg.symbolAlreadyExistsText % targetPath)
+                    status = False
                     continue
 
                 # no clashes - we're good to go, let's move the files
@@ -1102,13 +1105,11 @@ def readSymbolZip(q_directory, q_zipFileName):
                 move(svgSrc, svgDest)
 
         except Exception as e:
-            logger.error("Failed to move imported custom symbols into "
-                         "place due to")
-            logger.error(s)
+            logger.error(msg.failedToImportSymbolError % e)
             return False
 
     # all ok
-    return True
+    return status 
 
 
 

@@ -73,19 +73,24 @@ unknownImageFormatText  = ("Unknown image format for exporting as bitmap. "
                            "Please choose one of the supported image "
                            "formats.")
 
+
 patternFileExistsTitle = "sconcho: Pattern File Exists"
 patternFileExistsText = ("The pattern file %s already exists.\n"
                         "Do you want to overwrite it?")
 
+
 patternFileDoesNotExistTitle = "sconcho: Pattern File Does Not Exists"
 patternFileDoesNotExistText = ("The pattern file %s does not exist.\n")
+
 
 imageFileExistsTitle = "sconcho: Image File Exists"
 imageFileExistsText = ("The image file %s already exists.\n"
                         "Do you want to overwrite it?")
 
+
 noFilePathTitle = "sconcho: File Name Missing"
 noFilePathText = ("No filename was given. Please enter one.")
+
 
 wantToSavePatternTitle = "sconcho: Pattern File Not Saved"
 wantToSavePatternText = ("Your pattern has unsaved changes. You can either "
@@ -103,8 +108,8 @@ numColTooSmallText = ("There has to be at least one column remaining.\n"
 
 
 noColInsertLayoutTitle = "sconcho: Cannot Insert Column"
-noColInsertLayoutText = ("Sorry, cannot insert requested columns at the specified "
-                         "location due to the current layout.")
+noColInsertLayoutText = ("Sorry, cannot insert requested columns at the "
+                         "specified location due to the current layout.")
 
 
 noColDeleteLayoutTitle = "sconcho: Cannot Delete Columns"
@@ -136,7 +141,7 @@ noSelectionText = ("Sorry, nothing to do. Please select some cells first.")
 
 
 noCopyRectangularSelectionTitle = "sconcho: Cannot Copy Selection"
-noCopyRectangularSelectionText = ("Sorry, only rectangular selections can be " 
+noCopyRectangularSelectionText = ("Sorry, only rectangular selections can be "
                                   "copied. Please make sure to select a "
                                   "rectangular selection, then copy.")
 
@@ -181,8 +186,9 @@ cannotExportSymbolsText = ("Sorry, I could not export your symbols for "
 
 
 cannotImportSymbolsTitle = "sconcho: Cannot Import Custom Symbols"
-cannotImportSymbolsText = ("Sorry, I could not import the selected custom "
-                           "symbol archive for some reason.")
+cannotImportSymbolsText = ("Sorry, some or all of the symbols from the "
+                           "symbol archive could not be imported (please "
+                           "check logs for more detail)")
 
 
 cannotAddRowRepeatTitle = "sconcho: Cannot Add Row Repeat"
@@ -195,8 +201,8 @@ cannotAddRowRepeatText = ("Sorry, cannot add row repeat. To insert a "
 cannotDeleteRowRepeatTitle = "sconcho: Cannot Delete Row Repeat"
 cannotDeleteRowRepeatText = ("Sorry, cannot delete row repeat. To delete a "
                           "row repeat please make sure that complete rows "
-                          "are selected and are all inside the row repeat you "
-                          "would like to delete.")
+                          "are selected and are all inside the row repeat "
+                          "you would like to delete.")
 
 
 errorSavingProjectTitle = "sconcho: Error Saving Project"
@@ -251,6 +257,11 @@ errorLoadingTextItemsText = ("Could not load text item from "
                              "error: KeyError: %s.")
 
 
+restartAfterImportTitle = "sconcho: Please restart sconcho"
+restartAfterImportText = ("Please restart sconcho to make your newly "
+                          "imported symbols available within sconcho.")
+
+
 errorOpeningKnittingSymbols = ("sconcho: Failed to open knitting symbol "
                                "database.\n"
                                "Please check that you have valid symbols "
@@ -263,6 +274,27 @@ customSymbolPathDirectoryTitle = ("sconcho: Please Enter Location of Custom "
 
 loggingPathDirectoryTitle = ("sconcho: Please Enter Location of Path for "
                              "storing log files.")
+
+
+########################################################################
+#
+# messages for io
+#
+########################################################################
+symbolAlreadyExistsText = ("Symbol %s already exists. Refused to import "
+                           "new symbol.")
+
+
+failedToImportSymbolError = ("Failed to import custom symbols due to % ")
+
+
+directoryLayoutIncorrect = ("Directory layout of new symbol %s is incorrect ."
+                            "Skipping import of symbol.")
+
+
+failedToUnpackZipFile = ("Failed to unpack zip archive with custom symbols "
+                         "due to %s.")
+ 
 
 
 ########################################################################
