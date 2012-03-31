@@ -29,6 +29,7 @@ from PyQt4.QtCore import (Qt, QRect, QSize, QPointF, QSizeF,
                           QRectF) 
 from PyQt4.QtGui import (QGraphicsView, QRubberBand, QPainter)
 
+from sconcho.util.canvas import visible_bounding_rect
 
 
 #########################################################
@@ -135,7 +136,8 @@ class PatternView(QGraphicsView):
     def fit_scene(self):
         """ Fit scene into canvas. """
 
-        self.fitInView(self.scene().sceneRect(), Qt.KeepAspectRatio)
+        self.fitInView(visible_bounding_rect(self.scene().items()), 
+                       Qt.KeepAspectRatio)
 
 
 

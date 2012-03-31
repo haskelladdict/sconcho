@@ -851,7 +851,6 @@ class RepeatLegendItem(QGraphicsRectItem):
         return self.itemHeight
 
 
-
     @property
     def width(self):
         return self.itemWidth

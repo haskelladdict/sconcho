@@ -166,9 +166,9 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.imageHeight = imageHeight
         self._aspectRatio = imageWidth/imageHeight
         self.imageWidthSpinner.setValue(
-            self._convert_pixels_to_length(self.imageWidth))
+            int(self._convert_pixels_to_length(self.imageWidth)))
         self.imageHeightSpinner.setValue(
-            self._convert_pixels_to_length(self.imageHeight))
+            int(self._convert_pixels_to_length(self.imageHeight)))
 
 
     

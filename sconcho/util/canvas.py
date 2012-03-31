@@ -861,7 +861,10 @@ def visible_bounding_rect(items):
             if (itemBottomRight.y() > max_y):
                 max_y = itemBottomRight.y()
 
-    return QRectF(QPointF(min_x, min_y), QPointF(max_x, max_y))
+    margin = 10
+    rect = QRectF(QPointF(min_x, min_y), QPointF(max_x, max_y))
+    rect.adjust(-margin, -margin, margin, margin)
+    return rect
 
 
 
