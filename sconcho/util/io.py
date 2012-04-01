@@ -779,7 +779,6 @@ def export_scene(canvas, width, height, dpi, hideNostitchSymbols,
         # NOTE: We seem to need the 1px buffer region to avoid
         # the image being cut off
         margin = 10
-        #theScene = canvas.itemsBoundingRect()
         theScene = visible_bounding_rect(canvas.items())
         theScene.adjust(-margin, -margin, margin, margin)
 
@@ -828,12 +827,13 @@ def export_scene(canvas, width, height, dpi, hideNostitchSymbols,
 def printer(canvas, printer):
     """ The main print routine. """
 
-    theScene = canvas.itemsBoundingRect()
+    theScene = visible_bounding_rect(canvas.items()) 
     theScene.adjust(-10, -10, 10, 10)
 
     painter = QPainter(printer)
-    painter.setRenderHints(QPainter.SmoothPixmapTransform)
-    painter.setRenderHints(QPainter.HighQualityAntialiasing)
+    #painter.setRenderHints(QPainter.SmoothPixmapTransform)
+    #painter.setRenderHints(QPainter.HighQualityAntialiasing)
+    painter.setRenderHints(QPainter.Antialiasing)
     painter.setRenderHints(QPainter.TextAntialiasing)
     canvas.render(painter, QRectF(), theScene)
     painter.end()
