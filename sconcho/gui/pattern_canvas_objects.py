@@ -49,6 +49,7 @@ from PyQt4.QtGui import (QPen,
                          QGraphicsLineItem, 
                          QGraphicsItemGroup,
                          QApplication, 
+                         QTextCursor,
                          QCursor)
 from PyQt4.QtSvg import (QGraphicsSvgItem) 
 
@@ -499,8 +500,6 @@ class PatternLegendText(QGraphicsTextItem):
         if (event.modifiers() & Qt.ControlModifier):
             QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
             self.setTextInteractionFlags(Qt.NoTextInteraction)
-        else:
-            event.ignore()
 
         return QGraphicsTextItem.mousePressEvent(self, event)
 
@@ -550,6 +549,7 @@ class PatternLabelItem(QGraphicsTextItem):
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+
 
 
     @property
