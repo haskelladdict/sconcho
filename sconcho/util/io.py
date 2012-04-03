@@ -806,9 +806,9 @@ def export_scene(canvas, width, height, dpi, hideNostitchSymbols,
 
 
         painter = QPainter(generator)
-        painter.setRenderHints(QPainter.SmoothPixmapTransform )
-        painter.setRenderHints(QPainter.HighQualityAntialiasing )
-        painter.setRenderHints(QPainter.TextAntialiasing )
+        painter.setRenderHints(QPainter.SmoothPixmapTransform 
+                               | QPainter.HighQualityAntialiasing 
+                               | QPainter.TextAntialiasing )
         painter.setBackgroundMode(Qt.TransparentMode )
 
         canvas.render(painter, QRectF(), theScene )
@@ -831,10 +831,9 @@ def printer(canvas, printer):
     theScene.adjust(-10, -10, 10, 10)
 
     painter = QPainter(printer)
-    #painter.setRenderHints(QPainter.SmoothPixmapTransform)
-    #painter.setRenderHints(QPainter.HighQualityAntialiasing)
-    painter.setRenderHints(QPainter.Antialiasing)
-    painter.setRenderHints(QPainter.TextAntialiasing)
+    painter.setRenderHints(QPainter.SmoothPixmapTransform
+                          | QPainter.HighQualityAntialiasing
+                          | QPainter.TextAntialiasing)
     canvas.render(painter, QRectF(), theScene)
     painter.end()
 
