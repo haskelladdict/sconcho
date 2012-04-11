@@ -1,3 +1,3 @@
 
 all: manual.rst
-	rst2html manual.rst > manual.html
+	rst2html2 manual.rst > manual.html

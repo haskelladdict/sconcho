@@ -114,7 +114,7 @@ class PatternGridItem(QGraphicsSvgItem):
         self._selected = False
         self.color = defaultColor
         self._backBrush = QBrush(self.color)
-        self._highlightBrush = QBrush(QColor(Qt.darkGray), Qt.Dense4Pattern)
+        self._highlightBrush = QBrush(QColor(Qt.lightGray), Qt.SolidPattern)
 
         self.symbol = None
         self._set_symbol(defaultSymbol)

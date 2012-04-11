@@ -1,22 +1,21 @@
-Sconcho Manual
---------------
+Sconcho version 0.1 Manual
+--------------------------
 
-*Author: Markus Dittrich (last change 03/06/2012)*
+*Author: Markus Dittrich (last updated 04/10/2012)*
 
-Sconcho is a tool for creating knitting charts. Charts can be created by 
-placing stitch patterns into a rectangular grid. Sconcho has a large
-number of predefined knitting symbols and you can also define and import
-your own. Knitting charts can be saved in a platform independent format 
-as sconcho project files (spf) and can be edited at a later time. Charts 
-can be exported in a variety of image formats (jpg, png, etc.) and also 
-printed to a printer of saved in PDF or PostScript format (on Linux and
-Mac OSX).
+**About Sconcho**:
 
+Sconcho is a tool for designing knitting charts of any dimension. 
+Sconcho comes with a large number of predefined knitting symbols and 
+it is very easy to define and import your own. Knitting charts can be 
+saved in a platform independent format as sconcho project files (spf) 
+which can be opened and edited at a later time. Charts can be exported 
+into a variety of image formats (jpg, png, pdf on Linux and Mac OSX) 
+or printed to a printer.
 
 **Contents of this manual**:
 
 * `Starting a new Project`_
-* `Interacting with Sconcho`_
 * `Adding Symbols to Pattern Grid`_
 * `Copy and Pasting a Selection`_
 * `Un-doing/Re-doing Canvas Actions`_
@@ -27,7 +26,7 @@ Mac OSX).
 * `Inserting and Deleting Columns and Rows in the Chart`_
 * `Saving and Opening Sconcho Projects`_
 * `Exporting and Printing Charts`_
-* `Changing the Label and Legend Properties`_
+* `Changing Chart Properties`_
 * `Creating your own Custom Symbols`_
 
 
@@ -39,100 +38,69 @@ After start-up, sconcho by default presents a pattern grid with 10 rows and
 
   * starting a new project (**File -> New**) and specifying the intended size in the *New Pattern Grid* dialog.
 
-  * adding the proper number of rows with the *Insert/Delete Rows and Columns* dialog (**Grid -> Insert/Delete Rows and Columns**).
-
-
-Interacting with Sconcho
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Most interactions with sconcho only require a simple mouse click. One of
-the most fundamental interaction is the selection of any number of grid
-cells. Selected grid cells can then be filled with knitting symbols, 
-a color, or both (see `Adding Symbols To Pattern Grid`_).
-
-There are a number of additional ways to select cells on the pattern grid 
-all of which involve holding down the **Shift key** while clicking:
-
-* Shift + right mouse clicking and then dragging the mouse across the 
-  pattern grid will activate the *Rubberband Tool*. 
-  Upon releasing the mouse button all 
-  grid cells under the rubberband will either be selected or un-selected 
-  based on their previous state. If there is a knitting symbol active it 
-  will be placed immediately if it fits into the selection area.
-
-* Shift + right mouse clicking adjacent to the left/right or top/bottom 
-  edge of the pattern grid will select/unselect the neighboring complete 
-  row or column based on its previous state. If there 
-  is an active knitting symbol it will be placed into the selection.
-
-Finally, several items on the knitting chart can be moved around. Movable 
-items are: legend items (both symbols and text) and repeat boxes on the 
-canvas. In order to move items, hold down the **Control key** then click 
-on the item with the right mouse button and start dragging. Releasing the 
-mouse button will cause the item to be placed at the current 
-mouse pointer location.
+  * adding the desired number of rows and columns.
 
 
 Adding Symbols to Pattern Grid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can add symbols to the pattern grid via selecting grid cells. Selected
-cells will turn gray if there is no knitting symbol active. Clicking on
-selected cells once more will un-select them again. If a knitting symbol 
-is currently active, sconcho will try to immediately place it into the 
-selected cell if possible (e.g., sconcho can not place a three stitch 
-cable into a single selected cell. In order to place it at a multiple of 
-three adjacent cells has to be selected). If you first select a number
-of cells without an active symbol, sconcho will try to place the active
-knitting symbol as soon as you select one.
+You can add symbols to the pattern grid by selecting grid cells via:
 
-The presently active symbol (including its background color) is indicated 
-in the *Active Symbol Tool* in the lower right hand corner. If no symbol is 
-selected the *Active Symbol Tool* displays **No Active Symbol**.
+* Clicking on cells individually 
 
-As previously mentioned in `Interacting with Sconcho`_ Grid cells can be 
-selected in three ways:
+* Shift + right mouse clicking and then dragging the mouse across the 
+  pattern grid will activate the *Rubberband Tool*. Upon releasing the 
+  mouse button, all grid cells in the area covered by the rubberband will 
+  either be selected or un-selected based on their previous state. If there 
+  is a knitting symbol active it will be placed immediately into the
+  selection assuming it (or multiples of it) fits.
 
-  1) individual grid cells can be selected by using the right mouse button 
-  to click on them
-  2) complete rows or columns can be selected by holding down the 
-  **Shift** key and clicking on the row or column labels. If the label 
-  spacing is larger than 1, Control-clicking in empty row/column label 
-  positions will also select whole rows/columns.
-  3) a rectangular area can be selected with the *Rubberband Tool* by 
-  holding down the **Shift** key and the right mouse button and then 
-  dragging the mouse.
+* Shift + right mouse clicking adjacent to the left/right or top/bottom 
+  edge of the pattern grid will select/unselect all cells in the adjacent 
+  row or column based on each grid cell's previous state. If there 
+  is an active knitting symbol it will be placed into the selection.
 
-**Note:** If a symbol is active which spans more than a single
-cell - a 3 stitch cable for example -- it will only
-be inserted if the selected grid cells can fit the symbols 
-exactly.
+Selected cells will turn gray if there is no knitting symbol active
+otherwise the active knitting symbol will be inserted if it fits into
+the selection (e.g. a three stitch cable can not be added to a single
+selected cell, a multiple of three adjacent cells would have to be
+selected). Clicking on (or otherwise selecting) currently selected 
+cells will un-select them again. If you first select a number
+of cells without an active symbol and then select one, sconcho will try 
+to immediately place the active knitting symbol.
+
+Active symbols can be selected by choosing from the list
+of available symbols on the right a category and associated symbol. 
+The currently active symbol (including its background color) is shown
+in the *Active Symbol Tool* above the canvas on the left. If no symbol is 
+selected, the *Active Symbol Tool* displays **No Active Symbol**.
+
+Finally, you can select all patter grid cells of a certain color or
+type in one swoop by right mouse clicking on a cell with the desired
+color/symbol and then choosing the proper option in the selector menu.
 
 
 Copy and Pasting a Selection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can copy and paste any rectangular shaped selection on your chart.
-To copy, select a rectangular region and then 
-**Edit -> Copy Rectangular Selection** (or **Ctrl+C** hotkey). Next, you can
+You can copy and paste any selection on your chart. To copy, select a region
+(make sure to disable the currently active symbol first) and then 
+**Edit -> Copy** (or **Ctrl+C** hotkey). Next, you can
 paste this selection into your chart. To do so either
 
   1) Select the region on the canvas you would like to paste into and then
-  **Edit -> Paste Regular Selection** (or **Ctrl-V** hotkey). This
-  region has to be same size or a multiple of (both row and column wise)
-  the original copied selection. In the latter case, sconcho will paste the
+  **Edit -> Paste** (or **Ctrl-V** hotkey). This
+  region has to have the same size and shape (or a multiple) of the 
+  originally copied selection. In the latter case, sconcho will paste the
   respective number of copies. E.g. if you paste a 3x4 block into a 6x12 
   selection you get 6 copies of your original. 
 
   2) Right click on the canvas and in the pop-up menu select 
-  **Paste Rectangular Selection**. Sconcho will try to paste a single
+  **Paste**. Sconcho will try to paste a single
   copy of your selection such that the cell you clicked on will become the 
   upper left hand corner. This may fail if there is not enough space or
   due to the layout (e.g. you can not paste partially over a stitch, such as 
   half of a 2 stitch cable).
-
-**Note:** Presently, only rectangular selections can be copied and pasted. 
-
 
 
 Un-doing/Re-doing Canvas Actions
@@ -146,16 +114,13 @@ columns, changing colors, and moving and editing legend items.
 Changing a Symbol's Background Color
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-With the exception of the **no-stitch** symbol, the default background of
+With exception of the **no-stitch** symbol, the default background of
 all symbols is *white*. The color of the active symbol can be changed
-by choosing one of the predefined colors in the *Color Selector Tool*.
-The currently selected color is indicated in the *Active Symbol Tool*.
-You can customize the color in each of the predefined color selectors by 
-clicking on the *Customize Color* button and selecting a color.
-In addition, one can also load a color from any grid cell into the 
-currently active color selector by grabbing the color via 
-**Right Mouse Click -> Grab Color**.
-
+by choosing one of the predefined colors in the *Color Selector Tool*
+or by customizing one (via **customize color**). The selected color 
+will be reflected in the *Active Symbol Tool*. You can also load a color
+from any grid cell in your chart into the currently active 
+color selector by **Right Mouse Click -> Grab Color**.
 
 
 Changing the Legend Layout
@@ -163,19 +128,14 @@ Changing the Legend Layout
 
 For each new colored symbol used, sconcho places a legend entry
 consisting of a symbol and its description on the canvas. Both the symbol 
-and the text can be moved separately anywhere on the canvas and the 
-default description for a symbol can be changed.
+and the text can be moved separately anywhere on the canvas. 
+The default description text for a symbol can be changed
+by clicking on and editing it.
 
 To move a legend symbol or text item hold down the **Control Key**
 (the **Command Key** on Mac OSX) and **Left Mouse Click** on the
 desired item. The cursor should change to a cross shape and
 the item can now be moved. 
-
-**Note**: To move a text item click on the perimeter not the center
-of the item.
-
-To change the text of a legend item **Left Mouse Click** on its 
-center and start editing.
 
 If no legend is desired at all it can be turned off via un-checking
 **View -> Show Legend**.  
@@ -233,14 +193,12 @@ outside the actual chart area and then selecting "delete selected rows"
 or "delete selected columns". 
 
 **NOTE:** Deleting of rows and columns is only possible
-if complete rows or columns have been selected. If the current
-selection is anything but either complete rows or columns,
-deleting is disabled and these options are grayed out.
+if complete rows or columns have been selected. 
 
-To add rows or columns mark a **single** complete row/column.
-Next, open up the **Row And Column Management Menu** by 
+To add rows or columns mark a **single** complete row/column as
+pivot. Next, open up the **Row And Column Management Menu** by 
 right mouse clicking outside the chart area and then selecting 
-the desired add row or column selection.
+the either add row or column.
 
 
 Saving and Opening Sconcho Projects
@@ -255,27 +213,25 @@ with the extension .spf. spf files can then be re-opened in sconcho.
 Exporting and Printing Charts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can either print your sconcho project on a printer (or print
+You can either print your sconcho project to a printer (or print
 to a PDF file on some platforms), export it as a bitmapped image
 file, or save it as an svg image. The available image file formats 
 depend on the operating system and are listed at the bottom of
 the *Export As Bitmap or Svg* dialog.
 
-To enable the generation of non-rectangular image files, sconcho can 
-hide all *nostitch* symbols in the exported image of your pattern.
-Check *Hide Nostitch Symbols* in the export dialog to enable this.
+To enable the generation and export of non-rectangular knitting
+charts, sconcho can hide all *nostitch* symbols in the exported image 
+of your pattern. Check *Hide Nostitch Symbols* in the export dialog to 
+enable this.
 
 
+Changing Chart Properties
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Changing the Label and Legend Properties
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The font and size of the labels or the legend can be changed independently 
-in the preferences dialog (**File -> Preferences**). Furthermore the 
-preferences dialog allows one to select the *interval i* with which the 
-labels are displayed. By default, *i* is set to 1. Both the label and 
-legend font, size as well as label interval are saved in sconcho project 
-files and will be restored upon loading a previously saved project.
+The preferences dialog (**File -> Preferences**) allows you to
+change many properties of your chart such as font and size of 
+labels or the legend, label intervals and location and much more.
+Just take a look at what is available.
 
 
 Creating your own Custom Symbols
@@ -286,18 +242,23 @@ Knitting Symbols**) you can add your own knitting symbols and make them
 available within sconcho. 
 
 To *add* a new symbol click on the *Add New Symbol* button. Then enter the
-required information in the respective fields of the dialog. You need to provide
-an SVG image file of your symbol, a symbol name, category, default
+required information in the respective fields of the dialog. You need to 
+provide an SVG image file of your symbol, a symbol name, category, default
 width and finally a symbol description. Then click on *Add Symbol*.
 You can cancel adding the symbol by pressing *Cancel* at any time.
 
 **Please Note:**: 
 
-Sconcho does not provide a facility for creating the SVG images needed for a new symbol. You can use the excellent program Inkscape <http://inkscape.org/> for this purpose. Inkscape was also used to create the symbols that come with sconcho.
+Sconcho does not provide a facility for creating the SVG images needed for 
+a new symbol. You can use the excellent program Inkscape 
+<http://inkscape.org/> for this purpose. Inkscape was also used to create 
+the symbols that come with sconcho.
 
 By default, your new symbols are stored within your home directory 
-(*C:/Documents and Settings/Username* on Windows). You can change the location 
-in the *Custom Symbols & Logging* tab of the *Preferences* Dialog.
+(*C:/Documents and Settings/Username* on Windows). You can change the 
+location in the *Custom Symbols & Logging* tab of the *Preferences* Dialog.
+If you change the location any existing custom symbols in the old location
+will be lost until you copy them into the new location "by hand".
 
 The currently selected custom symbol can be updated or deleted. Deletion is
 only possible if the symbol does not appear in the currently worked on chart. 
@@ -308,6 +269,10 @@ delete/update then which is always possible.
 Updating or deleting a symbol will cause your undo history to be lost. Thus,
 in general it is advisable to *not* add/update/delete new symbols while
 working on an important chart.
+
+You can export all your custom symbols as a single zip file for sharing
+with others. Conversely, you can import zipped up custom symbols from
+others and use them for your projects. 
 
 **Please Note:**:
 
