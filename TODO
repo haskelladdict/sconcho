@@ -1,9 +1,12 @@
 - add option for heavier lines every 10x10 boxes for 
   highlighting purposes
 - editable row labels
-- more sophisticated print dialog
 - at some point we should move to a new file format version
   to fix up some of the cruft that has build up over time
 - allow selecting a group of legend items and move them
   together.
 - allow to change font color.
+- allow to resize pattern repeats
+- more sophisticated import dialog for custom symbols
+- fix svg export: currently it contains the symbols as bitmapped
+  which is silly, not sure why

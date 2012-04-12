@@ -1,3 +1,14 @@
+04-12-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+        * Release of version 0.1
+        * Many bugfixes and updates to manual
+        * Added some new symbols nancycat@ravelry for them
+        * Improved canvas sizing 
+        * Improved Copy and Paste (arbitrary selections can 
+          now be copied/pasted.
+        * Added ability to import/export custom as zip files
+
+
 02-29-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Release of 0.1.0_rc3

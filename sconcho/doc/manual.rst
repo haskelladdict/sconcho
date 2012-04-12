@@ -5,13 +5,13 @@ Sconcho version 0.1 Manual
 
 **About Sconcho**:
 
-Sconcho is a tool for designing knitting charts of any dimension. 
-Sconcho comes with a large number of predefined knitting symbols and 
-it is very easy to define and import your own. Knitting charts can be 
+Sconcho is a tool for designing publication quality knitting charts. 
+Sconcho comes with a large number of included knitting symbols and 
+it is very easy to create your own. Knitting charts can be 
 saved in a platform independent format as sconcho project files (spf) 
 which can be opened and edited at a later time. Charts can be exported 
-into a variety of image formats (jpg, png, pdf on Linux and Mac OSX) 
-or printed to a printer.
+into a variety of image (jpg, png, tif, etc.) and document formats
+(pdf, post-script on Linux and Mac OSX) or printed to a printer.
 
 **Contents of this manual**:
 
@@ -23,7 +23,7 @@ or printed to a printer.
 * `Changing the Legend Layout`_
 * `Adding Pattern Repeat Boxes`_
 * `Adding Row Repeats`_
-* `Inserting and Deleting Columns and Rows in the Chart`_
+* `Inserting and Deleting Columns and Rows`_
 * `Saving and Opening Sconcho Projects`_
 * `Exporting and Printing Charts`_
 * `Changing Chart Properties`_
@@ -33,18 +33,19 @@ or printed to a printer.
 Starting a new Project
 ~~~~~~~~~~~~~~~~~~~~~~
 
-After start-up, sconcho by default presents a pattern grid with 10 rows and
-10 columns. This initial grid size can be changed by 
+At start-up, sconcho by default presents a pattern grid with 10 rows and
+10 columns. This initial grid size can be easily changed by 
 
   * starting a new project (**File -> New**) and specifying the intended size in the *New Pattern Grid* dialog.
 
-  * adding the desired number of rows and columns.
+  * adding/removing the desired number of rows and columns (see `Inserting and Deleting Columns and Rows`_).
 
 
 Adding Symbols to Pattern Grid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can add symbols to the pattern grid by selecting grid cells via:
+You can create your chart by adding symbols to the pattern grid.
+This is done via selecting grid cells by:
 
 * Clicking on cells individually 
 
@@ -58,26 +59,32 @@ You can add symbols to the pattern grid by selecting grid cells via:
 * Shift + right mouse clicking adjacent to the left/right or top/bottom 
   edge of the pattern grid will select/unselect all cells in the adjacent 
   row or column based on each grid cell's previous state. If there 
-  is an active knitting symbol it will be placed into the selection.
+  is an active knitting symbol it will be placed into the selection if
+  it fits.
 
-Selected cells will turn gray if there is no knitting symbol active
-otherwise the active knitting symbol will be inserted if it fits into
-the selection (e.g. a three stitch cable can not be added to a single
-selected cell, a multiple of three adjacent cells would have to be
-selected). Clicking on (or otherwise selecting) currently selected 
-cells will un-select them again. If you first select a number
-of cells without an active symbol and then select one, sconcho will try 
-to immediately place the active knitting symbol.
+What happens after you select grid cells depends on if you
+currently have an active knitting symbol selected or not. Without an
+active knitting symbol cells will turn gray and a knitting
+symbol will be inserted into all currently selected cells once you pick one 
+(assuming the symbol or multiples of it fit properly into the selection). 
+If you already have an active knitting symbol selected it will be inserted 
+immediately into your selection if it fits (e.g. a three stitch cable 
+can not be added to a single selected cell; a multiple of three adjacent 
+cells would have to be selected). Clicking on (or otherwise picking) 
+already selected cells will un-select them again. You can deselect all
+currently selected cells by going to **Tools -> Deselect All**.
 
-Active symbols can be selected by choosing from the list
-of available symbols on the right a category and associated symbol. 
+The currently active knitting symbol can be selected from the list
+of available categories and symbols on the right. 
 The currently active symbol (including its background color) is shown
 in the *Active Symbol Tool* above the canvas on the left. If no symbol is 
 selected, the *Active Symbol Tool* displays **No Active Symbol**.
 
-Finally, you can select all patter grid cells of a certain color or
-type in one swoop by right mouse clicking on a cell with the desired
-color/symbol and then choosing the proper option in the selector menu.
+To simplify replacing or changing existing symbols on your chart you 
+can select all pattern grid cells of a certain color or containing a
+certain symbol in one swoop by right mouse clicking on a cell with 
+the desired color/symbol and then choosing the proper option in the 
+selector menu.
 
 
 Copy and Pasting a Selection
@@ -85,12 +92,12 @@ Copy and Pasting a Selection
 
 You can copy and paste any selection on your chart. To copy, select a region
 (make sure to disable the currently active symbol first) and then 
-**Edit -> Copy** (or **Ctrl+C** hotkey). Next, you can
-paste this selection into your chart. To do so either
+**Edit -> Copy**. Next, you can paste this selection into your chart. 
+To do so either
 
   1) Select the region on the canvas you would like to paste into and then
-  **Edit -> Paste** (or **Ctrl-V** hotkey). This
-  region has to have the same size and shape (or a multiple) of the 
+  **Edit -> Paste**. This
+  region has to have the same size and shape then (or a multiple of) the 
   originally copied selection. In the latter case, sconcho will paste the
   respective number of copies. E.g. if you paste a 3x4 block into a 6x12 
   selection you get 6 copies of your original. 
@@ -98,7 +105,8 @@ paste this selection into your chart. To do so either
   2) Right click on the canvas and in the pop-up menu select 
   **Paste**. Sconcho will try to paste a single
   copy of your selection such that the cell you clicked on will become the 
-  upper left hand corner. This may fail if there is not enough space or
+  upper left hand corner. This may fail if there is not enough space 
+  available to place the selection or
   due to the layout (e.g. you can not paste partially over a stitch, such as 
   half of a 2 stitch cable).
 
@@ -122,20 +130,23 @@ will be reflected in the *Active Symbol Tool*. You can also load a color
 from any grid cell in your chart into the currently active 
 color selector by **Right Mouse Click -> Grab Color**.
 
+**Note:** The color of the no-stitch symbol can not be changed
+from gray.
+
 
 Changing the Legend Layout
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For each new colored symbol used, sconcho places a legend entry
+For each new (colored) symbol used, sconcho places a legend entry
 consisting of a symbol and its description on the canvas. Both the symbol 
 and the text can be moved separately anywhere on the canvas. 
-The default description text for a symbol can be changed
-by clicking on and editing it.
+The default description text for a symbol can be changed by clicking on 
+the text box and editing it.
 
 To move a legend symbol or text item hold down the **Control Key**
 (the **Command Key** on Mac OSX) and **Left Mouse Click** on the
 desired item. The cursor should change to a cross shape and
-the item can now be moved. 
+the item can now be moved via the mouse. 
 
 If no legend is desired at all it can be turned off via un-checking
 **View -> Show Legend**.  
@@ -165,6 +176,12 @@ desired item. The cursor should change to a cross shape and the
 repeat box can now be dragged while holding down the left mouse
 button.
 
+**NOTE:** Pattern repeat boxes are not tied to the underlying 
+pattern (after all, they can be moved). Thus, if you remove or
+add columns/rows underneath a pattern repeat it will not re-size
+automatically. Rather, you will have to delete the previous
+pattern repeat and create a new one with the correct dimensions.
+
 
 Adding Row Repeats
 ~~~~~~~~~~~~~~~~~~
@@ -183,17 +200,19 @@ complete row within the repeat. Selecting *delete row repeat* in the
 the repeat. 
 
 
-Inserting and Deleting Columns and Rows in the Chart
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Inserting and Deleting Columns and Rows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Deleting rows and columns is straightforward. First, select the rows 
 or columns you would like to delete. Next, open up the 
 **Row And Column Management Menu** by right mouse clicking anywhere
-outside the actual chart area and then selecting "delete selected rows" 
+outside the actual chart area and then select "delete selected rows" 
 or "delete selected columns". 
 
-**NOTE:** Deleting of rows and columns is only possible
-if complete rows or columns have been selected. 
+**NOTE:** Deletion of rows and columns is only possible
+if complete rows or columns have been selected and these form 
+rectangular regions (i.e. no multi-cell symbols are partially
+sticking out).. 
 
 To add rows or columns mark a **single** complete row/column as
 pivot. Next, open up the **Row And Column Management Menu** by 
@@ -256,15 +275,16 @@ the symbols that come with sconcho.
 
 By default, your new symbols are stored within your home directory 
 (*C:/Documents and Settings/Username* on Windows). You can change the 
-location in the *Custom Symbols & Logging* tab of the *Preferences* Dialog.
+location in the *Custom Symbols & Logging* tab of the *Preferences Dialog*.
 If you change the location any existing custom symbols in the old location
 will be lost until you copy them into the new location "by hand".
 
 The currently selected custom symbol can be updated or deleted. Deletion is
 only possible if the symbol does not appear in the currently worked on chart. 
-Similarly, updating is only possible if the name, svg name, and width remain
-the same. Otherwise, close your current session, open a blank document and
-delete/update then which is always possible. 
+Similarly, updating of a symbol currently in use is only possible if the 
+name, svg name, and width remain the same. Otherwise, close your current 
+session, open a blank document and delete/update then which is always 
+possible. 
 
 Updating or deleting a symbol will cause your undo history to be lost. Thus,
 in general it is advisable to *not* add/update/delete new symbols while
