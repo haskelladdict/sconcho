@@ -1215,28 +1215,9 @@ class PatternCanvas(QGraphicsScene):
         (upperLHRow, upperLHColumn, dummy) = \
             get_upper_left_hand_corner(self._selectedCells.values())
 
-        # user clicked directly on canvas
-        # this always has priority over pasting into a selection
-        if (column != None and row != None):
-            (minRow, minCol, deadSelection) = \
-                    self._check_for_partial_overlaps(column, row)
-            if not deadSelection:
-                logger.error(msg.badPasteSelectionText)
-                QMessageBox.critical(None, msg.badPasteSelectionTitle,
-                                    msg.badPasteSelectionText,
-                                    QMessageBox.Close)
-                return 
-
-            else:
-                self.clear_all_selected_cells()
-                pasteCommand = PasteCellsNew(self, self._copySelection,
-                                        deadSelection, column, row,
-                                        minCol, minRow)
-                self._undoStack.push(pasteCommand)
-
         # we have a rectangular copy and paste selection
-        elif status1 and status2:
-            
+        # in this we always insert into the selection
+        if status1 and status2:
             (n_col, r_col) = divmod(colDim, pasteColDim)
             (n_row, r_row) = divmod(rowDim, pasteRowDim)
 
@@ -1292,7 +1273,23 @@ class PatternCanvas(QGraphicsScene):
                                         minCopyRow)
                 self._undoStack.push(pasteCommand)
 
+        # user clicked directly on canvas
+        elif (column != None and row != None):
+            (minRow, minCol, deadSelection) = \
+                    self._check_for_partial_overlaps(column, row)
+            if not deadSelection:
+                logger.error(msg.badPasteSelectionText)
+                QMessageBox.critical(None, msg.badPasteSelectionTitle,
+                                    msg.badPasteSelectionText,
+                                    QMessageBox.Close)
+                return 
 
+            else:
+                self.clear_all_selected_cells()
+                pasteCommand = PasteCellsNew(self, self._copySelection,
+                                        deadSelection, column, row,
+                                        minCol, minRow)
+                self._undoStack.push(pasteCommand)
 
         # without selection or user mouse clicking on canvas we can't
         # paste
