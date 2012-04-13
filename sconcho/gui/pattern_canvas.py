@@ -1121,6 +1121,10 @@ class PatternCanvas(QGraphicsScene):
     def copy_selection(self): 
         """ This slot copies the current selection if rectangular. """
 
+        # if nothing is selected don't do anything
+        if not self._selectedCells:
+            return
+
         self._copySelection.clear()
         self._copySelection = self._selectedCells.copy()
         self.clear_all_selected_cells()
