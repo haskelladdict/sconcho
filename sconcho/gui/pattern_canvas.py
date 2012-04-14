@@ -121,6 +121,13 @@ class PatternCanvas(QGraphicsScene):
 
         self.set_up_highlighted_rows()
 
+        # NOTE: This is a hack to force Qt to leave a margin on
+        # the left/upper edges. There should be a better way short
+        # of managing my own sceneRect which is tricky
+        dummy = QGraphicsRectItem(-100,-100,1,1)
+        self.addItem(dummy)
+        dummy.setVisible(False)
+
 
 
     def set_up_main_grid(self):
