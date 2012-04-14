@@ -606,6 +606,9 @@
    <property name="toolTip">
     <string>Deselect all currently highlighted cells on the grid.</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
   </action>
   <action name="action_Copy">
    <property name="text">
