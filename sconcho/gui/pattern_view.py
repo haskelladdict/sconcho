@@ -68,7 +68,8 @@ class PatternView(QGraphicsView):
 
         if event.modifiers() & Qt.ShiftModifier:
             self.rubberBandOrigin = event.pos()
-            self.rubberBand.setGeometry(QRect(self.rubberBandOrigin, QSize()))
+            self.rubberBand.setGeometry(QRect(self.rubberBandOrigin, 
+                                              QSize()))
             self.rubberBand.show()
         
         return QGraphicsView.mousePressEvent(self, event)
@@ -119,6 +120,7 @@ class PatternView(QGraphicsView):
             QGraphicsView.wheelEvent(self, event)
 
 
+
     def zoom_in(self):
         """ Zoom in by 10% """
 
@@ -135,9 +137,11 @@ class PatternView(QGraphicsView):
 
     def fit_scene(self):
         """ Fit scene into canvas. """
-
-        self.fitInView(visible_bounding_rect(self.scene().items()), 
-                       Qt.KeepAspectRatio)
+        
+        margin = 50.0
+        rawBoundary = visible_bounding_rect(self.scene().items())
+        rawBoundary.adjust(-margin, -margin, margin, margin)
+        self.fitInView(rawBoundary, Qt.KeepAspectRatio)
 
 
 
