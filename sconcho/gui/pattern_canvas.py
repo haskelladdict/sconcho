@@ -1786,10 +1786,7 @@ class PatternCanvas(QGraphicsScene):
             (status, (colDim, rowDim)) = \
                 is_selection_rectangular(chunk)
 
-            # check if we have complete columns
-            deadColumns = get_marked_columns(chunk, self._numRows)
-
-            if not status or not deadColumns:
+            if not status: 
                 return False
 
         return True
