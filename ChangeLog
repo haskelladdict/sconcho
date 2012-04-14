@@ -1,6 +1,15 @@
+04-XX-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+	* Bugfix release 0.1.1
+	* Fixed somewhat broken deletion of columns
+	* Improved handling of copy/pasting with selections
+	* Added margin around chart on canvas for better visbility
+	* Added Ctrl-X hotkey to deselect all
+
+
 04-12-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
-        * Release of version 0.1
+	* Release of version 0.1
         * Many bugfixes and updates to manual
         * Added some new symbols nancycat@ravelry for them
         * Improved canvas sizing 
