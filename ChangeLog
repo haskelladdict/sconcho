@@ -1,7 +1,7 @@
-04-XX-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+04-17-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Bugfix release 0.1.1
-	* Fixed somewhat broken deletion of columns
+	* Fixed broken deletion of columns
 	* Improved handling of copy/pasting with selections
 	* Added margin around chart on canvas for better visbility
 	* Added Ctrl-X hotkey to deselect all
