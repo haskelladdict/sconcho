@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/main_window.ui'
+# Form implementation generated from sconcho.gui.reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Apr 14 13:58:31 2012
+# Created: Wed Jun 20 10:10:20 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -506,8 +506,8 @@ class Ui_MainWindow(object):
         self.action_Paste_Rectangular_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Paste ", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Paste_Rectangular_Selection.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+V", None, QtGui.QApplication.UnicodeUTF8))
 
-from active_symbol_widget import ActiveSymbolWidget
-from color_widget import ColorWidget
-from pattern_view import PatternView
-from recently_used_symbol_widget import RecentlyUsedSymbolWidget
+from sconcho.gui.active_symbol_widget import ActiveSymbolWidget
+from sconcho.gui.color_widget import ColorWidget
+from sconcho.gui.pattern_view import PatternView
+from sconcho.gui.recently_used_symbol_widget import RecentlyUsedSymbolWidget
 from . import icons_rc

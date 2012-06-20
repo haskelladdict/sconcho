@@ -57,7 +57,8 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
         chooser.addItem(symbolCategory)
         (widget, wList) = \
             generate_category_widget(symbolCategory, symbols, synchronizer)
-        widgetList = dict(widgetList.items() + wList.items())
+        widgetList = dict(widgetList.items())
+        widgetList.update(wList.items())
         selectorWidgets[symbolCategory] = widget
 
     # make "basic" the top item if it exists, otherwise

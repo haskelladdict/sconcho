@@ -161,7 +161,7 @@ def main(fileName=None):
 
     # set up logging if requested
     doLogging = defaultSettings.doLogging.value
-    loggingPath = unicode(defaultSettings.loggingPath.value)
+    loggingPath = defaultSettings.loggingPath.value
     if doLogging and loggingPath:
         logHandle = create_log_file(loggingPath)
     else:

@@ -76,15 +76,14 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         self._svgFilePath      = None
         self._activeAction     = None
         self._selectedSymbol   = None
-        self._symbolCategories = symbolCategories
-        self._symbolCategories.sort()
+        self._symbolCategories = sorted(symbolCategories)
 
         # main setup
+        self._populate_category_chooser()
         self._symbolPath = symbolPath
         self._add_connections()
         self._symbolDict = parse_all_symbols([symbolPath])
         self._set_up_symbols_frame()
-        self._populate_category_chooser()
         self._add_symbols_to_widget()
         
 
@@ -180,7 +179,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         for name in self._symbolCategories:
             self.categoryChooser.addItem(name)
 
-        self.categoryChooser.addItem("other...", QVariant(1))
+        self.categoryChooser.addItem("other...", 1)
 
 
     
@@ -188,7 +187,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         """ This slot deals with changes to the selected category """
 
         itemText = self.categoryChooser.itemText(index)
-        (itemData, dummy) = self.categoryChooser.itemData(index).toInt()
+        (itemData, dummy) = self.categoryChooser.itemData(index)
 
         if itemText == QString("other...") and itemData == 1:
               
@@ -240,7 +239,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         if not newWidgetItem:
             return
 
-        symbolID = newWidgetItem.data(0, Qt.UserRole).toString()
+        symbolID = newWidgetItem.data(0, Qt.UserRole)
         if symbolID in self._symbolDict:
             symbol = self._symbolDict[symbolID]
             self._selectedSymbol = symbol

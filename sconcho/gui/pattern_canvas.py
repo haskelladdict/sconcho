@@ -237,9 +237,9 @@ class PatternCanvas(QGraphicsScene):
             if not rowLabels:
                 continue
 
-            labelText = unicode(rowLabels[0])
+            labelText = str(rowLabels[0])
             for label in rowLabels[1:]:
-                labelText += ", " + unicode(label)
+                labelText += ", " + str(label)
             
             item = PatternLabelItem(str(labelText), isRowLabel = True)
             yPos = self._unitCellDim.height() * (self._numRows - row - 1)
@@ -266,7 +266,7 @@ class PatternCanvas(QGraphicsScene):
             if not colLabel:
                 continue
 
-            labelText = QString(unicode(colLabel))
+            labelText = QString(colLabel)
             textWidth = fontMetric.width(labelText)
             item = PatternLabelItem(labelText, isRowLabel = False)
             
@@ -626,14 +626,14 @@ class PatternCanvas(QGraphicsScene):
                                               self._unitCellDim.height())
 
         if column >= 0 and column <= self._numColumns:
-            columnString = unicode(self._numColumns - column)
+            columnString = self._numColumns - column
         else:
             columnString = "NA"
         self.emit(SIGNAL("col_count_changed"), columnString)
 
         rowLabelOffset = self.settings.rowLabelStart.value - 1
         if row >= 0 and row <= self._numRows:
-            rowString = unicode(self._numRows - row + rowLabelOffset)
+            rowString = self._numRows - row + rowLabelOffset
         else:
             rowString = "NA"
         self.emit(SIGNAL("row_count_changed"), rowString)

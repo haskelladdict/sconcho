@@ -11,8 +11,8 @@ def check_dependencies():
     """
 
     # python 
-    if sys.version_info < (2, 6, 0) or sys.version_info >= (2, 8, 0):
-        print('Sorry, sconcho needs python version 2.6 or 2.7')
+    if sys.version_info < (3, 2, 0):
+        print('Sorry, sconcho needs python version 3.2 or later')
         print("Python Version detected: %d.%d.%d" % sys.version_info[:3])
         exit(5)
     print("Python Version: %d.%d.%d" % sys.version_info[:3])
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     dataFiles.append('doc/manual.html')
 
     setup(name='sconcho',
-        version='0.1.2',
+        version='0.2.0',
         description='Program for Generating Knitting Charts',
         author='Markus Dittrich',
         author_email='haskelladdict@users.sourceforge.net',

@@ -51,11 +51,11 @@ logger = logging.getLogger(__name__)
 inToCm = 1/0.393700787
 
 # dictionary with description of most common image file formats
-imageFileFormats = { "bmp" : "Bitmap Image File",
+imageFileFormats = { "png" : "Portable Networks Graphic",
+                     "bmp" : "Bitmap Image File",
                      "ico" : "Ico File Format",
                      "jpeg" : "Joint Photographic Experts Group Format",
                      "jpg" : "Joint Photographic Experts Group Format",
-                     "png" : "Portable Networks Graphic",
                      "ppm" : "Netpbm Color Image Format",
                      "tif" : "Tagged Image File Format",
                      "tiff" : "Tagged Image File Format",
@@ -79,6 +79,9 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         super(ExportBitmapDialog, self).__init__(parent)
         self.setupUi(self)
 
+        self._determine_image_formats()
+        self._add_image_formats_to_gui()
+
         if fileName:
             self.fullPath = QDir.homePath() + "/" + QFileInfo(fileName).baseName()
         else:
@@ -95,8 +98,6 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.unitSelector.setCurrentIndex(self.currentUnit)
         self.defaultDPI = 300
 
-        self._determine_image_formats()
-        self._add_image_formats_to_gui()
         self.update_dimensions()
         self.dpiSpinner.setValue(self.defaultDPI)
 
@@ -178,7 +179,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         
         """
 
-        self.formats = ["%s" % unicode(formating) for \
+        self.formats = ["%s" % str(formating) for \
                         formating in QImageWriter.supportedImageFormats()]
 
         # we support svg format as well
@@ -354,7 +355,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         """
 
         selectedExtension = \
-                self.availableFormatsChooser.itemData(selectionID).toString()
+                self.availableFormatsChooser.itemData(selectionID)
         self.fileNameEdit.setText(self.fullPath + "." + selectedExtension) 
 
 
@@ -375,7 +376,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         extension = QFileInfo(filePath).suffix()
         if extension in self.formats:
             for index in range(self.availableFormatsChooser.count()):
-                item = self.availableFormatsChooser.itemData(index).toString()
+                item = self.availableFormatsChooser.itemData(index)
                 if item == extension:
                     self.availableFormatsChooser.setCurrentIndex(index)
                     break
@@ -474,8 +475,8 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         extensionID = \
                 self.availableFormatsChooser.currentIndex()
         selectedExtension = \
-                self.availableFormatsChooser.itemData(extensionID).toString()
-
+                str(self.availableFormatsChooser.itemData(extensionID))
+        
         return selectedExtension
 
 

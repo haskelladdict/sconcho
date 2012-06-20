@@ -24,7 +24,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-import urllib2
+import urllib
 import re
 
 from PyQt4.QtCore import (qVersion, SIGNAL, QThread)
@@ -125,7 +125,7 @@ class UrlChecker(QThread):
         """
 
         try:
-            handle = urllib2.urlopen(LATEST_VERSION_URL, timeout=10)
+            handle = urllib.urlopen(LATEST_VERSION_URL, timeout=10)
             result = handle.read()
 
             # make sure we actually retrieved the correct file

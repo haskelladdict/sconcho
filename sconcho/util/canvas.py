@@ -27,7 +27,7 @@ from __future__ import absolute_import
 
 import logging
 import math
-from sys import (maxint, float_info)
+from sys import (maxsize, float_info)
 
 from PyQt4.QtCore import (QPointF, QRectF)
 from PyQt4.QtGui import (QMessageBox, QColor)
@@ -318,7 +318,7 @@ def get_upper_left_hand_corner(selectedCells):
     cellsByRow = order_selection_by_rows(selectedCells)
     minRow = min(cellsByRow.keys())
     
-    minCol = maxint
+    minCol = maxsize
     for item in cellsByRow[minRow]:
         if item.column < minCol:
             minCol = item.column

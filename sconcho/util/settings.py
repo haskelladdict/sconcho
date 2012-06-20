@@ -26,8 +26,12 @@ from __future__ import absolute_import
 
 import logging 
 
-from PyQt4.QtCore import (QSettings, QString, QSize, QDir, QVariant,
-                          QPoint)
+try:
+    from PyQt4.QtCore import QString
+except ImportError:
+    QString = str
+
+from PyQt4.QtCore import (QSettings, QSize, QDir, QPoint)
 from PyQt4.QtGui import (QFont, QFontDatabase)
 
 
@@ -190,8 +194,7 @@ class DefaultSettings(QSettings):
     def main_window_size(self):
         """ Return the size of the main window. """
 
-        return self.value("MainWindow/Size",
-                          QVariant(QSize(1200, 800))).toSize()
+        return self.value("MainWindow/Size", QSize(1200, 800))
 
 
 
@@ -199,7 +202,7 @@ class DefaultSettings(QSettings):
     def main_window_size(self, size):
         """ Set the size of the main window. """
 
-        self.setValue("MainWindow/Size", QVariant(size))
+        self.setValue("MainWindow/Size", size)
                           
 
 
@@ -207,8 +210,7 @@ class DefaultSettings(QSettings):
     def main_window_position(self):
         """ Return the position of the main window. """
         
-        return self.value("MainWindow/Position",
-                          QVariant(QPoint(0,0))).toPoint()
+        return self.value("MainWindow/Position", QPoint(0,0))
 
 
 
@@ -216,7 +218,7 @@ class DefaultSettings(QSettings):
     def main_window_position(self, position):
         """ Set the size of the main window. """
 
-        self.setValue("MainWindow/Position", QVariant(position))
+        self.setValue("MainWindow/Position", position)
 
 
 
@@ -224,7 +226,7 @@ class DefaultSettings(QSettings):
     def main_window_state(self):
         """ Return the saved state of the main window. """
 
-        return self.value("MainWindow/State").toByteArray()
+        return self.value("MainWindow/State")
 
 
 
@@ -232,7 +234,7 @@ class DefaultSettings(QSettings):
     def main_window_state(self, state):
         """ Set the state of the main window. """
 
-        self.setValue("MainWindow/State", QVariant(state))
+        self.setValue("MainWindow/State", state)
 
 
 
@@ -240,7 +242,7 @@ class DefaultSettings(QSettings):
     def recently_used_files(self):
         """ Return the list of recently used files. """
         
-        return self.value("RecentlyUsedFiles/List").toString()
+        return self.value("RecentlyUsedFiles/List")
 
 
 
@@ -248,7 +250,7 @@ class DefaultSettings(QSettings):
     def recently_used_files(self, values):
         """ Set the list of recently used files. """
 
-        self.setValue("RecentlyUsedFiles/List", QVariant(values))
+        self.setValue("RecentlyUsedFiles/List", values)
    
 
 
@@ -272,12 +274,12 @@ class PreferenceSetting(object):
         self.settings = settings
 
         # set defaults if necessary
-        value = self.settings.value(self.defaultName).toString()
-        if value.isEmpty():
+        value = self.settings.value(self.defaultName)
+        if not value:
             self.settings.setValue(self.defaultName, defaultValue)
 
         # set session values
-        defaultVal = self.settings.value(self.defaultName).toString()
+        defaultVal = self.settings.value(self.defaultName)
         self.settings.setValue(self.sessionName, defaultVal)
 
 
@@ -287,16 +289,16 @@ class PreferenceSetting(object):
     def value(self):
         """ Return the property value. """
 
-        value = self.settings.value(self.sessionName).toString()
+        value = self.settings.value(self.sessionName)
 
         status = True
         if self.returnType == "Int":
-            (value, status) = value.toInt()
+            value = int(value)
         elif self.returnType == "QFont":
-            newValue = QFont()
-            if not newValue.fromString(value):
-                status = False
-            value = newValue
+            #newValue = QFont()
+            #if not newValue.fromString(value):
+            #    status = False
+            value = QFont(value)
         elif self.returnType == "QString":
             pass
         else:
@@ -325,7 +327,7 @@ class PreferenceSetting(object):
     def make_settings_default(self):
         """ Make the current session settings the default. """
 
-        value = self.settings.value(self.sessionName).toString()
+        value = self.settings.value(self.sessionName)
         self.settings.setValue(self.defaultName, value)
 
 
@@ -336,10 +338,10 @@ class PreferenceSetting(object):
         # for font settings we check that they exist
         if self.returnType == "QFont":
             if fontDatabase_has_font(value):
-                fontString = value.toString()
+                fontString = value
                 self.settings.setValue(name, fontString)
         else:
-            self.settings.setValue(name, QString(unicode(value)))
+            self.settings.setValue(name, QString(value))
 
 
 

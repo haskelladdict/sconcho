@@ -123,9 +123,9 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
             newRowID = self.repeatWidget.rowCount()
             self.repeatWidget.insertRow(newRowID)
 
-            startRowItem = QTableWidgetItem(unicode(startRow))
-            endRowItem = QTableWidgetItem(unicode(endRow))
-            repeatItem = QTableWidgetItem(unicode(numRepeat))
+            startRowItem = QTableWidgetItem(str(startRow))
+            endRowItem = QTableWidgetItem(str(endRow))
+            repeatItem = QTableWidgetItem(str(numRepeat))
 
             self.repeatWidget.setItem(newRowID, 0, startRowItem)
             self.repeatWidget.setItem(newRowID, 1, endRowItem)
@@ -136,9 +136,9 @@ class PatternRowRepeatEditorDialog(QDialog, Ui_PatternRowRepeatEditor):
             if not self.check_ranges(startRow, endRow, selection):
                 return
 
-            self.repeatWidget.item(selection, 0).setText(unicode(startRow))
-            self.repeatWidget.item(selection, 1).setText(unicode(endRow))
-            self.repeatWidget.item(selection, 2).setText(unicode(numRepeat))
+            self.repeatWidget.item(selection, 0).setText(str(startRow))
+            self.repeatWidget.item(selection, 1).setText(str(endRow))
+            self.repeatWidget.item(selection, 2).setText(str(numRepeat))
 
             # remove the previous repeat
             self.emit(SIGNAL("deleted_row_repeat"), self.previousStart, 

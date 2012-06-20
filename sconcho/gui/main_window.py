@@ -26,7 +26,7 @@ from __future__ import absolute_import
 
 
 # version and release date of current sconcho
-__version__ = "0.1.2"
+__version__ = "0.2.0"
 __releaseDate__ = "2012-04-17"
 
 import logging
@@ -972,7 +972,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 while len(files) > 10 and not files.isEmpty():
                     files.takeFirst()
 
-        self.settings.recently_used_files = files.join("%")
+        self.settings.recently_used_files = "%".join(files)
         self.clear_recently_used_files_menu()
 
         # the actual path is stored as data since the text
@@ -996,7 +996,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         allPaths = self.menuRecent_Files.actions()
         for path in allPaths:
-            dontKeep = path.data().toString()
+            dontKeep = path.data()
             if dontKeep:
                 self.menuRecent_Files.removeAction(path)
 
@@ -1066,13 +1066,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # make sure we ignore menu clicks on non-filename
         # items (like the clear button)
-        isFile = action.data().toString()
+        isFile = action.data()
         if not isFile:
             return
 
         # the actual filename is in the data *not* the
         # text of the item
-        readFilePath = action.data().toString()
+        readFilePath = action.data()
  
         if not QFile(readFilePath).exists():
             logger.error(msg.patternFileDoesNotExistText % readFilePath)
