@@ -29,11 +29,6 @@ from tempfile import mkdtemp
 from os import path
 from shutil import (rmtree, move)
 
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
-
 from PyQt4.QtCore import (QDir, QFile, QIODevice,
                           QTextStream, QTemporaryFile, Qt)
 from PyQt4.QtGui import QMessageBox
@@ -162,11 +157,11 @@ def parse_symbol_description(node):
         if item.toElement().tagName() == "category":
             splitEntry = entry.split(":")
             if len(splitEntry) == 1:
-                content["category"] = QString(splitEntry[0])
-                content["category_pos"] = QString("%d" % __LARGE_INT__)
+                content["category"] = splitEntry[0]
+                content["category_pos"] = "%d" % __LARGE_INT__
             elif len(splitEntry) == 2:
-                content["category"] = QString(splitEntry[0])
-                content["category_pos"] = QString(splitEntry[-1])
+                content["category"] = splitEntry[0]
+                content["category_pos"] = splitEntry[-1]
             else:
                 return None
 

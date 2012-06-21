@@ -27,11 +27,6 @@ from __future__ import absolute_import
 import logging
 from copy import copy
 
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
-
 from PyQt4.QtCore import (Qt, QPointF, SIGNAL) 
 from PyQt4.QtGui import (QUndoCommand, QColor)
 
@@ -264,7 +259,7 @@ class InsertRows(QUndoCommand):
         self.unitHeight = self.canvas._unitCellDim.height()
         self.unitWidth = self.canvas._unitCellDim.width()
 
-        if mode == QString("above"):
+        if mode == "above":
             self.pivot = pivot
         else:
             self.pivot = pivot + 1
@@ -655,7 +650,7 @@ class InsertColumns(QUndoCommand):
         self.unitHeight = self.canvas._unitCellDim.height()
         self.unitWidth = self.canvas._unitCellDim.width()
 
-        if mode == QString("left of"):
+        if mode == "left of":
             self.pivot = pivot
         else:
             self.pivot = pivot + 1
@@ -1349,7 +1344,7 @@ class AddPatternRepeatLegend(QUndoCommand):
 
         self.canvas = canvas
         self.pathItem = pathItem 
-        self.legendText = QString("pattern repeat")
+        self.legendText = "pattern repeat"
 
         self.legendItem = RepeatLegendItem(self.pathItem.color)
         self.legendTextItem = PatternLegendText(self.legendText)

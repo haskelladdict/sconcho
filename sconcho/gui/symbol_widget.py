@@ -24,11 +24,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
- 
 from PyQt4.QtCore import (QSize, QObject, SIGNAL, Qt)
 from PyQt4.QtGui import (QFrame, QGridLayout, QWidgetItem, QWidget, 
                          QHBoxLayout, QLabel, QScrollArea, QMenu,
@@ -66,7 +61,7 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
     basicID = chooser.findText("basic")
     if basicID != -1:
         chooser.setCurrentIndex(basicID)
-        activeWidget = selectorWidgets[QString("basic")]
+        activeWidget = selectorWidgets["basic"]
     else:
         activeWidget = selectorWidgets[chooser.currentText()]
 

@@ -32,11 +32,6 @@ from tempfile import mkdtemp
 from functools import partial
 from shutil import (rmtree, move)
 
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
-
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, 
                           Qt, QRectF, QDataStream, QSize, QRect, 
                           QFileInfo, QLineF, QPointF, QThread,

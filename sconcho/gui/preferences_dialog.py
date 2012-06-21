@@ -26,11 +26,6 @@ from __future__ import absolute_import
 
 from functools import partial
 
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
- 
 from PyQt4.QtCore import (SIGNAL, QDir, QT_VERSION)
 from PyQt4.QtGui import (QDialog, QFontDatabase, QFileDialog,
                          QColorDialog, QColor)
@@ -222,7 +217,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         targetSizeIndex = 0
         self.legendSizeComboBox.clear()
         for (index, size) in enumerate(availableSizes):
-            self.legendSizeComboBox.addItem(QString(size))
+            self.legendSizeComboBox.addItem(str(size))
 
             if targetSize == size:
                 targetSizeIndex = index
@@ -309,7 +304,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         targetSizeIndex = 0
         self.labelSizeComboBox.clear()
         for (index, size) in enumerate(availableSizes):
-            self.labelSizeComboBox.addItem(QString(int(size)))
+            self.labelSizeComboBox.addItem(str(size))
 
             if targetSize == size:
                 targetSizeIndex = index

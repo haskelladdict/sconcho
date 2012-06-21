@@ -34,6 +34,7 @@ from sconcho.gui.symbol_widget import (SymbolSelectorItem,
                                SymbolSynchronizer)
 
 
+# this is the maximum number of recently used symbols we allow
 MAX_RECENT_SYMBOLS = 5
 
 

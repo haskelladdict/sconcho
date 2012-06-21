@@ -24,12 +24,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
-
-
     
 ########################################################################
 ##
@@ -422,10 +416,10 @@ notUpToDate = ("Your version of sconcho is <b>out of date</b>. "
 ## list of possible main window titles
 ##
 ########################################################################
-knittingQuotes = [QString("Oops, I charted ...."),
-                  QString("Chart this!"),
-                  QString("Happy knitting!"),
-                  QString("Purls before swine"),
-                  QString("Knit happens"),
-                  QString("Knit or die!")]
+knittingQuotes = ["Oops, I charted ....",
+                  "Chart this!",
+                  "Happy knitting!",
+                  "Purls before swine",
+                  "Knit happens",
+                  "Knit or die!"]
 

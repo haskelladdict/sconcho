@@ -26,11 +26,6 @@ from __future__ import absolute_import
 
 import logging 
 
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
-
 from PyQt4.QtCore import (QSettings, QSize, QDir, QPoint)
 from PyQt4.QtGui import (QFont, QFontDatabase)
 
