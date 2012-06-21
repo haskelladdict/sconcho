@@ -295,9 +295,6 @@ class PreferenceSetting(object):
         if self.returnType == "Int":
             value = int(value)
         elif self.returnType == "QFont":
-            #newValue = QFont()
-            #if not newValue.fromString(value):
-            #    status = False
             value = QFont(value)
         elif self.returnType == "QString":
             pass

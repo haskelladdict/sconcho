@@ -26,11 +26,6 @@ from __future__ import absolute_import
 
 from functools import partial
 
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
- 
 from PyQt4.QtCore import (Qt, SIGNAL, QDir)
 from PyQt4.QtGui import (QDialog, QColorDialog)
 

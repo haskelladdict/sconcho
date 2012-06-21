@@ -27,12 +27,6 @@ from __future__ import absolute_import
 import logging
 import uuid
 
-
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
- 
 from PyQt4.QtCore import (Qt, 
                           QRectF, 
                           QPointF, 

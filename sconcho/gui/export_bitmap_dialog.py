@@ -28,11 +28,6 @@ import math
 import logging
 from functools import partial
 
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
-
 from PyQt4.QtCore import (Qt, SIGNAL, QDir, QFileInfo, QFile)
 from PyQt4.QtGui import (QDialog, QMessageBox, QFileDialog,
                          QImageWriter, QDialogButtonBox)

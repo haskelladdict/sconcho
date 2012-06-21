@@ -33,10 +33,6 @@ import logging
 import platform, os
 from functools import partial
 
-try:
-    from PyQt4.QtCore import (QString, QStringList)
-except ImportError:
-    QString = str
 
 from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
                           Qt, QSize, QFile, QTimer, QVariant,
@@ -98,7 +94,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._topLevelPath = topLevelPath
         self._knittingSymbols = knittingSymbols
         self.canvas = PatternCanvas(self.settings, 
-                                    knittingSymbols[QString("knit")], self)
+                                    knittingSymbols["knit"], self)
 
         self.exportBitmapDialog = None
         self.create_export_bitmap_dialog()
@@ -957,7 +953,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # need this check to avoid interpreting a nonexisting entry
         # as an empty filename
         if len(fileString) == 0:
-            files = QStringList()
+            files = []
         else:
             files = fileString.split("%")
 
@@ -980,7 +976,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for (index, path) in enumerate(files):
             fileName = QFileInfo(path).fileName()
             newPathAction = \
-                QAction(QString("&%d.  %s" % (index+1, fileName)),
+                QAction("&%d.  %s" % (index+1, fileName),
                         self.menuRecent_Files)
             newPathAction.setData(path)
             self.menuRecent_Files.addAction(newPathAction)
@@ -1005,7 +1001,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def clear_recently_used_files_list(self):
         """ Clear the list of recently used files. """
 
-        self.settings.recently_used_files = QString("")
+        self.settings.recently_used_files = ""
         self.clear_recently_used_files_menu()
 
 
