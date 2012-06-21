@@ -333,7 +333,7 @@ class PreferenceSetting(object):
                 fontString = value
                 self.settings.setValue(name, fontString)
         else:
-            self.settings.setValue(name, QString(value))
+            self.settings.setValue(name, value)
 
 
 
