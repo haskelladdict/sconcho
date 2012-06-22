@@ -222,7 +222,7 @@
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="minimum">
-                 <number>1</number>
+                 <number>-10000</number>
                 </property>
                 <property name="maximum">
                  <number>10000</number>
@@ -285,10 +285,13 @@
             <item>
              <widget class="QSpinBox" name="rowLabelsIntervalStartSpinner">
               <property name="minimum">
-               <number>1</number>
+               <number>-10000</number>
               </property>
               <property name="maximum">
                <number>10000</number>
+              </property>
+              <property name="value">
+               <number>1</number>
               </property>
              </widget>
             </item>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Wed Jun 20 10:10:20 2012
+# Created: Fri Jun 22 18:48:15 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -125,7 +125,7 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout_7.addWidget(self.label_8)
         self.rowLabelStartSpinner = QtGui.QSpinBox(self.showRowLabelChecker)
         self.rowLabelStartSpinner.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.rowLabelStartSpinner.setMinimum(1)
+        self.rowLabelStartSpinner.setMinimum(-10000)
         self.rowLabelStartSpinner.setMaximum(10000)
         self.rowLabelStartSpinner.setObjectName(_fromUtf8("rowLabelStartSpinner"))
         self.horizontalLayout_7.addWidget(self.rowLabelStartSpinner)
@@ -154,8 +154,9 @@ class Ui_PreferencesDialog(object):
         self.rowLabelsStartLabel.setObjectName(_fromUtf8("rowLabelsStartLabel"))
         self.horizontalLayout_3.addWidget(self.rowLabelsStartLabel)
         self.rowLabelsIntervalStartSpinner = QtGui.QSpinBox(self.showRowLabelChecker)
-        self.rowLabelsIntervalStartSpinner.setMinimum(1)
+        self.rowLabelsIntervalStartSpinner.setMinimum(-10000)
         self.rowLabelsIntervalStartSpinner.setMaximum(10000)
+        self.rowLabelsIntervalStartSpinner.setProperty("value", 1)
         self.rowLabelsIntervalStartSpinner.setObjectName(_fromUtf8("rowLabelsIntervalStartSpinner"))
         self.horizontalLayout_3.addWidget(self.rowLabelsIntervalStartSpinner)
         spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
