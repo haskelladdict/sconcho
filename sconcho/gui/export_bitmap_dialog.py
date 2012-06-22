@@ -174,7 +174,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         
         """
 
-        self.formats = ["%s" % str(formating) for \
+        self.formats = [str(formating, "utf-8") for \
                         formating in QImageWriter.supportedImageFormats()]
 
         # we support svg format as well
