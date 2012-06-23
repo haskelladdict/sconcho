@@ -965,7 +965,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
             else:
                 files.append(fullPath)
-                while len(files) > 10 and not files.isEmpty():
+                while len(files) > 10 and files:
                     files.takeFirst()
 
         self.settings.recently_used_files = "%".join(files)

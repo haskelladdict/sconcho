@@ -403,7 +403,6 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
                                         msg.exportPatternTitle,
                                         defaultPath,
                                         formatStr,
-                                        None,
                                         QFileDialog.DontConfirmOverwrite) 
 
         if exportFilePath:
@@ -428,7 +427,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
         # check if a filename was provided - if not we open the
         # file dialog
-        if QFileInfo(exportFilePath).baseName().isEmpty():
+        if not QFileInfo(exportFilePath).baseName():
             self.open_file_selector()
             return
 
