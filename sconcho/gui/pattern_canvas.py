@@ -1777,11 +1777,22 @@ class PatternCanvas(QGraphicsScene):
                                      QMessageBox.Close)
                 return
 
+            # figure out if any pattern repeats need to be moved
+            patternRepeats = \
+              repeats_to_be_shifted_after_insert_col(self.patternRepeats,
+                                                     self.cell_width,
+                                                     pivot, numColumns)
+
             insertColCommand = InsertColumns(self, numColumns, pivot,
                                              location)
             self._undoStack.beginMacro("insert columns")
             self.clear_all_selected_cells()
             self._undoStack.push(insertColCommand)
+
+            for (item, oldPos, newPos) in patternRepeats:
+                moveCommand = MoveCanvasItem(item, oldPos, newPos)
+                self._undoStack.push(moveCommand)
+
             self._undoStack.endMacro()
 
 
@@ -1848,10 +1859,21 @@ class PatternCanvas(QGraphicsScene):
                                  QMessageBox.Close)
             return
 
+
+        patternRepeats = \
+          repeats_to_be_shifted_after_delete_cols(self.patternRepeats,
+                                                  self.cell_width,
+                                                  deadColumns)
+
         deleteColumnsCommand = DeleteColumns(self, deadColumns)
         self._undoStack.beginMacro("delete columns")
         self.clear_all_selected_cells()
         self._undoStack.push(deleteColumnsCommand)
+
+        for (item, oldPos, newPos) in patternRepeats:
+            moveCommand = MoveCanvasItem(item, oldPos, newPos)
+            self._undoStack.push(moveCommand)
+            
         self._undoStack.endMacro()
 
 

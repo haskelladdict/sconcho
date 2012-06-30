@@ -917,6 +917,57 @@ def repeats_to_be_shifted_after_delete_rows(repeats, cellHeight,
 
 
 
+def repeats_to_be_shifted_after_insert_col(repeats, cellWidth,
+                                           pivot, numCols):
+    """ Determine all pattern repeats that need to be
+    shifted after insertion of columns.
+
+    We don't do anything if columns are inserted within the
+    pattern repeat.
+
+    """
+
+    patternItems = []
+    for item in repeats:
+        if (item.canvas_pos().x()/cellWidth < pivot):
+            continue
+
+        oldPos = item.pos()
+        newPos = item.pos() + QPointF(numCols * cellWidth, 0.0)
+        patternItems.append((item, oldPos, newPos))
+
+    return patternItems
+
+
+
+def repeats_to_be_shifted_after_delete_cols(repeats, cellWidth,
+                                            deadCols):
+    """ Determine all pattern repeats that need to be
+    shifted after deletion of columns.
+
+    We don't do anything if column sare deleted within the
+    pattern repeat.
+
+    """
+
+    patternItems = []
+    for item in repeats:
+        shift = 0
+        for col in deadCols:
+            if (item.canvas_pos().x()/cellWidth > col):
+                shift += 1
+
+        # a row within the patter repeat was remove - do nothing
+        if shift == 0:
+            continue
+
+        oldPos = item.pos()
+        newPos = item.pos() - QPointF(shift * cellWidth, 0.0)
+        patternItems.append((item, oldPos, newPos))
+
+    return patternItems
+
+
 
 ############################################################################
 #
