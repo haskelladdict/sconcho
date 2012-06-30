@@ -2,7 +2,6 @@
 
 from distutils.core import setup
 import os, sys
-import string
 
 
 def check_dependencies():
@@ -34,7 +33,7 @@ def get_symbol_files():
 
     fileList = []
     for root, subFolders, files in os.walk("sconcho/symbols"):
-        newRoot = string.replace(root,"sconcho/","") 
+        newRoot = root.replace("sconcho/","") 
         for aFile in files:
             fileList.append(os.path.join(newRoot, aFile))
    
