@@ -685,6 +685,15 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
 
 
+    @property
+    def canvas_pos(self):
+        """ Returns the item's canvas position. """
+
+        return QPointF(self.boundingRect().x() + self.scenePos().x(),
+                       self.boundingRect().y() + self.scenePos().y())
+
+
+
     def _snap_to_grid(self):
         """ Snap to nearest grid point.
 
@@ -705,8 +714,8 @@ class PatternRepeatItem(QGraphicsItemGroup):
         cellXDim = self.scene()._unitCellDim.width()
         cellYDim = self.scene()._unitCellDim.height()
 
-        curX = self.boundingRect().x() + self.scenePos().x()
-        curY = self.boundingRect().y() + self.scenePos().y()
+        curX = self.canvas_pos.x()
+        curY = self.canvas_pos.y()
         withinGrid = (curX > -(0.5*cellXDim) \
                       and curX < (numCols+0.5)*cellXDim \
                       and curY > -(0.5*cellYDim) \

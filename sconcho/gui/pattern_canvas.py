@@ -130,6 +130,19 @@ class PatternCanvas(QGraphicsScene):
 
 
 
+    @property
+    def cell_height(self):
+        """ return the unit cell height """
+        return self._unitCellDim.height()
+
+
+    @property
+    def cell_width(self):
+        """ return the unit cell width """
+        return self._unitCellDim.width()
+
+
+
     def set_up_main_grid(self):
         """ This function draws the main grid. """
 
@@ -164,12 +177,12 @@ class PatternCanvas(QGraphicsScene):
             if isinstance(graphicsItem, PatternGridItem) and \
                ((graphicsItem.row + offset + start) % 2 != 0):
 
-                origin_x = graphicsItem.column * self._unitCellDim.width()
-                origin_y = graphicsItem.row * self._unitCellDim.height()
-                width = graphicsItem.width * self._unitCellDim.width()
-                height = self._unitCellDim.height()
-                element = PatternHighlightItem(origin_x, origin_y, width,
-                                               height, QColor(color),
+                origin_x = graphicsItem.column * self.cell_width
+                origin_y = graphicsItem.row * self.cell_height
+                element = PatternHighlightItem(origin_x, origin_y,
+                                               self.cell_width,
+                                               self.cell_height,
+                                               QColor(color),
                                                opacity)
                 element.setZValue(1)
                 if visibility == 0:
@@ -213,12 +226,10 @@ class PatternCanvas(QGraphicsScene):
     def _set_up_row_labels(self, labelFont, fontMetric):
         """ Set up row labels. """
 
-        unitWidth = self._unitCellDim.width()
-
         # we use lamda function so we can control positioning
         # based on the actual labeltext
-        rightXPos = lambda x: unitWidth * self._numColumns
-        leftXPos = lambda x: - 0.5*unitWidth - fontMetric.width(x)
+        rightXPos = lambda x: self.cell_width * self._numColumns
+        leftXPos = lambda x: - 0.5*self.cell_width - fontMetric.width(x)
 
         evenRowLabelLocation = self.settings.evenRowLabelLocation.value
         if evenRowLabelLocation == "LEFT_OF":
@@ -242,7 +253,7 @@ class PatternCanvas(QGraphicsScene):
                 labelText += ", " + str(label)
 
             item = PatternLabelItem(str(labelText), isRowLabel = True)
-            yPos = self._unitCellDim.height() * (self._numRows - row - 1)
+            yPos = self.cell_height * (self._numRows - row - 1)
             if rowLabels[0] % 2 == 0:
                 item.setPos(evenXPos(labelText), yPos)
             else:
@@ -258,9 +269,7 @@ class PatternCanvas(QGraphicsScene):
     def _set_up_column_labels(self, labelFont, fontMetric):
         """ Set up column labels. """
 
-        unitWidth = self._unitCellDim.width()
-        yPos = self._unitCellDim.height() * self._numRows
-
+        yPos = self.cell_height * self._numRows
         columnLabelList = self.columnLabelTracker.get_labels()
         for (col, colLabel) in enumerate(columnLabelList):
             if not colLabel:
@@ -270,8 +279,8 @@ class PatternCanvas(QGraphicsScene):
             textWidth = fontMetric.width(labelText)
             item = PatternLabelItem(labelText, isRowLabel = False)
 
-            xPos = unitWidth * (self._numColumns - col - 1) + \
-                (unitWidth * 0.6 -textWidth)
+            xPos = self.cell_width * (self._numColumns - col - 1) + \
+                (self.cell_width * 0.6 -textWidth)
             item.setPos(xPos, yPos)
             item.setFont(labelFont)
             item.setToolTip("Shift-Click to select whole column")
@@ -419,9 +428,9 @@ class PatternCanvas(QGraphicsScene):
                 graphicsItem.prepareGeometryChange()
                 graphicsItem.change_geometry(self._unitCellDim)
                 origin = QPointF(graphicsItem.column * \
-                                 self._unitCellDim.width(),
+                                 self.cell_width,
                                  graphicsItem.row * \
-                                 self._unitCellDim.height())
+                                 self.cell_height)
                 graphicsItem.setPos(origin)
 
             elif isinstance(graphicsItem, PatternLegendItem):
@@ -441,7 +450,7 @@ class PatternCanvas(QGraphicsScene):
 
         legendYmax = compute_max_legend_y_coordinate(self.gridLegend,
                                                      self.repeatLegend)
-        canvasYmax = (self._numRows + 1) * self._unitCellDim.height()
+        canvasYmax = (self._numRows + 1) * self.cell_height
         yMax = max(legendYmax, canvasYmax)
         return yMax
 
@@ -459,15 +468,15 @@ class PatternCanvas(QGraphicsScene):
         # add the symbol part of the legend
         width  = int(symbol["width"])
         height = 1
-        itemLocation = QPointF(0, yMax + self._unitCellDim.height() + 10)
+        itemLocation = QPointF(0, yMax + self.cell_height + 10)
         item = PatternLegendItem(self._unitCellDim, width, height, symbol,
                                  color, 1)
         item.setPos(itemLocation)
         self.addItem(item)
 
         # add the description part of the legend
-        textLocation = QPointF((width+1) * self._unitCellDim.width(),
-                                yMax + self._unitCellDim.height() + 10)
+        textLocation = QPointF((width+1) * self.cell_width,
+                                yMax + self.cell_height + 10)
         textItem = PatternLegendText(symbol["description"])
         textItem.setPos(textLocation)
         textItem.setFont(self.settings.legendFont.value)
@@ -622,8 +631,8 @@ class PatternCanvas(QGraphicsScene):
         """
 
         (column, row) = convert_pos_to_col_row(event.scenePos(),
-                                              self._unitCellDim.width(),
-                                              self._unitCellDim.height())
+                                              self.cell_width,
+                                              self.cell_height)
 
         if column >= 0 and column <= self._numColumns:
             columnString = self._numColumns - column
@@ -646,8 +655,8 @@ class PatternCanvas(QGraphicsScene):
         """ Handle mouse press events directly on the canvas. """
 
         (col, row) = convert_pos_to_col_row(event.scenePos(),
-                                            self._unitCellDim.width(),
-                                            self._unitCellDim.height())
+                                            self.cell_width,
+                                            self.cell_height)
 
         shiftPressed = event.modifiers() & Qt.ShiftModifier
         ctrlPressed = event.modifiers() & Qt.ControlModifier
@@ -967,14 +976,14 @@ class PatternCanvas(QGraphicsScene):
                         edges[edgeID] = 1
 
         lines = []
-        cellWidth = self._unitCellDim.width()
-        cellHeight = self._unitCellDim.height()
         for (edgeID, switch) in edges.items():
             if switch:
                 (col1, row1, col2, row2) = map(int, edgeID.split(":"))
 
-                line = QLineF(col1 * cellWidth, row1 * cellHeight,
-                              col2 * cellWidth, row2 * cellHeight)
+                line = QLineF(col1 * self.cell_width,
+                              row1 * self.cell_height,
+                              col2 * self.cell_width,
+                              row2 * self.cell_height)
                 lines.append(line)
 
         repeatItem = PatternRepeatItem(lines)
@@ -1166,19 +1175,19 @@ class PatternCanvas(QGraphicsScene):
 
         upperLeftCorner  = convert_col_row_to_pos(column,
                                     row,
-                                    self._unitCellDim.width(),
-                                    self._unitCellDim.height())
+                                    self.cell_width,
+                                    self.cell_height)
 
         lowerRightCorner = convert_col_row_to_pos(column + numCols - 1,
                                     row + numRows - 1,
-                                    self._unitCellDim.width(),
-                                    self._unitCellDim.height())
+                                    self.cell_width,
+                                    self.cell_height)
 
         # we need to add a small fraction to witdh and height
         # in case of single row column selections (otherwise Qt
         # doesn recognize the selection as a rectangle)
-        lowerRightCorner += QPointF(self._unitCellDim.width() * 0.01,
-                                    self._unitCellDim.height() * 0.01)
+        lowerRightCorner += QPointF(self.cell_width * 0.01,
+                                    self.cell_hight * 0.01)
 
         allItems = self.items(QRectF(upperLeftCorner, lowerRightCorner))
         patternGridItems = extract_patternItems(allItems, PatternGridItem)
@@ -1429,8 +1438,8 @@ class PatternCanvas(QGraphicsScene):
         if not patternType:
             patternType = PatternGridItem
 
-        pos = convert_col_row_to_pos(column, row, self._unitCellDim.width(),
-                                     self._unitCellDim.height())
+        pos = convert_col_row_to_pos(column, row, self.cell_width,
+                                     self.cell_height)
 
         # we really only expect one PatternItem of given type to be present;
         # however there may in principle be others (legend items etc)
@@ -1463,12 +1472,10 @@ class PatternCanvas(QGraphicsScene):
             patternType = PatternGridItem
 
         # select cells
-        cellWidth = self._unitCellDim.width()
-        cellHeight = self._unitCellDim.height()
-        allItems = self.items((colStart + 0.25) * cellWidth,
-                              (rowStart + 0.25) * cellHeight,
-                              (colEnd - colStart + 0.25) * cellWidth,
-                              (rowEnd - rowStart + 0.25) * cellHeight)
+        allItems = self.items((colStart + 0.25) * self.cell_width,
+                              (rowStart + 0.25) * self.cell_height,
+                              (colEnd - colStart + 0.25) * self.cell_width,
+                              (rowEnd - rowStart + 0.25) * self.cell_height)
 
         selection = set()
         for item in allItems:
@@ -1619,11 +1626,39 @@ class PatternCanvas(QGraphicsScene):
         if numRowDialog.exec_():
             numRows = numRowDialog.num
             location = numRowDialog.location
+
+            # figure out if any pattern repeats need to be moved
+            patternRepeats = \
+              self.get_pattern_repeats_to_be_shifted_byrow(rowPivot, numRows)
+
             insertRowCommand = InsertRows(self, numRows, rowPivot, location)
             self._undoStack.beginMacro("insert rows")
             self.clear_all_selected_cells()
             self._undoStack.push(insertRowCommand)
+
+            for (item, oldPos, newPos) in patternRepeats:
+                moveCommand = MoveCanvasItem(item, oldPos, newPos)
+                self._undoStack.push(moveCommand)
+
             self._undoStack.endMacro()
+
+
+
+    def get_pattern_repeats_to_be_shifted_byrow(self, pivot, numRows):
+
+        patternItems = []
+        for item in self.items():
+            if isinstance(item, PatternRepeatItem):
+                if (item.canvas_pos.y()/self.cell_height < pivot):
+                    continue
+
+                oldPos = item.pos()
+                newPos = item.pos() + QPointF(0.0, numRows*self.cell_height)
+                patternItems.append((item, oldPos, newPos))
+
+        return patternItems
+
+
 
 
 
@@ -1863,8 +1898,8 @@ class PatternCanvas(QGraphicsScene):
         """
 
         for column in range(0, self._numColumns):
-            location = QPointF(column * self._unitCellDim.width(),
-                                rowID * self._unitCellDim.height())
+            location = QPointF(column * self.cell_width,
+                                rowID * self.cell_height)
             item = self.create_pattern_grid_item(location, column, rowID,
                                                  1, 1,
                                                  self._defaultSymbol,
@@ -1882,8 +1917,8 @@ class PatternCanvas(QGraphicsScene):
         """
 
         for row in range(0, self._numRows):
-            location = QPointF(columnID * self._unitCellDim.width(),
-                                row * self._unitCellDim.height())
+            location = QPointF(columnID * self.cell_width,
+                                row * self.cell_height)
             item = self.create_pattern_grid_item(location, columnID, row, 1, 1,
                                                  self._defaultSymbol,
                                                  self._defaultColor)
@@ -1944,8 +1979,8 @@ class PatternCanvas(QGraphicsScene):
 
         allPatternGridItems = load_pattern_grid_items(patternGridItemInfo,
                                            knittingSymbols,
-                                           self._unitCellDim.width(),
-                                           self._unitCellDim.height())
+                                           self.cell_width,
+                                           self.cell_height)
         if allPatternGridItems == None:
             return False
 
