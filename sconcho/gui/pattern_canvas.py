@@ -111,10 +111,11 @@ class PatternCanvas(QGraphicsScene):
 
         self._copySelection = {}
 
-        self._textLabels = []
+        self.textLabels = []
         self.gridLegend = {}
         self.repeatLegend = {}
         self.canvasTextBoxes = {}
+        self.patternRepeats = set()
 
         self.set_up_main_grid()
         self.set_up_labels()
@@ -201,10 +202,10 @@ class PatternCanvas(QGraphicsScene):
         """
 
         # clear all previous labels
-        for label in self._textLabels:
+        for label in self.textLabels:
             self.removeItem(label)
             del label
-        self._textLabels = []
+        self.textLabels = []
 
         labelFont = self.settings.labelFont.value
         fm = QFontMetrics(labelFont)
@@ -262,7 +263,7 @@ class PatternCanvas(QGraphicsScene):
             item.setFont(labelFont)
             item.setToolTip("Shift-Click to select whole row")
             self.addItem(item)
-            self._textLabels.append(item)
+            self.textLabels.append(item)
 
 
 
@@ -286,7 +287,7 @@ class PatternCanvas(QGraphicsScene):
             item.setToolTip("Shift-Click to select whole column")
 
             self.addItem(item)
-            self._textLabels.append(item)
+            self.textLabels.append(item)
 
 
 
@@ -1938,7 +1939,7 @@ class PatternCanvas(QGraphicsScene):
         self.repeatLegend.clear()
         self.canvasTextBoxes.clear()
         self._selectedCells = {}
-        self._textLabels = []
+        self.textLabels = []
         self._undoStack.clear()
         self._copySelection = {}
 
@@ -2031,7 +2032,7 @@ class PatternCanvas(QGraphicsScene):
 
         # need to clear our caches, otherwise we'll try
         # to remove non-existing items
-        self._textLabels = []
+        self.textLabels = []
         self.finalize_grid_change()
         self.change_grid_cell_dimensions()
         self.clear_undo_stack()
