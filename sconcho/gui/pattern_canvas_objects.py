@@ -27,31 +27,31 @@ from __future__ import absolute_import
 import logging
 import uuid
 
-from PyQt4.QtCore import (Qt, 
-                          QRectF, 
-                          QPointF, 
-                          QSizeF, 
+from PyQt4.QtCore import (Qt,
+                          QRectF,
+                          QPointF,
+                          QSizeF,
                           QLineF,
-                          SIGNAL, 
+                          SIGNAL,
                           QT_VERSION)
-from PyQt4.QtGui import (QPen, 
-                         QColor, 
-                         QBrush, 
-                         QGraphicsTextItem, 
-                         QGraphicsItem, 
+from PyQt4.QtGui import (QPen,
+                         QColor,
+                         QBrush,
+                         QGraphicsTextItem,
+                         QGraphicsItem,
                          QGraphicsRectItem,
-                         QGraphicsLineItem, 
+                         QGraphicsLineItem,
                          QGraphicsItemGroup,
-                         QApplication, 
+                         QApplication,
                          QTextCursor,
                          QCursor)
-from PyQt4.QtSvg import (QGraphicsSvgItem) 
+from PyQt4.QtSvg import (QGraphicsSvgItem)
 
 
 # determine if we can to caching of items
 # it seems screwed up for older QT versions
 # and Windows XP seems to choke as well so
-# we turn it off 
+# we turn it off
 from platform import system
 if QT_VERSION < 0x040703 or system() == 'Windows':
     NO_ITEM_CACHING = True
@@ -59,7 +59,7 @@ else:
     NO_ITEM_CACHING = False
 
 
-from sconcho.util.canvas import * 
+from sconcho.util.canvas import *
 import sconcho.util.messages as msg
 
 # module lever logger:
@@ -67,7 +67,7 @@ logger = logging.getLogger(__name__)
 
 
 #########################################################
-## 
+##
 ## class for managing a single pattern grid item
 ## (svg image, frame, background color)
 ##
@@ -82,7 +82,7 @@ class PatternGridItem(QGraphicsSvgItem):
                  parent = None):
 
         super(PatternGridItem, self).__init__(parent)
-      
+
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
         if NO_ITEM_CACHING:
@@ -149,14 +149,14 @@ class PatternGridItem(QGraphicsSvgItem):
         self.color = newColor
         self._backBrush = QBrush(self.color)
 
-        
+
 
     @property
     def name(self):
         """ Return the name of the symbol we contain """
 
         return self.symbol["name"]
-    
+
 
 
     def _unselect(self):
@@ -176,7 +176,7 @@ class PatternGridItem(QGraphicsSvgItem):
         self.update()
 
 
-            
+
     def _set_symbol(self, newSymbol):
         """ Adds a new svg image of a knitting symbol to the scene. """
 
@@ -203,7 +203,7 @@ class PatternGridItem(QGraphicsSvgItem):
         halfPen = self._penSize * 0.5
         return QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
                                                        halfPen, halfPen)
-        
+
 
 
     def paint(self, painter, option, widget):
@@ -213,7 +213,7 @@ class PatternGridItem(QGraphicsSvgItem):
         painter.setBrush(self._backBrush)
         halfPen = self._penSize * 0.5
         scaledRect = \
-            QRectF(self.origin, self.size).adjusted(halfPen, halfPen, 
+            QRectF(self.origin, self.size).adjusted(halfPen, halfPen,
                                                     halfPen, halfPen)
         painter.drawRect(scaledRect)
         self.renderer().render(painter, scaledRect)
@@ -222,7 +222,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
 #########################################################
-## 
+##
 ## class for managing a single legend item
 ## (svg image, frame, background color)
 ##
@@ -244,7 +244,7 @@ class PatternLegendItem(QGraphicsSvgItem):
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-       
+
         self.setZValue(zValue)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
 
@@ -259,15 +259,15 @@ class PatternLegendItem(QGraphicsSvgItem):
 
         self.symbol = None
         self._set_symbol(defaultSymbol)
-        
+
         self._penSize = 1.0
         self._pen = QPen()
         self._pen.setWidthF(self._penSize)
         self._pen.setJoinStyle(Qt.MiterJoin)
         self._pen.setColor(Qt.black)
 
-        self.setAcceptsHoverEvents(True)       
-        self._outline = None 
+        self.setAcceptsHoverEvents(True)
+        self._outline = None
 
 
 
@@ -289,7 +289,7 @@ class PatternLegendItem(QGraphicsSvgItem):
             self._outline.setPen(highlightPen)
         else:
             self._outline.show()
-        
+
 
 
     def hoverLeaveEvent(self, event):
@@ -310,7 +310,7 @@ class PatternLegendItem(QGraphicsSvgItem):
         """
 
         self._position = self.pos()
-        
+
         if (event.modifiers() & Qt.ControlModifier):
             QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
         else:
@@ -318,7 +318,7 @@ class PatternLegendItem(QGraphicsSvgItem):
 
         return QGraphicsSvgItem.mousePressEvent(self, event)
 
-    
+
 
     def mouseReleaseEvent(self, event):
         """ We reimplement this function to check if its position
@@ -327,14 +327,14 @@ class PatternLegendItem(QGraphicsSvgItem):
         a Redo/Undo event.
 
         """
-        
+
         QApplication.restoreOverrideCursor()
 
         # this is needed for redo/undo
         if self._position != self.pos():
            self.scene().canvas_item_position_changed(self, self._position,
                                                      self.pos())
-           
+
         return QGraphicsSvgItem.mouseReleaseEvent(self, event)
 
 
@@ -398,7 +398,7 @@ class PatternLegendItem(QGraphicsSvgItem):
 
 
 #########################################################
-## 
+##
 ## class for managing the descriptive text of a legend
 ## item
 ##
@@ -424,7 +424,7 @@ class PatternLegendText(QGraphicsTextItem):
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
 
         self._position = self.pos()
-        self._outline = None 
+        self._outline = None
 
 
     def hoverEnterEvent(self, event):
@@ -444,7 +444,7 @@ class PatternLegendText(QGraphicsTextItem):
             self._outline.setPen(highlightPen)
         else:
             self._outline.show()
-        
+
 
 
     def hoverLeaveEvent(self, event):
@@ -464,7 +464,7 @@ class PatternLegendText(QGraphicsTextItem):
         For now we have to adjust the outline box.
 
         """
-        
+
         QGraphicsTextItem.keyPressEvent(self, event)
         self.adjust_size()
 
@@ -513,14 +513,14 @@ class PatternLegendText(QGraphicsTextItem):
         # this is needed for undo/redo
         if self._position != self.pos():
            self.scene().canvas_item_position_changed(self, self._position,
-                                                     self.pos()) 
+                                                     self.pos())
 
         return QGraphicsTextItem.mouseReleaseEvent(self, event)
 
 
 
 #########################################################
-## 
+##
 ## class for managing a single pattern grid label
 ## (this does nothing spiffy at all, we just need
 ## it to identify the item on the canvas)
@@ -555,22 +555,15 @@ class PatternLabelItem(QGraphicsTextItem):
 
 
 #########################################################
-## 
+##
 ## class for managing a pattern repeat item
 ##
 #########################################################
 class PatternRepeatItem(QGraphicsItemGroup):
-    """ NOTE: For some reason QGraphicsItemGroup's scenePos()
-    does not seem to return the scene coordinate but rather
-    the item coordinates. Thus, we have to compute the canvas
-    coordinate by means of initially computing the uper left
-    corner of the group.
-
-    """
 
     Type = 70000 + 5
 
-    def __init__(self, lines,  width = None, color = None, 
+    def __init__(self, lines,  width = None, color = None,
                  hasLegend = True, parent = None):
 
         super(PatternRepeatItem, self).__init__(parent)
@@ -584,7 +577,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-    
+
         # we keep track of some of our legends properties
         self.hasLegend = hasLegend
 
@@ -601,16 +594,6 @@ class PatternRepeatItem(QGraphicsItemGroup):
             self.lineElements.append(lineElement)
             self.addToGroup(lineElement)
 
-        # extract right and top bounds 
-        if points:
-            self.leftBound = points[0]
-            self.topBound = points[0]
-            for point in points[1:]:
-                if point.x() < self.leftBound.x():
-                    self.leftBound = point
-                if point.y() < self.topBound.y():
-                    self.topBound = point
-           
         # default pen
         if width:
             self.width = width
@@ -621,7 +604,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
             self.color = color
         else:
             self.color = QColor(Qt.red)
-            
+
         self.paint_elements()
 
 
@@ -664,7 +647,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
 
 
-    def set_properties(self, color, width): 
+    def set_properties(self, color, width):
         """ Sets the color and width to the requested values.
 
         NOTE: the fact that we call paint_elements in addition to
@@ -676,7 +659,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
         self.width = width
         self.paint_elements()
 
-         
+
 
     def mousePressEvent(self, event):
         """ Deal with mouse press events on the area spanned
@@ -692,7 +675,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
         """
 
         self._position = self.pos()
-        
+
         if (event.modifiers() & Qt.ControlModifier):
             QApplication.setOverrideCursor(QCursor(Qt.SizeAllCursor))
         else:
@@ -701,24 +684,29 @@ class PatternRepeatItem(QGraphicsItemGroup):
         return QGraphicsItemGroup.mousePressEvent(self, event)
 
 
-    
-    def _snap_to_grid(self):
-        """ Snap to nearest grid point. 
 
-        TODO: Currently we only use the left and top edge for this. A 
+    def _snap_to_grid(self):
+        """ Snap to nearest grid point.
+
+        NOTE: For some reason QGraphicsItemGroup's scenePos()
+        does not seem to return the scene coordinate but rather
+        the item coordinates. Thus, we have to compute the canvas
+        coordinate by means of initially computing the uper left
+        corner of the group.
+
+        TODO: Currently we only use the left and top edge for this. A
         more sophisticated algorithm would probably also use the right and
         bottom edget.
 
         """
-        
+
         numRows = self.scene()._numRows
         numCols = self.scene()._numColumns
         cellXDim = self.scene()._unitCellDim.width()
         cellYDim = self.scene()._unitCellDim.height()
-        bound = self.scenePos()
-  
-        curX = self.leftBound.x()+bound.x()
-        curY = self.topBound.y()+bound.y()       
+
+        curX = self.boundingRect().x() + self.scenePos().x()
+        curY = self.boundingRect().y() + self.scenePos().y()
         withinGrid = (curX > -(0.5*cellXDim) \
                       and curX < (numCols+0.5)*cellXDim \
                       and curY > -(0.5*cellYDim) \
@@ -736,7 +724,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
                 self.moveBy(0, -(curY % cellYDim))
             else:
                 self.moveBy(0, cellYDim - curY % cellYDim)
-            
+
 
 
     def mouseReleaseEvent(self, event):
@@ -751,11 +739,9 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         if self._position != self.pos():
             self.scene().canvas_item_position_changed(self, self._position,
-                                                      self.pos()) 
+                                                      self.pos())
 
         QApplication.restoreOverrideCursor()
-
-       
         return QGraphicsItemGroup.mouseReleaseEvent(self, event)
 
 
@@ -763,7 +749,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
 
 #########################################################
-## 
+##
 ## class for highling every other row on grid if requested
 ## by a user
 ##
@@ -772,11 +758,11 @@ class PatternHighlightItem(QGraphicsRectItem):
 
     Type = 70000 + 6
 
-   
+
     def __init__(self, x, y, width, height, color, alpha,
                  parent = None):
 
-        super(PatternHighlightItem, self).__init__(x, y, width, height, 
+        super(PatternHighlightItem, self).__init__(x, y, width, height,
                                                    parent)
 
         # NOTE: need this distinction for cache mode based on
@@ -785,21 +771,21 @@ class PatternHighlightItem(QGraphicsRectItem):
             self.setCacheMode(QGraphicsItem.NoCache)
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-    
+
         # we don't want to show the outline so draw it
         # in white
-        self._pen = QPen(Qt.NoPen) 
+        self._pen = QPen(Qt.NoPen)
         self.setPen(self._pen)
 
         color.setAlphaF(alpha)
-        self._brush = QBrush(color) 
+        self._brush = QBrush(color)
         self.setBrush(self._brush)
 
 
 
 
 #########################################################
-## 
+##
 ## class for managing the legend item corresponding
 ## to pattern repeat
 ##
@@ -837,7 +823,7 @@ class RepeatLegendItem(QGraphicsRectItem):
         self.setRect(0, 0, self.itemWidth, self.itemHeight)
 
         self.setAcceptsHoverEvents(True)
-        self._outline = None 
+        self._outline = None
 
 
     @property
@@ -859,7 +845,7 @@ class RepeatLegendItem(QGraphicsRectItem):
 
     @color.setter
     def color(self, newColor):
-        
+
         self.penColor = newColor
         self._pen.setColor(self.penColor)
         self.setPen(self._pen)
@@ -884,7 +870,7 @@ class RepeatLegendItem(QGraphicsRectItem):
             self._outline.setPen(highlightPen)
         else:
             self._outline.show()
-        
+
 
 
     def hoverLeaveEvent(self, event):
@@ -928,7 +914,7 @@ class RepeatLegendItem(QGraphicsRectItem):
         # this is needed for undo/redo
         if self._position != self.pos():
            self.scene().canvas_item_position_changed(self, self._position,
-                                                     self.pos()) 
+                                                     self.pos())
 
         return QGraphicsRectItem.mouseReleaseEvent(self, event)
 
@@ -936,7 +922,7 @@ class RepeatLegendItem(QGraphicsRectItem):
 
 
 #########################################################
-## 
+##
 ## class for managing a text label on the canvas
 ##
 #########################################################
@@ -962,13 +948,13 @@ class PatternTextItem(PatternLegendText):
 
 
 ######################################################################
-# 
+#
 # context manager taking care of hiding nostitch symbols and
 # underlying PatternHighlightItems if present
 #
 ######################################################################
 class NostitchVisualizer(object):
- 
+
     def __init__(self, canvas, active):
         """ Toggles the visibility of all nostitch symbols to on
         or off via show() and hide().
@@ -989,7 +975,7 @@ class NostitchVisualizer(object):
                 if isinstance(item, PatternGridItem):
                     if item.name == "nostitch":
                         self.nostitchItems.append(item)
-                        
+
                         highlightItem = \
                             canvas._item_at_row_col(item.row,
                                                     item.column,
@@ -1019,7 +1005,7 @@ class NostitchVisualizer(object):
                  self.textItem.hide()
 
         return self
-     
+
 
 
     def __exit__(self, exc_class, exc_instance, traceback):
@@ -1073,11 +1059,11 @@ class RowLabelTracker(object):
 
         counter_func = lambda x: (x + labelOffset)
         if withInterval:
-            labelInterval = self.settings.rowLabelsShowInterval.value 
+            labelInterval = self.settings.rowLabelsShowInterval.value
             labelStart = self.settings.rowLabelsShowIntervalStart.value
         elif labelIntervalState == "SHOW_EVEN_ROWS" \
              or labelIntervalState == "SHOW_ODD_ROWS":
-            counter_func = lambda x: 2*x - 1 + labelOffset 
+            counter_func = lambda x: 2*x - 1 + labelOffset
             rowShift = 2
 
         return (counter_func, labelInterval, labelStart, rowShift,
@@ -1115,9 +1101,9 @@ class RowLabelTracker(object):
                 rowEntry = counter_func(row)
                 realRow = numRows - row
 
-                # check if the current row is part of a repeat. 
+                # check if the current row is part of a repeat.
                 # if yes figure out the labels
-                # NOTE: This is pretty messy right now - there 
+                # NOTE: This is pretty messy right now - there
                 # should be a better way
                 if realRow in self.rangeMap:
                     (rowRange, mult, repeatID) = self.rangeMap[realRow]
@@ -1127,14 +1113,14 @@ class RowLabelTracker(object):
                     length = len(rowRange)
                     rowLabel = []
                     for i in range(0, mult):
-                        rowLabel.append(rowEntry + repeatShift 
+                        rowLabel.append(rowEntry + repeatShift
                                         + i * length * rowShift)
                     nextCount += (mult - 1) * rowShift
                     labels.append(rowLabel)
                 else:
                     repeatShift = nextCount
                     labels.append([rowEntry + repeatShift])
-                    
+
         return labels
 
 
@@ -1167,7 +1153,7 @@ class ColumnLabelTracker(object):
 
         counter_func = lambda x: (x + labelOffset)
         if withInterval:
-            labelInterval = self.settings.columnLabelsShowInterval.value 
+            labelInterval = self.settings.columnLabelsShowInterval.value
             labelStart = self.settings.columnLabelsShowIntervalStart.value
 
         return (counter_func, labelInterval, labelStart, withInterval)
@@ -1193,21 +1179,21 @@ class ColumnLabelTracker(object):
 
         else:
             labels = range(1, numColumns + 1)
-                    
+
         return labels
 
 
 
 ###################################################################
-# 
-# this class tracks all row repeats on the canvas 
+#
+# this class tracks all row repeats on the canvas
 #
 ###################################################################
 class RowRepeatTracker(object):
 
     def __init__(self, repeats = []):
         """ NOTE: A row repeat is stored as a triple
-        
+
         (repeatRange, multiplicity, ID)
 
         where:   repeatRange  = range of rows in this repeat
@@ -1222,10 +1208,10 @@ class RowRepeatTracker(object):
         # counter for iterator
         self.current = 0
 
-    
-    
+
+
     def __iter__(self):
-        
+
         self.current = 0
         return self
 
@@ -1237,7 +1223,7 @@ class RowRepeatTracker(object):
         return self.next()
 
 
-    
+
     def next(self):
         """ Simple next function to allow iteration over content. """
 
@@ -1295,7 +1281,7 @@ class RowRepeatTracker(object):
         repeatRange = range(rows[0], rows[-1]+1)
         repeatID = uuid.uuid4()
         self.repeats.append((repeatRange, numRepeats, repeatID))
-        
+
 
 
     def restore_repeat(self, restoreInfo):
@@ -1317,12 +1303,12 @@ class RowRepeatTracker(object):
             self.add_repeat(newRange, mult)
 
 
-    
+
     def change_repeat(self, startRow, numRows):
         """ This function is used to change row repeats.
 
-        Currently, the only user of this function is the undo 
-        framework when deleting a block of rows of length numRows 
+        Currently, the only user of this function is the undo
+        framework when deleting a block of rows of length numRows
         starting at startRow.
 
         The function detects any row repeats that are affected
@@ -1339,7 +1325,7 @@ class RowRepeatTracker(object):
         for index in range(len(repeats)):
             (theRange, mult, repeatID) = repeats[index]
             originalRange = set(theRange)
-            
+
             if originalRange.intersection(removeRange):
                 newRange = list(originalRange.difference(removeRange))
                 newRange.sort()
@@ -1348,7 +1334,7 @@ class RowRepeatTracker(object):
                 else:
                     del self.repeats[index]
                 changedRepeats.append((newRange, theRange, mult))
-        
+
         return changedRepeats
 
 
@@ -1387,11 +1373,11 @@ class RowRepeatTracker(object):
         return False
 
 
-    
+
     def rows_are_in_a_single_repeat(self, deadRows):
         """ Check if all rows within dead rows are part
         of a single repeat. """
-        
+
         matches = {}
         for row in deadRows:
             rowInRepeat = False
@@ -1404,7 +1390,7 @@ class RowRepeatTracker(object):
                 return False
 
         return len(matches) == 1
-        
+
 
 
     def shift_and_expand_repeats(self, pivot, rowShift):
@@ -1415,13 +1401,13 @@ class RowRepeatTracker(object):
 
         for index in range(len(self.repeats)):
             (theRange, mult, repeatID) = self.repeats[index]
-            
+
             # extend the range by row shift
-            if pivot in theRange[1:]:    
-                newRange = range(theRange[0], theRange[-1]+rowShift+1) 
+            if pivot in theRange[1:]:
+                newRange = range(theRange[0], theRange[-1]+rowShift+1)
             # just shift
             elif pivot <= min(theRange):
-                newRange = range(theRange[0]+rowShift, 
+                newRange = range(theRange[0]+rowShift,
                                  theRange[-1]+rowShift+1)
             # don't do anything
             else:
