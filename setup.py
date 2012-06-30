@@ -51,7 +51,7 @@ if __name__ == "__main__":
     dataFiles.append('doc/manual.html')
 
     setup(name='sconcho',
-        version='0.2.0',
+        version='0.2.0_b1',
         description='Program for Generating Knitting Charts',
         author='Markus Dittrich',
         author_email='haskelladdict@users.sourceforge.net',
