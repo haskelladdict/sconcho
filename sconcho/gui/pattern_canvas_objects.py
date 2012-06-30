@@ -685,12 +685,21 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
 
 
-    @property
-    def canvas_pos(self):
+    def canvas_pos(self, position = "upper left"):
         """ Returns the item's canvas position. """
 
-        return QPointF(self.boundingRect().x() + self.scenePos().x(),
-                       self.boundingRect().y() + self.scenePos().y())
+        assert(position == "upper left" or position == "lower right")
+
+        if position == "upper left":
+            return QPointF(self.boundingRect().x() + self.scenePos().x(),
+                           self.boundingRect().y() + self.scenePos().y())
+        elif position == "lower right":
+            return QPointF(self.boundingRect().x()
+                           + self.boundingRect().width()
+                           + self.scenePos().x(),
+                           self.boundingRect().y()
+                           + self.boundingRect().height()
+                           + self.scenePos().y())
 
 
 
@@ -714,8 +723,8 @@ class PatternRepeatItem(QGraphicsItemGroup):
         cellXDim = self.scene()._unitCellDim.width()
         cellYDim = self.scene()._unitCellDim.height()
 
-        curX = self.canvas_pos.x()
-        curY = self.canvas_pos.y()
+        curX = self.canvas_pos().x()
+        curY = self.canvas_pos().y()
         withinGrid = (curX > -(0.5*cellXDim) \
                       and curX < (numCols+0.5)*cellXDim \
                       and curY > -(0.5*cellYDim) \

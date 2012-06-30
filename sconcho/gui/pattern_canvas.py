@@ -1630,7 +1630,9 @@ class PatternCanvas(QGraphicsScene):
 
             # figure out if any pattern repeats need to be moved
             patternRepeats = \
-              self.get_pattern_repeats_to_be_shifted_byrow(rowPivot, numRows)
+              repeats_to_be_shifted_after_insert_row(self.patternRepeats,
+                                                     self.cell_height,
+                                                     rowPivot, numRows)
 
             insertRowCommand = InsertRows(self, numRows, rowPivot, location)
             self._undoStack.beginMacro("insert rows")
@@ -1642,24 +1644,6 @@ class PatternCanvas(QGraphicsScene):
                 self._undoStack.push(moveCommand)
 
             self._undoStack.endMacro()
-
-
-
-    def get_pattern_repeats_to_be_shifted_byrow(self, pivot, numRows):
-
-        patternItems = []
-        for item in self.items():
-            if isinstance(item, PatternRepeatItem):
-                if (item.canvas_pos.y()/self.cell_height < pivot):
-                    continue
-
-                oldPos = item.pos()
-                newPos = item.pos() + QPointF(0.0, numRows*self.cell_height)
-                patternItems.append((item, oldPos, newPos))
-
-        return patternItems
-
-
 
 
 
@@ -1681,11 +1665,21 @@ class PatternCanvas(QGraphicsScene):
                                  QMessageBox.Close)
             return
 
+        # figure out if any pattern repeats need to be moved
+        patternRepeats = \
+          repeats_to_be_shifted_after_delete_rows(self.patternRepeats,
+                                                  self.cell_height,
+                                                  deadRows)
 
         deleteRowsCommand = DeleteRows(self, deadRows)
         self._undoStack.beginMacro("delete marked rows")
         self.clear_all_selected_cells()
         self._undoStack.push(deleteRowsCommand)
+
+        for (item, oldPos, newPos) in patternRepeats:
+            moveCommand = MoveCanvasItem(item, oldPos, newPos)
+            self._undoStack.push(moveCommand)
+
         self._undoStack.endMacro()
 
 
@@ -1940,6 +1934,7 @@ class PatternCanvas(QGraphicsScene):
         self.canvasTextBoxes.clear()
         self._selectedCells = {}
         self.textLabels = []
+        self.patternRepeats.clear()
         self._undoStack.clear()
         self._copySelection = {}
 
@@ -1970,11 +1965,11 @@ class PatternCanvas(QGraphicsScene):
         NOTE: We have to be able to deal with bogus data (from a
         corrupted file perhaps).
 
-        NOTE1: No checking is done for rowRepeats since it is not a dictionary
-        but a list of tuples so there won't be a key error.
+        NOTE1: No checking is done for rowRepeats since it is not a
+        dictionary but a list of tuples so there won't be a key error.
 
-        NOTE2: In the tests below do NOT replace "X == NONE" with "not X" since
-        X can be legally [], for example.
+        NOTE2: In the tests below do NOT replace "X == NONE" with "not X"
+        since X can be legally [], for example.
 
         """
 
@@ -2079,6 +2074,7 @@ class PatternCanvas(QGraphicsScene):
                                        itemColor, legendIsVisible)
         repeatItem.setPos(itemPosition)
         self.addItem(repeatItem)
+        self.patternRepeats.add(repeatItem)
 
         # connect repeat box and legend
         self.repeatLegend[repeatItem.itemID] = \
