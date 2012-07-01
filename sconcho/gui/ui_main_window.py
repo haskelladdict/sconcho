@@ -2,7 +2,7 @@
 
 # Form implementation generated from sconcho.gui.reading ui file 'ui/main_window.ui'
 #
-# Created: Sun Jul  1 10:39:41 2012
+# Created: Sun Jul  1 10:48:38 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -209,17 +209,17 @@ class Ui_MainWindow(object):
         self.action_Insert_delete_rows_and_columns.setObjectName(_fromUtf8("action_Insert_delete_rows_and_columns"))
         self.actionZoom_In = QtGui.QAction(MainWindow)
         icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-in.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon7.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-in.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionZoom_In.setIcon(icon7)
         self.actionZoom_In.setObjectName(_fromUtf8("actionZoom_In"))
         self.actionZoom_Out = QtGui.QAction(MainWindow)
         icon8 = QtGui.QIcon()
-        icon8.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-out.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon8.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-out.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionZoom_Out.setIcon(icon8)
         self.actionZoom_Out.setObjectName(_fromUtf8("actionZoom_Out"))
         self.actionFit = QtGui.QAction(MainWindow)
         icon9 = QtGui.QIcon()
-        icon9.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-best-fit.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon9.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-best-fit.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionFit.setIcon(icon9)
         self.actionFit.setObjectName(_fromUtf8("actionFit"))
         self.actionSconcho_Manual = QtGui.QAction(MainWindow)
@@ -247,7 +247,7 @@ class Ui_MainWindow(object):
         self.actionCheck_Pattern_Grid.setObjectName(_fromUtf8("actionCheck_Pattern_Grid"))
         self.action_Normal = QtGui.QAction(MainWindow)
         icon12 = QtGui.QIcon()
-        icon12.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-original.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon12.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/zoom-original.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_Normal.setIcon(icon12)
         self.action_Normal.setObjectName(_fromUtf8("action_Normal"))
         self.action_Undo = QtGui.QAction(MainWindow)

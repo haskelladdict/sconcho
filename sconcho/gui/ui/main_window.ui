@@ -543,7 +543,7 @@
   <action name="actionZoom_In">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/zoom-in.svg</normaloff>:/icons/zoom-in.svg</iconset>
+     <normaloff>:/icons/zoom-in.png</normaloff>:/icons/zoom-in.png</iconset>
    </property>
    <property name="text">
     <string>Zoom &amp;In</string>
@@ -552,7 +552,7 @@
   <action name="actionZoom_Out">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/zoom-out.svg</normaloff>:/icons/zoom-out.svg</iconset>
+     <normaloff>:/icons/zoom-out.png</normaloff>:/icons/zoom-out.png</iconset>
    </property>
    <property name="text">
     <string>Zoom &amp;Out</string>
@@ -561,7 +561,7 @@
   <action name="actionFit">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/zoom-best-fit.svg</normaloff>:/icons/zoom-best-fit.svg</iconset>
+     <normaloff>:/icons/zoom-best-fit.png</normaloff>:/icons/zoom-best-fit.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Fit</string>
@@ -631,7 +631,7 @@
   <action name="action_Normal">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/zoom-original.svg</normaloff>:/icons/zoom-original.svg</iconset>
+     <normaloff>:/icons/zoom-original.png</normaloff>:/icons/zoom-original.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Normal</string>
