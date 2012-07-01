@@ -826,6 +826,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                   "doc/manual.html") 
 
         # this is a hack needed for sconcho + pyinstaller on MacOSX
+        #manualPath = manualPath.replace("library.zip","")
         #manualPath = "/Applications/Sconcho.app/Contents/Resources/doc/manual.html"
         self.manualDialog = SconchoManual(manualPath)
         self.manualDialog.setAttribute(Qt.WA_DeleteOnClose)

@@ -42,7 +42,7 @@ def wait_cursor(func):
     as Qt.WaitCursor for the duration.
 
     """
-    
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -59,8 +59,8 @@ def wait_cursor(func):
 
 def get_random_knitting_quote():
     """ This function randomly picks a title from the list
-    of available ones. 
-    
+    of available ones.
+
     """
 
     num = len(msg.knittingQuotes)
@@ -77,8 +77,13 @@ def set_up_symbol_paths(path, settings):
     symbolPaths.append(customSymbolPath)
 
     # FIXME: For now this is a hardcoded path needed
-    # for the app bundle on MacOSX
-    symbolPaths.append("/Applications/Sconcho.app/Contents/Resources/symbols")
+    # for the app bundle on MacOSX and msi package on Windows
+    from platform import system
+    if system() == 'Windows':
+        tempPath = os.path.join(path, "symbols")
+        symbolPaths.append(tempPath.replace("library.zip",""))
+        pass
+    elif system() == 'Darwin':
+        symbolPaths.append("/Applications/Sconcho.app/Contents/Resources/symbols")
 
     return symbolPaths
-

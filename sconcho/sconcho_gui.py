@@ -78,10 +78,11 @@ def create_log_file(logPath):
     # open a log file for this session
     if not os.path.exists(logPath):
         os.mkdir(logPath)
-    logHandle = tempfile.NamedTemporaryFile(prefix="sconcho_" + timeStamp, 
+    logHandle = tempfile.NamedTemporaryFile(prefix="sconcho_" + timeStamp,
                                             delete=False,
                                             dir=logPath)
-    logHandle.write("sconcho started on " + timeStamp + "\n\n")
+    logHandle.write(b"sconcho started on " + bytes(timeStamp, 'utf8')
+                    + b"\n\n")
     logHandle.flush()
 
     return logHandle
@@ -114,7 +115,7 @@ def sconcho_excepthook(logHandle, exceptType, value, tback):
         logHandle.flush()
 
     # then call the default handler
-    sys.__excepthook__(exceptType, value, tback) 
+    sys.__excepthook__(exceptType, value, tback)
 
 
 
@@ -128,12 +129,12 @@ def initialize_logger(logHandle):
     if logHandle:
         logging.basicConfig(filename=logHandle.name,
                             filemode="a",
-                            level=logging.DEBUG, 
+                            level=logging.DEBUG,
                             format=("%(asctime)s - %(name)s -  %(levelname)s "
                                     "=> %(message)s"),
                             datefmt='%m/%d/%Y %I:%M:%S %p')
     else:
-        logging.basicConfig(level=logging.DEBUG, 
+        logging.basicConfig(level=logging.DEBUG,
                             format=("%(asctime)s - %(name)s -  %(levelname)s "
                                     "=> %(message)s"),
                             datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -146,11 +147,11 @@ def initialize_logger(logHandle):
 
 def main(fileName=None):
     """ This is a simple wrapper for starting the main
-    sconcho sconcho.gui. 
+    sconcho sconcho.gui.
 
     For now we check if any command line arguments were
     passed. If yes, we assume the first one was meant to
-    be a sconcho spf file and then pass it on to 
+    be a sconcho spf file and then pass it on to
     sconcho_gui_launcher().
     """
 
@@ -178,16 +179,16 @@ def main(fileName=None):
         if os.path.isfile(fileNameTmp):
             fileName = fileNameTmp
 
-    # We attempt to read all available knitting symbols 
+    # We attempt to read all available knitting symbols
     # before firing up the MainWindow. At the very least we
-    # require to find a symbol for a "knit" stitch. If not, 
+    # require to find a symbol for a "knit" stitch. If not,
     # we terminate right away.
     knittingSymbols = parser.parse_all_symbols(symbolPaths)
     try:
         knittingSymbols[QString("knit")]
     except KeyError:
         sys.exit(msg.errorOpeningKnittingSymbols % symbolPaths)
-    
+
     sconcho_gui_launcher(currPath, defaultSettings, knittingSymbols, fileName)
     logging.shutdown()
 
