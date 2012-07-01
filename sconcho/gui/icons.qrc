@@ -37,10 +37,10 @@
   <file>icons/text.png</file>
   <file>icons/undo.png</file>
   <file>icons/up.png</file>
-  <file>icons/zoom-in.svg</file>
-  <file>icons/zoom-out.svg</file>
-  <file>icons/zoom-original.svg</file>
-  <file>icons/zoom-best-fit.svg</file>
-  <file>icons/zoom-100.svg</file>
+  <file>icons/zoom-in.png</file>
+  <file>icons/zoom-out.png</file>
+  <file>icons/zoom-original.png</file>
+  <file>icons/zoom-best-fit.png</file>
+  <file>icons/zoom-100.png</file>
 </qresource>
 </RCC>
