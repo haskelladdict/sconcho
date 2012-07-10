@@ -418,7 +418,7 @@
   <action name="actionSave_as">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/filesave.png</normaloff>:/icons/filesave.png</iconset>
+     <normaloff>:/icons/filesaveas.png</normaloff>:/icons/filesaveas.png</iconset>
    </property>
    <property name="text">
     <string>Save  &amp;as...</string>
@@ -687,7 +687,7 @@
   <action name="actionApply_Color_to_Selection">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/red_rect.png</normaloff>:/icons/red_rect.png</iconset>
+     <normaloff>:/icons/fill.png</normaloff>:/icons/fill.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Apply Color to Selection</string>
