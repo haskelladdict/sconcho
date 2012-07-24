@@ -71,7 +71,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>726</width>
+         <width>659</width>
          <height>71</height>
         </rect>
        </property>
@@ -198,8 +198,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>294</width>
-     <height>212</height>
+     <width>321</width>
+     <height>215</height>
     </size>
    </property>
    <property name="features">
@@ -238,10 +238,38 @@
            <height>130</height>
           </size>
          </property>
-         <property name="title">
-          <string>Most Frequently Used Symbols</string>
-         </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Frequently Used Symbols</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="clearFrequentlyUsedSymbolsButton">
+              <property name="text">
+               <string>Clear List</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
           <item>
            <widget class="QScrollArea" name="scrollArea_2">
             <property name="sizePolicy">
@@ -258,8 +286,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>248</width>
-               <height>86</height>
+               <width>315</width>
+               <height>67</height>
               </rect>
              </property>
              <property name="sizePolicy">
