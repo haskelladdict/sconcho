@@ -582,6 +582,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("unactivate_symbol"),
                      self.set_project_dirty)
 
+        # connection between clear button and the list of 
+        # recently used symbols
+        self.connect(self.clearFrequentlyUsedSymbolsButton,
+                     SIGNAL("clicked()"),
+                     self.recentlyUsedSymbolWidget.clear)
+
+
+
         # the connection between canvas and symbolTracker has
         # to be bi-directional so the canvas can properly 
         # undo/redo selections

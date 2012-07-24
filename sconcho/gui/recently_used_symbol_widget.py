@@ -77,7 +77,11 @@ class RecentlyUsedSymbolWidget(QWidget):
             widget.setParent(None)
 
         self._synchronizer.unselect()
-        self.recentSymbols = []
+
+        labelWidget = QLabel("None");
+        self.layout.addWidget(labelWidget, 0, 0, Qt.AlignVCenter)
+        self.recentSymbols = [labelWidget]
+
         self.recentSymbolsDict = {}
         self.widgetToSymbol = {}
 
@@ -101,10 +105,10 @@ class RecentlyUsedSymbolWidget(QWidget):
             self._synchronizer.unselect()
             return
 
-        # add symbol name to dictionary
+        # increase symbol use count by one or add new symbol
         if symbol in self.recentSymbolsDict:
             self.recentSymbolsDict[symbol] += 1
-            self.click_on_a_symbols_widget(symbol)
+            self.click_on_a_symbol_widget(symbol)
 
         else:
             # if we have more than MAX_RECENT_SYMBOLS symbols evict 
@@ -145,11 +149,11 @@ class RecentlyUsedSymbolWidget(QWidget):
             self.layout.addWidget(widget, 0, index, Qt.AlignVCenter)
             self.recentSymbols.append(widget)
 
-        self.click_on_a_symbols_widget(symbol)
+        self.click_on_a_symbol_widget(symbol)
 
 
 
-    def click_on_a_symbols_widget(self, symbol):
+    def click_on_a_symbol_widget(self, symbol):
         """ Clicks the widget corresponding to symbol. """
 
         for (widget, widgetSymbol) in self.widgetToSymbol.items():
