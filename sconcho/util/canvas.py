@@ -484,7 +484,8 @@ def get_marked_columns(selectedCells, numRows):
                 else:
                     cellsByColumn[col].append(cell)
 
-        entries = dict([(colID, len(cols)) for (colID, cols) in cellsByColumn.items()])
+        entries = dict([(colID, len(cols)) for (colID, cols) 
+                        in cellsByColumn.items()])
 
         # all columns are of lenght numRows - good to go
         if all([ (x == numRows) for x in entries.values()]):

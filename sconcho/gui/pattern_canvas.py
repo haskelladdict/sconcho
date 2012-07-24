@@ -1501,7 +1501,10 @@ class PatternCanvas(QGraphicsScene):
 
     def marked_columns(self):
         """ Based on the currently selected cells, returns a list of
-        completely marked columns or an empty list otherwise.
+        completely marked columns or an empty list if there are any 
+        partially marked columns. An exception is the case of a single 
+        marked column with *one* jagged edge which is returned as a single
+        column.
 
         """
 
@@ -1766,10 +1769,6 @@ class PatternCanvas(QGraphicsScene):
             # make sure we can insert the column given the current
             # pattern geometry. If not, tell the user and
             # return
-            # NOTE: I am pretty sure that this will never happen,
-            # i.e. if a user can insert a whole single row we
-            # should always be fine
-            # XXX: target this for removal.
             if not self.can_insert_grid_columns(location):
                 logger.error(msg.noColInsertLayoutText)
                 QMessageBox.critical(None, msg.noColInsertLayoutTitle,
