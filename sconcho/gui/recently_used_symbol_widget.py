@@ -94,7 +94,8 @@ class RecentlyUsedSymbolWidget(QWidget):
         symbol = self.widgetToSymbol[widget]
         self.recentSymbolsDict[symbol] += 1
 
-        self.widgetToSymbol[widget].click_me()
+        # synchronize with widget in symbol selector widget
+        symbol.click_me()
 
 
 
