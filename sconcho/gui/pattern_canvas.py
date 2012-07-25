@@ -180,8 +180,9 @@ class PatternCanvas(QGraphicsScene):
 
                 origin_x = graphicsItem.column * self.cell_width
                 origin_y = graphicsItem.row * self.cell_height
+                unitWidth = graphicsItem.width
                 element = PatternHighlightItem(origin_x, origin_y,
-                                               self.cell_width,
+                                               self.cell_width * unitWidth,
                                                self.cell_height,
                                                QColor(color),
                                                opacity)
