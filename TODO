@@ -10,3 +10,5 @@
 - more sophisticated import dialog for custom symbols
 - fix svg export: currently it contains the symbols as bitmapped
   which is silly, not sure why
+- don't select most recently used symbol when loading a previous
+  spf project.
