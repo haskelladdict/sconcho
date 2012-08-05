@@ -12,3 +12,5 @@
   which is silly, not sure why
 - don't select most recently used symbol when loading a previous
   spf project.
+- allow to select which row/columns labels to show (to deal
+  better with non-rectangular charts via hidden nostitches.
