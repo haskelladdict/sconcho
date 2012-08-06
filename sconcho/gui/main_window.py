@@ -34,12 +34,12 @@ import platform, os
 from functools import partial
 
 
-from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo, 
+from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo,
                           Qt, QSize, QFile, QTimer, QVariant,
-                          QPoint, PYQT_VERSION_STR, qVersion, 
+                          QPoint, PYQT_VERSION_STR, qVersion,
                           QObject)
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
-                         QWidget, QGridLayout, QHBoxLayout, QLabel, 
+                         QWidget, QGridLayout, QHBoxLayout, QLabel,
                          QFrame, QColor, QApplication, QDialog, QAction,
                          QPrinter, QPrintDialog, QPrintPreviewDialog,)
 from PyQt4.QtSvg import QSvgWidget
@@ -50,7 +50,7 @@ import sconcho.util.settings as settings
 import sconcho.util.misc as misc
 import sconcho.util.io as io
 import sconcho.util.symbol_parser as parser
-from sconcho.gui.symbol_widget import (generate_symbolWidgets, 
+from sconcho.gui.symbol_widget import (generate_symbolWidgets,
                                        SymbolSynchronizer,
                                        symbols_by_category,
                                        add_to_category_widget,
@@ -77,7 +77,7 @@ logger = logging.getLogger(__name__)
 #######################################################################
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    def __init__(self, topLevelPath, settings, knittingSymbols, 
+    def __init__(self, topLevelPath, settings, knittingSymbols,
                  fileName = None, parent = None):
         """ Initialize the main window. """
 
@@ -93,7 +93,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self._topLevelPath = topLevelPath
         self._knittingSymbols = knittingSymbols
-        self.canvas = PatternCanvas(self.settings, 
+        self.canvas = PatternCanvas(self.settings,
                                     knittingSymbols["knit"], self)
 
         self.exportBitmapDialog = None
@@ -148,7 +148,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _save_settings(self):
         """ Save all settings. """
-        
+
         self.settings.main_window_size = self.size()
         self.settings.main_window_position = self.pos()
         self.settings.main_window_state = self.saveState()
@@ -183,7 +183,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.show_sconcho_manual)
 
 
-        
+
     def _set_up_file_connections(self):
         """ Set up all connections for file menu. """
 
@@ -198,7 +198,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.actionSave_as, SIGNAL("triggered()"),
                      partial(self.save_pattern_dialog, "save as"))
-        
+
         self.connect(self.actionOpen, SIGNAL("triggered()"),
                      self.read_project_dialog)
 
@@ -241,7 +241,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.canvas.paste_selection)
 
 
-        
+
     def _set_up_view_connections(self):
         """ Set up all connections for view menu. """
 
@@ -270,7 +270,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.graphicsView.normal_view)
 
 
-        
+
     def _set_up_tools_connections(self):
         """ Set up all connections for view menu. """
 
@@ -278,15 +278,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionUnselect_All, SIGNAL("triggered()"),
                      self.canvas.clear_all_selected_cells)
 
-        self.connect(self.actionCreate_Pattern_Repeat, 
+        self.connect(self.actionCreate_Pattern_Repeat,
                      SIGNAL("triggered()"),
                      self.canvas.add_pattern_repeat)
 
-        self.connect(self.actionCreate_Row_Repeat, 
+        self.connect(self.actionCreate_Row_Repeat,
                      SIGNAL("triggered()"),
                      self.canvas.add_row_repeat)
 
-        self.connect(self.actionApply_Color_to_Selection, 
+        self.connect(self.actionApply_Color_to_Selection,
                      SIGNAL("triggered()"),
                      self.canvas.apply_color_to_selection)
 
@@ -299,19 +299,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _set_up_resize_grid_connections(self):
         """ Set up all connections for resize grid menu. """
 
-        self.connect(self.actionDelete_rows, 
+        self.connect(self.actionDelete_rows,
                      SIGNAL("triggered()"),
                      self.canvas.delete_marked_rows)
 
-        self.connect(self.actionInsert_rows, 
+        self.connect(self.actionInsert_rows,
                      SIGNAL("triggered()"),
                      self.canvas.insert_grid_rows)
 
-        self.connect(self.actionDelete_columns, 
+        self.connect(self.actionDelete_columns,
                      SIGNAL("triggered()"),
                      self.canvas.delete_marked_columns)
 
-        self.connect(self.actionInsert_columns, 
+        self.connect(self.actionInsert_columns,
                      SIGNAL("triggered()"),
                      self.canvas.insert_grid_columns)
 
@@ -320,59 +320,59 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _set_up_preferences_connections(self):
         """ Set up all connections for preferences dialog. """
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("label_font_changed"),
                      self.canvas.label_font_changed)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("label_font_changed"),
                      self.set_project_dirty)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("legend_font_changed"),
                      self.canvas.legend_font_changed)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("legend_font_changed"),
                      self.set_project_dirty)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("toggle_rowLabel_visibility(bool)"),
                      self.canvas.toggle_rowLabel_visibility)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("toggle_columnLabel_visibility(bool)"),
                      self.canvas.toggle_columnLabel_visibility)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("row_label_interval_changed"),
                      self.canvas.set_up_labels)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("row_label_interval_changed"),
                      self.set_project_dirty)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("column_label_interval_changed"),
                      self.canvas.set_up_labels)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("column_label_interval_changed"),
                      self.set_project_dirty)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("row_label_start_changed"),
                      self.canvas.set_up_labels)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("row_label_start_changed"),
                      self.set_project_dirty)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("row_label_location_changed"),
                      self.canvas.set_up_labels)
 
-        self.connect(self.preferencesDialog, 
+        self.connect(self.preferencesDialog,
                      SIGNAL("row_label_location_changed"),
                      self.set_project_dirty)
 
@@ -401,7 +401,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.preferencesDialog.populate_interface)
 
 
-    
+
     def _set_up_misc_connections(self):
         """ Set up misc connections. """
 
@@ -418,13 +418,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.connect(self.canvas, SIGNAL("canvas_dimensions_changed"),
                      self.exportBitmapDialog.update_dimensions)
-    
+
 
 
     def _set_up_connections(self):
         """ Set up all connections for MainWindow. """
 
-        # connections for main UI 
+        # connections for main UI
         self._set_up_file_connections()
         self._set_up_edit_connections()
         self._set_up_view_connections()
@@ -438,7 +438,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-       
+
     def keyPressEvent(self, event):
         """ Catch some key press events. """
 
@@ -453,7 +453,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def check_pattern_grid(self):
         """ NOTE: this is a temporary function which will be removed
-        in the production version. It is mainly indended for the 
+        in the production version. It is mainly indended for the
         maintiner and this hidden. It can be invoked
         by pressing CONTROL + SHIFT + G. It allows to query the pattern grid
         to make sure there are no overlapping PatternGridItems as has
@@ -503,7 +503,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def set_project_dirty(self):
         """ This function marks the canvas as dirty, aka it needs
         to be saved.
-        
+
         """
 
         self._projectIsDirty = True
@@ -514,7 +514,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def mark_project_clean(self):
         """ This function marks the project as clean, aka it does not need
         to be saved.
-        
+
         """
 
         self._projectIsDirty = False
@@ -525,7 +525,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
         """ Quit sconcho. If the canvas is currently dirty, we ask the
         user if she wants to save it.
-         
+
         """
 
         if not self._ok_to_continue_without_saving():
@@ -551,29 +551,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Connect the symbolCategoryChooser only after it has been fully
         set up. Otherwise we get spurious selector widget switches until
         the chooser has established the correct order.
-        
+
         """
 
         symbolTracker = SymbolSynchronizer()
-        self.connect(self.canvas, 
+        self.connect(self.canvas,
                      SIGNAL("activate_symbol"),
                      self.activeSymbolWidget.active_symbol_changed)
- 
-        self.connect(self.canvas, 
+
+        self.connect(self.canvas,
                      SIGNAL("unactivate_symbol"),
                      partial(self.activeSymbolWidget.active_symbol_changed,
                              None))
-        
-        self.connect(self.canvas, 
+
+        self.connect(self.canvas,
                      SIGNAL("activate_symbol"),
                      self.recentlyUsedSymbolWidget.insert_new_symbol)
- 
-        self.connect(self.canvas, 
+
+        self.connect(self.canvas,
                      SIGNAL("unactivate_symbol"),
                      partial(
                        self.recentlyUsedSymbolWidget.insert_new_symbol,
                        None))
- 
+
         self.connect(self.canvas,
                      SIGNAL("activate_symbol"),
                      self.set_project_dirty)
@@ -582,7 +582,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("unactivate_symbol"),
                      self.set_project_dirty)
 
-        # connection between clear button and the list of 
+        # connection between clear button and the list of
         # recently used symbols
         self.connect(self.clearFrequentlyUsedSymbolsButton,
                      SIGNAL("clicked()"),
@@ -591,9 +591,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         # the connection between canvas and symbolTracker has
-        # to be bi-directional so the canvas can properly 
+        # to be bi-directional so the canvas can properly
         # undo/redo selections
-        self.connect(symbolTracker, 
+        self.connect(symbolTracker,
                      SIGNAL("synchronized_object_changed"),
                      self.canvas.set_active_symbol)
 
@@ -604,7 +604,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.canvas,
                      SIGNAL("unactivate_symbol"),
                      symbolTracker.unselect)
-      
+
 
         (self.selectedSymbol, self.symbolSelector,
          self.symbolSelectorWidgets) = \
@@ -623,29 +623,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.symbolCategoryChooser,
                      SIGNAL("currentIndexChanged(QString)"),
                      partial(self.canvas.set_active_symbol, None))
-        
+
         # catch signals from custom symbol dialog in case a symbol
         # changed
         self.connect(self.manageSymbolsDialog,
                      SIGNAL("symbol_added"),
-                     partial(self.refresh_symbol_widget_after_addition, 
+                     partial(self.refresh_symbol_widget_after_addition,
                              symbolTracker))
 
 
         self.connect(self.manageSymbolsDialog,
                      SIGNAL("symbol_updated"),
-                     partial(self.refresh_symbol_widget_after_update, 
+                     partial(self.refresh_symbol_widget_after_update,
                              symbolTracker))
 
 
         self.connect(self.manageSymbolsDialog,
                      SIGNAL("symbol_deleted"),
-                     partial(self.refresh_symbol_widget_after_deletion, 
+                     partial(self.refresh_symbol_widget_after_deletion,
                              symbolTracker))
-    
 
 
-    def refresh_symbol_widget_after_update(self, synchronizer, newName, 
+
+    def refresh_symbol_widget_after_update(self, synchronizer, newName,
                                            newCategory, oldName, oldCategory):
         """ This slot is called when a symbol in oldCategory was updated.
 
@@ -660,17 +660,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def canvas_has_symbol(self, symbolName):
-        """ This wrapper ask the canvas if it contains any symbols with 
+        """ This wrapper ask the canvas if it contains any symbols with
 
         symbol name
-        
+
         """
 
         return self.canvas.contains_symbol(symbolName)
 
 
 
-    def refresh_symbol_widget_after_deletion(self, synchronizer, symbolName, 
+    def refresh_symbol_widget_after_deletion(self, synchronizer, symbolName,
                                              categoryName):
         """ This slot is called when a symbol in categoryName was deleted.
 
@@ -696,18 +696,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             message = ("Could not update symbolSelectorWidgets after "
                        "deleting symbol.")
-            logger.error(message)   
+            logger.error(message)
 
         # NOTE: We have no choice but to clear the undo cache
         # otherwise we're bound to have dangling pointers
         self.canvas.set_active_symbol(None)
-        self.recentlyUsedSymbolWidget.clear() 
+        self.recentlyUsedSymbolWidget.clear()
         self.canvas.clear_undo_stack()
 
 
 
-    
-    def refresh_symbol_widget_after_addition(self, synchronizer, symbolName, 
+
+    def refresh_symbol_widget_after_addition(self, synchronizer, symbolName,
                                              categoryName):
         """ This slot is called when a symbol in categoryName was added.
 
@@ -715,11 +715,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         """
 
-        symbolPaths = misc.set_up_symbol_paths(self._topLevelPath, 
+        symbolPaths = misc.set_up_symbol_paths(self._topLevelPath,
                                                self.settings)
         knittingSymbols = parser.parse_all_symbols(symbolPaths)
         symbolsByCategory = symbols_by_category(knittingSymbols)
-        
+
         if categoryName in symbolsByCategory:
             symbol = knittingSymbols[symbolName]
             synchronizer.unselect()
@@ -743,7 +743,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                        "after custom symbol change. "
                        "It is highly recommended to save your\n"
                        "current project and restart sconcho.")
-            logger.error(message)   
+            logger.error(message)
 
 
 
@@ -754,7 +754,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         the previous symbolSelectorWidget and installs the selected
         one.
         """
-        
+
         self.symbolSelectorLayout.removeWidget(self.selectedSymbol)
         self.selectedSymbol.setParent(None)
 
@@ -766,22 +766,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def initialize_color_widget(self):
         """ Proxy for adding all the color selectors to the color selector
         Widget and connecting the slots
-        
+
         """
 
         colorTracker = ColorSynchronizer()
         self.connect(self.canvas,
                      SIGNAL("activate_color_selector"),
                      self.activeSymbolWidget.active_colorObject_changed)
-        
+
         self.connect(self.canvas,
                      SIGNAL("activate_color_selector"),
                      self.set_project_dirty)
 
         # the connection between canvas and colorTracker has
-        # to be bi-directional so the canvas can properly 
+        # to be bi-directional so the canvas can properly
         # undo/redo selections
-        self.connect(colorTracker, 
+        self.connect(colorTracker,
                      SIGNAL("synchronized_object_changed"),
                      self.canvas.set_active_colorObject)
 
@@ -798,7 +798,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         Qt.black, Qt.darkGray, Qt.cyan, Qt.yellow, \
                         Qt.green, Qt.magenta]]
         self.colorWidget.initialize(colorTracker, colorList)
-        
+
 
 
     def initialize_row_col_widget(self):
@@ -806,7 +806,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         colLabel = QLabel("col:")
         rowLabel = QLabel("row:")
-        
+
         self.columnCounter = QLabel("NA")
         self.connect(self.canvas, SIGNAL("col_count_changed"),
                      (lambda x: self.columnCounter.setText(str(x))))
@@ -814,7 +814,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.rowCounter = QLabel("NA")
         self.connect(self.canvas, SIGNAL("row_count_changed"),
                      (lambda x: self.rowCounter.setText(str(x))))
-        
+
         layout = QHBoxLayout()
         layout.addWidget(colLabel)
         layout.addWidget(self.columnCounter)
@@ -830,8 +830,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_sconcho_manual(self):
         """ Show the sconcho manual. """
 
-        manualPath = os.path.join(self._topLevelPath, 
-                                  "doc/manual.html") 
+        manualPath = os.path.join(self._topLevelPath,
+                                  "doc/manual.html")
 
         # this is a hack needed for sconcho + pyinstaller on MacOSX
         #manualPath = manualPath.replace("library.zip","")
@@ -843,7 +843,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def show_update_check(self):
-        """ Show dialog that checks and displays any updates 
+        """ Show dialog that checks and displays any updates
         for sconcho.
         """
 
@@ -854,7 +854,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def show_about_sconcho(self):
         """ Show the about sconcho dialog. """
-        
+
         QMessageBox.about(self, QApplication.applicationName(),
                           msg.sconchoDescription % (__version__,
                                                     platform.python_version(),
@@ -866,7 +866,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def show_about_qt4(self):
         """ Show the about Qt dialog. """
-        
+
         QMessageBox.aboutQt(self)
 
 
@@ -874,7 +874,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def new_pattern_dialog(self):
         """ Open a dialog giving users an opportunity to save
         their previous pattern or cancel.
-        
+
         """
 
         if not self._ok_to_continue_without_saving():
@@ -883,7 +883,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         newPattern = NewPatternDialog(self)
         if newPattern.exec_():
-            
+
             # start new canvas
             self.clear_project_save_file()
             self.set_project_dirty()
@@ -899,10 +899,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         Returns True on successful saving of the file and False
         otherwise.
-        
+
         """
 
-        if (mode == "save as") or (not self._saveFilePath): 
+        if (mode == "save as") or (not self._saveFilePath):
             location = self._saveFilePath if self._saveFilePath \
                        else QDir.homePath() + "/.spf"
             saveFilePath = QFileDialog.getSaveFileName(self,
@@ -926,7 +926,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if QFile(saveFilePath).exists():
                     saveFileName = QFileInfo(saveFilePath).fileName()
                     messageBox = QMessageBox.question(self,
-                                    msg.patternFileExistsTitle, 
+                                    msg.patternFileExistsTitle,
                                     msg.patternFileExistsText % saveFileName,
                                     QMessageBox.Ok | QMessageBox.Cancel)
 
@@ -947,9 +947,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.update_recently_used_files(self._saveFilePath)
 
         return True
-    
 
-    
+
+
     def update_recently_used_files(self, path = None):
         """ Update the list of recently used files.
 
@@ -976,7 +976,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 files.append(fullPath)
                 while len(files) > 10 and files:
-                    files.takeFirst()
+                    files.pop(len(files)-1)
 
         self.settings.recently_used_files = "%".join(files)
         self.clear_recently_used_files_menu()
@@ -1019,22 +1019,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _save_pattern(self, filePath, markProjectClean = True):
         """ Main save routine.
 
-        If there is no filepath we return (e.g. when called by the 
+        If there is no filepath we return (e.g. when called by the
         saveTimer).
 
         NOTE: This function returns the SaveThread so callers have the
         opportunity to call wait() to make sure that saving is all
-        done. 
-        
+        done.
+
         """
-        
+
         if not filePath or not self._projectIsDirty:
             return (False, None)
 
         saveFileName = QFileInfo(filePath).fileName()
         self.statusBar().showMessage("saving " + saveFileName)
 
-        saveThread = io.SaveThread(self.canvas, 
+        saveThread = io.SaveThread(self.canvas,
                                    self.colorWidget.get_all_colors(),
                                    self.activeSymbolWidget.get_symbol(),
                                    self.settings, filePath,
@@ -1052,20 +1052,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _save_pattern_epilog(self, status, errorMessage, saveFileName,
                              markProjectClean):
         """ This method is called after the SaveThread is finished. """
-        
+
         if not status:
             logger.error(errorMsg)
             QMessageBox.critical(self, msg.errorSavingProjectTitle,
                                  errorMsg, QMessageBox.Close)
-            return 
-        
+            return
+
         self.statusBar().showMessage("successfully saved " + \
                                      saveFileName, 2000)
 
         if markProjectClean:
             self.mark_project_clean()
 
-            
+
 
     def open_recent_file(self, action):
         """ This function opens a recently opened pattern."""
@@ -1079,14 +1079,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # the actual filename is in the data *not* the
         # text of the item
         readFilePath = action.data()
- 
+
         if not QFile(readFilePath).exists():
             logger.error(msg.patternFileDoesNotExistText % readFilePath)
             QMessageBox.critical(self, msg.patternFileDoesNotExistTitle,
-                                 msg.patternFileDoesNotExistText % readFilePath, 
+                                 msg.patternFileDoesNotExistText % readFilePath,
                                  QMessageBox.Close)
             return
-       
+
         if not self._ok_to_continue_without_saving():
             return
 
@@ -1118,18 +1118,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.update_recently_used_files(readFilePath)
             self.mark_project_clean()
 
-        
+
 
     def _read_project(self, readFilePath):
-        """ This function does the hard work for opening a 
+        """ This function does the hard work for opening a
         sconcho project file.
-        
+
         """
 
         (status, errMsg, patternGridItems, legendItems, colors,
          activeItem, patternRepeats, repeatLegends, rowRepeats,
          textItems) = io.read_project(self.settings, readFilePath)
-        
+
 
         if not status:
             logger.error(msg.errorOpeningProjectTitle)
@@ -1138,7 +1138,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return False
 
         # add newly loaded project
-        if not self.canvas.load_previous_pattern(self._knittingSymbols, 
+        if not self.canvas.load_previous_pattern(self._knittingSymbols,
                                                  patternGridItems,
                                                  legendItems,
                                                  patternRepeats,
@@ -1149,8 +1149,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         set_up_colors(self.colorWidget, colors)
         self.recentlyUsedSymbolWidget.clear()
-        self.select_symbolSelectorItem(self.symbolSelectorWidgets, 
-                                       activeItem)
+        #self.select_symbolSelectorItem(self.symbolSelectorWidgets,
+        #                               activeItem)
 
         # provide feedback in statusbar
         readFileName = QFileInfo(readFilePath).fileName()
@@ -1160,7 +1160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return True
 
 
-    
+
     def create_export_bitmap_dialog(self):
         """ Create export bitmap dialog. """
 
@@ -1192,7 +1192,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # need this to make sure we take away focus from
         # any currently selected legend items
         self.canvas.clearFocus()
-    
+
         if printDialog.exec_() == QDialog.Accepted:
             io.printer(self.canvas, aPrinter)
 
@@ -1225,20 +1225,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def open_manage_knitting_symbols_dialog(self):
         """ Open dialog allowing users to manage their own
         symbols (as opposed to the ones which come with sconcho).
-        
+
         """
 
         self.manageSymbolsDialog.raise_()
         self.manageSymbolsDialog.show()
 
-    
+
 
     def create_manage_knitting_symbols_dialog(self):
-        """ Create the manage knitting symbols dialog. 
+        """ Create the manage knitting symbols dialog.
 
         NOTE: We create this widget at program startup so we can
         install a signal between it and the main window for updating
-        the symbols widget. 
+        the symbols widget.
 
         """
 
@@ -1279,7 +1279,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         save the current pattern. Returns True if the pattern
         was save or the user discarded changes, and False if
         the user canceled.
-        
+
         """
 
         status = True
@@ -1298,38 +1298,43 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 status = False
 
         return status
- 
 
 
-    def select_symbolSelectorItem(self, symbolWidgets, activeItem):
-        """ Activate the requested item.
+    # NOTE: This code is currently unused. It was intended to select
+    #       the current selected symbol coming from a loaded spf file.
+    #       However, users have stated that it would be better to not
+    #       select anything. --> schedule for removal
+    #
+    #
+    # def select_symbolSelectorItem(self, symbolWidgets, activeItem):
+    #     """ Activate the requested item.
 
-        If activeItem is None we inactivate whatever symbolSelectorWidget
-        is currently selected. Otherwise activate the proper widget.
-        The activeItem comes directly from the parser so we have to
-        be careful.
-        
-        """
+    #     If activeItem is None we inactivate whatever symbolSelectorWidget
+    #     is currently selected. Otherwise activate the proper widget.
+    #     The activeItem comes directly from the parser so we have to
+    #     be careful.
 
-        try:
-            name = activeItem["name"]
-        except:
-            return
+    #     """
 
-        try:
-            category = activeItem["category"]
-        except:
-            return
+    #     try:
+    #         name = activeItem["name"]
+    #     except:
+    #         return
 
-        if (name, category) in symbolWidgets:
+    #     try:
+    #         category = activeItem["category"]
+    #     except:
+    #         return
 
-            # select the proper category widget
-            index = self.symbolCategoryChooser.findText(category)
-            self.symbolCategoryChooser.setCurrentIndex(index)
+    #     if (name, category) in symbolWidgets:
 
-            # then select the proper item in the category
-            symbolWidgets[(name, category)].click_me()
-        
+    #         # select the proper category widget
+    #         index = self.symbolCategoryChooser.findText(category)
+    #         self.symbolCategoryChooser.setCurrentIndex(index)
+
+    #         # then select the proper item in the category
+    #         symbolWidgets[(name, category)].click_me()
+
 
 
 
@@ -1342,7 +1347,7 @@ def set_up_colors(widget, colors):
     """ Sets the colors of ColorSelectorItems in the widget to
     the requested colors. Also activates the previously
     active item.
-    
+
     """
 
     assert (len(widget.colorWidgets) >= len(colors))
@@ -1353,7 +1358,7 @@ def set_up_colors(widget, colors):
         item.repaint()
         if state == 1:
             widget._synchronizer.select(item)
-            
+
 
 
 
@@ -1381,14 +1386,14 @@ def check_for_recovery_file(filePath):
     (status, filename of file to open).
 
     """
-    
+
     returnPath = (False, filePath)
     recoveryFilePath = generate_recovery_filepath(filePath)
     recoveryFile = QFile(recoveryFilePath)
     fileName = QFileInfo(filePath).fileName()
     if recoveryFile.exists():
         answer = QMessageBox.question(None,
-                                 msg.recoveryFilePresentTitle, 
+                                 msg.recoveryFilePresentTitle,
                                  msg.recoveryFilePresentText.format(fileName),
                                  QMessageBox.Ok | QMessageBox.Cancel)
 
@@ -1396,4 +1401,3 @@ def check_for_recovery_file(filePath):
             returnPath = (True, recoveryFilePath)
 
     return returnPath
-
