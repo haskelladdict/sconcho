@@ -862,13 +862,11 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        searchArea = QRectF(event.scenePos(), QSizeF(1, 1))
-        searchArea = searchArea.adjusted(-4.0, -4.0, 4.0, 4.0)
-        patternRepeats = extract_patternItems(self.items(searchArea),
+        scenePos = event.scenePos()
+        patternRepeats = extract_patternItems([self.itemAt(scenePos)],
                                               PatternRepeatItem)
 
         gridMenu = QMenu()
-        scenePos = event.scenePos()
 
         # grab color actoin
         grabColorAction = gridMenu.addAction("&Grab Color and Insert Into "
@@ -956,6 +954,14 @@ class PatternCanvas(QGraphicsScene):
                                  QMessageBox.Close)
             return
 
+        # the below code computes what edges to draw. 
+        # It subdivides the whole pattern grid into 1x1
+        # cells whose edges are described by edgeID as 
+        # [upper edge, left edge, right edge, bottom edget]
+        # where each descriptor is of the form 'x1:y1:x2:y2'.
+        # Then, all edges are collected. Edges that appear twice
+        # are internal and are not drawn. Edges that appear once
+        # are external and are drawn.
         edges = {}
         for entry in self._selectedCells.values():
 
@@ -1502,8 +1508,8 @@ class PatternCanvas(QGraphicsScene):
 
     def marked_columns(self):
         """ Based on the currently selected cells, returns a list of
-        completely marked columns or an empty list if there are any 
-        partially marked columns. An exception is the case of a single 
+        completely marked columns or an empty list if there are any
+        partially marked columns. An exception is the case of a single
         marked column with *one* jagged edge which is returned as a single
         column.
 
@@ -1873,7 +1879,7 @@ class PatternCanvas(QGraphicsScene):
         for (item, oldPos, newPos) in patternRepeats:
             moveCommand = MoveCanvasItem(item, oldPos, newPos)
             self._undoStack.push(moveCommand)
-            
+
         self._undoStack.endMacro()
 
 

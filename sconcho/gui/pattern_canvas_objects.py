@@ -34,15 +34,17 @@ from PyQt4.QtCore import (Qt,
                           QLineF,
                           SIGNAL,
                           QT_VERSION)
-from PyQt4.QtGui import (QPen,
-                         QColor,
+from PyQt4.QtGui import (QApplication,
                          QBrush,
+                         QColor,
                          QGraphicsTextItem,
                          QGraphicsItem,
                          QGraphicsRectItem,
                          QGraphicsLineItem,
                          QGraphicsItemGroup,
-                         QApplication,
+                         QPainterPath,
+                         QPen,
+                         QPolygonF,
                          QTextCursor,
                          QCursor)
 from PyQt4.QtSvg import (QGraphicsSvgItem)
@@ -586,10 +588,10 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         # set up group
         self.lineElements = []
-        points = []
+        self.points = []
         for line in lines:
-            points.append(line.p1())
-            points.append(line.p2())
+            self.points.append(line.p1())
+            self.points.append(line.p2())
             lineElement = QGraphicsLineItem(line)
             self.lineElements.append(lineElement)
             self.addToGroup(lineElement)
@@ -626,6 +628,15 @@ class PatternRepeatItem(QGraphicsItemGroup):
         for line in self.lineElements:
             line.setPen(pen)
 
+
+    #def shape(self):
+
+    #    path = QPainterPath()
+    #    poly = QPolygonF(self.points)
+    #    path.addPolygon(poly)
+    #    print("************")
+    #    print(poly.isClosed())
+    #    return path
 
 
     def highlight(self):
