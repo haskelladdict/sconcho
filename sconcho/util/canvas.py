@@ -669,7 +669,7 @@ def get_item_id(column, row):
 
 def get_edge_id(gridPoint1, gridPoint2):
     """ Given the column and row values of two grid points
-    return an string ID.
+    return a string ID.
 
     NOTE: Each cell has 4 grid points. The upper left hand
     corner corresponds to the row/column id of the cell.

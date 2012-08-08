@@ -110,7 +110,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # should be a little smarter about this in the future
         self.graphicsView.setScene(self.canvas)
 
-        self._readFileDialogPath = QDir.homePath()
         self._set_up_recently_used_files_menu()
 
         # set up all the connections
@@ -904,7 +903,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if (mode == "save as") or (not self._saveFilePath):
             location = self._saveFilePath if self._saveFilePath \
-                       else QDir.homePath() + "/.spf"
+                       else self.settings.export_path + "/.spf"
             saveFilePath = QFileDialog.getSaveFileName(self,
                                            msg.saveSconchoProjectTitle,
                                            location,
@@ -960,7 +959,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         fileString = self.settings.recently_used_files
 
-        # need this check to avoid interpreting a nonexisting entry
+        # need this check to avoid interpreting an empty entry
         # as an empty filename
         if len(fileString) == 0:
             files = []
@@ -1102,17 +1101,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self._ok_to_continue_without_saving():
             return
 
+        location = self.settings.export_path + "/.spf"
         readFilePath = \
              QFileDialog.getOpenFileName(self,
                                          msg.openSconchoProjectTitle,
-                                         self._readFileDialogPath,
+                                         location, 
                                          ("sconcho pattern files (*.spf);;"
                                           "all files (*.*)"))
 
         if not readFilePath:
             return
 
-        self._readFileDialogPath = QFileInfo(readFilePath).absoluteFilePath()
+        self.settings.export_path = QFileInfo(readFilePath).absolutePath()
         if self._read_project(readFilePath):
             self.set_project_save_file(readFilePath)
             self.update_recently_used_files(readFilePath)
@@ -1258,6 +1258,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle(QApplication.applicationName() + ": " \
                             + QFileInfo(fileName).fileName() + "[*]")
         self.exportBitmapDialog.update_export_path(fileName)
+
+        # store location as export path
+        self.settings.export_path = QFileInfo(fileName).absolutePath()
 
         # generate recovery file path
         self._recoveryFilePath = generate_recovery_filepath(fileName)

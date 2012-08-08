@@ -80,6 +80,7 @@ class DefaultSettings(QSettings):
     DEFAULT_LOGGING_PATH = QDir.convertSeparators(
             QDir.homePath() + "/.sconcho_logs")
     DEFAULT_DO_LOGGING = "0"
+    DEFAULT_EXPORT_PATH = QDir.homePath()
 
 
     def __init__(self, organization, application, parent = None):
@@ -236,7 +237,11 @@ class DefaultSettings(QSettings):
     @property
     def recently_used_files(self):
         """ Return the list of recently used files. """
-        
+
+        # handle empty entries
+        if not self.value("RecentlyUsedFiles/List"):
+            self.recently_used_files = ""
+
         return self.value("RecentlyUsedFiles/List")
 
 
@@ -246,7 +251,33 @@ class DefaultSettings(QSettings):
         """ Set the list of recently used files. """
 
         self.setValue("RecentlyUsedFiles/List", values)
-   
+
+
+
+    @property
+    def export_path(self):
+        """ Return the current export path for spf and 
+        bitmap files. 
+
+        """
+
+        # handle empty entry
+        if not self.value("ExportPath/Path"):
+            self.export_path = DefaultSettings.DEFAULT_EXPORT_PATH
+
+        return self.value("ExportPath/Path")
+
+
+
+    @export_path.setter
+    def export_path(self, path):
+        """ Set the new export path for spf and bitmap
+        files. 
+
+        """
+
+        self.setValue("ExportPath/Path", path)
+
 
 
 
@@ -296,7 +327,6 @@ class PreferenceSetting(object):
         else:
             logger.error("Unknown return type %s encountered when "
                           "retrieving settings." % self.returnType)
-
 
         if not status:
             if not self.errorMsg:
