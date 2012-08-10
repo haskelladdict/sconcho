@@ -147,6 +147,11 @@ noSelectionTitle = "sconcho: No Cells Selected"
 noSelectionText = ("Sorry, nothing to do. Please select some cells first.")
 
 
+badPatternRepeatTitle = "sconcho: Bad PatternRepeat Selection"
+badPatternRepeatText = ("Sorry, cannot create pattern repeat. The area "
+                        "of a pattern repeat has to be a single connected "
+                        "piece and contain no holes")
+
 noCopySelectionTitle = "sconcho: Cannot Paste Selection"
 noCopySelectionText = ("Sorry, there is no selection to be pasted. " 
                         "Please copy a rectangular selection first, "

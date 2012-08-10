@@ -970,6 +970,92 @@ def repeats_to_be_shifted_after_delete_cols(repeats, cellWidth,
 
 
 
+def sort_vertices(segments):
+    """ Sorts the line segments corresponding to a pattern
+    repeat into a consecutive set of points describing
+    the outline of the repeat.
+
+    The list of segments is in the form
+    [(point1, point2), (point3, point4), ....]
+    where is point is an (x,y) tuple.
+
+    NOTE 0: line vertices assumes that the are described
+    by line vertices has not hole and is singly 
+    connected.
+
+    NOTE 1: If there is a problem sorting, e.g., if we're
+    past a bunch of segments corresponding to an area with
+    a whole we abort and return None
+
+    """
+
+    # find the beginning of outline
+    minKey = get_min(segments)
+    vertices = [minKey] 
+
+    current = minKey
+    while len(segments) > 0:
+
+        # if get_segment returns None the most likely
+        # was a hole in the are of the repeat and
+        # we abort
+        seg = get_segment(segments, current)
+        if not seg:
+            return None
+        
+        if seg[0] == current:
+            vertices.append(seg[1])
+            current = seg[1]
+        else:
+            vertices.append(seg[0])
+            current = seg[0]
+           
+        segments.remove(seg)
+
+    return vertices
+
+
+
+def get_segment(segments, targetPoint):
+    """ Given a list of segments and a target point
+    picks the segment that contains the point.
+
+    NOTE: this function will pick the first point
+    it finds and None if nothing is returned.
+
+    """
+
+    for seg in segments:
+        if (seg[0] == targetPoint):
+            return seg
+        elif (seg[1] == targetPoint):
+            return seg
+
+    return None
+
+
+
+def get_min(segments):
+    """ Given a list of segments return the smallest point
+    in all segments.
+
+    """
+
+    if len(segments) == 0:
+        return None
+
+    currentMin = segments[0][0];
+    for seg in segments:
+        if seg[0] < currentMin:
+            currentMin = seg[0]
+
+        if seg[1] < currentMin:
+            currentMin = seg[1]
+
+    return currentMin
+
+
+
 ############################################################################
 #
 # Helper Classes

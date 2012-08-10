@@ -983,18 +983,26 @@ class PatternCanvas(QGraphicsScene):
                     else:
                         edges[edgeID] = 1
 
-        lines = []
+        lineTuples = [] 
         for (edgeID, switch) in edges.items():
             if switch:
                 (col1, row1, col2, row2) = map(int, edgeID.split(":"))
+                lineTuples.append(((col1, row1), (col2, row2)))
 
-                line = QLineF(col1 * self.cell_width,
-                              row1 * self.cell_height,
-                              col2 * self.cell_width,
-                              row2 * self.cell_height)
-                lines.append(line)
+        vertices = sort_vertices(lineTuples)
+        if not vertices:
+            logger.error(msg.badPatternRepeatText)
+            QMessageBox.critical(None, msg.badPatternRepeatTitle,
+                                 msg.badPatternRepeatText,
+                                 QMessageBox.Close)
+            return
 
-        repeatItem = PatternRepeatItem(lines)
+        points = [] 
+        for vertex in vertices:
+            points.append(QPointF(vertex[0]*self.cell_width,
+                                  vertex[1]*self.cell_height))
+        testPolygon = QPolygonF(points)
+        repeatItem = PatternRepeatItem(testPolygon)
 
         self._undoStack.beginMacro("add pattern repeat")
         patternRepeatCommand = AddPatternRepeat(self, repeatItem)

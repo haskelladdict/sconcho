@@ -37,10 +37,11 @@ from PyQt4.QtCore import (Qt,
 from PyQt4.QtGui import (QApplication,
                          QBrush,
                          QColor,
-                         QGraphicsTextItem,
                          QGraphicsItem,
-                         QGraphicsRectItem,
                          QGraphicsLineItem,
+                         QGraphicsPolygonItem,
+                         QGraphicsRectItem,
+                         QGraphicsTextItem,
                          QGraphicsItemGroup,
                          QPainterPath,
                          QPen,
@@ -561,14 +562,14 @@ class PatternLabelItem(QGraphicsTextItem):
 ## class for managing a pattern repeat item
 ##
 #########################################################
-class PatternRepeatItem(QGraphicsItemGroup):
+class PatternRepeatItem(QGraphicsPolygonItem):
 
     Type = 70000 + 5
 
-    def __init__(self, lines,  width = None, color = None,
+    def __init__(self, polygon,  width = None, color = None,
                  hasLegend = True, parent = None):
 
-        super(PatternRepeatItem, self).__init__(parent)
+        super(PatternRepeatItem, self).__init__(polygon, parent)
 
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setZValue(1)
@@ -585,16 +586,6 @@ class PatternRepeatItem(QGraphicsItemGroup):
 
         # we use this ID for tracking our legend entry
         self.itemID = uuid.uuid4()
-
-        # set up group
-        self.lineElements = []
-        self.points = []
-        for line in lines:
-            self.points.append(line.p1())
-            self.points.append(line.p2())
-            lineElement = QGraphicsLineItem(line)
-            self.lineElements.append(lineElement)
-            self.addToGroup(lineElement)
 
         # default pen
         if width:
@@ -625,18 +616,7 @@ class PatternRepeatItem(QGraphicsItemGroup):
         pen = QPen()
         pen.setWidth(self.width)
         pen.setBrush(brush)
-        for line in self.lineElements:
-            line.setPen(pen)
-
-
-    #def shape(self):
-
-    #    path = QPainterPath()
-    #    poly = QPolygonF(self.points)
-    #    path.addPolygon(poly)
-    #    print("************")
-    #    print(poly.isClosed())
-    #    return path
+        self.setPen(pen)
 
 
     def highlight(self):
