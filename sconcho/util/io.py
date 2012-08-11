@@ -46,7 +46,7 @@ from sconcho.gui.pattern_canvas_objects import (PatternGridItem,
                                         PatternRepeatItem, 
                                         NostitchVisualizer)
 from sconcho.util.canvas import (legendItem_symbol, legendItem_text,
-                                 visible_bounding_rect)
+                                 visible_bounding_rect, sort_vertices)
 from sconcho.util.misc import wait_cursor
 from sconcho.util.exceptions import PatternReadError
 import sconcho.util.messages as msg
@@ -416,7 +416,8 @@ def read_project(settings, openFileName):
         # repeats and rowRepeats
         if version == 1:
             read_settings(stream, settings, version)
-            patternRepeats = read_patternRepeats(stream, numRepeats)
+            patternRepeats_ = read_patternRepeats_API_1_2(stream, numRepeats)
+            patternRepeats = convert_repeats_to_API_3(patternRepeats_)
             repeatLegends = {}
             rowRepeats = []
             textItems = []
@@ -424,7 +425,9 @@ def read_project(settings, openFileName):
         # API version 2 deals with the old way of setting up
         # pattern repeats (via lines grouped via QGraphicsItemGroup
         elif version == 2:
-            patternRepeats = read_patternRepeats_old(stream, numRepeats)
+            patternRepeats_ = read_patternRepeats_API_1_2(stream, numRepeats)
+            patternRepeats = convert_repeats_to_API_3(patternRepeats_)
+
             read_settings(stream, settings, version)
             repeatLegends = read_patternRepeatLegends(stream, 
                                                       numRepeatLegends)
@@ -638,8 +641,12 @@ def read_settings(stream, settings, version):
 
 
 
-def read_patternRepeats_old(stream, numRepeats):
-    """ Read all patternRepeats from our output stream """
+def read_patternRepeats_API_1_2(stream, numRepeats):
+    """ Read all patternRepeats from our output stream 
+    
+    NOTE: This is a legacy reader for pattern repeats
+    written with API versions 1 and 2. 
+    """
 
     patternRepeats = []
     for count in range(numRepeats):
@@ -1163,3 +1170,49 @@ class TempDir(object):
 
         if os.path.isdir(self.tempDir):
             rmtree(self.tempDir)
+
+
+
+#######################################################################
+#
+# helper functions
+#
+#######################################################################
+def convert_repeats_to_API_3(repeats):
+    """ Converts a list of old style pattern repeat items
+    (API 1 and 2) into a list of ones that are appropriate
+    for API 3 and later.
+
+    """
+
+    newAPI3Repeats = []
+    for repeat in repeats:
+
+        lines = repeat["lines"]
+
+        lineTuples = []
+        for line in lines:
+            lineTuples.append(((line.x1(), line.y1()),(line.x2(), line.y2())))
+
+        vertices = sort_vertices(lineTuples)
+        if not vertices:
+            logger.error(msg.badPatternRepeatText)
+            QMessageBox.critical(None, msg.badPatternRepeatTitle,
+                                 msg.badPatternRepeatText,
+                                 QMessageBox.Close)
+            return
+
+        points = []
+        for vertex in vertices:
+            points.append(QPointF(vertex[0], vertex[1]))
+        repeatPolygon = QPolygonF(points)
+
+        newItem = { "polygon"   : repeatPolygon,
+                    "position"  : repeat["position"],
+                    "width"     : repeat["width"],
+                    "color"     : repeat["color"],
+                    "legendID"  : repeat["legendID"]}
+
+        newAPI3Repeats.append(newItem)
+
+    return newAPI3Repeats

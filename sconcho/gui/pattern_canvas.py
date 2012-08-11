@@ -1010,8 +1010,8 @@ class PatternCanvas(QGraphicsScene):
         for vertex in vertices:
             points.append(QPointF(vertex[0]*self.cell_width,
                                   vertex[1]*self.cell_height))
-        testPolygon = QPolygonF(points)
-        repeatItem = PatternRepeatItem(testPolygon)
+        repeatPolygon = QPolygonF(points)
+        repeatItem = PatternRepeatItem(repeatPolygon)
 
         self._undoStack.beginMacro("add pattern repeat")
         patternRepeatCommand = AddPatternRepeat(self, repeatItem)
