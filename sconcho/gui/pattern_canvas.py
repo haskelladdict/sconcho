@@ -1021,6 +1021,7 @@ class PatternCanvas(QGraphicsScene):
         self._undoStack.endMacro()
 
 
+
     def delete_pattern_repeat(self, patternRepeat):
         """ Delete the selected pattern repeat. """
         

@@ -572,7 +572,11 @@ class PatternRepeatItem(QGraphicsPolygonItem):
         super(PatternRepeatItem, self).__init__(polygon, parent)
 
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
-        self.setZValue(1)
+
+        # PatternRepeat items should always be all the way
+        # up front otherwise there may be problems selecting them
+        # for editing or deletion.
+        self.setZValue(2)
 
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
