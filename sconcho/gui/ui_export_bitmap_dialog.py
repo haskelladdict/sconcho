@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/export_bitmap_dialog.ui'
 #
-# Created: Tue Jul 24 15:47:49 2012
+# Created: Fri Aug 10 21:45:49 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!

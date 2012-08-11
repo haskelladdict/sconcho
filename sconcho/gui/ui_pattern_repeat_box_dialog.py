@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/pattern_repeat_box_dialog.ui'
 #
-# Created: Tue Jul 24 15:47:50 2012
+# Created: Fri Aug 10 21:45:50 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_PatternRepeatDialog(object):
     def setupUi(self, PatternRepeatDialog):
         PatternRepeatDialog.setObjectName(_fromUtf8("PatternRepeatDialog"))
-        PatternRepeatDialog.resize(419, 204)
+        PatternRepeatDialog.resize(279, 196)
         self.verticalLayout_2 = QtGui.QVBoxLayout(PatternRepeatDialog)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.groupBox = QtGui.QGroupBox(PatternRepeatDialog)
@@ -53,23 +53,20 @@ class Ui_PatternRepeatDialog(object):
         self.verticalLayout_2.addItem(spacerItem)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.deleteButton = QtGui.QPushButton(PatternRepeatDialog)
-        self.deleteButton.setObjectName(_fromUtf8("deleteButton"))
-        self.horizontalLayout_2.addWidget(self.deleteButton)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
+        self.cancelButton = QtGui.QPushButton(PatternRepeatDialog)
+        self.cancelButton.setObjectName(_fromUtf8("cancelButton"))
+        self.horizontalLayout_2.addWidget(self.cancelButton)
         self.acceptButton = QtGui.QPushButton(PatternRepeatDialog)
         self.acceptButton.setObjectName(_fromUtf8("acceptButton"))
         self.horizontalLayout_2.addWidget(self.acceptButton)
-        self.pushButton_3 = QtGui.QPushButton(PatternRepeatDialog)
-        self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
-        self.horizontalLayout_2.addWidget(self.pushButton_3)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.label.setBuddy(self.lineWidthSpinner)
         self.label_2.setBuddy(self.colorButton)
 
         self.retranslateUi(PatternRepeatDialog)
-        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL(_fromUtf8("clicked()")), PatternRepeatDialog.close)
+        QtCore.QObject.connect(self.cancelButton, QtCore.SIGNAL(_fromUtf8("clicked()")), PatternRepeatDialog.close)
         QtCore.QMetaObject.connectSlotsByName(PatternRepeatDialog)
 
     def retranslateUi(self, PatternRepeatDialog):
@@ -78,7 +75,6 @@ class Ui_PatternRepeatDialog(object):
         self.label.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Line &Width", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Line &Color", None, QtGui.QApplication.UnicodeUTF8))
         self.legendChecker.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Show in Legend", None, QtGui.QApplication.UnicodeUTF8))
-        self.deleteButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Delete", None, QtGui.QApplication.UnicodeUTF8))
-        self.acceptButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Accept Changes", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton_3.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
+        self.cancelButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Cancel", None, QtGui.QApplication.UnicodeUTF8))
+        self.acceptButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Apply", None, QtGui.QApplication.UnicodeUTF8))
 

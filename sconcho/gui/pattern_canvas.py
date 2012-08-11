@@ -905,6 +905,15 @@ class PatternCanvas(QGraphicsScene):
                                  patternRepeats[0]))
         else:
             editRepeatAction.setEnabled(False)
+
+        # delete repeat box action
+        deleteRepeatAction = gridMenu.addAction("&Delete Pattern Repeat")
+        if patternRepeats:
+            self.connect(deleteRepeatAction, SIGNAL("triggered()"),
+                         partial(self.delete_pattern_repeat,
+                                 patternRepeats[0]))
+        else:
+            deleteRepeatAction.setEnabled(False)
         gridMenu.addSeparator()
 
         # copy action
@@ -1012,6 +1021,18 @@ class PatternCanvas(QGraphicsScene):
         self._undoStack.endMacro()
 
 
+    def delete_pattern_repeat(self, patternRepeat):
+        """ Delete the selected pattern repeat. """
+        
+        self._undoStack.beginMacro("delete pattern repeat")
+        patternRepeatCommand = DeletePatternRepeat(self, patternRepeat)
+        self._undoStack.push(patternRepeatCommand)
+        patternLegendCommand = DeletePatternRepeatLegend(self, patternRepeat)
+        self._undoStack.push(patternLegendCommand)
+        self._undoStack.endMacro()
+        self.emit(SIGNAL("scene_changed"))
+
+
 
     def edit_pattern_repeat(self, patternRepeat):
         """ Edit the provided pattern repeat item. """
@@ -1032,18 +1053,9 @@ class PatternCanvas(QGraphicsScene):
                                                      dialog.color,
                                                      dialog.width)
             self._undoStack.push(patternRepeatCommand)
-            patternLegendCommand = EditPatternRepeatLegend(self,
-                                                           patternRepeat,
-                                                           dialog.showInLegend)
-            self._undoStack.push(patternLegendCommand)
-            self._undoStack.endMacro()
-            self.emit(SIGNAL("scene_changed"))
-        elif status < 0:
-            self._undoStack.beginMacro("delete pattern repeat")
-            patternRepeatCommand = DeletePatternRepeat(self, patternRepeat)
-            self._undoStack.push(patternRepeatCommand)
-            patternLegendCommand = DeletePatternRepeatLegend(self,
-                                                             patternRepeat)
+            patternLegendCommand = \
+                    EditPatternRepeatLegend(self, patternRepeat,
+                                            dialog.showInLegend)
             self._undoStack.push(patternLegendCommand)
             self._undoStack.endMacro()
             self.emit(SIGNAL("scene_changed"))

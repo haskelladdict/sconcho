@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>419</width>
-    <height>204</height>
+    <width>279</width>
+    <height>196</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -96,13 +96,6 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="deleteButton">
-       <property name="text">
-        <string>&amp;Delete</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -116,16 +109,16 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="acceptButton">
+      <widget class="QPushButton" name="cancelButton">
        <property name="text">
-        <string>&amp;Accept Changes</string>
+        <string>&amp;Cancel</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="acceptButton">
        <property name="text">
-        <string>&amp;Close</string>
+        <string>&amp;Apply</string>
        </property>
       </widget>
      </item>
@@ -136,7 +129,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton_3</sender>
+   <sender>cancelButton</sender>
    <signal>clicked()</signal>
    <receiver>PatternRepeatDialog</receiver>
    <slot>close()</slot>

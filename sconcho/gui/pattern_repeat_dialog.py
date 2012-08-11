@@ -57,8 +57,6 @@ class PatternRepeatDialog(QDialog, Ui_PatternRepeatDialog):
 
         self.connect(self.acceptButton, SIGNAL("pressed()"),
                      partial(self.done, 1))
-        self.connect(self.deleteButton, SIGNAL("pressed()"),
-                     partial(self.done, -1))
         self.connect(self.colorButton, SIGNAL("pressed()"),
                      self.change_color)
         self.connect(self.lineWidthSpinner, SIGNAL("valueChanged(int)"),
