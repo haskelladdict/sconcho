@@ -2020,8 +2020,8 @@ class PatternCanvas(QGraphicsScene):
         if allLegendItems == None:
             return False
 
-        allRepeatBoxes = load_patternRepeat_items(patternRepeats)
-        if allRepeatBoxes == None:
+        allPatternRepeats = load_patternRepeat_items(patternRepeats)
+        if allPatternRepeats == None:
             return False
 
         allRepeatBoxLegends = load_patternRepeatLegend_items(repeatLegends)
@@ -2045,7 +2045,7 @@ class PatternCanvas(QGraphicsScene):
         for entry in allLegendItems:
             arrange_label_item(self.gridLegend, *entry)
 
-        for (repeatID, entry) in allRepeatBoxes.items():
+        for (repeatID, entry) in allPatternRepeats.items():
 
             # also retrieve the proper legend
             if repeatID in allRepeatBoxLegends:
@@ -2072,8 +2072,8 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def add_patternRepeatItem(self, itemLineInfo, itemLineWidth, itemPosition,
-                              itemColor, legendInfo):
+    def add_patternRepeatItem(self, itemPolygonInfo, itemLineWidth, 
+                              itemPosition, itemColor, legendInfo):
         """ Recreates a pattern repeat item and its legend based on
         itemInfo and legendInfo. """
 
@@ -2081,7 +2081,8 @@ class PatternCanvas(QGraphicsScene):
         legendItem = RepeatLegendItem(itemColor)
 
         if legendInfo:
-            (legendIsVisible, legendItemPos, legendTextPos, legendText) = legendInfo
+            (legendIsVisible, legendItemPos, legendTextPos, \
+                    legendText) = legendInfo
         else:
             legendText = QString("pattern repeat")
             yCoord = self._get_legend_y_coordinate_for_placement()
@@ -2106,7 +2107,7 @@ class PatternCanvas(QGraphicsScene):
         self.addItem(legendTextItem)
 
         # create the actual pattern repeat
-        repeatItem = PatternRepeatItem(itemLineInfo, itemLineWidth,
+        repeatItem = PatternRepeatItem(itemPolygonInfo, itemLineWidth,
                                        itemColor, legendIsVisible)
         repeatItem.setPos(itemPosition)
         self.addItem(repeatItem)

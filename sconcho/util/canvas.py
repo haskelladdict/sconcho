@@ -767,11 +767,11 @@ def load_patternRepeat_items(repeatItemInfo):
     try:
         for item in repeatItemInfo:
             itemID = item["legendID"]
-            itemLineInfo = item["lines"]
+            itemPolygonInfo = item["polygon"]
             itemLineWidth = item["width"]
             itemPosition = item["position"]
             itemColor = item["color"]
-            allPatternRepeatItems[itemID] = ((itemLineInfo, itemLineWidth,
+            allPatternRepeatItems[itemID] = ((itemPolygonInfo, itemLineWidth,
                                               itemPosition, itemColor))
     except KeyError as e:
         logger.error(msg.errorLoadingRepeatBoxText % e)

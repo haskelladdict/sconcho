@@ -34,9 +34,9 @@ from shutil import (rmtree, move)
 
 from PyQt4.QtCore import (QFile, QTextStream, QIODevice, 
                           Qt, QRectF, QDataStream, QSize, QRect, 
-                          QFileInfo, QLineF, QPointF, QThread,
-                          QReadWriteLock, QWriteLocker, SIGNAL)
-from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter,
+                          QFileInfo, QLineF, QPointF,
+                          QThread, QReadWriteLock, QWriteLocker, SIGNAL)
+from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter, QPolygonF,
                          QFont)
 from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
 from PyQt4.QtSvg import QSvgGenerator
@@ -57,7 +57,7 @@ logger = logging.getLogger(__name__)
 
 # magic number to specify binary API
 MAGIC_NUMBER = 0xA3D1
-API_VERSION  = 2
+API_VERSION  = 3
 
 
 ###########################################################################
@@ -303,28 +303,12 @@ def get_patternRepeats(canvas):
 
 
 def write_patternRepeats(stream, repeats):
-    """ Write all patternGridItems to our output stream.
-
-    NOTE: This is a little bit more work. For each pattern
-    repeat item, we extract the lines that make it up, and
-    then store pairs of points together with color and
-    line width information.
-
-    """
+    """ Write all patternGridItems to our output stream. """
 
     for repeat in repeats:
 
-        points = []
-        for element in repeat.lineElements:
-
-            line = element.line()
-            points.append(line.p1())
-            points.append(line.p2())
-
-        stream.writeInt32(len(points))
-        for point in points:
-            stream << point
-
+        # write underlying polygon and position
+        stream << repeat.polygon()
         stream << repeat.pos()
 
         # store 16 bit of the id to we can match the repeat
@@ -428,19 +412,30 @@ def read_project(settings, openFileName):
         colors = read_colors(stream, numColors)
         activeSymbol = read_active_symbol(stream)
 
-        # with API_VERSION 2 the settings are always read last
+        # API version 1 knows nothing about legends for pattern
+        # repeats and rowRepeats
         if version == 1:
             read_settings(stream, settings, version)
             patternRepeats = read_patternRepeats(stream, numRepeats)
-            # API version 1 knows nothing about legends for pattern
-            # repeats and rowRepeats
             repeatLegends = {}
             rowRepeats = []
             textItems = []
+
+        # API version 2 deals with the old way of setting up
+        # pattern repeats (via lines grouped via QGraphicsItemGroup
         elif version == 2:
+            patternRepeats = read_patternRepeats_old(stream, numRepeats)
+            read_settings(stream, settings, version)
+            repeatLegends = read_patternRepeatLegends(stream, 
+                                                      numRepeatLegends)
+            rowRepeats = read_rowRepeats(stream, numRowRepeats)
+            textItems = read_textItems(stream, numTextItems)
+
+        elif version == 3:
             patternRepeats = read_patternRepeats(stream, numRepeats)
             read_settings(stream, settings, version)
-            repeatLegends = read_patternRepeatLegends(stream, numRepeatLegends)
+            repeatLegends = read_patternRepeatLegends(stream, 
+                                                      numRepeatLegends)
             rowRepeats = read_rowRepeats(stream, numRowRepeats)
             textItems = read_textItems(stream, numTextItems)
         else:
@@ -642,7 +637,8 @@ def read_settings(stream, settings, version):
             stream.readInt32()
 
 
-def read_patternRepeats(stream, numRepeats):
+
+def read_patternRepeats_old(stream, numRepeats):
     """ Read all patternRepeats from our output stream """
 
     patternRepeats = []
@@ -670,6 +666,35 @@ def read_patternRepeats(stream, numRepeats):
         stream >> color 
         
         newItem = { "lines"     : lines,
+                    "position"  : position,
+                    "width"     : width,
+                    "color"     : color,
+                    "legendID"  : legendID}
+ 
+        patternRepeats.append(newItem)
+
+    return patternRepeats
+
+
+
+def read_patternRepeats(stream, numRepeats):
+    """ Read all patternRepeats from our output stream """
+
+    patternRepeats = []
+    for count in range(numRepeats):
+
+        polygon = QPolygonF()
+        stream >> polygon
+
+        position = QPointF()
+        stream >> position
+
+        legendID = stream.readUInt16()
+        width = stream.readInt16()
+        color = QColor()
+        stream >> color 
+        
+        newItem = { "polygon"   : polygon,
                     "position"  : position,
                     "width"     : width,
                     "color"     : color,
