@@ -336,12 +336,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.set_project_dirty)
 
         self.connect(self.preferencesDialog,
-                     SIGNAL("toggle_rowLabel_visibility(bool)"),
-                     self.canvas.toggle_rowLabel_visibility)
+                     SIGNAL("toggle_row_label_visibility(bool)"),
+                     self.canvas.toggle_row_label_visibility)
 
         self.connect(self.preferencesDialog,
-                     SIGNAL("toggle_columnLabel_visibility(bool)"),
-                     self.canvas.toggle_columnLabel_visibility)
+                     SIGNAL("toggle_editable_row_labels(bool)"),
+                     self.canvas.toggle_row_label_editing)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("toggle_editable_column_labels(bool)"),
+                     self.canvas.toggle_column_label_editing)
+
+        self.connect(self.preferencesDialog,
+                     SIGNAL("toggle_column_label_visibility(bool)"),
+                     self.canvas.toggle_column_label_visibility)
 
         self.connect(self.preferencesDialog,
                      SIGNAL("row_label_interval_changed"),

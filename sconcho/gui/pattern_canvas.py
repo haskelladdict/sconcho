@@ -93,6 +93,13 @@ class PatternCanvas(QGraphicsScene):
         # are we currently visible?
         self.isVisible = True
 
+        # should row/column labels be updated?
+        self.updateRowLabels = True
+        self.rowLabels = {}
+
+        self.updateColumnLabels = True
+        self.columnLabels = {}
+
         self._activeSymbol = None
         self._defaultSymbol = defaultSymbol
         self._activeColorObject = None
@@ -111,7 +118,6 @@ class PatternCanvas(QGraphicsScene):
 
         self._copySelection = {}
 
-        self.textLabels = []
         self.gridLegend = {}
         self.repeatLegend = {}
         self.canvasTextBoxes = {}
@@ -145,10 +151,25 @@ class PatternCanvas(QGraphicsScene):
 
 
     def set_up_main_grid(self):
-        """ This function draws the main grid. """
+        """ This function draws the main grid. 
+        
+        NOTE: Since the grid is drawn via rows
+        we need to update the column labels by
+        hand (this would otherwise be done by
+        _create_column)
+        
+        """
 
         for row in range(0, self._numRows):
             self._create_row(row)
+
+        # create the corresponding column entry
+        for colID in range(0, self._numColumns):
+            labelItem = PatternLabelItem("    ", False, 
+                                         not self.updateColumnLabels)
+            labelItem.setToolTip("Shift-Click to select whole column")
+            self.addItem(labelItem)
+            self.columnLabels[colID] = labelItem 
 
 
 
@@ -194,19 +215,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def set_up_labels(self):
-        """ Add labels to the main grid.
-
-        FIXME: This function currently recreates all labels instead
-        of just shifting around existing ones. The latter should
-        probably be more efficient.
-
-        """
-
-        # clear all previous labels
-        for label in self.textLabels:
-            self.removeItem(label)
-            del label
-        self.textLabels = []
+        """ Add labels to the main grid. """
 
         labelFont = self.settings.labelFont.value
         fm = QFontMetrics(labelFont)
@@ -245,26 +254,33 @@ class PatternCanvas(QGraphicsScene):
         else:
             oddXPos = rightXPos
 
-        rowLabelList = self.rowLabelTracker.get_labels()
-        for (row, rowLabels) in enumerate(rowLabelList):
-            if not rowLabels:
-                continue
+        if self.updateRowLabels:
+            rowLabelList = self.rowLabelTracker.get_labels()
+            rowLabelList.reverse()
+            for (row, rowLabels) in enumerate(rowLabelList):
+                if not rowLabels:
+                    continue
 
-            labelText = str(rowLabels[0])
-            for label in rowLabels[1:]:
-                labelText += ", " + str(label)
+                labelText = str(rowLabels[0])
+                for label in rowLabels[1:]:
+                    labelText += ", " + str(label)
 
-            item = PatternLabelItem(str(labelText), isRowLabel = True)
-            yPos = self.cell_height * (self._numRows - row - 1)
-            if rowLabels[0] % 2 == 0:
+                item = self.rowLabels[row]
+                item.setPlainText(str(labelText)) 
+                yPos = self.cell_height * row
+                if rowLabels[0] % 2 == 0:
+                    item.setPos(evenXPos(labelText), yPos)
+                else:
+                    item.setPos(oddXPos(labelText), yPos)
+
+                item.setFont(labelFont)
+        else:
+            for (row, item) in self.rowLabels.items():
+                yPos = self.cell_height * row
+                labelText = item.toPlainText()
                 item.setPos(evenXPos(labelText), yPos)
-            else:
-                item.setPos(oddXPos(labelText), yPos)
-
-            item.setFont(labelFont)
-            item.setToolTip("Shift-Click to select whole row")
-            self.addItem(item)
-            self.textLabels.append(item)
+                item.setFont(labelFont)
+                item.update()   # OSX hack to force redrawing
 
 
 
@@ -273,23 +289,30 @@ class PatternCanvas(QGraphicsScene):
 
         yPos = self.cell_height * self._numRows
         columnLabelList = self.columnLabelTracker.get_labels()
-        for (col, colLabel) in enumerate(columnLabelList):
-            if not colLabel:
-                continue
+        columnLabelList.reverse()
 
-            labelText = QString(colLabel)
-            textWidth = fontMetric.width(labelText)
-            item = PatternLabelItem(labelText, isRowLabel = False)
+        if self.updateColumnLabels:
+            for (col, colLabel) in enumerate(columnLabelList):
+                if not colLabel:
+                    continue
 
-            xPos = self.cell_width * (self._numColumns - col - 1) + \
-                (self.cell_width * 0.6 -textWidth)
-            item.setPos(xPos, yPos)
-            item.setFont(labelFont)
-            item.setToolTip("Shift-Click to select whole column")
-
-            self.addItem(item)
-            self.textLabels.append(item)
-
+                labelText = QString(colLabel)
+                textWidth = fontMetric.width(labelText)
+                item = self.columnLabels[col]
+                item.setPlainText(labelText) 
+                xPos = self.cell_width * col + \
+                    (self.cell_width * 0.6 - textWidth)
+                item.setPos(xPos, yPos)
+                item.setFont(labelFont)
+        else:
+            for (col, item) in self.columnLabels.items():
+                labelText = item.toPlainText()
+                textWidth = fontMetric.width(labelText)
+                xPos = self.cell_width * col + \
+                    (self.cell_width * 0.6 - textWidth)
+                item.setPos(xPos, yPos)
+                item.setFont(labelFont)
+                item.update()   # OSX hack to force redrawing
 
 
     def finalize_grid_change(self):
@@ -674,7 +697,10 @@ class PatternCanvas(QGraphicsScene):
 
             if is_click_on_labels(col, row, self._numColumns,
                                   self._numRows):
-                 self.select_column_row_cells(col, row)
+                self.select_column_row_cells(col, row)
+
+                # don't propagate this event
+                return
 
         # tell our main window that something changed
         self.emit(SIGNAL("scene_changed"))
@@ -1950,6 +1976,12 @@ class PatternCanvas(QGraphicsScene):
                                                  self._defaultColor)
             self.addItem(item)
 
+        # create the corresponding row entry
+        labelItem = PatternLabelItem("    ", True, not self.updateRowLabels)
+        labelItem.setToolTip("Shift-Click to select whole row")
+        self.addItem(labelItem)
+        self.rowLabels[rowID] = labelItem 
+
 
 
     def _create_column(self, columnID):
@@ -1963,10 +1995,17 @@ class PatternCanvas(QGraphicsScene):
         for row in range(0, self._numRows):
             location = QPointF(columnID * self.cell_width,
                                 row * self.cell_height)
-            item = self.create_pattern_grid_item(location, columnID, row, 1, 1,
-                                                 self._defaultSymbol,
+            item = self.create_pattern_grid_item(location, columnID, row, 
+                                                 1, 1, self._defaultSymbol,
                                                  self._defaultColor)
             self.addItem(item)
+
+        # create the corresponding column entry
+        labelItem = PatternLabelItem("    ", False, 
+                                     not self.updateColumnLabels)
+        labelItem.setToolTip("Shift-Click to select whole row")
+        self.addItem(labelItem)
+        self.columnLabels[columnID] = labelItem 
 
 
 
@@ -1982,7 +2021,6 @@ class PatternCanvas(QGraphicsScene):
         self.repeatLegend.clear()
         self.canvasTextBoxes.clear()
         self._selectedCells = {}
-        self.textLabels = []
         self.patternRepeats.clear()
         self._undoStack.clear()
         self._copySelection = {}
@@ -2076,7 +2114,6 @@ class PatternCanvas(QGraphicsScene):
 
         # need to clear our caches, otherwise we'll try
         # to remove non-existing items
-        self.textLabels = []
         self.finalize_grid_change()
         self.change_grid_cell_dimensions()
         self.clear_undo_stack()
@@ -2132,38 +2169,76 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def toggle_rowLabel_visibility(self, status):
+    def toggle_row_label_visibility(self, status):
         """ Per request from main window toggle
         the visibility of the row labels.
 
         """
 
-        for item in self.items():
-            if isinstance(item, PatternLabelItem):
-                if item.isRowLabel:
-                    if status:
-                        item.show()
-                    else:
-                        item.hide()
+        labelItems = extract_patternItems(self.items(), PatternLabelItem)
+        for item in labelItems:
+            if item.is_rowLabel:
+                if status:
+                    item.show()
+                else:
+                    item.hide()
 
 
 
-    def toggle_columnLabel_visibility(self, status):
+    def toggle_column_label_visibility(self, status):
         """ Per request from main window toggle
         the visibility of the column labels.
 
         """
 
-        for item in self.items():
-            if isinstance(item, PatternLabelItem):
-                if not item.isRowLabel:
-                    if status:
-                        item.show()
-                    else:
-                        item.hide()
+        labelItems = extract_patternItems(self.items(), PatternLabelItem)
+        for item in labelItems:
+            if not item.is_rowLabel:
+                if status:
+                    item.show()
+                else:
+                    item.hide()
 
 
 
+    def toggle_row_label_editing(self, status):
+        """ Per request from main window toggles the ability
+        to edit the row labels.
+
+        """
+
+        self.updateRowLabels = not status
+        labelItems = extract_patternItems(self.items(), PatternLabelItem)
+        for item in labelItems:
+            if item.is_rowLabel:
+                item.editable(status)
+        
+        # if we just turned editing off make sure to reset labels
+        # to the currently selected auto labeling; if we turned
+        # editing on this call is a no op
+        self.set_up_labels()
+
+
+
+    def toggle_column_label_editing(self, status):
+        """ Per request from main window toggles the ability
+        to edit the column labels.
+
+        """
+
+        self.updateColumnLabels = not status
+        labelItems = extract_patternItems(self.items(), PatternLabelItem)
+        for item in labelItems:
+            if not item.is_rowLabel:
+                item.editable(status)
+        
+        # if we just turned editing off make sure to reset labels
+        # to the currently selected auto labeling; if we turned
+        # editing on this call is a no op
+        self.set_up_labels()
+
+
+    
     def label_font_changed(self):
         """ This slot is called when the label font has
         been changed.

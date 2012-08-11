@@ -534,11 +534,14 @@ class PatternLabelItem(QGraphicsTextItem):
     Type = 70000 + 4
 
 
-    def __init__(self, text, isRowLabel = True, parent = None):
+    def __init__(self, text, isRowLabel = True, editableStatus = False,
+                 parent = None):
 
         super(PatternLabelItem, self).__init__(text, parent)
 
         self.isRowLabel = isRowLabel
+
+        self.editable(editableStatus)
 
         # NOTE: need this distinction for cache mode based on
         # the Qt version otherwise rendering is broken
@@ -554,6 +557,16 @@ class PatternLabelItem(QGraphicsTextItem):
         """ Return True if we are a row label and False otherwise """
 
         return self.isRowLabel
+
+
+
+    def editable(self, toggle):
+        """ Toggles editability of this label. """
+
+        if toggle:
+            self.setTextInteractionFlags(Qt.TextEditorInteraction)
+        else:
+            self.setTextInteractionFlags(Qt.NoTextInteraction)
 
 
 
@@ -1193,7 +1206,7 @@ class ColumnLabelTracker(object):
         else:
             labels = range(1, numColumns + 1)
 
-        return labels
+        return list(labels)
 
 
 
@@ -1290,6 +1303,7 @@ class RowRepeatTracker(object):
         if not rows:
             return
 
+        rows = list(rows)
         rows.sort()
         repeatRange = range(rows[0], rows[-1]+1)
         repeatID = uuid.uuid4()

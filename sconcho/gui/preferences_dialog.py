@@ -418,6 +418,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def set_up_row_label_selector_connections(self):
         """ Set up connections for row labels. """
 
+        self.connect(self.customRowLabelsChecker,
+                     SIGNAL("clicked(bool)"),
+                     self.change_custom_row_labeling)
+
         self.connect(self.showRowLabelChecker, 
                      SIGNAL("clicked(bool)"),
                      self.change_row_label_visibility)
@@ -471,10 +475,24 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
             self.settings.showRowLabels.value = 1
         else:
             self.settings.showRowLabels.value = 0
-        self.emit(SIGNAL("toggle_rowLabel_visibility(bool)"), status)
+        self.emit(SIGNAL("toggle_row_label_visibility(bool)"), status)
 
 
-    
+
+    def change_custom_row_labeling(self, status):
+        """ Toggle the custom editability of row labels. """
+
+        ### enable settings stuff
+        self.emit(SIGNAL("toggle_editable_row_labels(bool)"), status)
+
+
+    def change_custom_column_labeling(self, status):
+        """ Toggle the custom editability of column labels. """
+
+        ### enable settings stuff
+        self.emit(SIGNAL("toggle_editable_column_labels(bool)"), status)
+
+
 
     def change_row_label_interval(self, state, clicked):
         """ Sets the new row label state and lets the canvas know. """
@@ -582,7 +600,11 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
     def set_up_column_label_selector_connections(self):
         """ Set up connections for column labels. """
-        
+
+        self.connect(self.customColumnLabelsChecker,
+                     SIGNAL("clicked(bool)"),
+                     self.change_custom_column_labeling)
+
         self.connect(self.showColumnLabelChecker, 
                      SIGNAL("clicked(bool)"),
                      self.change_column_label_visibility)
@@ -614,7 +636,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
             self.settings.showColumnLabels.value = 1
         else:
             self.settings.showColumnLabels.value = 0
-        self.emit(SIGNAL("toggle_columnLabel_visibility(bool)"), status)
+        self.emit(SIGNAL("toggle_column_label_visibility(bool)"), status)
 
 
 

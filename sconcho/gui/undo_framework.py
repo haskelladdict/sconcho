@@ -38,6 +38,8 @@ from sconcho.util.canvas import (get_item_id,
                          shift_item_column_wise,
                          shift_legend_vertically,
                          shift_selection_vertically,
+                         shift_column_labels,
+                         shift_row_labels,
                          shift_legend_horizontally,
                          shift_selection_horizontally,
                          PatternCanvasEntry)
@@ -278,6 +280,8 @@ class InsertRows(QUndoCommand):
 
         """
 
+        self.rowLabels = self.canvas.rowLabels.copy()
+
         shiftedItems = \
             self.canvas._items_in_col_row_range(0, self.numColumns,
                                                 self.pivot,
@@ -285,6 +289,10 @@ class InsertRows(QUndoCommand):
 
         for item in shiftedItems:
             shift_item_row_wise(item, self.rowShift, self.unitHeight)
+
+        newLabels = shift_row_labels(self.canvas.rowLabels, 
+                                     self.pivot, self.rowShift)
+        self.canvas.rowLabels = newLabels
 
         for row in range(0, self.rowShift):
             self.canvas._create_row(self.pivot + row)
@@ -300,7 +308,8 @@ class InsertRows(QUndoCommand):
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells,
                                            self.pivot, self.rowShift)
-
+       
+        
         self.redo_adjust_row_repeats(self.pivot, self.rowShift)
 
         self.canvas._numRows += self.rowShift
@@ -332,18 +341,26 @@ class InsertRows(QUndoCommand):
                 shift_selection_vertically(self.canvas._selectedCells,
                                            self.pivot, rowUpShift)
 
-        selection = \
-            self.canvas._items_in_col_row_range(0, self.numColumns,
-                                                self.pivot,
-                                                self.pivot + self.rowShift - 1)
+        selection = self.canvas._items_in_col_row_range(0, 
+                                            self.numColumns,
+                                            self.pivot,
+                                            self.pivot + self.rowShift - 1)
         for item in selection:
             self.canvas.removeItem(item)
             del item
 
-        selection = \
-            self.canvas._items_in_col_row_range(0, self.numColumns,
-                                                self.pivot + self.rowShift,
-                                                self.numRows + self.rowShift)
+        # also remove the generated row label
+        for row in range(self.pivot, self.pivot + self.rowShift):
+            label = self.canvas.rowLabels[row]
+            self.canvas.removeItem(label)
+            del label
+
+        self.canvas.rowLabels = self.rowLabels
+
+        selection = self.canvas._items_in_col_row_range(0, 
+                                            self.numColumns,
+                                            self.pivot + self.rowShift,
+                                            self.numRows + self.rowShift)
 
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
@@ -431,12 +448,15 @@ class DeleteRows(QUndoCommand):
 
         """
 
+        self.rowLabels = self.canvas.rowLabels.copy()
+
         self.deletedCells = []
         for (pivot, num) in self.deadRanges:
             self.delete_requested_items(pivot, num)
             self.remove_selected_cells(pivot, num)
             self.redo_shift_remaining_items(pivot, -num)
             self.redo_adjust_row_repeats(pivot, num)
+            self.remove_row_labels(pivot, num)
         self.canvas._numRows -= len(self.deadRows)
         self.finalize()
 
@@ -456,6 +476,9 @@ class DeleteRows(QUndoCommand):
             self.undo_adjust_row_repeats(pivot, num)
         self.readd_selected_cells()
         self.readd_deleted_items()
+
+        self.readd_row_labels()
+       
         self.canvas._numRows += len(self.deadRows)
         self.finalize()
 
@@ -546,6 +569,20 @@ class DeleteRows(QUndoCommand):
 
 
 
+    def remove_row_labels(self, pivot, num):
+        """ Remove the labels corresponding to the deleted rows. """
+
+        for row in range(pivot, pivot+num):
+            label = self.canvas.rowLabels[row]
+            self.canvas.removeItem(label)
+            self.canvas.rowLabels.pop(row)
+            del label
+
+        newLabels = shift_row_labels(self.canvas.rowLabels, pivot, -num)
+        self.canvas.rowLabels = newLabels
+
+
+
     def redo_shift_remaining_items(self, pivot, rowUpShift):
         """ Shift all remaining canvas elements to accomodate the
         inserted rows.
@@ -623,6 +660,20 @@ class DeleteRows(QUndoCommand):
 
 
 
+    def readd_row_labels(self):
+        """ Re-add the correct row labels. """
+        
+        for (key, item) in self.canvas.rowLabels.items():
+            self.canvas.removeItem(item)
+            del item
+
+        for (key, item) in self.rowLabels.items():
+            self.canvas.addItem(item)
+
+        self.canvas.rowLabels = self.rowLabels
+
+
+
     def finalize(self):
         """ Common stuff for redo/undo after the canvas has been adjusted
         appropriately.
@@ -669,6 +720,8 @@ class InsertColumns(QUndoCommand):
 
         """
 
+        self.columnLabels = canvas.columnLabels.copy()
+
         shiftedItems = \
             self.canvas._items_in_col_row_range(self.pivot,
                                                 self.numColumns,
@@ -676,6 +729,10 @@ class InsertColumns(QUndoCommand):
 
         for item in shiftedItems:
             shift_item_column_wise(item, self.columnShift, self.unitWidth)
+
+        newLabels = shift_column_labels(self.canvas.columnLabels, 
+                                        self.pivot, self.columnShift)
+        self.canvas.columnLabels = newLabels
 
         for column in range(0, self.columnShift):
             self.canvas._create_column(self.pivot + column)
@@ -729,6 +786,15 @@ class InsertColumns(QUndoCommand):
         for item in selection:
             self.canvas.removeItem(item)
             del item
+
+        # also remove the generated column label
+        for column in range(self.pivot, self.pivot + self.columnShift):
+            label = self.canvas.columnLabels[column]
+            self.canvas.removeItem(label)
+            del label
+
+        self.canvas.columnLabels = self.columnLabels
+
 
         # shift the rest back into place
         selection.clear()
@@ -791,11 +857,14 @@ class DeleteColumns(QUndoCommand):
 
         """
 
+        self.columnLabels = self.canvas.columnLabels.copy()
+
         self.deletedCells = []
         for (pivot, num) in self.deadRanges:
             self.delete_requested_items(pivot, num)
             self.remove_selected_cells(pivot, num)
             self.redo_shift_remaining_items(pivot, -num)
+            self.remove_column_labels(pivot, num)
         self.canvas._numColumns -= len(self.deadColumns)
         self.finalize()
 
@@ -814,6 +883,7 @@ class DeleteColumns(QUndoCommand):
             self.undo_shift_remaining_items(pivot, num)
         self.readd_selected_cells()
         self.readd_deleted_items()
+        self.readd_column_labels()
         self.canvas._numColumns += len(self.deadColumns)
         self.finalize()
 
@@ -843,8 +913,8 @@ class DeleteColumns(QUndoCommand):
         """ Delete the requested items. """
 
         selection = self.canvas._items_in_col_row_range(pivot,
-                                                        pivot + columnShift - 1,
-                                                        0,  self.numRows)
+                                            pivot + columnShift - 1,
+                                            0,  self.numRows)
 
 
         for item in selection:
@@ -873,6 +943,24 @@ class DeleteColumns(QUndoCommand):
                     entryID = get_item_id(entry.column, entry.row)
                     self.deadSelectedCells[entryID] = entry
                     del self.canvas._selectedCells[entryID]
+
+
+
+    def remove_column_labels(self, pivot, columnShift):
+        """ Remove the labels corresponding to the deleted 
+        columns. 
+        
+        """
+
+        for column in range(pivot, pivot + columnShift):
+            label = self.canvas.columnLabels[column]
+            self.canvas.removeItem(label)
+            self.canvas.columnLabels.pop(column)
+            del label
+
+        newLabels = shift_column_labels(self.canvas.columnLabels, 
+                                        pivot, -columnShift)
+        self.canvas.columnLabels = newLabels
 
 
 
@@ -952,6 +1040,20 @@ class DeleteColumns(QUndoCommand):
             itemID = get_item_id(entry.column, entry.row)
             if itemID in self.deadSelectedCells:
                 item._select()
+
+
+    def readd_column_labels(self):
+        """ Re-add the correct column labels. """
+        
+        for (key, item) in self.canvas.columnLabels.items():
+            self.canvas.removeItem(item)
+            del item
+
+        for (key, item) in self.columnLabels.items():
+            self.canvas.addItem(item)
+
+        self.canvas.columnLabels = self.columnLabels
+
 
 
 

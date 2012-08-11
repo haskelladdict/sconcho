@@ -28,6 +28,7 @@ from __future__ import absolute_import
 import logging
 import math
 from sys import (maxsize, float_info)
+from copy import copy
 
 from PyQt4.QtCore import (QPointF, QRectF)
 from PyQt4.QtGui import (QMessageBox, QColor)
@@ -187,6 +188,43 @@ def shift_legend_horizontally(legendList, columnShift, unitCellWidth,
 
             text.prepareGeometryChange()
             text.setPos(text.pos() + QPointF(xShift, 0.0))
+
+
+
+def shift_row_labels(rowLabels, pivot, rowShift):
+    """ Shifts the row labels in the rowLabels dictionary
+    according to the pivot point and shift given by rowShift.
+
+    """
+
+    newLabels = {}
+    for (key, item) in rowLabels.items():
+        if key >= pivot:
+            newLabels[key+rowShift] = item
+        else:
+            newLabels[key] = item
+
+    return newLabels
+
+
+
+def shift_column_labels(columnLabels, pivot, columnShift):
+    """ Shifts the column labels in the columnLabels dictionary
+    according to the pivot point and shift given by columnShift.
+
+    """
+
+    newLabels = {}
+    for (key, item) in columnLabels.items():
+        if key > pivot-1:
+            newLabels[key+columnShift] = item
+        else:
+            newLabels[key] = item
+
+    #for (key, item) in newLabels.items():
+    #    print(key, item.toPlainText())
+    
+    return newLabels
 
 
 
