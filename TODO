@@ -12,7 +12,3 @@
   which is silly, not sure why
 - allow to select which row/columns labels to show (to deal
   better with non-rectangular charts via hidden nostitches.
-- BUG: There seems to be some issue with interacting with
-  pattern repeats if there are several overlapping ones
-  on the canvas.
-- When saving/export patterns remember last used location.

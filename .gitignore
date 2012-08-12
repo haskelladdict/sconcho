@@ -1,6 +1,7 @@
 *.swp
 *.pyc
 *.pyo
+tags
 build/
 dist/
 MANIFEST
