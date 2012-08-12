@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>614</width>
-    <height>702</height>
+    <height>709</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -103,7 +103,7 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_9">
        <item>
-        <widget class="QGroupBox" name="groupBox_2">
+        <widget class="QGroupBox" name="labelFontGrouper">
          <property name="title">
           <string>Label Font</string>
          </property>
@@ -185,7 +185,7 @@
             <item row="5" column="0" colspan="3">
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
-               <widget class="QLabel" name="label_9">
+               <widget class="QLabel" name="evenRowLabel">
                 <property name="text">
                  <string>even row label location</string>
                 </property>
@@ -253,7 +253,7 @@
             <item row="4" column="0" colspan="3">
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
-               <widget class="QLabel" name="label_13">
+               <widget class="QLabel" name="oddRowLabel">
                 <property name="text">
                  <string>odd row label location</string>
                 </property>
@@ -308,7 +308,7 @@
             <item row="0" column="2" colspan="2">
              <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
-               <widget class="QLabel" name="label_8">
+               <widget class="QLabel" name="rowLabelStart">
                 <property name="text">
                  <string>row labels start with</string>
                 </property>
@@ -332,11 +332,6 @@
            </layout>
           </item>
          </layout>
-         <zorder>showOddRowsButton</zorder>
-         <zorder>showEvenRowsButton</zorder>
-         <zorder></zorder>
-         <zorder>customRowLabelsChecker</zorder>
-         <zorder>line_2</zorder>
         </widget>
        </item>
        <item>
@@ -392,7 +387,7 @@
              </widget>
             </item>
             <item row="1" column="2">
-             <widget class="QLabel" name="label_16">
+             <widget class="QLabel" name="columnLabelStart">
               <property name="text">
                <string>label starting at column</string>
               </property>

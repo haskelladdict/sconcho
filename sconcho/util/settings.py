@@ -55,6 +55,8 @@ class DefaultSettings(QSettings):
 
     DEFAULT_SHOW_COLUMN_LABELS = "1"
     DEFAULT_SHOW_ROW_LABELS = "1"
+    DEFAULT_ROW_LABELS_EDITABLE = "0"
+    DEFAULT_COLUMN_LABELS_EDITABLE = "0"
 
     # options are LABEL_ALL_ROWS, SHOW_ROWS_WITH_INTERVAL,
     # SHOW_ODD_ROWS, SHOW_EVEN_ROWS
@@ -108,6 +110,14 @@ class DefaultSettings(QSettings):
         self.showRowLabels = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_SHOW_ROW_LABELS,
                 "showRowLabels", "Int")
+
+        self.rowLabelsEditable = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_ROW_LABELS_EDITABLE,
+                "rowLabelsEditable", "Int")
+
+        self.columnLabelsEditable = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_COLUMN_LABELS_EDITABLE,
+                "columnLabelsEditable", "Int")
 
         self.rowLabelsShowInterval = PreferenceSetting(self,
                 DefaultSettings.DEFAULT_ROW_LABELS_SHOW_INTERVAL,

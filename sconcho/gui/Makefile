@@ -16,6 +16,9 @@ all:
 	pyrcc4 -py3 -o icons_rc.py icons.qrc
 
 
+ctags:
+	ctags *.py ../util/*.py
+
 .PHONY: clean
 clean:
 	rm -f *.pyc ui_* icons_rc.py

@@ -156,11 +156,13 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings.rowLabelStart.make_settings_default()
         self.settings.evenRowLabelLocation.make_settings_default()
         self.settings.oddRowLabelLocation.make_settings_default()
+        self.settings.rowLabelsEditable.make_settings_default()
 
         self.settings.showColumnLabels.make_settings_default()
         self.settings.columnLabelMode.make_settings_default()
         self.settings.columnLabelsShowInterval.make_settings_default()
         self.settings.columnLabelsShowIntervalStart.make_settings_default()
+        self.settings.columnLabelsEditable.make_settings_default()
 
         self.settings.gridCellWidth.make_settings_default()
         self.settings.gridCellHeight.make_settings_default()
@@ -412,6 +414,14 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
             self.oddRowLabelLocationComboBox.setCurrentIndex(0)
         else:
             self.oddRowLabelLocationComboBox.setCurrentIndex(1)
+
+        rowLabelEditable = self.settings.rowLabelsEditable.value
+        if rowLabelEditable == 0:
+            self.customRowLabelsChecker.setChecked(False)
+            self.change_custom_row_labeling(False)
+        else:
+            self.customRowLabelsChecker.setChecked(True)
+            self.change_custom_row_labeling(True)
     
 
 
@@ -482,15 +492,15 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
     def change_custom_row_labeling(self, status):
         """ Toggle the custom editability of row labels. """
 
-        ### enable settings stuff
+        if status:
+            self.settings.rowLabelsEditable.value = 1
+        else:
+            self.settings.rowLabelsEditable.value = 0
+
+        # hide/unhide rest of widget
+        self.set_row_label_properties_visibility(status)
+
         self.emit(SIGNAL("toggle_editable_row_labels(bool)"), status)
-
-
-    def change_custom_column_labeling(self, status):
-        """ Toggle the custom editability of column labels. """
-
-        ### enable settings stuff
-        self.emit(SIGNAL("toggle_editable_column_labels(bool)"), status)
 
 
 
@@ -577,6 +587,34 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.emit(SIGNAL("row_label_location_changed"))
 
 
+
+    def set_row_label_properties_visibility(self, status):
+        """ Toggles the visibility of all items in the row labels
+        panel.
+
+        These will be turned of if the user selects custom row
+        labels for examples.
+
+        """
+
+        elements = [self.labelAllRowsButton, 
+                    self.showOddRowsButton,
+                    self.showEvenRowsButton,
+                    self.showRowsWithIntervalButton,
+                    self.rowLabelsIntervalSpinner,
+                    self.oddRowLabel,
+                    self.oddRowLabelLocationComboBox,
+                    self.evenRowLabel,
+                    self.evenRowLabelLocationComboBox,
+                    self.rowLabelStart,
+                    self.rowLabelStartSpinner,
+                    self.rowLabelsStartLabel,
+                    self.rowLabelsIntervalStartSpinner]
+
+        for element in elements:
+            getattr(element, "setDisabled")(status)
+   
+
     
     def set_up_column_label_selectors(self):
         """ Sets up the column label interval selectors. """
@@ -595,6 +633,15 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         columnShowInterval = \
             self.settings.columnLabelsShowIntervalStart.value
         self.columnLabelsIntervalStartSpinner.setValue(columnShowInterval)
+
+        columnLabelEditable = self.settings.columnLabelsEditable.value
+        if columnLabelEditable == 0:
+            self.customColumnLabelsChecker.setChecked(False)
+            self.change_custom_column_labeling(False)
+        else:
+            self.customColumnLabelsChecker.setChecked(True)
+            self.change_custom_column_labeling(True)
+
 
 
 
@@ -640,6 +687,21 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
 
 
 
+    def change_custom_column_labeling(self, status):
+        """ Toggle the custom editability of column labels. """
+
+        if status:
+            self.settings.columnLabelsEditable.value = 1
+        else:
+            self.settings.columnLabelsEditable.value = 0
+
+        # hide/unhide rest of widget
+        self.set_column_label_properties_visibility(status)
+
+        self.emit(SIGNAL("toggle_editable_column_labels(bool)"), status)
+
+
+
     def change_column_label_interval(self, state, clicked):
         """ Sets the new column label state and lets the canvas know. """
 
@@ -663,6 +725,27 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
             self.columnLabelsIntervalStartSpinner.value()
 
         self.emit(SIGNAL("column_label_interval_changed"))
+
+
+
+    def set_column_label_properties_visibility(self, status):
+        """ Toggles the visibility of all items in the column labels
+        panel.
+
+        These will be turned of if the user selects custom column
+        labels for example.
+
+        """
+
+        elements = [self.labelAllColumnsButton, 
+                    self.showColumnsWithIntervalButton,
+                    self.columnLabelsIntervalSpinner,
+                    self.columnLabelStart,
+                    self.columnLabelsIntervalStartSpinner]
+
+        for element in elements:
+            getattr(element, "setDisabled")(status)
+   
 
 
 

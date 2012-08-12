@@ -94,9 +94,10 @@ class PatternCanvas(QGraphicsScene):
         self.isVisible = True
 
         # should row/column labels be updated?
-        self.updateRowLabels = True
+        # NOTE: We initialize to True, then build the main grid
+        # and then update the properties with the default settings
+        self.updateRowLabels = True 
         self.rowLabels = {}
-
         self.updateColumnLabels = True
         self.columnLabels = {}
 
@@ -170,6 +171,17 @@ class PatternCanvas(QGraphicsScene):
             labelItem.setToolTip("Shift-Click to select whole column")
             self.addItem(labelItem)
             self.columnLabels[colID] = labelItem 
+
+        # finally we need to make sure the labels have the proper
+        # visibility; 
+        # NOTE: We need to create the labels first before changing
+        #       editability, otherwise they will never be created
+        #       if the default edit setting is true
+        self.set_up_labels()
+        if self.settings.rowLabelsEditable.value == 1:
+            self.toggle_row_label_editing(True)
+        if self.settings.columnLabelsEditable.value == 1:
+            self.toggle_column_label_editing(True)
 
 
 
