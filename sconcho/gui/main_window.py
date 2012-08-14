@@ -1136,7 +1136,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         (status, errMsg, patternGridItems, legendItems, colors,
          activeItem, patternRepeats, repeatLegends, rowRepeats,
-         textItems) = io.read_project(self.settings, readFilePath)
+         textItems, rowLabels, columnLabels) = \
+                 io.read_project(self.settings, readFilePath)
 
 
         if not status:
@@ -1152,7 +1153,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                  patternRepeats,
                                                  repeatLegends,
                                                  rowRepeats,
-                                                 textItems):
+                                                 textItems,
+                                                 rowLabels,
+                                                 columnLabels):
             return False
 
         set_up_colors(self.colorWidget, colors)

@@ -2034,6 +2034,8 @@ class PatternCanvas(QGraphicsScene):
         self.canvasTextBoxes.clear()
         self._selectedCells = {}
         self.patternRepeats.clear()
+        self.rowLabels.clear()
+        self.columnLabels.clear()
         self._undoStack.clear()
         self._copySelection = {}
 
@@ -2056,7 +2058,8 @@ class PatternCanvas(QGraphicsScene):
     @wait_cursor
     def load_previous_pattern(self, knittingSymbols, patternGridItemInfo,
                               legendItemInfo, patternRepeats,
-                              repeatLegends, rowRepeats, textItems):
+                              repeatLegends, rowRepeats, textItems,
+                              rowLabels, columnLabels):
         """ Clear curent canvas and establishes a new canvas
         based on the passed canvas items. Returns True on success
         and False otherwise.
@@ -2124,6 +2127,9 @@ class PatternCanvas(QGraphicsScene):
         for textItem in allTextItems:
             self.add_text_item(*textItem)
 
+
+        self.load_row_column_labels(rowLabels, columnLabels)
+
         # need to clear our caches, otherwise we'll try
         # to remove non-existing items
         self.finalize_grid_change()
@@ -2178,6 +2184,50 @@ class PatternCanvas(QGraphicsScene):
         # connect repeat box and legend
         self.repeatLegend[repeatItem.itemID] = \
             (visible, legendItem, legendTextItem)
+
+
+
+    def load_row_column_labels(self, rowLabels, columnLabels):
+        """ Establish the proper row and column labels after
+        reading an spf file.
+
+        """
+
+        for rowID in range(0, self._numRows):
+
+            if rowID in rowLabels:
+                name = rowLabels[rowID]
+            else:
+                name = str(self._numRows - rowID)  
+
+            labelItem = PatternLabelItem(name, False, 
+                                         not self.updateRowLabels)
+            labelItem.setToolTip("Shift-Click to select whole row")
+            self.addItem(labelItem)
+            self.rowLabels[rowID] = labelItem 
+
+        for colID in range(0, self._numColumns):
+
+            if colID in columnLabels:
+                name = columnLabels[colID]
+            else:
+                name = str(self._numColumns - colID)
+
+            labelItem = PatternLabelItem(name, False, 
+                                         not self.updateColumnLabels)
+            labelItem.setToolTip("Shift-Click to select whole column")
+            self.addItem(labelItem)
+            self.columnLabels[colID] = labelItem 
+
+        # finally we need to make sure the labels have the proper
+        # visibility; 
+        # NOTE: We need to create the labels first before changing
+        #       editability, otherwise they will never be created
+        #       if the default edit setting is true
+        if self.settings.rowLabelsEditable.value == 1:
+            self.updateRowLabels = False
+        if self.settings.columnLabelsEditable.value == 1:
+            self.updateColumnLabels = False
 
 
 

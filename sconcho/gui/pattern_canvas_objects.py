@@ -570,6 +570,7 @@ class PatternLabelItem(QGraphicsTextItem):
 
 
 
+
 #########################################################
 ##
 ## class for managing a pattern repeat item

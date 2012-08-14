@@ -111,9 +111,6 @@ class SaveThread(QThread):
 def save_project(canvas, colors, activeSymbol, settings, saveFileName):
     """ Toplevel writer routine. 
 
-    NOTE: Make sure that the settings are written last since 
-    they are the most volatile. That way, the API has the
-    largest chance of surviving as long as possible.
     """
 
     # prepare data structures
@@ -122,6 +119,8 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
     patternRepeats = get_patternRepeats(canvas)
     repeatLegends = canvas.repeatLegend
     rowRepeats = canvas.rowRepeatTracker
+    rowLabels = canvas.rowLabels
+    columnLabels = canvas.columnLabels
     textItems = canvas.canvasTextBoxes
     assert(len(patternRepeats) == len(repeatLegends))
 
@@ -139,29 +138,18 @@ def save_project(canvas, colors, activeSymbol, settings, saveFileName):
         stream.writeInt32(API_VERSION)
         stream.setVersion(QDataStream.Qt_4_5)
 
-        stream.writeInt32(len(patternGridItems))
-        stream.writeInt32(len(legendItems))
-        stream.writeInt32(len(colors))
-        stream.writeInt32(len(patternRepeats))
-        stream.writeInt32(len(repeatLegends))
-        stream.writeInt32(len(rowRepeats))
-        stream.writeInt32(len(textItems))
-        
-        # the next is 1 dummy entry so we can add more
-        # output within the same API
-        for count in range(1):
-            stream.writeInt32(0)
-
         # write content
         write_patternGridItems(stream, patternGridItems)
         write_legendItems(stream, legendItems)
         write_colors(stream, colors)
         write_active_symbol(stream, activeSymbol)
         write_patternRepeats(stream, patternRepeats)
-        write_settings(stream, settings)
         write_repeatLegends(stream, repeatLegends)
         write_rowRepeats(stream, rowRepeats)
         write_textItems(stream, textItems)
+        write_row_labels(stream, rowLabels)
+        write_column_labels(stream, columnLabels)
+        write_settings(stream, settings)
 
 
     except (IOError, OSError) as e:
@@ -193,6 +181,8 @@ def get_patternGridItems(canvas):
 def write_patternGridItems(stream, items):
     """ Write all patternGridItems to our output stream """
 
+    write_section_header(stream, "patternGridItems", len(items))
+
     for item in items:
         stream.writeQString(item.symbol["category"]) 
         stream.writeQString(item.symbol["name"])
@@ -206,6 +196,8 @@ def write_patternGridItems(stream, items):
 
 def write_legendItems(stream, items):
     """ Write all legendItems to our output stream. """
+
+    write_section_header(stream, "legendItems", len(items))
 
     for item in items:
 
@@ -225,7 +217,9 @@ def write_legendItems(stream, items):
 
 def write_colors(stream, items):
     """ Write all colors to our output stream. """
-    
+
+    write_section_header(stream, "colors", len(items))   
+
     for (color, state) in items:
         stream << color
         stream.writeInt16(state)
@@ -234,6 +228,8 @@ def write_colors(stream, items):
 
 def write_active_symbol(stream, activeSymbol):
     """ Write the info regarding the active symbol """
+
+    write_section_header(stream, "activeSymbol", 1)   
 
     if activeSymbol:
         stream.writeQString(activeSymbol["category"])
@@ -246,6 +242,8 @@ def write_active_symbol(stream, activeSymbol):
 
 def write_settings(stream, settings):
     """ Write all settings such as fonts for labels and legend """
+
+    write_section_header(stream, "settings", 1)   
 
     stream << settings.labelFont.value
     
@@ -283,9 +281,10 @@ def write_settings(stream, settings):
     stream.writeInt32(settings.columnLabelsShowInterval.value)
     stream.writeInt32(settings.columnLabelsShowIntervalStart.value)
 
-    # write 200 dummy bytes so we can add more items
-    for i in range(0,200):
-        stream.writeInt32(0)
+    # custom row/column labels
+    stream.writeInt32(settings.rowLabelsEditable.value)
+    stream.writeInt32(settings.columnLabelsEditable.value)
+
 
 
 
@@ -304,6 +303,8 @@ def get_patternRepeats(canvas):
 
 def write_patternRepeats(stream, repeats):
     """ Write all patternGridItems to our output stream. """
+
+    write_section_header(stream, "patternRepeats", len(repeats))   
 
     for repeat in repeats:
 
@@ -328,6 +329,8 @@ def write_repeatLegends(stream, repeatLegends):
 
     """
 
+    write_section_header(stream, "repeatLegends", len(repeatLegends))   
+
     for (legendID, (dummy, item, textItem)) in repeatLegends.items():
     
         if item.isVisible():
@@ -346,6 +349,8 @@ def write_repeatLegends(stream, repeatLegends):
 def write_rowRepeats(stream, rowRepeats):
     """ write the row repeats if any. """
 
+    write_section_header(stream, "rowRepeats", len(rowRepeats))   
+
     for (rowList, multiplicity, dummy) in rowRepeats:
         stream.writeInt32(multiplicity)
         stream.writeInt32(len(rowList))
@@ -357,9 +362,57 @@ def write_rowRepeats(stream, rowRepeats):
 def write_textItems(stream, textItems):
     """ write the text items """
 
+    write_section_header(stream, "textItems", len(textItems))   
+
     for item in textItems.values():
         stream << item.pos()
         stream.writeQString(item.toPlainText())
+
+
+
+def write_row_labels(stream, rowLabels):
+    """ Write the labels for rows.
+
+    NOTE: We write the labels irrespective if the pattern has
+    editable row labels or not.
+
+    """
+
+    write_section_header(stream, "rowLabels", len(rowLabels))
+
+    for (key, label) in rowLabels.items():
+        stream.writeInt32(key)
+        stream.writeQString(label.toPlainText())
+
+
+
+def write_column_labels(stream, columnLabels):
+    """ Write the labels for columns.
+
+    NOTE: We write the labels irrespective if the pattern has
+    editable column labels or not.
+
+    """
+
+    write_section_header(stream, "columnLabels", len(columnLabels))
+
+    for (key, label) in columnLabels.items():
+        stream.writeInt32(key)
+        stream.writeQString(label.toPlainText())
+
+
+
+def write_section_header(stream, name, length):
+    """ Writes the section header for a section in the spf
+    file. 
+
+    For API version 3 consists of the name of the section
+    and its length in number of element types (not in bytes).
+
+    """
+
+    stream.writeQString(name)
+    stream.writeInt32(length)
 
 
 
@@ -393,54 +446,26 @@ def read_project(settings, openFileName):
         version = stream.readInt32()
         stream.setVersion(QDataStream.Qt_4_5)
 
-        # start parsing
-        numGridItems = stream.readInt32()
-        numLegendItems = stream.readInt32()
-        numColors = stream.readInt32()
-        numRepeats = stream.readInt32()
-        numRepeatLegends = stream.readInt32()
-        numRowRepeats = stream.readInt32()
-        numTextItems = stream.readInt32()
+        # initialize API specific entries
+        repeatLegends = {}
+        rowRepeats = []
+        textItems = []
+        rowLabels = {}
+        columnLabels = {}
 
-        # the next are 4 dummy entries we just skip
-        for count in range(1):
-            stream.readInt32()
-
-        # read elements
-        patternGridItems = read_patternGridItems(stream, numGridItems)
-        legendItems = read_legendItems(stream, numLegendItems)
-        colors = read_colors(stream, numColors)
-        activeSymbol = read_active_symbol(stream)
-
-        # API version 1 knows nothing about legends for pattern
-        # repeats and rowRepeats
         if version == 1:
-            read_settings(stream, settings, version)
-            patternRepeats_ = read_patternRepeats_API_1_2(stream, numRepeats)
-            patternRepeats = convert_repeats_to_API_3(patternRepeats_)
-            repeatLegends = {}
-            rowRepeats = []
-            textItems = []
+            (patternGridItems, legendItems, colors, activeSymbol, 
+             patternRepeats) = read_API_1_version(stream, settings)
 
-        # API version 2 deals with the old way of setting up
-        # pattern repeats (via lines grouped via QGraphicsItemGroup
         elif version == 2:
-            patternRepeats_ = read_patternRepeats_API_1_2(stream, numRepeats)
-            patternRepeats = convert_repeats_to_API_3(patternRepeats_)
-
-            read_settings(stream, settings, version)
-            repeatLegends = read_patternRepeatLegends(stream, 
-                                                      numRepeatLegends)
-            rowRepeats = read_rowRepeats(stream, numRowRepeats)
-            textItems = read_textItems(stream, numTextItems)
-
+             (patternGridItems, legendItems, colors, activeSymbol, 
+             patternRepeats, repeatLegends, rowRepeats, textItems) = \
+                     read_API_2_version(stream, settings)
         elif version == 3:
-            patternRepeats = read_patternRepeats(stream, numRepeats)
-            read_settings(stream, settings, version)
-            repeatLegends = read_patternRepeatLegends(stream, 
-                                                      numRepeatLegends)
-            rowRepeats = read_rowRepeats(stream, numRowRepeats)
-            textItems = read_textItems(stream, numTextItems)
+             (patternGridItems, legendItems, colors, activeSymbol, 
+             patternRepeats, repeatLegends, rowRepeats, textItems,
+             rowLabels, columnLabels) = \
+                     read_API_3_version(stream, settings)
         else:
             raise IOError("unsupported API version")
             
@@ -457,7 +482,142 @@ def read_project(settings, openFileName):
 
     return (True, None, patternGridItems, legendItems, colors, 
             activeSymbol, patternRepeats, repeatLegends, rowRepeats,
-            textItems)
+            textItems, rowLabels, columnLabels)
+
+
+
+def read_API_1_version(stream, settings):
+    """ Main wrapper responsible for reading spf files with
+    API version 1. 
+
+    """
+
+    # start parsing
+    numGridItems = stream.readInt32()
+    numLegendItems = stream.readInt32()
+    numColors = stream.readInt32()
+    numRepeats = stream.readInt32()
+    numRepeatLegends = stream.readInt32()
+    numRowRepeats = stream.readInt32()
+    numTextItems = stream.readInt32()
+
+    # the next are 4 dummy entries we just skip
+    for count in range(1):
+        stream.readInt32()
+
+    # read elements
+    patternGridItems = read_patternGridItems(stream, numGridItems)
+    legendItems = read_legendItems(stream, numLegendItems)
+    colors = read_colors(stream, numColors)
+    activeSymbol = read_active_symbol(stream)
+
+    read_settings_API_1(stream, settings)
+    patternRepeats_ = read_patternRepeats_API_1_2(stream, numRepeats)
+    patternRepeats = convert_repeats_to_API_3(patternRepeats_)
+
+    return (patternGridItems, legendItems, colors, activeSymbol, 
+            patternRepeats)
+
+
+
+def read_API_2_version(stream, settings):
+    """ Main wrapper responsible for reading spf files with
+    API version 2. 
+
+    """
+
+    # start parsing
+    numGridItems = stream.readInt32()
+    numLegendItems = stream.readInt32()
+    numColors = stream.readInt32()
+    numRepeats = stream.readInt32()
+    numRepeatLegends = stream.readInt32()
+    numRowRepeats = stream.readInt32()
+    numTextItems = stream.readInt32()
+
+    # the next are 4 dummy entries we just skip
+    for count in range(1):
+        stream.readInt32()
+
+    # read elements
+    patternGridItems = read_patternGridItems(stream, numGridItems)
+    legendItems = read_legendItems(stream, numLegendItems)
+    colors = read_colors(stream, numColors)
+    activeSymbol = read_active_symbol(stream)
+
+    patternRepeats_ = read_patternRepeats_API_1_2(stream, numRepeats)
+    patternRepeats = convert_repeats_to_API_3(patternRepeats_)
+
+    read_settings_API_2(stream, settings)
+    repeatLegends = read_patternRepeatLegends(stream, 
+                                                numRepeatLegends)
+    rowRepeats = read_rowRepeats(stream, numRowRepeats)
+    textItems = read_textItems(stream, numTextItems)
+
+    return (patternGridItems, legendItems, colors, activeSymbol, 
+            patternRepeats, repeatLegends, rowRepeats, textItems)
+
+
+
+def read_API_3_version(stream, settings):
+    """ Main wrapper responsible for reading spf files with
+    API version 3. 
+    
+    We keep parsing until we hit the settings which are always 
+    last in the file.
+
+    """
+
+    sectionCount = 0
+    while (sectionCount < 11) or not stream.atEnd():
+
+        (name, length) = read_section_header(stream)
+
+        if name == "patternGridItems":
+            patternGridItems = read_patternGridItems(stream, length)
+
+        elif name == "legendItems":
+            legendItems = read_legendItems(stream, length)
+
+        elif name == "colors":
+            colors = read_colors(stream, length)
+
+        elif name == "activeSymbol":
+            activeSymbol = read_active_symbol(stream)
+
+        elif name == "patternRepeats":
+            patternRepeats = read_patternRepeats_API_3(stream, length)
+
+        elif name == "repeatLegends":
+            repeatLegends = read_patternRepeatLegends(stream, length)
+
+        elif name == "rowRepeats":
+            rowRepeats = read_rowRepeats(stream, length)
+
+        elif name == "textItems":
+            textItems = read_textItems(stream, length)
+
+        elif name == "rowLabels":
+            rowLabels = read_row_labels(stream, length)
+
+        elif name == "columnLabels":
+            columnLabels = read_column_labels(stream, length)
+
+        elif name == "settings":
+            read_settings_API_3(stream, settings)
+
+        else:
+            logger.error("Error: Encountered unknown section " + name +
+                         " in spf file. Ignoring ...")
+
+        sectionCount = sectionCount + 1
+
+
+    return (patternGridItems, legendItems, colors, activeSymbol, 
+            patternRepeats, repeatLegends, rowRepeats, textItems,
+            rowLabels, columnLabels)
+
+
 
 
 
@@ -550,7 +710,44 @@ def read_active_symbol(stream):
 
 
 
-def read_settings(stream, settings, version):
+def read_settings_API_1(stream, settings):
+    """ Write all settings such as fonts for labels and legend.
+    
+    NOTE: This function doesn't return anything and changes
+    the settings directly."""
+
+    labelFont     = QFont()
+    legendFont    = QFont()
+
+    stream >> labelFont
+
+    labelInterval = stream.readInt32()
+    labelState = get_row_label_identifier(labelInterval)
+
+    stream >> legendFont
+    gridCellWidth = stream.readInt32()
+    gridCellHeight = stream.readInt32()
+
+    # make sure we parsed something sensible before 
+    # touching the settings
+    if labelFont.family():
+        settings.labelFont.value = labelFont
+
+    if labelState:
+        settings.rowLabelMode.value = labelState
+
+    if legendFont.family():
+        settings.legendFont.value = legendFont
+
+    if gridCellWidth != 0:
+        settings.gridCellWidth.value = gridCellWidth
+
+    if gridCellHeight != 0:
+        settings.gridCellHeight.value = gridCellHeight
+
+
+
+def read_settings_API_2(stream, settings):
     """ Write all settings such as fonts for labels and legend.
     
     NOTE: This function doesn't return anything and changes
@@ -586,58 +783,145 @@ def read_settings(stream, settings, version):
         settings.gridCellHeight.value = gridCellHeight
 
     # new stuff in API_VERSION 2 and onward
-    # NOTE: To accomodate additional data written to spf files within the
-    # same API we rely on stream.readInt32 and friends to return 0 on EOF
-    if version > 1:
-        labelStart = stream.readInt32()
-        settings.rowLabelStart.value = labelStart
+    labelStart = stream.readInt32()
+    settings.rowLabelStart.value = labelStart
 
-        evenRowLabelLocation = stream.readInt32()
-        settings.evenRowLabelLocation.value = \
-                get_row_label_location_string(evenRowLabelLocation)
+    evenRowLabelLocation = stream.readInt32()
+    settings.evenRowLabelLocation.value = \
+            get_row_label_location_string(evenRowLabelLocation)
 
-        highlightRows = stream.readInt32()
-        settings.highlightRows.value = highlightRows
+    highlightRows = stream.readInt32()
+    settings.highlightRows.value = highlightRows
 
-        highlightRowsOpacity = stream.readInt32()
-        settings.highlightRowsOpacity.value = highlightRowsOpacity
+    highlightRowsOpacity = stream.readInt32()
+    settings.highlightRowsOpacity.value = highlightRowsOpacity
 
-        highlightRowsStart = stream.readInt32()
-        settings.highlightRowsStart.value = highlightRowsStart
+    highlightRowsStart = stream.readInt32()
+    settings.highlightRowsStart.value = highlightRowsStart
 
-        highlightRowsColor = stream.readQString()
-        if highlightRowsColor:
-            settings.highlightRowsColor.value = highlightRowsColor
+    highlightRowsColor = stream.readQString()
+    if highlightRowsColor:
+        settings.highlightRowsColor.value = highlightRowsColor
 
-        # write rest of row/column settings
-        # NOTE: The row settings aren't combined with the rest to
-        # remain backward compatible.
-        oddRowLabelLocation = stream.readInt32()
-        settings.oddRowLabelLocation.value = \
-                get_row_label_location_string(oddRowLabelLocation)
+    # write rest of row/column settings
+    # NOTE: The row settings aren't combined with the rest to
+    # remain backward compatible.
+    oddRowLabelLocation = stream.readInt32()
+    settings.oddRowLabelLocation.value = \
+            get_row_label_location_string(oddRowLabelLocation)
 
-        rowLabelsShowInterval = stream.readInt32()
-        settings.rowLabelsShowInterval.value = rowLabelsShowInterval
+    rowLabelsShowInterval = stream.readInt32()
+    settings.rowLabelsShowInterval.value = rowLabelsShowInterval
 
-        rowLabelsShowIntervalStart = stream.readInt32()
-        settings.rowLabelsShowIntervalStart.value = \
-                rowLabelsShowIntervalStart
+    rowLabelsShowIntervalStart = stream.readInt32()
+    settings.rowLabelsShowIntervalStart.value = \
+            rowLabelsShowIntervalStart
 
-        columnLabelMode = stream.readInt32()
-        settings.columnLabelMode.value = \
-                get_column_label_identifier(columnLabelMode)
+    columnLabelMode = stream.readInt32()
+    settings.columnLabelMode.value = \
+            get_column_label_identifier(columnLabelMode)
 
-        columnLabelsShowInterval = stream.readInt32()
-        settings.columnLabelsShowInterval.value = \
-                columnLabelsShowInterval
+    columnLabelsShowInterval = stream.readInt32()
+    settings.columnLabelsShowInterval.value = \
+            columnLabelsShowInterval
 
-        columnLabelsShowIntervalStart = stream.readInt32()
-        settings.columnLabelsShowIntervalStart.value = \
-                columnLabelsShowIntervalStart
+    columnLabelsShowIntervalStart = stream.readInt32()
+    settings.columnLabelsShowIntervalStart.value = \
+            columnLabelsShowIntervalStart
 
-        # reat 200 dummy bytes so we can add more items
-        for i in range(0,200):
-            stream.readInt32()
+    # reat 200 dummy bytes so we can add more items
+    for i in range(0,200):
+        stream.readInt32()
+
+
+
+def read_settings_API_3(stream, settings):
+    """ Write all settings such as fonts for labels and legend.
+    
+    NOTE: This function doesn't return anything and changes
+    the settings directly."""
+
+    labelFont     = QFont()
+    legendFont    = QFont()
+
+    stream >> labelFont
+
+    labelInterval = stream.readInt32()
+    labelState = get_row_label_identifier(labelInterval)
+
+    stream >> legendFont
+    gridCellWidth = stream.readInt32()
+    gridCellHeight = stream.readInt32()
+
+    # make sure we parsed something sensible before 
+    # touching the settings
+    if labelFont.family():
+        settings.labelFont.value = labelFont
+
+    if labelState:
+        settings.rowLabelMode.value = labelState
+
+    if legendFont.family():
+        settings.legendFont.value = legendFont
+
+    if gridCellWidth != 0:
+        settings.gridCellWidth.value = gridCellWidth
+
+    if gridCellHeight != 0:
+        settings.gridCellHeight.value = gridCellHeight
+
+    # new stuff in API_VERSION 2 and onward
+    labelStart = stream.readInt32()
+    settings.rowLabelStart.value = labelStart
+
+    evenRowLabelLocation = stream.readInt32()
+    settings.evenRowLabelLocation.value = \
+            get_row_label_location_string(evenRowLabelLocation)
+
+    highlightRows = stream.readInt32()
+    settings.highlightRows.value = highlightRows
+
+    highlightRowsOpacity = stream.readInt32()
+    settings.highlightRowsOpacity.value = highlightRowsOpacity
+
+    highlightRowsStart = stream.readInt32()
+    settings.highlightRowsStart.value = highlightRowsStart
+
+    highlightRowsColor = stream.readQString()
+    if highlightRowsColor:
+        settings.highlightRowsColor.value = highlightRowsColor
+
+    # write rest of row/column settings
+    # NOTE: The row settings aren't combined with the rest to
+    # remain backward compatible.
+    oddRowLabelLocation = stream.readInt32()
+    settings.oddRowLabelLocation.value = \
+            get_row_label_location_string(oddRowLabelLocation)
+
+    rowLabelsShowInterval = stream.readInt32()
+    settings.rowLabelsShowInterval.value = rowLabelsShowInterval
+
+    rowLabelsShowIntervalStart = stream.readInt32()
+    settings.rowLabelsShowIntervalStart.value = \
+            rowLabelsShowIntervalStart
+
+    columnLabelMode = stream.readInt32()
+    settings.columnLabelMode.value = \
+            get_column_label_identifier(columnLabelMode)
+
+    columnLabelsShowInterval = stream.readInt32()
+    settings.columnLabelsShowInterval.value = \
+            columnLabelsShowInterval
+
+    columnLabelsShowIntervalStart = stream.readInt32()
+    settings.columnLabelsShowIntervalStart.value = \
+            columnLabelsShowIntervalStart
+
+    rowLabelsEditable = stream.readInt32()
+    settings.rowLabelsEditable.value = rowLabelsEditable
+
+    columnLabelsEditable = stream.readInt32()
+    settings.columnLabelsEditable.value = columnLabelsEditable
 
 
 
@@ -684,7 +968,7 @@ def read_patternRepeats_API_1_2(stream, numRepeats):
 
 
 
-def read_patternRepeats(stream, numRepeats):
+def read_patternRepeats_API_3(stream, numRepeats):
     """ Read all patternRepeats from our output stream """
 
     patternRepeats = []
@@ -784,6 +1068,51 @@ def read_textItems(stream, numTextItems):
         textItemList.append(newItem)
 
     return textItemList
+
+
+
+def read_row_labels(stream, numRowLabels):
+    """ Read in the row labels """
+
+    rowLabels = {}
+    for count in range(numRowLabels):
+        row = stream.readInt32()
+        label = stream.readQString()
+        
+        rowLabels[row] = label
+
+    return rowLabels
+
+
+
+def read_column_labels(stream, numColumnLabels):
+    """ Read in the column labels """
+
+    columnLabels = {}
+    for count in range(numColumnLabels):
+        column = stream.readInt32()
+        label = stream.readQString()
+        
+        columnLabels[column] = label
+
+    return columnLabels
+
+
+
+def read_section_header(stream):
+    """ Reades the section header for a section in the spf
+    file. 
+
+    For API version 3 consists of the name of the section
+    and its length in number of element types (not in bytes).
+
+    """
+
+    name = stream.readQString()
+    length = stream.readInt32()
+
+    return (name, length)
+
 
 
 
