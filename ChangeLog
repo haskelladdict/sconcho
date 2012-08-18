@@ -1,3 +1,21 @@
+08-18-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+        * Release 0.2.0_b2
+        * Many bugfixes
+        * Now requires python3
+        * Starting with this release sconcho is properly unicode aware
+        * Updated interface and added new icons
+        * Added new project file API version 3 which is much more
+          flexible and accommodates new features. sconcho remains fully
+          backward compatible for spf projects stored with API1/2
+        * Improved pattern repeat interface and detection when
+          clicking on repeats on the canvas
+        * Added ability to edit row and column labels 
+        * Added ability to clear list of most recently used symbols
+        * sconcho now remembers that most recently opened location used
+          for saving/opening spf files.
+
+
 04-17-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
 	* Bugfix release 0.1.1
