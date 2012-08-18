@@ -85,7 +85,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.settings = settings
-        self._restore_window_settings()
         self.preferencesDialog = PreferencesDialog(self.settings, self)
         self.manualDialog = None
 
@@ -105,6 +104,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.initialize_symbol_widget(knittingSymbols)
         self.initialize_color_widget()
         self.initialize_row_col_widget()
+
+        self._restore_window_settings()
 
         # we set a manual scene rectangle for our view. we
         # should be a little smarter about this in the future
@@ -143,6 +144,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.move(self.settings.main_window_position)
         self.restoreState(self.settings.main_window_state)
 
+        # load the symbol selector splitter state
+        self.SymbolSelectorSplitter.restoreState(\
+                self.settings.symbol_selector_state)
 
 
     def _save_settings(self):
@@ -151,6 +155,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings.main_window_size = self.size()
         self.settings.main_window_position = self.pos()
         self.settings.main_window_state = self.saveState()
+
+        # save the symbol selector splitter state
+        self.settings.symbol_selector_state = \
+            self.SymbolSelectorSplitter.saveState() 
 
 
 

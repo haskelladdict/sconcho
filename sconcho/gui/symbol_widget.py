@@ -27,7 +27,7 @@ from __future__ import absolute_import
 from PyQt4.QtCore import (QSize, QObject, SIGNAL, Qt)
 from PyQt4.QtGui import (QFrame, QGridLayout, QWidgetItem, QWidget, 
                          QHBoxLayout, QLabel, QScrollArea, QMenu,
-                         QColor)
+                         QColor, QDockWidget)
 from PyQt4.QtSvg import QSvgWidget
 
 
@@ -171,7 +171,6 @@ def sort_symbols_by_category(symbols):
     sortedSymbols.sort(key=(lambda x: x[0]))
 
     return sortedSymbols
-
 
 
 

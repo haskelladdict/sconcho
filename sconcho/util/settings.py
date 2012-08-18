@@ -26,7 +26,7 @@ from __future__ import absolute_import
 
 import logging 
 
-from PyQt4.QtCore import (QSettings, QSize, QDir, QPoint)
+from PyQt4.QtCore import (QSettings, QSize, QDir, QPoint, QByteArray)
 from PyQt4.QtGui import (QFont, QFontDatabase)
 
 
@@ -232,7 +232,7 @@ class DefaultSettings(QSettings):
     def main_window_state(self):
         """ Return the saved state of the main window. """
 
-        return self.value("MainWindow/State")
+        return self.value("MainWindow/State", QByteArray())
 
 
 
@@ -241,6 +241,23 @@ class DefaultSettings(QSettings):
         """ Set the state of the main window. """
 
         self.setValue("MainWindow/State", state)
+
+
+
+    @property
+    def symbol_selector_state(self):
+        """ Return the saved state of the symbol selector splitter. """
+
+        return self.value("SymbolSelector/State", QByteArray())
+
+
+
+    @symbol_selector_state.setter
+    def symbol_selector_state(self, state):
+        """ Set the state of the symbol selector splitter. """
+
+        self.setValue("SymbolSelector/State", state)
+
 
 
 

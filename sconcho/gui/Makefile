@@ -3,7 +3,7 @@ all:
 	
 # NOTE: this seems like a hack; pyuic4 should really offer a way
 # to do this automagically
-	sed -i -e '/from [a|c|p|r]/s/from /from sconcho.gui./' ui_main_window.py
+	sed -i -e '/from [a|c|p|r|s]/s/from /from sconcho.gui./' ui_main_window.py
 	pyuic4 -o ui_export_bitmap_dialog.py ui/export_bitmap_dialog.ui
 	pyuic4 -o ui_new_pattern_dialog.py ui/new_pattern_dialog.ui
 	pyuic4 -o ui_sconcho_manual.py ui/sconcho_manual.ui
