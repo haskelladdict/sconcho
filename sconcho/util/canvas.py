@@ -40,6 +40,13 @@ import sconcho.util.messages as msg
 logger = logging.getLogger(__name__)
 
 
+# constants determining the interacion mode with
+# the canvas
+SELECTION_MODE = 0
+HIDE_MODE = 1
+SHOW_MODE = 2
+
+
 
 def convert_pos_to_col_row(mousePos, cellWidth, cellHeight):
     """ Converts a mouse position on the canvas into a tuple
@@ -86,8 +93,11 @@ def is_click_on_labels(col, row, numCols, numRows):
     of the grid.
     """
 
-    if (((col == numCols or col == -1) and (row >= 0 and row < numRows)) or
-        ((row == -1 or row == numRows) and (col >= 0 and col < numCols))):
+    #if (((col == numCols or col == -1) and (row >= 0 and row < numRows)) or
+    #    ((row == -1 or row == numRows) and (col >= 0 and col < numCols))):
+    if ((col == numCols and (row >= 0 and row < numRows)) or
+        (row == numRows and (col >= 0 and col < numCols))):
+
         return True
     else:
         return False
@@ -488,7 +498,10 @@ def is_selection_rectangular(selectedCells):
 
 
 def get_marked_rows(selectedCells, numColumns):
-    """ Returns a list of completely selected rows.
+    """ Returns a list of selected rows. 
+
+    Each row that has at least a single cell selected
+    will be selected.
 
     Returns a list of selected rows if nothing else
     is selected and otherwise an empty list.
@@ -498,7 +511,7 @@ def get_marked_rows(selectedCells, numColumns):
     if selectedCells:
         cellsByRow = order_selection_by_rows(selectedCells)
         values = set(num_unitcells(row) for row in cellsByRow.values())
-        if len(values) == 1 and values.pop() == numColumns:
+        if len(values) == 1: # and values.pop() == numColumns:
             return list(cellsByRow.keys())
 
     return []
@@ -506,7 +519,10 @@ def get_marked_rows(selectedCells, numColumns):
 
 
 def get_marked_columns(selectedCells, numRows):
-    """ Returns a list of completely selected columns.
+    """ Returns a list of selected columns.
+
+    Each column that has at least a single cell selected
+    will be selected.
 
     Returns a list of selected columns if nothing else
     is selected and otherwise an empty list.
@@ -526,16 +542,16 @@ def get_marked_columns(selectedCells, numRows):
                         in cellsByColumn.items()])
 
         # all columns are of lenght numRows - good to go
-        if all([ (x == numRows) for x in entries.values()]):
-            return list(cellsByColumn.keys())
+        #if all([ (x == numRows) for x in entries.values()]):
+        return list(cellsByColumn.keys())
 
         # we also accept a single full column with a complete non-jagged
         # edge
-        if len([x for x in entries.values() if x == numRows]) == 1:
-            for (col, length) in entries.items():
-                if length == numRows:
-                    if not ((col-1) in entries and (col+1) in entries):
-                        return [col]
+        #if len([x for x in entries.values() if x == numRows]) == 1:
+        #    for (col, length) in entries.items():
+        #        if length == numRows:
+        #            if not ((col-1) in entries and (col+1) in entries):
+        #                return [col]
 
     return []
 

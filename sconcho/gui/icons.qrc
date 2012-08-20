@@ -1,6 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
   <file>icons/copy.png</file>
+  <file>icons/create_cells.png</file>
   <file>icons/cut.png</file>
   <file>icons/down.png</file>
   <file>icons/delete_row.png</file>
@@ -15,6 +16,7 @@
   <file>icons/fill.png</file>
   <file>icons/gtk-preferences.png</file>
   <file>icons/gtk-clear.png</file>
+  <file>icons/hide_cells.png</file>
   <file>icons/histogram.png</file>
   <file>icons/insert_frame.png</file>
   <file>icons/insert_row.png</file>
@@ -34,6 +36,7 @@
   <file>icons/right.png</file>
   <file>icons/sconcho_icon.png</file>
   <file>icons/select_all.png</file>
+  <file>icons/show_cells.png</file>
   <file>icons/stop.png</file>
   <file>icons/togglelegend.png</file>
   <file>icons/text.png</file>

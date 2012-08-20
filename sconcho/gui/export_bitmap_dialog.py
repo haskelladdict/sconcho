@@ -96,7 +96,6 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self.update_dimensions()
         self.dpiSpinner.setValue(self.defaultDPI)
 
-        self.hideNostitchSymbols = False
 
 
     def _set_up_connections(self):
@@ -118,9 +117,6 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
         self.connect(self.dpiSpinner, SIGNAL("valueChanged(int)"),
                      self.dpi_update)
-
-        self.connect(self.hideNostitchCheckBox, SIGNAL("stateChanged(int)"),
-                     self.hide_nostitch_update)
 
         self.connect(self.unitSelector, SIGNAL("currentIndexChanged(int)"),
                      self.unit_update)
@@ -333,16 +329,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
 
 
 
-    def hide_nostitch_update(self, state):
-        """ Update the current hide nostitch state """
 
-        if state == 0:
-            self.hideNostitchSymbols = False
-        else:
-            self.hideNostitchSymbols = True
-            
-
-    
     def update_path_extension(self, selectionID):
         """ This function updates the filename extension
         if the user changes the image file format. 
@@ -454,7 +441,7 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         height = self.heightSpinner.value()
         dpi = self.dpiSpinner.value()
         self.emit(SIGNAL("export_pattern"), width, height, dpi,
-                  self.hideNostitchSymbols, exportFilePath)
+                  exportFilePath)
 
         QDialog.accept(self)
 

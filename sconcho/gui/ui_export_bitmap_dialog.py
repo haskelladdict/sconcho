@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/export_bitmap_dialog.ui'
 #
-# Created: Sat Aug 18 12:45:53 2012
+# Created: Mon Aug 20 14:49:48 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -97,19 +97,8 @@ class Ui_ExportBitmapDialog(object):
         spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem6, 1, 3, 1, 2)
         self.verticalLayout.addLayout(self.gridLayout)
-        spacerItem7 = QtGui.QSpacerItem(20, 27, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        spacerItem7 = QtGui.QSpacerItem(20, 10, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem7)
-        self.label_7 = QtGui.QLabel(ExportBitmapDialog)
-        self.label_7.setObjectName(_fromUtf8("label_7"))
-        self.verticalLayout.addWidget(self.label_7)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.hideNostitchCheckBox = QtGui.QCheckBox(ExportBitmapDialog)
-        self.hideNostitchCheckBox.setObjectName(_fromUtf8("hideNostitchCheckBox"))
-        self.horizontalLayout.addWidget(self.hideNostitchCheckBox)
-        self.verticalLayout.addLayout(self.horizontalLayout)
-        spacerItem8 = QtGui.QSpacerItem(20, 10, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem8)
         self.label_5 = QtGui.QLabel(ExportBitmapDialog)
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.verticalLayout.addWidget(self.label_5)
@@ -130,15 +119,15 @@ class Ui_ExportBitmapDialog(object):
         self.availableFormatsChooser = QtGui.QComboBox(ExportBitmapDialog)
         self.availableFormatsChooser.setObjectName(_fromUtf8("availableFormatsChooser"))
         self.horizontalLayout_4.addWidget(self.availableFormatsChooser)
-        spacerItem9 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_4.addItem(spacerItem9)
+        spacerItem8 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem8)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
-        spacerItem10 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem10)
+        spacerItem9 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem9)
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
         self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
-        spacerItem11 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem11)
+        spacerItem10 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem10)
         self.cancelButton = QtGui.QPushButton(ExportBitmapDialog)
         self.cancelButton.setObjectName(_fromUtf8("cancelButton"))
         self.horizontalLayout_3.addWidget(self.cancelButton)
@@ -180,13 +169,6 @@ class Ui_ExportBitmapDialog(object):
         self.label_9.setText(QtGui.QApplication.translate("ExportBitmapDialog", "dpi", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Height", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("ExportBitmapDialog", "pixels at", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_7.setText(QtGui.QApplication.translate("ExportBitmapDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'DejaVu Sans\'; font-size:8pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:600;\">Nostich Symbols</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.hideNostitchCheckBox.setToolTip(QtGui.QApplication.translate("ExportBitmapDialog", "Checking this option will hide all <i>nostitch</i> symbols in the exported image of your pattern. This can be used to generate non-rectangular patterns.", None, QtGui.QApplication.UnicodeUTF8))
-        self.hideNostitchCheckBox.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Hide nostitch symbols", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("ExportBitmapDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

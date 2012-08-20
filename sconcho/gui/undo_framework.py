@@ -720,7 +720,7 @@ class InsertColumns(QUndoCommand):
 
         """
 
-        self.columnLabels = canvas.columnLabels.copy()
+        self.columnLabels = self.canvas.columnLabels.copy()
 
         shiftedItems = \
             self.canvas._items_in_col_row_range(self.pivot,

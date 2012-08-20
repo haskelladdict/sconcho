@@ -44,7 +44,7 @@ from PyQt4.QtSvg import QSvgGenerator
 from sconcho.gui.pattern_canvas_objects import (PatternGridItem, 
                                         PatternLegendItem,
                                         PatternRepeatItem, 
-                                        NostitchVisualizer)
+                                        HiddenStitchManager)
 from sconcho.util.canvas import (legendItem_symbol, legendItem_text,
                                  visible_bounding_rect, sort_vertices)
 from sconcho.util.misc import wait_cursor
@@ -1130,7 +1130,7 @@ def export_scene(canvas, width, height, dpi, hideNostitchSymbols,
     # any currently selected legend items
     canvas.clearFocus()
 
-    with NostitchVisualizer(canvas, hideNostitchSymbols):
+    with HiddenStitchManager(canvas):
 
         # NOTE: We seem to need the 1px buffer region to avoid
         # the image being cut off

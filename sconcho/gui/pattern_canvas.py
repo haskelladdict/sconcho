@@ -93,6 +93,8 @@ class PatternCanvas(QGraphicsScene):
         # are we currently visible?
         self.isVisible = True
 
+        self.selectionMode = 0
+
         # should row/column labels be updated?
         # NOTE: We initialize to True, then build the main grid
         # and then update the properties with the default settings
@@ -100,6 +102,8 @@ class PatternCanvas(QGraphicsScene):
         self.rowLabels = {}
         self.updateColumnLabels = True
         self.columnLabels = {}
+
+        self.selectionMode = SELECTION_MODE
 
         self._activeSymbol = None
         self._defaultSymbol = defaultSymbol
@@ -195,7 +199,7 @@ class PatternCanvas(QGraphicsScene):
         hand, the user hopefully won't do these changes very often.
 
         """
-
+        
         visibility = self.settings.highlightRows.value
         color = self.settings.highlightRowsColor.value
         opacity = self.settings.highlightRowsOpacity.value/100.0
@@ -209,7 +213,8 @@ class PatternCanvas(QGraphicsScene):
 
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem) and \
-               ((graphicsItem.row + offset + start) % 2 != 0):
+               ((graphicsItem.row + offset + start) % 2 != 0) and \
+               not graphicsItem.isHidden:
 
                 origin_x = graphicsItem.column * self.cell_width
                 origin_y = graphicsItem.row * self.cell_height
@@ -345,6 +350,14 @@ class PatternCanvas(QGraphicsScene):
             self.sceneRect()
 
         self.invalidate()
+
+
+
+    def select_mode(self, mode):
+        """ Set the selection mode to mode """
+
+        print("mode ", mode)
+        self.selectionMode = mode
 
 
 
@@ -617,7 +630,50 @@ class PatternCanvas(QGraphicsScene):
         self.connect(item, SIGNAL("cell_unselected"),
                      self.grid_cell_inactivated)
 
+        self.connect(item, SIGNAL("cell_hidden"), self.hide_cell_event)
+        self.connect(item, SIGNAL("cell_visible"), self.show_cell_event)
+
         return item
+
+
+
+    def hide_cell_event(self, row, column):
+        """ This function does all the housekeeping after a cell
+        has been hidden.
+
+        Currently this only involves hiding the row highlighting.
+
+        """
+
+        pos = convert_col_row_to_pos(column, row, self.cell_width,
+                                     self.cell_height)
+        allItems = self.items(pos)
+        patternItems = extract_patternItems(allItems, PatternHighlightItem)
+        if len(patternItems) == 0:
+            return
+        else:
+            # NOTE: don't set opacity to 0 since Qt seems to think that
+            # the item is gone and looses track
+            patternItems[0].setOpacity(0.01)  
+
+
+ 
+    def show_cell_event(self, row, column):
+        """ This function does all the housekeeping after a cell
+        has been made visible again.
+
+        Currently this only involves un-hiding the row highlighting.
+
+        """
+
+        pos = convert_col_row_to_pos(column, row, self.cell_width,
+                                     self.cell_height)
+        allItems = self.items(pos)
+        patternItems = extract_patternItems(allItems, PatternHighlightItem)
+        if len(patternItems) == 0:
+            return
+        else:
+            patternItems[0].setOpacity(1.0)
 
 
 
@@ -729,20 +785,12 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        selection = set()
-        unselection = set()
+        items = []
         for item in self.items(region):
             if isinstance(item, PatternGridItem):
-                itemID = get_item_id(item.column, item.row)
-                entry = PatternCanvasEntry(item.column, item.row,
-                                           item.width, item.color,
-                                           item.symbol)
-                if itemID in self._selectedCells:
-                    unselection.add(entry)
-                else:
-                    selection.add(entry)
+                items.append(item)
 
-        self._paint_cells(selection, unselection)
+        self.select_cells(items)
 
 
 
@@ -762,20 +810,35 @@ class PatternCanvas(QGraphicsScene):
         else:
             selectedItems = self.get_row_items(row)
 
+        self.select_cells(selectedItems)
+
+
+
+    def select_cells(self, items):
+        """ This function selects all cells in the items list. """
+
         selection = set()
         unselection = set()
-        for item in selectedItems:
-            itemID = get_item_id(item.column, item.row)
-            entry = PatternCanvasEntry(item.column, item.row,
-                                       item.width, item.color,
-                                       item.symbol)
-            if itemID in self._selectedCells:
-                unselection.add(entry)
+        for item in items:
+
+            if self.selectionMode == HIDE_MODE:
+                item.hide_cell()
+
+            elif self.selectionMode == SHOW_MODE:
+                item.show_cell()
+
             else:
-                selection.add(entry)
+                itemID = get_item_id(item.column, item.row)
+                entry = PatternCanvasEntry(item.column, item.row, item.width,
+                                           item.color, item.symbol)
+                if itemID in self._selectedCells:
+                    unselection.add(entry)
+                elif item.isHidden:
+                    continue
+                else:
+                    selection.add(entry)
 
         self._paint_cells(selection, unselection)
-
 
 
 

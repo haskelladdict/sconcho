@@ -2,7 +2,7 @@
 
 # Form implementation generated from sconcho.gui.reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Aug 18 12:45:53 2012
+# Created: Mon Aug 20 14:49:48 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -349,6 +349,25 @@ class Ui_MainWindow(object):
         icon25.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/paste.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_Paste_Rectangular_Selection.setIcon(icon25)
         self.action_Paste_Rectangular_Selection.setObjectName(_fromUtf8("action_Paste_Rectangular_Selection"))
+        self.actionHide_Selected_Cells = QtGui.QAction(MainWindow)
+        self.actionHide_Selected_Cells.setCheckable(True)
+        icon26 = QtGui.QIcon()
+        icon26.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/hide_cells.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionHide_Selected_Cells.setIcon(icon26)
+        self.actionHide_Selected_Cells.setObjectName(_fromUtf8("actionHide_Selected_Cells"))
+        self.actionShow_Selected_Cells = QtGui.QAction(MainWindow)
+        self.actionShow_Selected_Cells.setCheckable(True)
+        icon27 = QtGui.QIcon()
+        icon27.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/show_cells.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionShow_Selected_Cells.setIcon(icon27)
+        self.actionShow_Selected_Cells.setObjectName(_fromUtf8("actionShow_Selected_Cells"))
+        self.actionCreate_Chart = QtGui.QAction(MainWindow)
+        self.actionCreate_Chart.setCheckable(True)
+        self.actionCreate_Chart.setChecked(True)
+        icon28 = QtGui.QIcon()
+        icon28.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/create_cells.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionCreate_Chart.setIcon(icon28)
+        self.actionCreate_Chart.setObjectName(_fromUtf8("actionCreate_Chart"))
         self.menuRecent_Files.addAction(self.action_Clear_Recently_Used_Files)
         self.menuRecent_Files.addSeparator()
         self.menuFile.addAction(self.actionNew)
@@ -396,6 +415,10 @@ class Ui_MainWindow(object):
         self.menuTools.addAction(self.actionApply_Color_to_Selection)
         self.menuTools.addAction(self.actionAdd_Text)
         self.menuTools.addAction(self.actionCreate_Row_Repeat)
+        self.menuTools.addSeparator()
+        self.menuTools.addAction(self.actionCreate_Chart)
+        self.menuTools.addAction(self.actionShow_Selected_Cells)
+        self.menuTools.addAction(self.actionHide_Selected_Cells)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuGrid.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
@@ -425,6 +448,10 @@ class Ui_MainWindow(object):
         self.toolBar_2.addAction(self.actionInsert_rows)
         self.toolBar_2.addAction(self.actionDelete_columns)
         self.toolBar_2.addAction(self.actionInsert_columns)
+        self.toolBar_2.addSeparator()
+        self.toolBar_2.addAction(self.actionCreate_Chart)
+        self.toolBar_2.addAction(self.actionShow_Selected_Cells)
+        self.toolBar_2.addAction(self.actionHide_Selected_Cells)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -525,6 +552,9 @@ class Ui_MainWindow(object):
         self.action_Copy_Rectangular_Selection.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+C", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Paste_Rectangular_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Paste ", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Paste_Rectangular_Selection.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+V", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionHide_Selected_Cells.setText(QtGui.QApplication.translate("MainWindow", "Hide Selected Cells", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_Selected_Cells.setText(QtGui.QApplication.translate("MainWindow", "Show Selected Cells", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCreate_Chart.setText(QtGui.QApplication.translate("MainWindow", "Create Chart", None, QtGui.QApplication.UnicodeUTF8))
 
 from sconcho.gui.active_symbol_widget import ActiveSymbolWidget
 from sconcho.gui.color_widget import ColorWidget

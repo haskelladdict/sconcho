@@ -108,6 +108,7 @@ class PatternGridItem(QGraphicsSvgItem):
         self._pen.setJoinStyle(Qt.MiterJoin)
         self._pen.setColor(Qt.black)
 
+        self.isHidden = False
         self._selected = False
         self.color = defaultColor
         self._backBrush = QBrush(self.color)
@@ -130,10 +131,45 @@ class PatternGridItem(QGraphicsSvgItem):
             event.ignore()
             return
 
-        if not self._selected:
-            self.emit(SIGNAL("cell_selected"), self)
-        else:
-            self.emit(SIGNAL("cell_unselected"), self)
+        mode = self.scene().selectionMode
+
+        if mode == HIDE_MODE:
+            self.hide_cell()
+            self.emit(SIGNAL("cell_hidden"), self.row, self.column)
+
+        elif mode == SHOW_MODE:
+            self.show_cell()
+            self.emit(SIGNAL("cell_visible"), self.row, self.column)
+
+        elif not self.isHidden:
+            if not self._selected:
+                self.emit(SIGNAL("cell_selected"), self)
+            else:
+                self.emit(SIGNAL("cell_unselected"), self)
+
+
+
+    def hide_cell(self):
+        """ Hides the cell by setting the opacity to a low value.
+
+        NOTE: This is different from Qt's hide function since it
+        is not meant to disable the item completely.
+        """
+
+        self.isHidden = True
+        self.setOpacity(0.05)
+
+
+
+    def show_cell(self):
+        """ Shows/Unhides the cell by setting the opacity back to 1.0.
+
+        NOTE: This is the reverse of hide_cell().
+        
+        """
+
+        self.isHidden = False
+        self.setOpacity(1.0)
 
 
 
@@ -803,6 +839,7 @@ class PatternHighlightItem(QGraphicsRectItem):
         # in white
         self._pen = QPen(Qt.NoPen)
         self.setPen(self._pen)
+        self.setZValue(1)
 
         color.setAlphaF(alpha)
         self._brush = QBrush(color)
@@ -974,15 +1011,16 @@ class PatternTextItem(PatternLegendText):
 
 
 
+
 ######################################################################
 #
 # context manager taking care of hiding nostitch symbols and
 # underlying PatternHighlightItems if present
 #
 ######################################################################
-class NostitchVisualizer(object):
+class HiddenStitchManager(object):
 
-    def __init__(self, canvas, active):
+    def __init__(self, canvas):
         """ Toggles the visibility of all nostitch symbols to on
         or off via show() and hide().
 
@@ -994,42 +1032,32 @@ class NostitchVisualizer(object):
         """
 
         self.isPatternVisible = canvas.isVisible
-        self.isActive = active
-        if self.isActive:
-            self.highlightItems = []
-            self.nostitchItems = []
-            for item in canvas.items():
-                if isinstance(item, PatternGridItem):
-                    if item.name == "nostitch":
-                        self.nostitchItems.append(item)
+        #self.isActive = active
+        self.highlightItems = []
+        self.hiddenItems = []
+        for item in canvas.items():
+            if isinstance(item, PatternGridItem):
+                if item.isHidden:
+                    self.hiddenItems.append(item)
 
-                        highlightItem = \
-                            canvas._item_at_row_col(item.row,
-                                                    item.column,
-                                                    PatternHighlightItem)
-                        if highlightItem:
-                            self.highlightItems.append(highlightItem)
-
-            if self.nostitchItems:
-                legendID = generate_legend_id(self.nostitchItems[0].symbol,
-                                              self.nostitchItems[0].color)
-                (_, self.item, self.textItem) = canvas.gridLegend[legendID]
+                    highlightItem = \
+                        canvas._item_at_row_col(item.row,
+                                                item.column,
+                                                PatternHighlightItem)
+                    if highlightItem:
+                        self.highlightItems.append(highlightItem)
 
 
 
     def __enter__(self):
         """ Entry method of NostitchVisualizer context manager. """
 
-        if self.isActive:
-             for item in self.nostitchItems:
-                item.hide()
+        #if self.isActive:
+        for item in self.hiddenItems:
+            item.hide()
 
-             for item in self.highlightItems:
-                 item.hide()
-
-             if self.nostitchItems:
-                 self.item.hide()
-                 self.textItem.hide()
+        for item in self.highlightItems:
+            item.hide()
 
         return self
 
@@ -1039,17 +1067,12 @@ class NostitchVisualizer(object):
         """ Exit method of NostitchVisualizer context manager. """
 
         # only show no-stitches if pattern grid is visible
-        if self.isActive and self.isPatternVisible:
-             for item in self.nostitchItems:
+        if self.isPatternVisible:
+             for item in self.hiddenItems:
                  item.show()
 
              for item in self.highlightItems:
                  item.show()
-
-        if self.isActive:
-             if self.nostitchItems:
-                 self.item.show()
-                 self.textItem.show()
 
 
 

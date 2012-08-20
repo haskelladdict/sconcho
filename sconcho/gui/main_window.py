@@ -41,7 +41,8 @@ from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo,
 from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
                          QWidget, QGridLayout, QHBoxLayout, QLabel,
                          QFrame, QColor, QApplication, QDialog, QAction,
-                         QPrinter, QPrintDialog, QPrintPreviewDialog,)
+                         QPrinter, QPrintDialog, QPrintPreviewDialog,
+                         QActionGroup)
 from PyQt4.QtSvg import QSvgWidget
 
 from sconcho.gui.ui_main_window import Ui_MainWindow
@@ -50,6 +51,7 @@ import sconcho.util.settings as settings
 import sconcho.util.misc as misc
 import sconcho.util.io as io
 import sconcho.util.symbol_parser as parser
+import sconcho.util.canvas as canvas
 from sconcho.gui.symbol_widget import (generate_symbolWidgets,
                                        SymbolSynchronizer,
                                        symbols_by_category,
@@ -300,6 +302,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionAdd_Text, SIGNAL("triggered()"),
                      self.canvas.add_text_item)
 
+        modeGroup = QActionGroup(self)
+        modeGroup.addAction(self.actionHide_Selected_Cells)
+        modeGroup.addAction(self.actionShow_Selected_Cells)
+        modeGroup.addAction(self.actionCreate_Chart)
+
+        self.connect(self.actionHide_Selected_Cells, SIGNAL("triggered()"),
+                     partial(self.canvas.select_mode, canvas.HIDE_MODE))
+
+        self.connect(self.actionShow_Selected_Cells, SIGNAL("triggered()"),
+                     partial(self.canvas.select_mode, canvas.SHOW_MODE))
+
+        self.connect(self.actionCreate_Chart, SIGNAL("triggered()"),
+                     partial(self.canvas.select_mode, canvas.SELECTION_MODE))
 
 
 
