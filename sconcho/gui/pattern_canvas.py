@@ -81,6 +81,8 @@ logger = logging.getLogger(__name__)
 #########################################################
 class PatternCanvas(QGraphicsScene):
 
+    HIDE_OPACITY = 0.01
+
 
     def __init__(self, theSettings, defaultSymbol, parent = None):
 
@@ -213,8 +215,7 @@ class PatternCanvas(QGraphicsScene):
 
         for graphicsItem in self.items():
             if isinstance(graphicsItem, PatternGridItem) and \
-               ((graphicsItem.row + offset + start) % 2 != 0) and \
-               not graphicsItem.isHidden:
+               ((graphicsItem.row + offset + start) % 2 != 0): 
 
                 origin_x = graphicsItem.column * self.cell_width
                 origin_y = graphicsItem.row * self.cell_height
@@ -227,6 +228,9 @@ class PatternCanvas(QGraphicsScene):
                 element.setZValue(1)
                 if visibility == 0:
                     element.hide()
+
+                if graphicsItem.isHidden:
+                    element.setOpacity(PatternCanvas.HIDE_OPACITY)
                 self.addItem(element)
 
 
@@ -356,7 +360,6 @@ class PatternCanvas(QGraphicsScene):
     def select_mode(self, mode):
         """ Set the selection mode to mode """
 
-        print("mode ", mode)
         self.selectionMode = mode
 
 
@@ -654,7 +657,7 @@ class PatternCanvas(QGraphicsScene):
         else:
             # NOTE: don't set opacity to 0 since Qt seems to think that
             # the item is gone and looses track
-            patternItems[0].setOpacity(0.01)  
+            patternItems[0].setOpacity(PatternCanvas.HIDE_OPACITY)  
 
 
  

@@ -1121,10 +1121,11 @@ class PatternCanvasEntry(object):
 
     """
 
-    def __init__(self,  column, row, width, color, symbol):
+    def __init__(self,  column, row, width, color, symbol, hidden=False):
 
         self.column = column
         self.row    = row
         self.width  = width
         self.color  = color
         self.symbol = symbol
+        self.isHidden = hidden

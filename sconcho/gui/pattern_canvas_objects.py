@@ -135,11 +135,9 @@ class PatternGridItem(QGraphicsSvgItem):
 
         if mode == HIDE_MODE:
             self.hide_cell()
-            self.emit(SIGNAL("cell_hidden"), self.row, self.column)
 
         elif mode == SHOW_MODE:
             self.show_cell()
-            self.emit(SIGNAL("cell_visible"), self.row, self.column)
 
         elif not self.isHidden:
             if not self._selected:
@@ -158,6 +156,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
         self.isHidden = True
         self.setOpacity(0.05)
+        self.emit(SIGNAL("cell_hidden"), self.row, self.column)
 
 
 
@@ -170,6 +169,7 @@ class PatternGridItem(QGraphicsSvgItem):
 
         self.isHidden = False
         self.setOpacity(1.0)
+        self.emit(SIGNAL("cell_visible"), self.row, self.column)
 
 
 
@@ -841,10 +841,16 @@ class PatternHighlightItem(QGraphicsRectItem):
         self.setPen(self._pen)
         self.setZValue(1)
 
+        self.set_color(color, alpha)
+
+       
+
+    def set_color(self, color, alpha):
+        """ Sets the color and opacity of the highligh item """
+
         color.setAlphaF(alpha)
         self._brush = QBrush(color)
         self.setBrush(self._brush)
-
 
 
 

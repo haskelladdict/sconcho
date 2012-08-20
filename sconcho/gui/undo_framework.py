@@ -545,7 +545,8 @@ class DeleteRows(QUndoCommand):
                                                         item.row,
                                                         item.width,
                                                         item.color,
-                                                        item.symbol))
+                                                        item.symbol,
+                                                        item.isHidden))
             self.canvas.removeItem(item)
             del item
 
@@ -652,6 +653,10 @@ class DeleteRows(QUndoCommand):
                                                     entry.symbol,
                                                     entry.color)
             self.canvas.addItem(item)
+
+            # make sure to hide cell again
+            if entry.isHidden:
+                item.hide_cell()
 
             # if item was selected, press it
             itemID = get_item_id(entry.column, entry.row)
@@ -922,7 +927,8 @@ class DeleteColumns(QUndoCommand):
                                                         item.row,
                                                         item.width,
                                                         item.color,
-                                                        item.symbol))
+                                                        item.symbol,
+                                                        item.isHidden))
             self.canvas.removeItem(item)
             del item
 
@@ -1035,6 +1041,10 @@ class DeleteColumns(QUndoCommand):
                                                       entry.symbol,
                                                       entry.color)
             self.canvas.addItem(item)
+
+            # make sure to hide previous hidden cells
+            if entry.isHidden:
+                item.hide_cell()
 
             # if item was selected, press it
             itemID = get_item_id(entry.column, entry.row)

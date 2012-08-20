@@ -78,7 +78,8 @@ class ExportBitmapDialog(QDialog, Ui_ExportBitmapDialog):
         self._add_image_formats_to_gui()
 
         if fileName:
-            self.fullPath = QDir.homePath() + "/" + QFileInfo(fileName).baseName()
+            self.fullPath = QDir.homePath() + "/" + \
+                    QFileInfo(fileName).baseName()
         else:
             self.fullPath = QDir.homePath() + "/" 
         extension = self.selected_file_extension()

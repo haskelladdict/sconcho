@@ -1122,8 +1122,7 @@ def read_section_header(stream):
 #
 ###########################################################################
 @wait_cursor
-def export_scene(canvas, width, height, dpi, hideNostitchSymbols,
-                 exportFileName):
+def export_scene(canvas, width, height, dpi, exportFileName):
     """ This function exports the scene to a file. """
 
     # need this to make sure we take away focus from
