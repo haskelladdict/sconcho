@@ -57,7 +57,7 @@ logger = logging.getLogger(__name__)
 # the following classes encapsulate actions for the Undo/Redo framework
 #
 ###########################################################################
-class PasteCellsNew(QUndoCommand):
+class PasteCells(QUndoCommand):
     """ This class encapsulates the paste action. I.e. all
     items in our copySelection are pasted into the dead Selection.
 
@@ -66,20 +66,19 @@ class PasteCellsNew(QUndoCommand):
 
     """
 
-
-
     def __init__(self, canvas, copySelection, deadSelection,
-                 column, row, minCol, minRow, parent = None):
+                 pasteColumn, pasteRow, minCopyCol, minCopyRow, 
+                 parent = None):
 
-        super(PasteCellsNew, self).__init__(parent)
+        super(PasteCells, self).__init__(parent)
         self.setText("paste cells")
         self.canvas = canvas
         self.copySelection = copySelection.copy()
         self.deadSelection = deadSelection.copy()
-        self.column = column
-        self.row = row
-        self.minColumn = minCol
-        self.minRow = minRow
+        self.pasteColumn = pasteColumn
+        self.pasteRow = pasteRow
+        self.minCopyColumn = minCopyCol
+        self.minCopyRow = minCopyRow
 
 
 
@@ -90,6 +89,11 @@ class PasteCellsNew(QUndoCommand):
         for entry in self.deadSelection.values():
             item = self.canvas._item_at_row_col(entry.row, entry.column)
             if item:
+                # make sure we make hidden items visible before we
+                # remove them (otherwise highlighting gets screwed up)
+                if item.isHidden:
+                    item.show_cell()
+            
                 self.canvas.removeItem(item)
                 del item
 
@@ -97,8 +101,8 @@ class PasteCellsNew(QUndoCommand):
         # we shift the upper left corner to (0,0) and then the
         # whole selection to the target location (self.column, self.row)
         for entry in self.copySelection.values():
-            column = entry.column - self.minColumn + self.column
-            row    = entry.row - self.minRow + self.row
+            column = entry.column - self.minCopyColumn + self.pasteColumn
+            row    = entry.row - self.minCopyRow + self.pasteRow
 
             location = QPointF(column * self.canvas._unitCellDim.width(),
                                row * self.canvas._unitCellDim.height())
@@ -118,8 +122,8 @@ class PasteCellsNew(QUndoCommand):
         #for colID in range(self.column, self.column + self.numColumns):
         #    for rowID in range(self.row, self.row + self.numRows):
         for entry in self.copySelection.values():
-            column = entry.column - self.minColumn + self.column
-            row = entry.row - self.minRow + self.row
+            column = entry.column - self.minCopyColumn + self.pasteColumn
+            row = entry.row - self.minCopyRow + self.pasteRow
             item = self.canvas._item_at_row_col(row, column)
             if item:
                 self.canvas.removeItem(item)
@@ -138,110 +142,11 @@ class PasteCellsNew(QUndoCommand):
                                                      entry.width, 1,
                                                      entry.symbol,
                                                      entry.color)
+
+            # make sure to hide previous hidden cells again
+            if entry.isHidden:
+                item.hide_cell()
             self.canvas.addItem(item)
-
-
-
-class PasteCells(QUndoCommand):
-    """ This class encapsulates the paste action. I.e. all
-    items in our copySelection are pasted into the dead Selection.
-
-    NOTE: The calling code has to make sure that deadSelection
-    has the proper dimension to fit copySelection.
-
-    """
-
-
-
-    def __init__(self, canvas, copySelection, deadSelection,
-                 column, row, numCols, numRows, parent = None):
-
-        super(PasteCells, self).__init__(parent)
-        self.setText("paste cells")
-        self.canvas = canvas
-        self.copySelection = copySelection.copy()
-        self.deadSelection = deadSelection.copy()
-        self.column = column
-        self.row = row
-        self.numColumns = numCols
-        self.numRows = numRows
-
-
-
-    def _get_upper_left(self, selection):
-        """ Determines the column and row of the upper left
-        corner of the selection.
-
-        """
-
-        rows = []
-        cols = []
-        for entry in selection:
-            cols.append(entry.column)
-            rows.append(entry.row)
-
-        return (min(cols), min(rows))
-
-
-
-    def redo(self):
-        """ The redo action. """
-
-        (upperLeftCol, upperLeftRow) = \
-                self._get_upper_left(self.copySelection.values())
-
-        # delete previous items
-        for entry in self.deadSelection.values():
-            item = self.canvas._item_at_row_col(entry.row, entry.column)
-            if item:
-                self.canvas.removeItem(item)
-                del item
-
-        # add new items; shift them to the proper column and row:
-        # we shift the upper left corner to (0,0) and then the
-        # whole selection to the target location (self.column, self.row)
-        for entry in self.copySelection.values():
-            column = entry.column - upperLeftCol + self.column
-            row    = entry.row - upperLeftRow + self.row
-
-            location = QPointF(column * self.canvas._unitCellDim.width(),
-                               row * self.canvas._unitCellDim.height())
-            item = self.canvas.create_pattern_grid_item(location,
-                                                     column, row,
-                                                     entry.width, 1,
-                                                     entry.symbol,
-                                                     entry.color)
-            self.canvas.addItem(item)
-
-
-
-    def undo(self):
-        """ The undo action. """
-
-        # remove previously pasted cells
-        for colID in range(self.column, self.column + self.numColumns):
-            for rowID in range(self.row, self.row + self.numRows):
-
-                item = self.canvas._item_at_row_col(rowID, colID)
-                if item:
-                    self.canvas.removeItem(item)
-                    del item
-
-
-        # re-add previously deleted cells
-        for entry in self.deadSelection.values():
-            column = entry.column
-            row = entry.row
-
-            location = QPointF(column * self.canvas._unitCellDim.width(),
-                               row * self.canvas._unitCellDim.height())
-            item = self.canvas.create_pattern_grid_item(location,
-                                                     column, row,
-                                                     entry.width, 1,
-                                                     entry.symbol,
-                                                     entry.color)
-            self.canvas.addItem(item)
-
 
 
 

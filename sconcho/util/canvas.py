@@ -381,9 +381,10 @@ def get_leftmost_column(selectedCells):
     if not selectedCells:
         return None
 
-    selectedCells.sort(key=(lambda x: x.column))
+    cells = list(selectedCells)
+    cells.sort(key=(lambda x: x.column))
 
-    return selectedCells[0].column
+    return cells[0].column
 
 
 
@@ -448,7 +449,8 @@ def match_selections(copySelection, pasteSelection):
                                                     item.row,
                                                     item.width,
                                                     item.color,
-                                                    item.symbol)
+                                                    item.symbol,
+                                                    item.isHidden)
     return (minCopyCol, minCopyRow, minPasteCol, minPasteRow,
             deadSelection)
 

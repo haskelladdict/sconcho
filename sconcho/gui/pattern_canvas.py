@@ -1293,7 +1293,8 @@ class PatternCanvas(QGraphicsScene):
                                                        item.row,
                                                        item.width,
                                                        item.color,
-                                                       item.symbol)
+                                                       item.symbol, 
+                                                       item.isHidden)
 
         return deadSelection
 
@@ -1320,7 +1321,7 @@ class PatternCanvas(QGraphicsScene):
         # in case of single row column selections (otherwise Qt
         # doesn recognize the selection as a rectangle)
         lowerRightCorner += QPointF(self.cell_width * 0.01,
-                                    self.cell_hight * 0.01)
+                                    self.cell_height * 0.01)
 
         allItems = self.items(QRectF(upperLeftCorner, lowerRightCorner))
         patternGridItems = extract_patternItems(allItems, PatternGridItem)
@@ -1361,18 +1362,20 @@ class PatternCanvas(QGraphicsScene):
             return
 
         # case 1: copy and paste selection are both rectangular
-        (status1, (colDim, rowDim)) = \
+        (status1, (pasteColDim, pasteRowDim)) = \
             is_selection_rectangular(self._selectedCells.values())
-        (status2, (pasteColDim, pasteRowDim)) = \
+        (status2, (copyColDim, copyRowDim)) = \
             is_selection_rectangular(self._copySelection.values())
-        (upperLHRow, upperLHColumn, dummy) = \
+        (pasteUpperLHRow, pasteUpperLHColumn, dummy) = \
             get_upper_left_hand_corner(self._selectedCells.values())
-
+        (copyUpperLHRow, copyUpperLHColumn, dummy) = \
+            get_upper_left_hand_corner(self._copySelection.values())
+        
         # we have a rectangular copy and paste selection
         # in this we always insert into the selection
         if status1 and status2:
-            (n_col, r_col) = divmod(colDim, pasteColDim)
-            (n_row, r_row) = divmod(rowDim, pasteRowDim)
+            (n_col, r_col) = divmod(pasteColDim, copyColDim)
+            (n_row, r_row) = divmod(pasteRowDim, copyRowDim)
 
             # only paste if selection is a multiple of what's on the
             # clipboard
@@ -1382,18 +1385,19 @@ class PatternCanvas(QGraphicsScene):
                 self.clear_all_selected_cells()
                 for rowRepeat in range(0, n_row):
 
-                    rowID = upperLHRow + (rowRepeat * pasteRowDim)
+                    rowID = pasteUpperLHRow + (rowRepeat * copyRowDim)
                     for colRepeat in range(0, n_col):
 
-                        colID = upperLHColumn + (colRepeat * pasteColDim)
+                        colID = pasteUpperLHColumn + (colRepeat * copyColDim)
                         deadSelection = \
                             self._patternCanvasEntries_in_rectangle(colID,
-                                    rowID, pasteColDim, pasteRowDim)
+                                    rowID, copyColDim, copyRowDim)
 
-                        pasteCommand = PasteCells(self, self._copySelection,
+                        pasteCommand = PasteCells(self, 
+                                                  self._copySelection,
                                                   deadSelection, colID,
-                                                  rowID, pasteColDim,
-                                                  pasteRowDim)
+                                                  rowID, copyUpperLHColumn,
+                                                  copyUpperLHRow)
                         self._undoStack.push(pasteCommand)
                 self._undoStack.endMacro()
 
@@ -1420,7 +1424,7 @@ class PatternCanvas(QGraphicsScene):
 
             else:
                 self.clear_all_selected_cells()
-                pasteCommand = PasteCellsNew(self, self._copySelection,
+                pasteCommand = PasteCells(self, self._copySelection,
                                         deadSelection, minPasteCol,
                                         minPasteRow, minCopyCol,
                                         minCopyRow)
@@ -1439,7 +1443,7 @@ class PatternCanvas(QGraphicsScene):
 
             else:
                 self.clear_all_selected_cells()
-                pasteCommand = PasteCellsNew(self, self._copySelection,
+                pasteCommand = PasteCells(self, self._copySelection,
                                         deadSelection, column, row,
                                         minCol, minRow)
                 self._undoStack.push(pasteCommand)
@@ -1508,7 +1512,8 @@ class PatternCanvas(QGraphicsScene):
                                                        item.row,
                                                        item.width,
                                                        item.color,
-                                                       item.symbol)
+                                                       item.symbol,
+                                                       item.isHidden)
         return (minRow, minCol, deadSelection)
 
 
