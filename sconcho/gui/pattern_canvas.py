@@ -107,6 +107,10 @@ class PatternCanvas(QGraphicsScene):
 
         self.selectionMode = SELECTION_MODE
 
+        # this dictionary keeps track (for each row) what
+        # calls are visible - needed for proper label placement
+        self.visibleRowLabels = {}
+
         self._activeSymbol = None
         self._defaultSymbol = defaultSymbol
         self._activeColorObject = None
@@ -652,11 +656,7 @@ class PatternCanvas(QGraphicsScene):
                                      self.cell_height)
         allItems = self.items(pos)
         patternItems = extract_patternItems(allItems, PatternHighlightItem)
-        if len(patternItems) == 0:
-            return
-        else:
-            # NOTE: don't set opacity to 0 since Qt seems to think that
-            # the item is gone and looses track
+        if len(patternItems) != 0:
             patternItems[0].setOpacity(PatternCanvas.HIDE_OPACITY)  
 
 
@@ -673,9 +673,7 @@ class PatternCanvas(QGraphicsScene):
                                      self.cell_height)
         allItems = self.items(pos)
         patternItems = extract_patternItems(allItems, PatternHighlightItem)
-        if len(patternItems) == 0:
-            return
-        else:
+        if len(patternItems) != 0:
             patternItems[0].setOpacity(1.0)
 
 

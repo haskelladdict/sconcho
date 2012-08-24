@@ -136,6 +136,10 @@
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>
     <addaction name="actionShow_legend"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreate_Chart"/>
+    <addaction name="actionShow_Selected_Cells"/>
+    <addaction name="actionHide_Selected_Cells"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -180,10 +184,6 @@
     <addaction name="actionApply_Color_to_Selection"/>
     <addaction name="actionAdd_Text"/>
     <addaction name="actionCreate_Row_Repeat"/>
-    <addaction name="separator"/>
-    <addaction name="actionCreate_Chart"/>
-    <addaction name="actionShow_Selected_Cells"/>
-    <addaction name="actionHide_Selected_Cells"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuGrid"/>

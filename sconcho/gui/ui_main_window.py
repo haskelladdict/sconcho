@@ -2,7 +2,7 @@
 
 # Form implementation generated from sconcho.gui.reading ui file 'ui/main_window.ui'
 #
-# Created: Mon Aug 20 14:49:48 2012
+# Created: Thu Aug 23 21:19:27 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -391,6 +391,10 @@ class Ui_MainWindow(object):
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionShow_pattern_grid)
         self.menuView.addAction(self.actionShow_legend)
+        self.menuView.addSeparator()
+        self.menuView.addAction(self.actionCreate_Chart)
+        self.menuView.addAction(self.actionShow_Selected_Cells)
+        self.menuView.addAction(self.actionHide_Selected_Cells)
         self.menuHelp.addAction(self.actionSconcho_Manual)
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionCheck_for_updates)
@@ -415,10 +419,6 @@ class Ui_MainWindow(object):
         self.menuTools.addAction(self.actionApply_Color_to_Selection)
         self.menuTools.addAction(self.actionAdd_Text)
         self.menuTools.addAction(self.actionCreate_Row_Repeat)
-        self.menuTools.addSeparator()
-        self.menuTools.addAction(self.actionCreate_Chart)
-        self.menuTools.addAction(self.actionShow_Selected_Cells)
-        self.menuTools.addAction(self.actionHide_Selected_Cells)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuGrid.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
