@@ -107,9 +107,9 @@ class PatternCanvas(QGraphicsScene):
 
         self.selectionMode = SELECTION_MODE
 
-        # this dictionary keeps track (for each row) what
-        # calls are visible - needed for proper label placement
-        self.visibleRowLabels = {}
+        self.hiddenCellsByRow = {}
+        self.alignRowLabelsToVisibleCells = \
+                self.settings.alignRowLabelsToVisibleCells.value
 
         self._activeSymbol = None
         self._defaultSymbol = defaultSymbol
@@ -262,22 +262,41 @@ class PatternCanvas(QGraphicsScene):
     def _set_up_row_labels(self, labelFont, fontMetric):
         """ Set up row labels. """
 
+        rightMostColumns = []
+        leftMostColumns = []
+        if self.alignRowLabelsToVisibleCells:
+            for row in range(0, self._numRows):
+                columnIDs = set(range(0, self._numColumns))
+                if row in self.hiddenCellsByRow:
+                    columnIDs = \
+                            columnIDs.difference(self.hiddenCellsByRow[row])
+                if len(columnIDs) == 0:
+                    rightMostColumns.append(-1)
+                    leftMostColumns.append(-1)
+                else:
+                    rightMostColumns.append(max(columnIDs))
+                    leftMostColumns.append(min(columnIDs))
+        else:
+            rightMostColumns = [self._numColumns-1]*self._numRows
+            leftMostColumns = [0]*self._numRows
+
         # we use lamda function so we can control positioning
         # based on the actual labeltext
-        rightXPos = lambda x: self.cell_width * self._numColumns
-        leftXPos = lambda x: - 0.5*self.cell_width - fontMetric.width(x)
+        rightXPosNew = lambda x, y: self.cell_width * (rightMostColumns[y]+1) 
+        leftXPosNew = lambda x, y: - (0.5 - leftMostColumns[y]) * \
+                self.cell_width - fontMetric.width(x)
 
         evenRowLabelLocation = self.settings.evenRowLabelLocation.value
         if evenRowLabelLocation == "LEFT_OF":
-            evenXPos = leftXPos
+            evenXPos = leftXPosNew
         else:
-            evenXPos = rightXPos
+            evenXPos = rightXPosNew
 
         oddRowLabelLocation = self.settings.oddRowLabelLocation.value
         if oddRowLabelLocation == "LEFT_OF":
-            oddXPos = leftXPos
+            oddXPos = leftXPosNew
         else:
-            oddXPos = rightXPos
+            oddXPos = rightXPosNew
 
         if self.updateRowLabels:
             rowLabelList = self.rowLabelTracker.get_labels()
@@ -294,16 +313,16 @@ class PatternCanvas(QGraphicsScene):
                 item.setPlainText(str(labelText)) 
                 yPos = self.cell_height * row
                 if rowLabels[0] % 2 == 0:
-                    item.setPos(evenXPos(labelText), yPos)
+                    item.setPos(evenXPos(labelText, row), yPos)
                 else:
-                    item.setPos(oddXPos(labelText), yPos)
+                    item.setPos(oddXPos(labelText, row), yPos)
 
                 item.setFont(labelFont)
         else:
             for (row, item) in self.rowLabels.items():
                 yPos = self.cell_height * row
                 labelText = item.toPlainText()
-                item.setPos(evenXPos(labelText), yPos)
+                item.setPos(evenXPos(labelText, row), yPos)
                 item.setFont(labelFont)
                 item.update()   # OSX hack to force redrawing
 
@@ -651,16 +670,31 @@ class PatternCanvas(QGraphicsScene):
         Currently this only involves hiding the row highlighting.
 
         """
+   
+        # need to clear all selected cells first
+        self.clear_all_selected_cells()
 
         pos = convert_col_row_to_pos(column, row, self.cell_width,
                                      self.cell_height)
+
+        # fix up pattern highlight items
         allItems = self.items(pos)
         patternItems = extract_patternItems(allItems, PatternHighlightItem)
         if len(patternItems) != 0:
             patternItems[0].setOpacity(PatternCanvas.HIDE_OPACITY)  
 
+        # update the data structure for the hidden cells by row
+        if row in self.hiddenCellsByRow:
+            self.hiddenCellsByRow[row].add(column)
+        else:
+            newSet = set()
+            newSet.add(column)
+            self.hiddenCellsByRow[row] = newSet
 
- 
+        self.set_up_labels()
+
+
+
     def show_cell_event(self, row, column):
         """ This function does all the housekeeping after a cell
         has been made visible again.
@@ -675,6 +709,12 @@ class PatternCanvas(QGraphicsScene):
         patternItems = extract_patternItems(allItems, PatternHighlightItem)
         if len(patternItems) != 0:
             patternItems[0].setOpacity(1.0)
+
+        # update the data structure for the hidden cells by row
+        if row in self.hiddenCellsByRow:
+            self.hiddenCellsByRow[row].discard(column)
+
+        self.set_up_labels()
 
 
 
@@ -2313,6 +2353,17 @@ class PatternCanvas(QGraphicsScene):
                     item.show()
                 else:
                     item.hide()
+
+
+
+    def toggle_row_label_alignment(self, status):
+        """ Per request from main window toggles the alignment
+        of the row labels to the visible cells.
+
+        """
+        
+        self.alignRowLabelsToVisibleCells = status
+        self.set_up_labels()
 
 
 

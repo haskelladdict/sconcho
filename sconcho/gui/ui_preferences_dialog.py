@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Thu Aug 23 21:19:27 2012
+# Created: Thu Aug 23 22:27:45 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -108,6 +108,9 @@ class Ui_PreferencesDialog(object):
         self.customRowLabelsChecker = QtGui.QCheckBox(self.showRowLabelChecker)
         self.customRowLabelsChecker.setObjectName(_fromUtf8("customRowLabelsChecker"))
         self.verticalLayout.addWidget(self.customRowLabelsChecker)
+        self.alignRowLabelsToVisibleChecker = QtGui.QCheckBox(self.showRowLabelChecker)
+        self.alignRowLabelsToVisibleChecker.setObjectName(_fromUtf8("alignRowLabelsToVisibleChecker"))
+        self.verticalLayout.addWidget(self.alignRowLabelsToVisibleChecker)
         self.line_2 = QtGui.QFrame(self.showRowLabelChecker)
         self.line_2.setFrameShape(QtGui.QFrame.HLine)
         self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
@@ -364,6 +367,7 @@ class Ui_PreferencesDialog(object):
         self.label_12.setText(QtGui.QApplication.translate("PreferencesDialog", "Size", None, QtGui.QApplication.UnicodeUTF8))
         self.showRowLabelChecker.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Show Row Labels", None, QtGui.QApplication.UnicodeUTF8))
         self.customRowLabelsChecker.setText(QtGui.QApplication.translate("PreferencesDialog", "Use custom row labels (disables all automatic updates)", None, QtGui.QApplication.UnicodeUTF8))
+        self.alignRowLabelsToVisibleChecker.setText(QtGui.QApplication.translate("PreferencesDialog", "Align row labels to visible cells", None, QtGui.QApplication.UnicodeUTF8))
         self.evenRowLabel.setText(QtGui.QApplication.translate("PreferencesDialog", "even row label location", None, QtGui.QApplication.UnicodeUTF8))
         self.evenRowLabelLocationComboBox.setItemText(0, QtGui.QApplication.translate("PreferencesDialog", "right of chart", None, QtGui.QApplication.UnicodeUTF8))
         self.evenRowLabelLocationComboBox.setItemText(1, QtGui.QApplication.translate("PreferencesDialog", "left of chart", None, QtGui.QApplication.UnicodeUTF8))

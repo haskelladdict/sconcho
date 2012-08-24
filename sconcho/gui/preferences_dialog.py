@@ -157,6 +157,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings.evenRowLabelLocation.make_settings_default()
         self.settings.oddRowLabelLocation.make_settings_default()
         self.settings.rowLabelsEditable.make_settings_default()
+        self.settings.alignRowLabelsToVisibleCells.make_settings_default()
 
         self.settings.showColumnLabels.make_settings_default()
         self.settings.columnLabelMode.make_settings_default()
@@ -422,7 +423,13 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         else:
             self.customRowLabelsChecker.setChecked(True)
             self.change_custom_row_labeling(True)
-    
+
+        alignLabels = self.settings.alignRowLabelsToVisibleCells.value
+        if alignLabels == 0:
+            self.alignRowLabelsToVisibleChecker.setChecked(False)
+        else:
+            self.alignRowLabelsToVisibleChecker.setChecked(True)
+
 
 
     def set_up_row_label_selector_connections(self):
@@ -476,8 +483,12 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
                      SIGNAL("currentIndexChanged(int)"),
                      self.change_odd_row_label_location) 
 
+        self.connect(self.alignRowLabelsToVisibleChecker,
+                     SIGNAL("clicked(bool)"),
+                     self.change_row_label_alignment)
 
-    
+
+
     def change_row_label_visibility(self, status):
         """ Toggle the visibility of the row labels. """
 
@@ -501,6 +512,18 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.set_row_label_properties_visibility(status)
 
         self.emit(SIGNAL("toggle_editable_row_labels(bool)"), status)
+
+
+
+    def change_row_label_alignment(self, status):
+        """ Toggle the alignment of the row labels. """
+
+        if status:
+            self.settings.alignRowLabelsToVisibleCells.value = 1
+        else:
+            self.settings.alignRowLabelsToVisibleCells.value = 0
+
+        self.emit(SIGNAL("toggle_row_label_alignment(bool)"), status)
 
 
 

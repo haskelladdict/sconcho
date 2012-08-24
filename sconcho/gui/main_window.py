@@ -367,6 +367,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      self.canvas.toggle_row_label_editing)
 
         self.connect(self.preferencesDialog,
+                     SIGNAL("toggle_row_label_alignment(bool)"),
+                     self.canvas.toggle_row_label_alignment)
+
+        self.connect(self.preferencesDialog,
                      SIGNAL("toggle_editable_column_labels(bool)"),
                      self.canvas.toggle_column_label_editing)
 

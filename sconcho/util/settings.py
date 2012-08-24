@@ -66,6 +66,7 @@ class DefaultSettings(QSettings):
     DEFAULT_ODD_ROW_LABEL_LOCATION = "RIGHT_OF"
     DEFAULT_ROW_LABELS_SHOW_INTERVAL = "1"
     DEFAULT_ROW_LABELS_SHOW_INTERVAL_START = "1"
+    DEFAULT_ALIGN_ROW_LABELS_TO_VISIBLE_CELLS = "0"
 
     # options are LABEL_ALL_COLUMNS, SHOW_COLUMNS_WITH_INTERVAL,
     DEFAULT_COLUMN_LABEL_MODE = "LABEL_ALL_COLUMNS"
@@ -142,6 +143,10 @@ class DefaultSettings(QSettings):
         self.oddRowLabelLocation = PreferenceSetting(self, 
                 DefaultSettings.DEFAULT_ODD_ROW_LABEL_LOCATION,
                 "oddRowLabelLocation", "QString")
+
+        self.alignRowLabelsToVisibleCells = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_ALIGN_ROW_LABELS_TO_VISIBLE_CELLS,
+                "alignRowLabelsToVisibleCells", "Int")
 
         self.columnLabelsShowInterval = PreferenceSetting(self,
                 DefaultSettings.DEFAULT_COLUMN_LABELS_SHOW_INTERVAL,
