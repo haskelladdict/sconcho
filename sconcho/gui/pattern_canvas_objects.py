@@ -136,7 +136,7 @@ class PatternGridItem(QGraphicsSvgItem):
         if mode == HIDE_MODE:
             self.emit(SIGNAL("cell_hidden"), [self])
 
-        elif mode == SHOW_MODE:
+        elif mode == UNHIDE_MODE:
             self.emit(SIGNAL("cell_visible"), [self])
 
         elif not self.isHidden:

@@ -30,9 +30,11 @@ from PyQt4.QtGui import (QColor,
                          QUndoCommand)
 
 from sconcho.util.canvas import (HIDE_OPACITY,
+                         add_to_hidden_cells_tracker,
                          get_item_id,
                          chunkify_cell_arrangement,
                          convert_col_row_to_pos,
+                         delete_from_hidden_cells_tracker,
                          extract_patternItems,
                          order_selection_by_rows,
                          order_selection_by_columns,
@@ -1927,14 +1929,7 @@ class HideCells(QUndoCommand):
                 patternItems[0].setOpacity(HIDE_OPACITY)
                 self.hiddenPatternItems.append(patternItems[0])
 
-            # update the data structure for the hidden cells by row
-            if item.row in self.canvas.hiddenCellsByRow:
-                self.canvas.hiddenCellsByRow[item.row].update(\
-                        set(range(item.column, item.column+item.width)))
-            else:
-                newSet = set()
-                newSet.update(set(range(item.column, item.column+item.width)))
-                self.canvas.hiddenCellsByRow[item.row] = newSet
+            add_to_hidden_cells_tracker(self.canvas.hiddenCellsByRow, item)
 
         self.canvas.set_up_labels()
 
@@ -1947,9 +1942,8 @@ class HideCells(QUndoCommand):
 
             item.unhide_cell()
 
-            if item.row in self.canvas.hiddenCellsByRow:
-                self.canvas.hiddenCellsByRow[item.row].difference_update(\
-                        set(range(item.column, item.column+item.width)))
+            delete_from_hidden_cells_tracker(\
+                    self.canvas.hiddenCellsByRow, item)
 
         for item in self.hiddenPatternItems:
                 item.setOpacity(1.0)
@@ -2002,10 +1996,8 @@ class UnhideCells(QUndoCommand):
                 patternItems[0].setOpacity(1.0)
                 self.unhiddenPatternItems.append(patternItems[0])
 
-            # update the data structure for the hidden cells by row
-            if item.row in self.canvas.hiddenCellsByRow:
-                self.canvas.hiddenCellsByRow[item.row].difference_update(\
-                        set(range(item.column, item.column + item.width)))
+            delete_from_hidden_cells_tracker(\
+                    self.canvas.hiddenCellsByRow, item)
 
         self.canvas.set_up_labels()
 
@@ -2017,15 +2009,7 @@ class UnhideCells(QUndoCommand):
         for item in self.unhiddenItems:
 
             item.hide_cell()
-
-            # update the data structure for the hidden cells by row
-            if item.row in self.canvas.hiddenCellsByRow:
-                self.canvas.hiddenCellsByRow[item.row].update(\
-                        set(range(item.column, item.column+item.width)))
-            else:
-                newSet = set()
-                newSet.update(set(range(item.column, item.column+item.width)))
-                self.canvas.hiddenCellsByRow[item.row] = newSet
+            add_to_hidden_cells_tracker(self.canvas.hiddenCellsByRow, item)
 
         for item in self.unhiddenPatternItems:
             item.setOpacity(HIDE_OPACITY)

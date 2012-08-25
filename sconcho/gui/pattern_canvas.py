@@ -639,7 +639,7 @@ class PatternCanvas(QGraphicsScene):
 
 
     def create_pattern_grid_item(self, origin, col, row, width, height,
-                                 knittingSymbol, color):
+                                 knittingSymbol, color, isHidden = False):
         """ Creates a new PatternGridItem of the specified dimension
         at the given location.
 
@@ -648,6 +648,11 @@ class PatternCanvas(QGraphicsScene):
         item = PatternGridItem(self._unitCellDim, col, row, width, height,
                                knittingSymbol, color)
         item.setPos(origin)
+
+        if isHidden:
+            item.hide_cell()
+            add_to_hidden_cells_tracker(self.hiddenCellsByRow, item)
+
         self.connect(item, SIGNAL("cell_selected"), self.grid_cell_activated)
         self.connect(item, SIGNAL("cell_unselected"),
                      self.grid_cell_inactivated)

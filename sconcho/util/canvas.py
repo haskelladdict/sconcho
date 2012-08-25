@@ -761,6 +761,7 @@ def load_pattern_grid_items(patternGridItemInfo, knittingSymbols,
             height   = newItem["height"]
             name     = newItem["name"]
             color    = QColor(newItem["color"])
+            isHidden = newItem["isHidden"]
             category = newItem["category"]
             location = QPointF(colID * unitCellWidth, rowID * unitCellHeight)
             symbol   = knittingSymbols[name]
@@ -768,7 +769,7 @@ def load_pattern_grid_items(patternGridItemInfo, knittingSymbols,
             #if name == "nostitch":
             #    color = QColor("#6a6a6a")
             allPatternGridItems.append((location, colID, rowID, width, height,
-                                        symbol, color))
+                                        symbol, color, isHidden))
 
     except KeyError as e:
         logger.error(msg.errorLoadingGridText % e)
@@ -1126,6 +1127,30 @@ def extract_patternItems(allItems, patternType):
             patternItems.append(item)
 
     return patternItems
+
+
+
+def add_to_hidden_cells_tracker(tracker, item):
+    """ Add the hidden item to the canvas' hidden cell tracker. """ 
+
+    if item.row in tracker:
+        tracker[item.row].update(\
+                set(range(item.column, item.column+item.width)))
+    else:
+        newSet = set()
+        newSet.update(set(range(item.column, item.column+item.width)))
+        tracker[item.row] = newSet
+
+
+
+def delete_from_hidden_cells_tracker(tracker, item):
+    """ Add the hidden item to the canvas' hidden cell tracker. """ 
+
+    if item.row in tracker:
+        tracker[item.row].difference_update(\
+            set(range(item.column, item.column+item.width)))
+
+
 
 
 

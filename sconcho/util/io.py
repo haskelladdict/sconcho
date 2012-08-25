@@ -211,6 +211,7 @@ def write_patternGridItems(stream, items):
         stream.writeInt32(item.width)
         stream.writeInt32(item.height)
         stream << item.color
+        stream.writeBool(item.isHidden)
 
 
 
@@ -526,7 +527,7 @@ def read_API_1_version(stream, settings):
         stream.readInt32()
 
     # read elements
-    patternGridItems = read_patternGridItems(stream, numGridItems)
+    patternGridItems = read_patternGridItems_API_1_2(stream, numGridItems)
     legendItems = read_legendItems(stream, numLegendItems)
     colors = read_colors(stream, numColors)
     activeSymbol = read_active_symbol(stream)
@@ -560,7 +561,7 @@ def read_API_2_version(stream, settings):
         stream.readInt32()
 
     # read elements
-    patternGridItems = read_patternGridItems(stream, numGridItems)
+    patternGridItems = read_patternGridItems_API_1_2(stream, numGridItems)
     legendItems = read_legendItems(stream, numLegendItems)
     colors = read_colors(stream, numColors)
     activeSymbol = read_active_symbol(stream)
@@ -594,7 +595,7 @@ def read_API_3_version(stream, settings):
         (name, length) = read_section_header(stream)
 
         if name == "patternGridItems":
-            patternGridItems = read_patternGridItems(stream, length)
+            patternGridItems = read_patternGridItems_API_3(stream, length)
 
         elif name == "legendItems":
             legendItems = read_legendItems(stream, length)
@@ -641,8 +642,15 @@ def read_API_3_version(stream, settings):
 
 
 
-def read_patternGridItems(stream, numItems):
-    """ Read all patternGridItems from our output stream """
+def read_patternGridItems_API_1_2(stream, numItems):
+    """ Read all patternGridItems from our output stream 
+    
+    NOTE: This function is used for API versions 1 and 2
+    and does not contain the information regarding the
+    cell visibility status. Thus, we default this property
+    to False.
+    
+    """
 
     patternGridItems = []
     for count in range(numItems):
@@ -662,11 +670,49 @@ def read_patternGridItems(stream, numItems):
                     "row"      : row,
                     "width"    : width,
                     "height"   : height,
-                    "color"    : color}
+                    "color"    : color,
+                    "isHidden" : False}
 
         patternGridItems.append(newItem)
 
     return patternGridItems
+
+
+
+def read_patternGridItems_API_3(stream, numItems):
+    """ Read all patternGridItems from our output stream 
+
+    NOTE: This function is used for API version 3 
+    and contains the information for the cell visibility 
+    status.
+
+    """
+ 
+    patternGridItems = []
+    for count in range(numItems):
+        category = stream.readQString() 
+        name = stream.readQString() 
+        column = stream.readInt32()
+        row    = stream.readInt32()
+        width  = stream.readInt32()
+        height = stream.readInt32()
+        color  = QColor()
+        stream >> color
+        isHidden = stream.readBool()
+
+        newItem = { "category" : category,
+                    "name"     : name,
+                    "column"   : column,
+                    "row"      : row,
+                    "width"    : width,
+                    "height"   : height,
+                    "color"    : color,
+                    "isHidden" : isHidden}
+
+        patternGridItems.append(newItem)
+
+    return patternGridItems
+
 
 
 
