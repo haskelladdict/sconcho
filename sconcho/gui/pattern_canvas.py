@@ -656,7 +656,7 @@ class PatternCanvas(QGraphicsScene):
                      self.grid_cell_inactivated)
 
         self.connect(item, SIGNAL("cell_hidden"), self.hide_cell_event)
-        self.connect(item, SIGNAL("cell_visible"), self.show_cell_event)
+        self.connect(item, SIGNAL("cell_visible"), self.unhide_cell_event)
 
         return item
 
@@ -677,21 +677,18 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-
-
-    def show_cell_event(self, items):
+    def unhide_cell_event(self, items):
         """ This function is a wrapper calling the undo framwork
-        to show the collection of pattern grid cells. 
+        to unhide the collection of pattern grid cells. 
 
         """
 
-        showCommand = ShowCells(self, items)
+        unhideCommand = UnhideCells(self, items)
 
-        self._undoStack.beginMacro("show cells")
+        self._undoStack.beginMacro("unhide cells")
         self.clear_all_selected_cells()
-        self._undoStack.push(showCommand)
+        self._undoStack.push(unhideCommand)
         self._undoStack.endMacro()
-
 
 
 
@@ -854,8 +851,8 @@ class PatternCanvas(QGraphicsScene):
         elif self.selectionMode == HIDE_MODE:
             self.hide_cell_event(items)
 
-        elif self.selectionMode == SHOW_MODE:
-            self.show_cell_event(items)
+        elif self.selectionMode == UNHIDE_MODE:
+            self.unhide_cell_event(items)
 
 
 

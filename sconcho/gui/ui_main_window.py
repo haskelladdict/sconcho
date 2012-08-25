@@ -2,7 +2,7 @@
 
 # Form implementation generated from sconcho.gui.reading ui file 'ui/main_window.ui'
 #
-# Created: Thu Aug 23 22:27:44 2012
+# Created: Sat Aug 25 10:35:37 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -552,9 +552,9 @@ class Ui_MainWindow(object):
         self.action_Copy_Rectangular_Selection.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+C", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Paste_Rectangular_Selection.setText(QtGui.QApplication.translate("MainWindow", "&Paste ", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Paste_Rectangular_Selection.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+V", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionHide_Selected_Cells.setText(QtGui.QApplication.translate("MainWindow", "Hide Selected Cells", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShow_Selected_Cells.setText(QtGui.QApplication.translate("MainWindow", "Show Selected Cells", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCreate_Chart.setText(QtGui.QApplication.translate("MainWindow", "Create Chart", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionHide_Selected_Cells.setText(QtGui.QApplication.translate("MainWindow", "&Hide Selected Cells", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_Selected_Cells.setText(QtGui.QApplication.translate("MainWindow", "&Unhide Selected Cells", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCreate_Chart.setText(QtGui.QApplication.translate("MainWindow", "&Create Chart", None, QtGui.QApplication.UnicodeUTF8))
 
 from sconcho.gui.active_symbol_widget import ActiveSymbolWidget
 from sconcho.gui.color_widget import ColorWidget

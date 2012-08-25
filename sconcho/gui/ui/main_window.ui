@@ -864,7 +864,7 @@
      <normaloff>:/icons/hide_cells.png</normaloff>:/icons/hide_cells.png</iconset>
    </property>
    <property name="text">
-    <string>Hide Selected Cells</string>
+    <string>&amp;Hide Selected Cells</string>
    </property>
   </action>
   <action name="actionShow_Selected_Cells">
@@ -876,7 +876,7 @@
      <normaloff>:/icons/show_cells.png</normaloff>:/icons/show_cells.png</iconset>
    </property>
    <property name="text">
-    <string>Show Selected Cells</string>
+    <string>&amp;Unhide Selected Cells</string>
    </property>
   </action>
   <action name="actionCreate_Chart">
@@ -891,7 +891,7 @@
      <normaloff>:/icons/create_cells.png</normaloff>:/icons/create_cells.png</iconset>
    </property>
    <property name="text">
-    <string>Create Chart</string>
+    <string>&amp;Create Chart</string>
    </property>
   </action>
  </widget>

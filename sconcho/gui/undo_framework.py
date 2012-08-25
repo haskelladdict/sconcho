@@ -1897,7 +1897,15 @@ class HideCells(QUndoCommand):
         super(HideCells, self).__init__(parent)
 
         self.canvas = canvas
-        self.hiddenItems = items
+
+        # NOTE: we filter cells that are current already
+        # hidden since these are no-ops
+        hideItems = []
+        for item in items:
+            if not item.isHidden:
+                hideItems.append(item)
+
+        self.hiddenItems = hideItems
         self.hiddenPatternItems = []
 
 
@@ -1938,7 +1946,8 @@ class HideCells(QUndoCommand):
 
         for item in self.hiddenItems:
 
-            item.show_cell()
+            item.unhide_cell()
+
             if item.row in self.canvas.hiddenCellsByRow:
                 self.canvas.hiddenCellsByRow[item.row].difference_update(\
                         set(range(item.column, item.column+item.width)))
@@ -1951,7 +1960,7 @@ class HideCells(QUndoCommand):
 
 
 
-class ShowCells(QUndoCommand):
+class UnhideCells(QUndoCommand):
     """ This class encapsulates the un-hiding (aka showing) of grid 
     cells on the pattern canvas.
 
@@ -1960,28 +1969,28 @@ class ShowCells(QUndoCommand):
 
     def __init__(self, canvas, items, parent = None):
 
-        super(ShowCells, self).__init__(parent)
+        super(UnhideCells, self).__init__(parent)
 
         self.canvas = canvas
 
         # NOTE: we filter cells that are current already
         # visible since these are no-ops
-        showItems = []
+        unhiddenItems = []
         for item in items:
             if item.isHidden:
-                showItems.append(item)
+                unhiddenItems.append(item)
 
-        self.shownItems = showItems
-        self.shownPatternItems = []
+        self.unhiddenItems = unhiddenItems
+        self.unhiddenPatternItems = []
 
 
 
     def redo(self):
         """ The redo action. """
 
-        for item in self.shownItems:
+        for item in self.unhiddenItems:
 
-            item.show_cell()
+            item.unhide_cell()
 
             # show the corresponding pattern highlight items
             pos = convert_col_row_to_pos(item.column, item.row, 
@@ -1992,7 +2001,7 @@ class ShowCells(QUndoCommand):
                                                 PatternHighlightItem)
             if len(patternItems) != 0:
                 patternItems[0].setOpacity(1.0)
-                self.shownPatternItems.append(patternItems[0])
+                self.unhiddenPatternItems.append(patternItems[0])
 
             # update the data structure for the hidden cells by row
             if item.row in self.canvas.hiddenCellsByRow:
@@ -2006,7 +2015,7 @@ class ShowCells(QUndoCommand):
     def undo(self):
         """ The undo action. """
 
-        for item in self.shownItems:
+        for item in self.unhiddenItems:
 
             item.hide_cell()
 
@@ -2019,7 +2028,7 @@ class ShowCells(QUndoCommand):
                 newSet.update(set(range(item.column, item.column+item.width)))
                 self.canvas.hiddenCellsByRow[item.row] = newSet
 
-        for item in self.shownPatternItems:
+        for item in self.unhiddenPatternItems:
             item.setOpacity(HIDE_OPACITY)
 
         self.canvas.set_up_labels()

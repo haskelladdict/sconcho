@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 # the canvas
 SELECTION_MODE = 0
 HIDE_MODE = 1
-SHOW_MODE = 2
+UNHIDE_MODE = 2
 
 # opacity used for hiding cells
 HIDE_OPACITY = 0.01

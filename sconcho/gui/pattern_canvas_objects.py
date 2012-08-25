@@ -159,8 +159,8 @@ class PatternGridItem(QGraphicsSvgItem):
 
 
 
-    def show_cell(self):
-        """ Shows/Unhides the cell by setting the opacity back to 1.0.
+    def unhide_cell(self):
+        """ Unhides the cell by setting the opacity back to 1.0.
 
         NOTE: This is the reverse of hide_cell().
         

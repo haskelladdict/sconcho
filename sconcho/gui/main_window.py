@@ -311,7 +311,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      partial(self.canvas.select_mode, canvas.HIDE_MODE))
 
         self.connect(self.actionShow_Selected_Cells, SIGNAL("triggered()"),
-                     partial(self.canvas.select_mode, canvas.SHOW_MODE))
+                     partial(self.canvas.select_mode, canvas.UNHIDE_MODE))
 
         self.connect(self.actionCreate_Chart, SIGNAL("triggered()"),
                      partial(self.canvas.select_mode, canvas.SELECTION_MODE))

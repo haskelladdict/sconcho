@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/update_dialog.ui'
 #
-# Created: Thu Aug 23 22:27:45 2012
+# Created: Sat Aug 25 10:35:38 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
