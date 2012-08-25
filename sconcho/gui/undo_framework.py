@@ -1890,6 +1890,13 @@ class HideCells(QUndoCommand):
     """ This class encapsulates the hiding of grid cells
     on the pattern canvas.
 
+    NOTE: Instead of "saving" the actual items we only keep
+    track of the positions of hidden items and retrieve
+    them dynamically. If we would do it otherwise, we'd
+    interfere with Deletion/Insertion of rows/columns since
+    these actions remove/add cells which would render our
+    references stale.
+
     """
 
 
@@ -1904,33 +1911,28 @@ class HideCells(QUndoCommand):
         hideItems = []
         for item in items:
             if not item.isHidden:
-                hideItems.append(item)
+                hideItems.append((item.row, item.column))
 
-        self.hiddenItems = hideItems
-        self.hiddenPatternItems = []
+        self.hiddenItemsPositions = hideItems
 
 
 
     def redo(self):
         """ The redo action. """
 
-        for item in self.hiddenItems:
+        for (row, col) in self.hiddenItemsPositions:
 
-            item.hide_cell()
-            pos = convert_col_row_to_pos(item.column, item.row,
-                                         self.canvas.cell_width,
-                                         self.canvas.cell_height)
+            gridItem = self.canvas._item_at_row_col(row, col)
+            gridItem.hide_cell()
+            add_to_hidden_cells_tracker(self.canvas.hiddenCellsByRow,
+                                        gridItem)
 
-            # fix up pattern highlight items
-            allItems = self.canvas.items(pos)
-            patternItems = extract_patternItems(allItems,
-                                                PatternHighlightItem)
-            if len(patternItems) != 0:
-                patternItems[0].setOpacity(HIDE_OPACITY)
-                self.hiddenPatternItems.append(patternItems[0])
+            highlightItem = self.canvas._item_at_row_col(row, col,
+                                                         PatternHighlightItem)
+            if highlightItem:
+                highlightItem.hide_cell()
 
-            add_to_hidden_cells_tracker(self.canvas.hiddenCellsByRow, item)
-
+            
         self.canvas.set_up_labels()
 
 
@@ -1938,15 +1940,17 @@ class HideCells(QUndoCommand):
     def undo(self):
         """ The undo action. """
 
-        for item in self.hiddenItems:
+        for (row, col) in self.hiddenItemsPositions:
 
-            item.unhide_cell()
-
+            gridItem = self.canvas._item_at_row_col(row, col)
+            gridItem.unhide_cell()
             delete_from_hidden_cells_tracker(\
-                    self.canvas.hiddenCellsByRow, item)
+                    self.canvas.hiddenCellsByRow, gridItem)
 
-        for item in self.hiddenPatternItems:
-                item.setOpacity(1.0)
+            highlightItem = self.canvas._item_at_row_col(row, col,
+                                                         PatternHighlightItem)
+            if highlightItem:
+                highlightItem.unhide_cell()
 
         self.canvas.set_up_labels()
 
@@ -1956,6 +1960,13 @@ class HideCells(QUndoCommand):
 class UnhideCells(QUndoCommand):
     """ This class encapsulates the un-hiding (aka showing) of grid
     cells on the pattern canvas.
+
+    NOTE: Instead of "saving" the actual items we only keep
+    track of the positions of hidden items and retrieve
+    them dynamically. If we would do it otherwise, we'd
+    interfere with Deletion/Insertion of rows/columns since
+    these actions remove/add cells which would render our
+    references stale.
 
     """
 
@@ -1971,33 +1982,27 @@ class UnhideCells(QUndoCommand):
         unhiddenItems = []
         for item in items:
             if item.isHidden:
-                unhiddenItems.append(item)
+                unhiddenItems.append((item.row, item.column))
 
-        self.unhiddenItems = unhiddenItems
-        self.unhiddenPatternItems = []
+        self.unhiddenItemsPositions = unhiddenItems
 
 
 
     def redo(self):
         """ The redo action. """
 
-        for item in self.unhiddenItems:
+        for (row, col) in self.unhiddenItemsPositions:
 
-            item.unhide_cell()
-
-            # show the corresponding pattern highlight items
-            pos = convert_col_row_to_pos(item.column, item.row,
-                                         self.canvas.cell_width,
-                                         self.canvas.cell_height)
-            allItems = self.canvas.items(pos)
-            patternItems = extract_patternItems(allItems,
-                                                PatternHighlightItem)
-            if len(patternItems) != 0:
-                patternItems[0].setOpacity(1.0)
-                self.unhiddenPatternItems.append(patternItems[0])
-
+            gridItem = self.canvas._item_at_row_col(row, col)
+            gridItem.unhide_cell()
             delete_from_hidden_cells_tracker(\
-                    self.canvas.hiddenCellsByRow, item)
+                    self.canvas.hiddenCellsByRow, gridItem)
+
+            highlightItem = self.canvas._item_at_row_col(row, col,
+                                                         PatternHighlightItem)
+            if highlightItem:
+                highlightItem.unhide_cell()
+
 
         self.canvas.set_up_labels()
 
@@ -2006,12 +2011,17 @@ class UnhideCells(QUndoCommand):
     def undo(self):
         """ The undo action. """
 
-        for item in self.unhiddenItems:
+        for (row, col) in self.unhiddenItemsPositions:
 
-            item.hide_cell()
-            add_to_hidden_cells_tracker(self.canvas.hiddenCellsByRow, item)
+            gridItem = self.canvas._item_at_row_col(row, col)
+            gridItem.hide_cell()
+            add_to_hidden_cells_tracker(self.canvas.hiddenCellsByRow, 
+                                        gridItem)
 
-        for item in self.unhiddenPatternItems:
-            item.setOpacity(HIDE_OPACITY)
+            highlightItem = self.canvas._item_at_row_col(row, col,
+                                                         PatternHighlightItem)
+            if highlightItem:
+                highlightItem.hide_cell()
+
 
         self.canvas.set_up_labels()

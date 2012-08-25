@@ -155,7 +155,7 @@ class PatternGridItem(QGraphicsSvgItem):
         """
 
         self.isHidden = True
-        self.setOpacity(0.05)
+        self.setOpacity(HIDE_OPACITY)
 
 
 
@@ -840,6 +840,30 @@ class PatternHighlightItem(QGraphicsRectItem):
         self.setZValue(1)
 
         self.set_color(color, alpha)
+
+
+    def hide_cell(self):
+        """ Hides the cell by setting the opacity to a low value.
+
+        NOTE: This is different from Qt's hide function since it
+        is not meant to disable the item completely.
+        """
+
+        self.setOpacity(HIDE_OPACITY)
+
+
+
+    def unhide_cell(self):
+        """ Unhides the cell by setting the opacity back to 1.0.
+
+        NOTE: This is the reverse of hide_cell().
+        
+        """
+
+        self.setOpacity(1.0)
+
+
+
 
        
 
