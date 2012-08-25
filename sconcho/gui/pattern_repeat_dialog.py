@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,15 +19,14 @@
 #
 #######################################################################
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 from functools import partial
 
-from PyQt4.QtCore import (Qt, SIGNAL, QDir)
-from PyQt4.QtGui import (QDialog, QColorDialog)
+from PyQt4.QtCore import (QDir,
+                          Qt,
+                          SIGNAL)
+
+from PyQt4.QtGui import (QColorDialog,
+                         QDialog)
 
 from sconcho.gui.ui_pattern_repeat_box_dialog import Ui_PatternRepeatDialog
 
@@ -73,7 +72,7 @@ class PatternRepeatDialog(QDialog, Ui_PatternRepeatDialog):
         self.colorButton.setStyleSheet(styleSheet)
 
 
-        
+
     def change_color(self):
         """ Fire up a QColorDialog to let the user change the
         color of the lines marking a pattern repeat box.
@@ -85,7 +84,7 @@ class PatternRepeatDialog(QDialog, Ui_PatternRepeatDialog):
 
         self.color = color
         self.set_button_color()
-    
+
 
 
     def change_width(self, newWidth):

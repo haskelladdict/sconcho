@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,17 +19,23 @@
 #
 #######################################################################
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
+from PyQt4.QtCore import (QObject,
+                          QSize,
+                          Qt,
+                          SIGNAL)
 
-from PyQt4.QtCore import (QSize, QObject, SIGNAL, Qt)
-from PyQt4.QtGui import (QFrame, QGridLayout, QWidgetItem, QWidget, 
-                         QHBoxLayout, QLabel, QScrollArea, QMenu,
-                         QColor, QDockWidget)
+from PyQt4.QtGui import (QColor,
+                         QDockWidget,
+                         QFrame,
+                         QGridLayout,
+                         QHBoxLayout,
+                         QLabel,
+                         QMenu,
+                         QScrollArea,
+                         QWidget,
+                         QWidgetItem)
+
 from PyQt4.QtSvg import QSvgWidget
-
 
 
 
@@ -40,7 +46,7 @@ def generate_symbolWidgets(symbols, chooser, symbolLayout,
     For each category, we create a symbolSelectorWidget, add
     the category to the selector, and store the widget in a dictionary
     with the category name as key.
-    
+
     The mainWindow then installs the proper widget based on the
     user selection.
     """
@@ -84,7 +90,7 @@ def generate_category_widget(symbolCategory, symbols, synchronizer):
     for symbol in symbols:
         rawList.append((int(symbol["category_pos"]), symbol))
 
-    #rawList.sort(lambda x,y: cmp(x[0], y[0])) 
+    #rawList.sort(lambda x,y: cmp(x[0], y[0]))
     rawList.sort(key=(lambda x: x[0]))
 
     # add them to the tab
@@ -105,7 +111,7 @@ def generate_category_widget(symbolCategory, symbols, synchronizer):
     return (scrollArea, widgetList)
 
 
-    
+
 def add_to_category_widget(scrollWidget, symbol, synchronizer):
     """ Adds new selector widget for symbol to scrollWidget. """
 
@@ -115,10 +121,10 @@ def add_to_category_widget(scrollWidget, symbol, synchronizer):
     newItem = SymbolSelectorItem(symbol, synchronizer)
     layout.append_row(newItem, QLabel(symbol["name"]))
     widget.adjustSize()
-    
+
     widgetList = {(symbol["name"], symbol["category"]) : newItem}
     return widgetList
-    
+
 
 
 def remove_from_category_widget(scrollWidget, symbolName):
@@ -127,7 +133,7 @@ def remove_from_category_widget(scrollWidget, symbolName):
     widget = scrollWidget.widget()
     layout = widget.layout()
     itemsLeft = layout.remove_row_by_name(symbolName)
-    widget.adjustSize() 
+    widget.adjustSize()
 
     return itemsLeft
 
@@ -143,7 +149,7 @@ def symbols_by_category(symbols):
     # assemble the categories
     rawSortedSymbols = {}
     for symbol in symbols.values():
-       
+
         symbolKey = symbol["category"]
         if symbolKey in rawSortedSymbols:
             rawSortedSymbols[symbolKey].append(symbol)
@@ -175,7 +181,7 @@ def sort_symbols_by_category(symbols):
 
 
 #########################################################
-## 
+##
 ## class for managing a single symbol selector item
 ##
 #########################################################
@@ -188,12 +194,12 @@ class SymbolSelectorItem(QFrame):
         self._symbol = symbol
 
         # define and set stylesheets
-        self.define_stylesheets() 
+        self.define_stylesheets()
         self.setStyleSheet(self._unselectedStyleSheet)
         self.setToolTip(symbol["description"])
-        
+
         # add the symbol's svg
-        svgWidget = QSvgWidget(symbol["svgPath"]) 
+        svgWidget = QSvgWidget(symbol["svgPath"])
         svgWidth = int(symbol["width"]) #.toInt()[0]
         svgWidget.setMaximumSize(QSize(svgWidth * 30, 30))
 
@@ -233,7 +239,7 @@ class SymbolSelectorItem(QFrame):
             backColor = self._symbol["backgroundColor"]
         else:
             backColor = "white"
-            
+
         return QColor(backColor)
 
 
@@ -265,12 +271,12 @@ class SymbolSelectorItem(QFrame):
         """
         Encapsulates all events when somebody clicks on us.
         """
-        
+
         self._synchronizer.select(self)
 
 
 
-    def mousePressEvent(self, event): 
+    def mousePressEvent(self, event):
         """
         Acts on mouse press events and uses the synchronizer
         for selecting.
@@ -300,11 +306,11 @@ class SymbolSelectorItem(QFrame):
 
 
 #########################################################
-## 
+##
 ## class providing a more suitable QGridLayout
 ##
 ## this class derives from QGridLayout and allows
-## for adding and deleting full rows without 
+## for adding and deleting full rows without
 ## leaving holes
 ##
 #########################################################
@@ -340,7 +346,7 @@ class SymbolSelectorGridLayout(QGridLayout):
         self.setColumnMinimumWidth(0, 30 * max(self.itemWidths))
 
 
-       
+
     def remove_row_by_name(self, symbolName):
         """ Remove a the row containing the symbol of the given name.
 
@@ -388,7 +394,7 @@ class SymbolSelectorGridLayout(QGridLayout):
 
 
 #########################################################
-## 
+##
 ## class for managing a single symbol label
 ##
 #########################################################
@@ -401,13 +407,13 @@ class SymbolSelectorLabel(QLabel):
 
         # define and set stylesheets
         self.setToolTip(symbol["description"])
-        
 
 
-    def mousePressEvent(self, event): 
+
+    def mousePressEvent(self, event):
         """ Acts on mouse press events and uses the synchronizer
         for selecting.
-        
+
         """
 
         self.emit(SIGNAL("label_clicked"))
@@ -416,7 +422,7 @@ class SymbolSelectorLabel(QLabel):
 
 
 #########################################################
-## 
+##
 ## class for synchronizing all symbol selector widgets
 ##
 #########################################################
@@ -441,7 +447,7 @@ class SymbolSynchronizer(QObject):
         else:
             self.select_plain(target)
             self.emit(SIGNAL("synchronized_object_changed"),
-                      self._activeWidget) 
+                      self._activeWidget)
 
 
 

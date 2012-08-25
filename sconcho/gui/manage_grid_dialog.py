@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,14 +19,12 @@
 #
 #######################################################################
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
+from PyQt4.QtCore import (Qt,
+                          SIGNAL)
 
+from PyQt4.QtGui import (QDialog,
+                         QMessageBox)
 
-from PyQt4.QtCore import (Qt, SIGNAL)
-from PyQt4.QtGui import (QDialog, QMessageBox)
 from sconcho.sconcho.gui.ui_manage_grid_dialog import Ui_ManageGridDialog
 import sconcho.util.messages as msg
 
@@ -40,7 +38,7 @@ import sconcho.util.messages as msg
 class ManageGridDialog(QDialog, Ui_ManageGridDialog):
 
 
-    def __init__(self, rowOffset, numRows, numCols, row, col, 
+    def __init__(self, rowOffset, numRows, numCols, row, col,
                  parent = None):
         """ Initialize this dialog. """
 
@@ -79,8 +77,8 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
 
         self.emit(SIGNAL("insert_rows"), rowAdd, insertMode, pivot)
 
-        
-        
+
+
     def delete_row_button_pressed(self):
         """ This method forwards clicks on the deleteRowButton. """
 
@@ -88,19 +86,19 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
         pivot = self.deleteRowPivot.value()
         deleteMode = self.deleteRowMode.currentText()
 
-        self.emit(SIGNAL("delete_rows"), numRowsToDelete, deleteMode, 
+        self.emit(SIGNAL("delete_rows"), numRowsToDelete, deleteMode,
                   pivot)
 
 
 
     def insert_column_button_pressed(self):
         """ This method forwards clicks on the insertColumnButton. """
-        
+
         numColumnsToAdd = self.numInsertColumns.value()
         pivot = self.insertColumnPivot.value()
         insertMode = self.insertColumnMode.currentText()
 
-        self.emit(SIGNAL("insert_columns"), numColumnsToAdd, 
+        self.emit(SIGNAL("insert_columns"), numColumnsToAdd,
                   insertMode, pivot)
 
 
@@ -112,7 +110,7 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
         pivot = self.deleteColumnPivot.value()
         deleteMode = self.deleteColumnMode.currentText()
 
-        self.emit(SIGNAL("delete_columns"), numColumnsToDelete, 
+        self.emit(SIGNAL("delete_columns"), numColumnsToDelete,
                   deleteMode, pivot)
 
 
@@ -120,7 +118,7 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
     def set_row_limit(self, rowOffset, numRows):
         """ Sets the upper limit of the row selectors based
         on the number of available rows.
-        
+
         """
 
         self.insertRowPivot.setMinimum(rowOffset)
@@ -130,13 +128,13 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
         self.deleteRowPivot.setMaximum(rowOffset + numRows - 1)
         self._numRows = numRows
         self._rowLabelOffset = rowOffset
-        
+
 
 
     def set_upper_column_limit(self, numCols):
         """ Sets the upper limit of the column selectors based
         on the number of available columns.
-        
+
         """
 
         self.insertColumnPivot.setMinimum(1)
@@ -154,7 +152,7 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
         NOTE: We don't check the row, col values at all
         and rely on the widget to make sure the values
         remain within the limits.
-        
+
         """
 
         self.insertRowPivot.setValue(self._numRows + self._rowLabelOffset
@@ -168,8 +166,8 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
 
     def adjust_delete_columns_combo_box(self, value):
         """ Adjust the first entry in the combo box for selecting
-        the deletion mode dynamically depending on how many columns 
-        are selected. 
+        the deletion mode dynamically depending on how many columns
+        are selected.
 
         NOTE: Changing the UI like this seems sort of confusing
         but the hope is that it will be more easy to part that
@@ -186,7 +184,7 @@ class ManageGridDialog(QDialog, Ui_ManageGridDialog):
 
     def adjust_delete_rows_combo_box(self, value):
         """ Adjust the first entry in the combo box for selecting the
-        deletion mode dynamically depending on how many rows are selected. 
+        deletion mode dynamically depending on how many rows are selected.
 
         NOTE: Changing the UI like this seems sort of confusing
         but the hope is that it will be more easy to part that

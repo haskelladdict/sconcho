@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,14 +19,11 @@
 #
 #######################################################################
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 from functools import partial
 
-from PyQt4.QtCore import (SIGNAL, QDir)
+from PyQt4.QtCore import (QDir,
+                          SIGNAL)
+
 from PyQt4.QtGui import (QDialog)
 
 from sconcho.gui.ui_num_row_column_dialog import Ui_NumRowColumnDialog
@@ -35,7 +32,7 @@ from sconcho.gui.ui_num_row_column_dialog import Ui_NumRowColumnDialog
 
 ##########################################################################
 #
-# This widget allows users to select the number of rows to insert 
+# This widget allows users to select the number of rows to insert
 # into the canvas
 #
 ##########################################################################
@@ -51,8 +48,8 @@ class NumRowColumnDialog(QDialog, Ui_NumRowColumnDialog):
         numMessage = ("number of " + requestType + " to add")
         self.requestLabel.setText(numMessage)
         self.setWindowTitle("insert " + requestType)
-       
-        preLocationMessage = "" 
+
+        preLocationMessage = ""
         postLocationMessage = ""
         if requestType == "rows":
             self.locationChooser.addItem("above")
@@ -72,11 +69,11 @@ class NumRowColumnDialog(QDialog, Ui_NumRowColumnDialog):
 
     @property
     def num(self):
-        
+
         return self.numSpinner.value()
 
 
-    @property 
+    @property
     def location(self):
 
         return self.locationChooser.currentText()

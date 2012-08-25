@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,30 +19,48 @@
 #
 #######################################################################
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
-
 # version and release date of current sconcho
 __version__ = "0.2.0_b2"
 __releaseDate__ = "2012-06-30"
 
 import logging
 import platform, os
+
 from functools import partial
 
 
-from PyQt4.QtCore import (SIGNAL, SLOT, QSettings, QDir, QFileInfo,
-                          Qt, QSize, QFile, QTimer, QVariant,
-                          QPoint, PYQT_VERSION_STR, qVersion,
-                          QObject)
-from PyQt4.QtGui import (QMainWindow, QMessageBox, QFileDialog,
-                         QWidget, QGridLayout, QHBoxLayout, QLabel,
-                         QFrame, QColor, QApplication, QDialog, QAction,
-                         QPrinter, QPrintDialog, QPrintPreviewDialog,
-                         QActionGroup)
+from PyQt4.QtCore import (QDir,
+                          QFileInfo,
+                          QSettings,
+                          QFile,
+                          QObject,
+                          QPoint,
+                          Qt,
+                          QSize,
+                          QTimer,
+                          QVariant,
+                          qVersion,
+                          PYQT_VERSION_STR,
+                          SIGNAL,
+                          SLOT)
+
+from PyQt4.QtGui import (QAction,
+                         QActionGroup,
+                         QApplication,
+                         QColor,
+                         QDialog,
+                         QFileDialog,
+                         QFrame,
+                         QGridLayout,
+                         QHBoxLayout,
+                         QLabel,
+                         QPrinter,
+                         QPrintDialog,
+                         QPrintPreviewDialog,
+                         QMainWindow,
+                         QMessageBox,
+                         QWidget)
+
 from PyQt4.QtSvg import QSvgWidget
 
 from sconcho.gui.ui_main_window import Ui_MainWindow
@@ -52,13 +70,17 @@ import sconcho.util.misc as misc
 import sconcho.util.io as io
 import sconcho.util.symbol_parser as parser
 import sconcho.util.canvas as canvas
-from sconcho.gui.symbol_widget import (generate_symbolWidgets,
-                                       SymbolSynchronizer,
-                                       symbols_by_category,
-                                       add_to_category_widget,
+
+from sconcho.gui.symbol_widget import (add_to_category_widget,
+                                       generate_category_widget,
+                                       generate_symbolWidgets,
                                        remove_from_category_widget,
-                                       generate_category_widget)
-from sconcho.gui.color_widget import (ColorWidget, ColorSynchronizer)
+                                       SymbolSynchronizer,
+                                       symbols_by_category)
+
+from sconcho.gui.color_widget import (ColorSynchronizer,
+                                      ColorWidget)
+
 from sconcho.gui.pattern_canvas import PatternCanvas
 from sconcho.gui.export_bitmap_dialog import ExportBitmapDialog
 from sconcho.gui.new_pattern_dialog import NewPatternDialog
@@ -160,7 +182,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # save the symbol selector splitter state
         self.settings.symbol_selector_state = \
-            self.SymbolSelectorSplitter.saveState() 
+            self.SymbolSelectorSplitter.saveState()
 
 
 
@@ -1140,7 +1162,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         readFilePath = \
              QFileDialog.getOpenFileName(self,
                                          msg.openSconchoProjectTitle,
-                                         location, 
+                                         location,
                                          ("sconcho pattern files (*.spf);;"
                                           "all files (*.*)"))
 

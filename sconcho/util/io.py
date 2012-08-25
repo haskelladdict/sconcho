@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,34 +19,54 @@
 #
 #######################################################################
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 import logging
 import os
 import string
 import zipfile
+
 from tempfile import mkdtemp
 from functools import partial
 from shutil import (rmtree, move)
 
-from PyQt4.QtCore import (QFile, QTextStream, QIODevice, 
-                          Qt, QRectF, QDataStream, QSize, QRect, 
-                          QFileInfo, QLineF, QPointF,
-                          QThread, QReadWriteLock, QWriteLocker, SIGNAL)
-from PyQt4.QtGui import (QColor, QMessageBox, QImage, QPainter, QPolygonF,
-                         QFont)
-from PyQt4.QtXml import (QDomDocument, QDomNode, QDomElement)
+from PyQt4.QtCore import (QDataStream, 
+                          QFile, 
+                          QFileInfo, 
+                          QIODevice, 
+                          QLineF, 
+                          QPointF,
+                          QRect, 
+                          QRectF, 
+                          QReadWriteLock, 
+                          QSize, 
+                          Qt, 
+                          QTextStream, 
+                          QThread, 
+                          QWriteLocker, 
+                          SIGNAL)
+
+from PyQt4.QtGui import (QColor, 
+                         QFont,
+                         QImage, 
+                         QMessageBox, 
+                         QPainter, 
+                         QPolygonF)
+
+from PyQt4.QtXml import (QDomDocument, 
+                         QDomElement,
+                         QDomNode)
+
 from PyQt4.QtSvg import QSvgGenerator
 
-from sconcho.gui.pattern_canvas_objects import (PatternGridItem, 
-                                        PatternLegendItem,
-                                        PatternRepeatItem, 
-                                        HiddenStitchManager)
-from sconcho.util.canvas import (legendItem_symbol, legendItem_text,
-                                 visible_bounding_rect, sort_vertices)
+from sconcho.gui.pattern_canvas_objects import (HiddenStitchManager,
+                                                PatternGridItem, 
+                                                PatternLegendItem,
+                                                PatternRepeatItem)
+
+from sconcho.util.canvas import (legendItem_symbol, 
+                                 legendItem_text,
+                                 sort_vertices,
+                                 visible_bounding_rect)
+
 from sconcho.util.misc import wait_cursor
 from sconcho.util.exceptions import PatternReadError
 import sconcho.util.messages as msg

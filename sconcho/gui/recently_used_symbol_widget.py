@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ######################################################################## #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -18,20 +18,22 @@
 #
 #######################################################################
 
+from PyQt4.QtCore import (Qt,
+                          QSize,
+                          SIGNAL)
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
+from PyQt4.QtGui import (QColor,
+                         QFrame,
+                         QGridLayout,
+                         QHBoxLayout,
+                         QLabel,
+                         QWidget)
 
-from PyQt4.QtCore import (Qt, QSize, SIGNAL) 
-from PyQt4.QtGui import (QWidget, QFrame, QGridLayout, QColor,
-                         QLabel, QHBoxLayout)
 from PyQt4.QtSvg import QSvgWidget
 
 
 from sconcho.gui.symbol_widget import (SymbolSelectorItem,
-                               SymbolSynchronizer)
+                                       SymbolSynchronizer)
 
 
 # this is the maximum number of recently used symbols we allow
@@ -45,7 +47,7 @@ MAX_RECENT_SYMBOLS = 5
 #
 ###############################################################
 class RecentlyUsedSymbolWidget(QWidget):
-    """ Container Widget for most recently used symbols symbol """ 
+    """ Container Widget for most recently used symbols symbol """
 
 
     def __init__(self, parent = None):
@@ -61,7 +63,7 @@ class RecentlyUsedSymbolWidget(QWidget):
 
         self.setMinimumHeight(40)
         self.setMaximumHeight(40)
-       
+
         labelWidget = QLabel("None");
         self.layout.addWidget(labelWidget, 0, 0, Qt.AlignVCenter)
         self.recentSymbols = [labelWidget]
@@ -112,7 +114,7 @@ class RecentlyUsedSymbolWidget(QWidget):
             self.click_on_a_symbol_widget(symbol)
 
         else:
-            # if we have more than MAX_RECENT_SYMBOLS symbols evict 
+            # if we have more than MAX_RECENT_SYMBOLS symbols evict
             # the one with the lowest count
             if len(self.recentSymbolsDict) > MAX_RECENT_SYMBOLS-1:
                 minKey = min(self.recentSymbolsDict.values())
@@ -122,7 +124,7 @@ class RecentlyUsedSymbolWidget(QWidget):
                         del self.recentSymbolsDict[key]
                         break
 
-            # adding it after evicting a previous one 
+            # adding it after evicting a previous one
             # makes sure we always keep the most recent item
             self.recentSymbolsDict[symbol] = 1
 
@@ -142,11 +144,11 @@ class RecentlyUsedSymbolWidget(QWidget):
         # add new ones
         self.widgetToSymbol = {}
         for (index, item) in enumerate(self.recentSymbolsDict.keys()):
-            widget = SymbolDisplayItem(item.get_content(), 
+            widget = SymbolDisplayItem(item.get_content(),
                                        self._synchronizer)
-            self.connect(widget, SIGNAL("widget_pressed"), 
+            self.connect(widget, SIGNAL("widget_pressed"),
                          self.widget_clicked)
-            self.widgetToSymbol[widget] = item 
+            self.widgetToSymbol[widget] = item
             self.layout.addWidget(widget, 0, index, Qt.AlignVCenter)
             self.recentSymbols.append(widget)
 
@@ -164,27 +166,27 @@ class RecentlyUsedSymbolWidget(QWidget):
 
 
 
-        
+
 #########################################################
-## 
+##
 ## class for displaying the most recently used symbols
 ##
 #########################################################
 class SymbolDisplayItem(SymbolSelectorItem):
     """ Widget displaying currently active symbol and color.
-   
+
     This is a very close specialization of SymbolSelectorItem
     for use in the recently used widget display.
-    
+
     """
 
     def __init__(self, symbol, synchronizer, parent = None):
 
-        super(SymbolDisplayItem, self).__init__(symbol, synchronizer, 
+        super(SymbolDisplayItem, self).__init__(symbol, synchronizer,
                                                 parent)
 
         # adjust the size according to the symbol's svg
-        svgWidget = QSvgWidget(symbol["svgPath"]) 
+        svgWidget = QSvgWidget(symbol["svgPath"])
         svgWidth = int(symbol["width"])
         self.setMinimumWidth(svgWidth * 25)
         self.setMaximumWidth(svgWidth * 25)
@@ -193,8 +195,7 @@ class SymbolDisplayItem(SymbolSelectorItem):
 
 
 
-    def mousePressEvent(self, event): 
+    def mousePressEvent(self, event):
         """ Acts on mouse press events """
 
         self.emit(SIGNAL("widget_pressed"), self)
-

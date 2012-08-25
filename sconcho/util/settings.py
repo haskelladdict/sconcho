@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,15 +19,16 @@
 #
 #######################################################################
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 import logging 
 
-from PyQt4.QtCore import (QSettings, QSize, QDir, QPoint, QByteArray)
-from PyQt4.QtGui import (QFont, QFontDatabase)
+from PyQt4.QtCore import (QByteArray,
+                          QDir,
+                          QPoint,
+                          QSettings, 
+                          QSize)
+
+from PyQt4.QtGui import (QFont, 
+                         QFontDatabase)
 
 
 # module level logger:

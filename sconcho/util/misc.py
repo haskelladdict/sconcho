@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,19 +19,14 @@
 #
 #######################################################################
 
-
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 import functools
 import random
 import sys
 import os
 
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import (QApplication, QCursor)
+from PyQt4.QtGui import (QApplication, 
+                         QCursor)
 
 import sconcho.util.messages as msg
 

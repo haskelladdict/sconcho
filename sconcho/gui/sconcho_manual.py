@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,21 +19,17 @@
 #
 #######################################################################
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
+from PyQt4.QtCore  import (Qt,
+                           QUrl)
 
-
-from PyQt4.QtCore  import (QUrl, Qt)
-from PyQt4.QtGui import QDialog 
+from PyQt4.QtGui import QDialog
 
 from sconcho.gui.ui_sconcho_manual import Ui_SconchoManual
 
 
 ##########################################################################
 #
-# This dialog provides the sconcho manual 
+# This dialog provides the sconcho manual
 #
 ##########################################################################
 class SconchoManual(QDialog, Ui_SconchoManual):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ######################################################################## #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public

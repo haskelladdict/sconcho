@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ######################################################################## #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,16 +19,15 @@
 #######################################################################
 
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 import logging
 from copy import copy
 
-from PyQt4.QtCore import (Qt, QPointF, SIGNAL)
-from PyQt4.QtGui import (QUndoCommand, QColor)
+from PyQt4.QtCore import (QPointF,
+                          Qt,
+                          SIGNAL)
+
+from PyQt4.QtGui import (QColor,
+                         QUndoCommand)
 
 from sconcho.util.canvas import (HIDE_OPACITY,
                          get_item_id,
@@ -72,7 +71,7 @@ class PasteCells(QUndoCommand):
     """
 
     def __init__(self, canvas, copySelection, deadSelection,
-                 pasteColumn, pasteRow, minCopyCol, minCopyRow, 
+                 pasteColumn, pasteRow, minCopyCol, minCopyRow,
                  parent = None):
 
         super(PasteCells, self).__init__(parent)
@@ -98,7 +97,7 @@ class PasteCells(QUndoCommand):
                 # remove them (otherwise highlighting gets screwed up)
                 if item.isHidden:
                     item.show_cell()
-            
+
                 self.canvas.removeItem(item)
                 del item
 
@@ -200,7 +199,7 @@ class InsertRows(QUndoCommand):
         for item in shiftedItems:
             shift_item_row_wise(item, self.rowShift, self.unitHeight)
 
-        newLabels = shift_row_labels(self.canvas.rowLabels, 
+        newLabels = shift_row_labels(self.canvas.rowLabels,
                                      self.pivot, self.rowShift)
         self.canvas.rowLabels = newLabels
 
@@ -218,8 +217,8 @@ class InsertRows(QUndoCommand):
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells,
                                            self.pivot, self.rowShift)
-       
-        
+
+
         self.redo_adjust_row_repeats(self.pivot, self.rowShift)
 
         self.canvas._numRows += self.rowShift
@@ -251,7 +250,7 @@ class InsertRows(QUndoCommand):
                 shift_selection_vertically(self.canvas._selectedCells,
                                            self.pivot, rowUpShift)
 
-        selection = self.canvas._items_in_col_row_range(0, 
+        selection = self.canvas._items_in_col_row_range(0,
                                             self.numColumns,
                                             self.pivot,
                                             self.pivot + self.rowShift - 1)
@@ -267,7 +266,7 @@ class InsertRows(QUndoCommand):
 
         self.canvas.rowLabels = self.rowLabels
 
-        selection = self.canvas._items_in_col_row_range(0, 
+        selection = self.canvas._items_in_col_row_range(0,
                                             self.numColumns,
                                             self.pivot + self.rowShift,
                                             self.numRows + self.rowShift)
@@ -388,7 +387,7 @@ class DeleteRows(QUndoCommand):
         self.readd_deleted_items()
 
         self.readd_row_labels()
-       
+
         self.canvas._numRows += len(self.deadRows)
         self.finalize()
 
@@ -577,7 +576,7 @@ class DeleteRows(QUndoCommand):
 
     def readd_row_labels(self):
         """ Re-add the correct row labels. """
-        
+
         for (key, item) in self.canvas.rowLabels.items():
             self.canvas.removeItem(item)
             del item
@@ -645,7 +644,7 @@ class InsertColumns(QUndoCommand):
         for item in shiftedItems:
             shift_item_column_wise(item, self.columnShift, self.unitWidth)
 
-        newLabels = shift_column_labels(self.canvas.columnLabels, 
+        newLabels = shift_column_labels(self.canvas.columnLabels,
                                         self.pivot, self.columnShift)
         self.canvas.columnLabels = newLabels
 
@@ -863,9 +862,9 @@ class DeleteColumns(QUndoCommand):
 
 
     def remove_column_labels(self, pivot, columnShift):
-        """ Remove the labels corresponding to the deleted 
-        columns. 
-        
+        """ Remove the labels corresponding to the deleted
+        columns.
+
         """
 
         for column in range(pivot, pivot + columnShift):
@@ -874,7 +873,7 @@ class DeleteColumns(QUndoCommand):
             self.canvas.columnLabels.pop(column)
             del label
 
-        newLabels = shift_column_labels(self.canvas.columnLabels, 
+        newLabels = shift_column_labels(self.canvas.columnLabels,
                                         pivot, -columnShift)
         self.canvas.columnLabels = newLabels
 
@@ -964,7 +963,7 @@ class DeleteColumns(QUndoCommand):
 
     def readd_column_labels(self):
         """ Re-add the correct column labels. """
-        
+
         for (key, item) in self.canvas.columnLabels.items():
             self.canvas.removeItem(item)
             del item
@@ -1664,7 +1663,7 @@ class DeletePatternRepeat(QUndoCommand):
         """ The undo action. """
 
         self.canvas.addItem(self.patternRepeat)
-        self.canvas.patternRepeats.add(self.patternRepeat)       
+        self.canvas.patternRepeats.add(self.patternRepeat)
 
 
 
@@ -1916,16 +1915,16 @@ class HideCells(QUndoCommand):
         for item in self.hiddenItems:
 
             item.hide_cell()
-            pos = convert_col_row_to_pos(item.column, item.row, 
+            pos = convert_col_row_to_pos(item.column, item.row,
                                          self.canvas.cell_width,
                                          self.canvas.cell_height)
 
             # fix up pattern highlight items
             allItems = self.canvas.items(pos)
-            patternItems = extract_patternItems(allItems, 
+            patternItems = extract_patternItems(allItems,
                                                 PatternHighlightItem)
             if len(patternItems) != 0:
-                patternItems[0].setOpacity(HIDE_OPACITY)  
+                patternItems[0].setOpacity(HIDE_OPACITY)
                 self.hiddenPatternItems.append(patternItems[0])
 
             # update the data structure for the hidden cells by row
@@ -1961,7 +1960,7 @@ class HideCells(QUndoCommand):
 
 
 class UnhideCells(QUndoCommand):
-    """ This class encapsulates the un-hiding (aka showing) of grid 
+    """ This class encapsulates the un-hiding (aka showing) of grid
     cells on the pattern canvas.
 
     """
@@ -1993,11 +1992,11 @@ class UnhideCells(QUndoCommand):
             item.unhide_cell()
 
             # show the corresponding pattern highlight items
-            pos = convert_col_row_to_pos(item.column, item.row, 
+            pos = convert_col_row_to_pos(item.column, item.row,
                                          self.canvas.cell_width,
                                          self.canvas.cell_height)
             allItems = self.canvas.items(pos)
-            patternItems = extract_patternItems(allItems, 
+            patternItems = extract_patternItems(allItems,
                                                 PatternHighlightItem)
             if len(patternItems) != 0:
                 patternItems[0].setOpacity(1.0)
@@ -2032,6 +2031,3 @@ class UnhideCells(QUndoCommand):
             item.setOpacity(HIDE_OPACITY)
 
         self.canvas.set_up_labels()
-
-
-

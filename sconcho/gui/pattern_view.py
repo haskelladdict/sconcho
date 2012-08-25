@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ######################################################################## #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -18,22 +18,24 @@
 #
 #######################################################################
 
-
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 import operator
-from PyQt4.QtCore import (Qt, QRect, QSize, QPointF, QSizeF,
-                          QRectF) 
-from PyQt4.QtGui import (QGraphicsView, QRubberBand, QPainter)
+
+from PyQt4.QtCore import (QPointF,
+                          QRect,
+                          QRectF,
+                          QSize,
+                          QSizeF,
+                          Qt)
+
+from PyQt4.QtGui import (QGraphicsView,
+                         QPainter,
+                         QRubberBand)
 
 from sconcho.util.canvas import visible_bounding_rect
 
 
 #########################################################
-## 
+##
 ## class for managing the actual pattern canvas
 ##
 #########################################################
@@ -68,10 +70,10 @@ class PatternView(QGraphicsView):
 
         if event.modifiers() & Qt.ShiftModifier:
             self.rubberBandOrigin = event.pos()
-            self.rubberBand.setGeometry(QRect(self.rubberBandOrigin, 
+            self.rubberBand.setGeometry(QRect(self.rubberBandOrigin,
                                               QSize()))
             self.rubberBand.show()
-        
+
         return QGraphicsView.mousePressEvent(self, event)
 
 
@@ -88,7 +90,7 @@ class PatternView(QGraphicsView):
                                               event.pos()).normalized())
 
         return QGraphicsView.mouseMoveEvent(self, event)
-        
+
 
 
     def mouseReleaseEvent(self, event):
@@ -97,17 +99,17 @@ class PatternView(QGraphicsView):
         If a rubberBand is active we tell our GraphicsScene what are
         was selected and then disable the rubberBand.
         """
-        
+
         if self.rubberBandOrigin:
             self.scene().select_region((self.mapToScene(
                 self.rubberBand.geometry())))
             self.rubberBandOrigin = None
             self.rubberBand.hide()
-        
+
         return QGraphicsView.mouseReleaseEvent(self, event)
 
 
-    
+
     def wheelEvent(self, event):
         """ Mouse wheel events cause zooming in and out. """
 
@@ -137,7 +139,7 @@ class PatternView(QGraphicsView):
 
     def fit_scene(self):
         """ Fit scene into canvas. """
-        
+
         margin = 50.0
         rawBoundary = visible_bounding_rect(self.scene().items())
         rawBoundary.adjust(-margin, -margin, margin, margin)

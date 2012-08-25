@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2011 Markus Dittrich
+# (c) 2009-2012 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -19,16 +19,14 @@
 #
 #######################################################################
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 import urllib
 import re
 
-from PyQt4.QtCore import (qVersion, SIGNAL, QThread)
-from PyQt4.QtGui import (QDialog) 
+from PyQt4.QtCore import (qVersion,
+                          QThread,
+                          SIGNAL)
+
+from PyQt4.QtGui import (QDialog)
 
 from sconcho.gui.ui_update_dialog import Ui_UpdateDialog
 import sconcho.util.messages as msg
@@ -72,10 +70,10 @@ class UpdateDialog(QDialog, Ui_UpdateDialog):
 
         self.updateTextEdit.setText(msg.currentVersionText % self.version)
 
-        
+
 
     def show_results(self, status, result):
-        """ Show the result based on if there is a new version or 
+        """ Show the result based on if there is a new version or
         not.
 
         """
@@ -96,12 +94,12 @@ class UpdateDialog(QDialog, Ui_UpdateDialog):
         else:
             self.updateTextEdit.append(msg.versionFailureText)
 
-    
+
 
 
 
 ############################################################
-# 
+#
 # small thread that goes out and tries to retrieve the
 # current sconcho version from LATEST_VERSION_URL
 #
@@ -136,11 +134,6 @@ class UrlChecker(QThread):
             else:
                 self.emit(SIGNAL("version_info"), True, result)
 
-        # we catch any exception and simply abort 
+        # we catch any exception and simply abort
         except:
             self.emit(SIGNAL("version_info"), False, "")
-
-        
-
-
-
