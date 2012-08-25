@@ -1,3 +1,14 @@
+08-25-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+        * Release 0.2.0_b3
+        * Many bugfixes
+        * Added ability to hide/unhide arbitrary grid cells. This 
+          replaces the previous way to hide cells during exporting via 
+          nostitches. Also added option allowing row labels to adjust
+          their position based on hidden cells, i.e. they always
+          move closted to the left/rightmost visible cell.
+
+
 08-18-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
         * Release 0.2.0_b2
