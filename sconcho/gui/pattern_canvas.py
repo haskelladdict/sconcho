@@ -81,7 +81,6 @@ logger = logging.getLogger(__name__)
 #########################################################
 class PatternCanvas(QGraphicsScene):
 
-    HIDE_OPACITY = 0.01
 
 
     def __init__(self, theSettings, defaultSymbol, parent = None):
@@ -234,7 +233,7 @@ class PatternCanvas(QGraphicsScene):
                     element.hide()
 
                 if graphicsItem.isHidden:
-                    element.setOpacity(PatternCanvas.HIDE_OPACITY)
+                    element.setOpacity(HIDE_OPACITY)
                 self.addItem(element)
 
 
@@ -663,58 +662,36 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def hide_cell_event(self, row, column):
-        """ This function does all the housekeeping after a cell
-        has been hidden.
-
-        Currently this only involves hiding the row highlighting.
+    def hide_cell_event(self, items):
+        """ This function is a wrapper calling the undo framwork
+        to hide the collection of pattern grid cells. 
 
         """
-   
-        # need to clear all selected cells first
+
+        hideCommand = HideCells(self, items)
+
+        self._undoStack.beginMacro("hide cells")
         self.clear_all_selected_cells()
-
-        pos = convert_col_row_to_pos(column, row, self.cell_width,
-                                     self.cell_height)
-
-        # fix up pattern highlight items
-        allItems = self.items(pos)
-        patternItems = extract_patternItems(allItems, PatternHighlightItem)
-        if len(patternItems) != 0:
-            patternItems[0].setOpacity(PatternCanvas.HIDE_OPACITY)  
-
-        # update the data structure for the hidden cells by row
-        if row in self.hiddenCellsByRow:
-            self.hiddenCellsByRow[row].add(column)
-        else:
-            newSet = set()
-            newSet.add(column)
-            self.hiddenCellsByRow[row] = newSet
-
-        self.set_up_labels()
+        self._undoStack.push(hideCommand)
+        self._undoStack.endMacro()
 
 
 
-    def show_cell_event(self, row, column):
-        """ This function does all the housekeeping after a cell
-        has been made visible again.
 
-        Currently this only involves un-hiding the row highlighting.
+
+    def show_cell_event(self, items):
+        """ This function is a wrapper calling the undo framwork
+        to show the collection of pattern grid cells. 
 
         """
 
-        pos = convert_col_row_to_pos(column, row, self.cell_width,
-                                     self.cell_height)
-        allItems = self.items(pos)
-        patternItems = extract_patternItems(allItems, PatternHighlightItem)
-        if len(patternItems) != 0:
-            patternItems[0].setOpacity(1.0)
+        showCommand = ShowCells(self, items)
 
-        # update the data structure for the hidden cells by row
-        if row in self.hiddenCellsByRow:
-            self.hiddenCellsByRow[row].discard(column)
+        self._undoStack.beginMacro("show cells")
+        self.clear_all_selected_cells()
+        self._undoStack.push(showCommand)
+        self._undoStack.endMacro()
 
-        self.set_up_labels()
 
 
 
@@ -858,20 +835,13 @@ class PatternCanvas(QGraphicsScene):
     def select_cells(self, items):
         """ This function selects all cells in the items list. """
 
-        selection = set()
-        unselection = set()
-        for item in items:
-
-            if self.selectionMode == HIDE_MODE:
-                item.hide_cell()
-
-            elif self.selectionMode == SHOW_MODE:
-                item.show_cell()
-
-            else:
+        if self.selectionMode == SELECTION_MODE:
+            selection = set()
+            unselection = set()
+            for item in items:
                 itemID = get_item_id(item.column, item.row)
                 entry = PatternCanvasEntry(item.column, item.row, item.width,
-                                           item.color, item.symbol)
+                                            item.color, item.symbol)
                 if itemID in self._selectedCells:
                     unselection.add(entry)
                 elif item.isHidden:
@@ -879,7 +849,13 @@ class PatternCanvas(QGraphicsScene):
                 else:
                     selection.add(entry)
 
-        self._paint_cells(selection, unselection)
+            self._paint_cells(selection, unselection)
+        
+        elif self.selectionMode == HIDE_MODE:
+            self.hide_cell_event(items)
+
+        elif self.selectionMode == SHOW_MODE:
+            self.show_cell_event(items)
 
 
 
@@ -2147,6 +2123,7 @@ class PatternCanvas(QGraphicsScene):
         self.columnLabels.clear()
         self._undoStack.clear()
         self._copySelection = {}
+        self.hiddenCellsByRow = {}
 
 
 
@@ -2541,23 +2518,3 @@ class PatternCanvas(QGraphicsScene):
 
         return False
 
-
-
-
-############################################################################
-#
-# Helper Functions
-#
-############################################################################
-def extract_patternItems(allItems, patternType):
-    """ From a list of QGraphicsItems extracts and returns
-    all PatternGridItems.
-
-    """
-
-    patternItems = []
-    for item in allItems:
-        if isinstance(item, patternType):
-            patternItems.append(item)
-
-    return patternItems

@@ -46,6 +46,8 @@ SELECTION_MODE = 0
 HIDE_MODE = 1
 SHOW_MODE = 2
 
+# opacity used for hiding cells
+HIDE_OPACITY = 0.01
 
 
 def convert_pos_to_col_row(mousePos, cellWidth, cellHeight):
@@ -1109,6 +1111,21 @@ def get_min(segments):
             currentMin = seg[1]
 
     return currentMin
+
+
+
+def extract_patternItems(allItems, patternType):
+    """ From a list of QGraphicsItems extracts and returns
+    all PatternGridItems.
+
+    """
+
+    patternItems = []
+    for item in allItems:
+        if isinstance(item, patternType):
+            patternItems.append(item)
+
+    return patternItems
 
 
 

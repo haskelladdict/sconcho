@@ -134,10 +134,10 @@ class PatternGridItem(QGraphicsSvgItem):
         mode = self.scene().selectionMode
 
         if mode == HIDE_MODE:
-            self.hide_cell()
+            self.emit(SIGNAL("cell_hidden"), [self])
 
         elif mode == SHOW_MODE:
-            self.show_cell()
+            self.emit(SIGNAL("cell_visible"), [self])
 
         elif not self.isHidden:
             if not self._selected:
@@ -156,7 +156,6 @@ class PatternGridItem(QGraphicsSvgItem):
 
         self.isHidden = True
         self.setOpacity(0.05)
-        self.emit(SIGNAL("cell_hidden"), self.row, self.column)
 
 
 
@@ -169,7 +168,6 @@ class PatternGridItem(QGraphicsSvgItem):
 
         self.isHidden = False
         self.setOpacity(1.0)
-        self.emit(SIGNAL("cell_visible"), self.row, self.column)
 
 
 

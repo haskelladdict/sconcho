@@ -30,8 +30,11 @@ from copy import copy
 from PyQt4.QtCore import (Qt, QPointF, SIGNAL)
 from PyQt4.QtGui import (QUndoCommand, QColor)
 
-from sconcho.util.canvas import (get_item_id,
+from sconcho.util.canvas import (HIDE_OPACITY,
+                         get_item_id,
                          chunkify_cell_arrangement,
+                         convert_col_row_to_pos,
+                         extract_patternItems,
                          order_selection_by_rows,
                          order_selection_by_columns,
                          shift_item_row_wise,
@@ -46,7 +49,9 @@ from sconcho.util.canvas import (get_item_id,
 
 from sconcho.gui.pattern_canvas_objects import (RepeatLegendItem,
                                         PatternLegendText,
+                                        PatternHighlightItem,
                                         PatternTextItem)
+
 
 # module lever logger:
 logger = logging.getLogger(__name__)
@@ -1875,3 +1880,149 @@ class DeleteTextBox(QUndoCommand):
 
         self.canvas.addItem(self.textItem)
         self.canvas.canvasTextBoxes[self.textItem] = self.textItem
+
+
+
+
+
+class HideCells(QUndoCommand):
+    """ This class encapsulates the hiding of grid cells
+    on the pattern canvas.
+
+    """
+
+
+    def __init__(self, canvas, items, parent = None):
+
+        super(HideCells, self).__init__(parent)
+
+        self.canvas = canvas
+        self.hiddenItems = items
+        self.hiddenPatternItems = []
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        for item in self.hiddenItems:
+
+            item.hide_cell()
+            pos = convert_col_row_to_pos(item.column, item.row, 
+                                         self.canvas.cell_width,
+                                         self.canvas.cell_height)
+
+            # fix up pattern highlight items
+            allItems = self.canvas.items(pos)
+            patternItems = extract_patternItems(allItems, 
+                                                PatternHighlightItem)
+            if len(patternItems) != 0:
+                patternItems[0].setOpacity(HIDE_OPACITY)  
+                self.hiddenPatternItems.append(patternItems[0])
+
+            # update the data structure for the hidden cells by row
+            if item.row in self.canvas.hiddenCellsByRow:
+                self.canvas.hiddenCellsByRow[item.row].update(\
+                        set(range(item.column, item.column+item.width)))
+            else:
+                newSet = set()
+                newSet.update(set(range(item.column, item.column+item.width)))
+                self.canvas.hiddenCellsByRow[item.row] = newSet
+
+        self.canvas.set_up_labels()
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        for item in self.hiddenItems:
+
+            item.show_cell()
+            if item.row in self.canvas.hiddenCellsByRow:
+                self.canvas.hiddenCellsByRow[item.row].difference_update(\
+                        set(range(item.column, item.column+item.width)))
+
+        for item in self.hiddenPatternItems:
+                item.setOpacity(1.0)
+
+        self.canvas.set_up_labels()
+
+
+
+
+class ShowCells(QUndoCommand):
+    """ This class encapsulates the un-hiding (aka showing) of grid 
+    cells on the pattern canvas.
+
+    """
+
+
+    def __init__(self, canvas, items, parent = None):
+
+        super(ShowCells, self).__init__(parent)
+
+        self.canvas = canvas
+
+        # NOTE: we filter cells that are current already
+        # visible since these are no-ops
+        showItems = []
+        for item in items:
+            if item.isHidden:
+                showItems.append(item)
+
+        self.shownItems = showItems
+        self.shownPatternItems = []
+
+
+
+    def redo(self):
+        """ The redo action. """
+
+        for item in self.shownItems:
+
+            item.show_cell()
+
+            # show the corresponding pattern highlight items
+            pos = convert_col_row_to_pos(item.column, item.row, 
+                                         self.canvas.cell_width,
+                                         self.canvas.cell_height)
+            allItems = self.canvas.items(pos)
+            patternItems = extract_patternItems(allItems, 
+                                                PatternHighlightItem)
+            if len(patternItems) != 0:
+                patternItems[0].setOpacity(1.0)
+                self.shownPatternItems.append(patternItems[0])
+
+            # update the data structure for the hidden cells by row
+            if item.row in self.canvas.hiddenCellsByRow:
+                self.canvas.hiddenCellsByRow[item.row].difference_update(\
+                        set(range(item.column, item.column + item.width)))
+
+        self.canvas.set_up_labels()
+
+
+
+    def undo(self):
+        """ The undo action. """
+
+        for item in self.shownItems:
+
+            item.hide_cell()
+
+            # update the data structure for the hidden cells by row
+            if item.row in self.canvas.hiddenCellsByRow:
+                self.canvas.hiddenCellsByRow[item.row].update(\
+                        set(range(item.column, item.column+item.width)))
+            else:
+                newSet = set()
+                newSet.update(set(range(item.column, item.column+item.width)))
+                self.canvas.hiddenCellsByRow[item.row] = newSet
+
+        for item in self.shownPatternItems:
+            item.setOpacity(HIDE_OPACITY)
+
+        self.canvas.set_up_labels()
+
+
+
