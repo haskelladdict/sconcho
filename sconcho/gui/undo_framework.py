@@ -33,11 +33,15 @@ from sconcho.util.canvas import (HIDE_OPACITY,
                          add_to_hidden_cells_tracker,
                          get_item_id,
                          chunkify_cell_arrangement,
+                         column_delete_shift_hidden_cell_tracker,
+                         column_insert_shift_hidden_cell_tracker,
                          convert_col_row_to_pos,
                          delete_from_hidden_cells_tracker,
                          extract_patternItems,
                          order_selection_by_rows,
                          order_selection_by_columns,
+                         row_delete_shift_hidden_cell_tracker,
+                         row_insert_shift_hidden_cell_tracker,
                          shift_item_row_wise,
                          shift_item_column_wise,
                          shift_legend_vertically,
@@ -191,6 +195,7 @@ class InsertRows(QUndoCommand):
 
         """
 
+        self.hiddenCellTracker = self.canvas.hiddenCellsByRow.copy()
         self.rowLabels = self.canvas.rowLabels.copy()
 
         shiftedItems = \
@@ -220,6 +225,10 @@ class InsertRows(QUndoCommand):
                 shift_selection_vertically(self.canvas._selectedCells,
                                            self.pivot, self.rowShift)
 
+        # shift hidden cell tracker
+        self.canvas.hiddenCellsByRow = \
+            row_insert_shift_hidden_cell_tracker(self.canvas.hiddenCellsByRow,
+                                                 self.pivot, self.rowShift)
 
         self.redo_adjust_row_repeats(self.pivot, self.rowShift)
 
@@ -275,6 +284,9 @@ class InsertRows(QUndoCommand):
 
         for item in selection:
             shift_item_row_wise(item, rowUpShift, self.unitHeight)
+
+        # shift back hidden cells tracker
+        self.canvas.hiddenCellsByRow = self.hiddenCellTracker 
 
         self.undo_adjust_row_repeats(self.pivot, self.rowShift)
         self.canvas._numRows -= self.rowShift
@@ -359,13 +371,14 @@ class DeleteRows(QUndoCommand):
 
         """
 
+        self.hiddenCellTracker = self.canvas.hiddenCellsByRow.copy()
         self.rowLabels = self.canvas.rowLabels.copy()
 
         self.deletedCells = []
         for (pivot, num) in self.deadRanges:
             self.delete_requested_items(pivot, num)
             self.remove_selected_cells(pivot, num)
-            self.redo_shift_remaining_items(pivot, -num)
+            self.redo_shift_remaining_items(pivot, num)
             self.redo_adjust_row_repeats(pivot, num)
             self.remove_row_labels(pivot, num)
         self.canvas._numRows -= len(self.deadRows)
@@ -495,7 +508,7 @@ class DeleteRows(QUndoCommand):
 
 
 
-    def redo_shift_remaining_items(self, pivot, rowUpShift):
+    def redo_shift_remaining_items(self, pivot, rowShift):
         """ Shift all remaining canvas elements to accomodate the
         inserted rows.
 
@@ -504,18 +517,23 @@ class DeleteRows(QUndoCommand):
         selection = self.canvas._items_in_col_row_range(0, self.numColumns,
                                                         pivot, self.numRows)
         for item in selection:
-            shift_item_row_wise(item, rowUpShift, self.unitHeight)
+            shift_item_row_wise(item, -rowShift, self.unitHeight)
 
         legendList = list(self.canvas.gridLegend.values()) \
             + list(self.canvas.repeatLegend.values())
         shift_legend_vertically(legendList,
-                                rowUpShift,
+                                -rowShift,
                                 self.unitHeight,
                                 self.numColumns,
                                 self.unitWidth)
         self.canvas._selectedCells = \
                 shift_selection_vertically(self.canvas._selectedCells,
-                                           pivot, rowUpShift)
+                                           pivot, -rowShift)
+
+        # shift the row tracker
+        self.canvas.hiddenCellsByRow = \
+            row_delete_shift_hidden_cell_tracker(self.canvas.hiddenCellsByRow,
+                                                 pivot, rowShift)
 
 
 
@@ -539,6 +557,9 @@ class DeleteRows(QUndoCommand):
 
         for item in shiftItems:
             shift_item_row_wise(item, rowDownShift, self.unitHeight)
+
+        # shift row tracker
+        self.canvas.hiddenCellsByRow = self.hiddenCellTracker 
 
 
 
@@ -636,6 +657,7 @@ class InsertColumns(QUndoCommand):
 
         """
 
+        self.hiddenCellTracker = self.canvas.hiddenCellsByRow.copy()
         self.columnLabels = self.canvas.columnLabels.copy()
 
         shiftedItems = \
@@ -664,6 +686,10 @@ class InsertColumns(QUndoCommand):
                 shift_selection_horizontally(self.canvas._selectedCells,
                                              self.pivot,
                                              self.columnShift)
+
+        # shift the hidden cell trackers
+        column_insert_shift_hidden_cell_tracker(self.canvas.hiddenCellsByRow, 
+                                                self.pivot, self.columnShift)
 
         self.canvas._numColumns += self.columnShift
         self.finalize()
@@ -721,6 +747,8 @@ class InsertColumns(QUndoCommand):
         for item in selection:
             shift_item_column_wise(item, columnLeftShift, self.unitWidth)
 
+        self.canvas.hiddenCellsByRow = self.hiddenCellTracker
+
         self.canvas._numColumns -= self.columnShift
         self.finalize()
 
@@ -773,13 +801,14 @@ class DeleteColumns(QUndoCommand):
 
         """
 
+        self.hiddenCellTracker = self.canvas.hiddenCellsByRow.copy()
         self.columnLabels = self.canvas.columnLabels.copy()
 
         self.deletedCells = []
         for (pivot, num) in self.deadRanges:
             self.delete_requested_items(pivot, num)
             self.remove_selected_cells(pivot, num)
-            self.redo_shift_remaining_items(pivot, -num)
+            self.redo_shift_remaining_items(pivot, num)
             self.remove_column_labels(pivot, num)
         self.canvas._numColumns -= len(self.deadColumns)
         self.finalize()
@@ -881,7 +910,7 @@ class DeleteColumns(QUndoCommand):
 
 
 
-    def redo_shift_remaining_items(self, pivot, columnLeftShift):
+    def redo_shift_remaining_items(self, pivot, columnShift):
         """ Shift all remaining canvas elements to accomodate the
         inserted columns.
 
@@ -891,18 +920,22 @@ class DeleteColumns(QUndoCommand):
             self.canvas._items_in_col_row_range(pivot, self.numColumns,
                                                 0,  self.numRows)
         for item in selection:
-            shift_item_column_wise(item, columnLeftShift, self.unitWidth)
+            shift_item_column_wise(item, -columnShift, self.unitWidth)
 
         legendList = list(self.canvas.gridLegend.values()) \
             + list(self.canvas.repeatLegend.values())
         shift_legend_horizontally(legendList,
-                                  columnLeftShift,
+                                  -columnShift,
                                   self.unitWidth,
                                   self.numRows,
                                   self.unitHeight)
         self.canvas._selectedCells = \
                 shift_selection_horizontally(self.canvas._selectedCells,
-                                             pivot, columnLeftShift)
+                                             pivot, -columnShift)
+
+        # shift the hidden cell trackers
+        column_delete_shift_hidden_cell_tracker(self.canvas.hiddenCellsByRow, 
+                                                pivot, columnShift)
 
 
 
@@ -926,6 +959,9 @@ class DeleteColumns(QUndoCommand):
                                                 0, self.numRows)
         for item in shiftItems:
             shift_item_column_wise(item, columnRightShift, self.unitWidth)
+
+        # shift the hidden cell trackers back
+        self.canvas.hiddenCellsByRow = self.hiddenCellTracker
 
 
 
@@ -1926,6 +1962,7 @@ class HideCells(QUndoCommand):
             gridItem.hide_cell()
             add_to_hidden_cells_tracker(self.canvas.hiddenCellsByRow,
                                         gridItem)
+
 
             highlightItem = self.canvas._item_at_row_col(row, col,
                                                          PatternHighlightItem)

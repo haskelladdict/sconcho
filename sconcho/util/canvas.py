@@ -47,7 +47,7 @@ HIDE_MODE = 1
 UNHIDE_MODE = 2
 
 # opacity used for hiding cells
-HIDE_OPACITY = 0.01
+HIDE_OPACITY = 0.05
 
 
 def convert_pos_to_col_row(mousePos, cellWidth, cellHeight):
@@ -1150,6 +1150,94 @@ def delete_from_hidden_cells_tracker(tracker, item):
         tracker[item.row].difference_update(\
             set(range(item.column, item.column+item.width)))
 
+
+
+def column_delete_shift_hidden_cell_tracker(tracker, pivot, shift):
+    """ Shift the tracked columns by shift around pivot and remove
+    deleted columns if required.
+
+    This function is used when deleting columns to
+    make sure the tracker is properly synced with the current layout.
+    
+    """
+
+    for (row, values) in tracker.items():
+        newSet = set()
+        for item in values:
+            if item in range(pivot, pivot+shift):
+                continue
+            elif item >= pivot+shift:
+                newSet.add(item - shift)
+            else:
+                newSet.add(item)
+        tracker[row] = newSet
+
+
+
+def column_insert_shift_hidden_cell_tracker(tracker, pivot, shift):
+    """ Shift the tracked columns by shift around pivot and insert 
+    columns if required.
+
+    This function is used when inserting columns to ensure
+    the tracker is properly synced with the current layout.
+    
+    """
+
+    for (row, values) in tracker.items():
+        newSet = set()
+        for item in values:
+            if item >= pivot:
+                newSet.add(item + shift)
+            else:
+                newSet.add(item)
+        tracker[row] = newSet
+
+
+
+def row_delete_shift_hidden_cell_tracker(tracker, pivot, shift):
+    """ Shift the tracked rows by shift around pivot and remove
+    deleted rows if required.
+
+    This function is used when deleting rows to ensure
+    the tracker is properly synced with the current layout.
+
+    NOTE: We don't want to mutate the hidden cell tracker
+    so we create a new one and return it.
+    
+    """
+
+    newTracker = {}
+    for (row, value) in tracker.items():
+        if row in range(pivot, pivot+shift):
+            continue
+        elif row >= pivot+shift:
+            newTracker[row-shift] = value
+        else:
+            newTracker[row] = value
+    
+    return newTracker
+
+
+
+def row_insert_shift_hidden_cell_tracker(tracker, pivot, shift):
+    """ Shift the tracked rows by shift around pivot.
+
+    This function is used when inserting rows to ensure
+    the tracker is properly synced with the current layout.
+
+    NOTE: We don't want to mutate the hidden cell tracker
+    so we create a new one and return it.
+    
+    """
+
+    newTracker = {}
+    for (row, value) in tracker.items():
+        if row >= pivot:
+            newTracker[row+shift] = value
+        else:
+            newTracker[row] = value
+    
+    return newTracker
 
 
 
