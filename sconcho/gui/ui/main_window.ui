@@ -825,7 +825,7 @@
   <action name="actionCreate_Row_Repeat">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/togglelegend.png</normaloff>:/icons/togglelegend.png</iconset>
+     <normaloff>:/icons/row_repeats.png</normaloff>:/icons/row_repeats.png</iconset>
    </property>
    <property name="text">
     <string>Create &amp;Row Repeat</string>

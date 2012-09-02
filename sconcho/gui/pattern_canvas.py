@@ -905,43 +905,6 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def insert_delete_columns_rows_menu(self, screenPos, col, row):
-        """ Show menu for deleting rows or columns. """
-
-        rowColMenu = QMenu()
-
-        # row options
-        deleteRowsAction = rowColMenu.addAction("delete selected &rows")
-        self.connect(deleteRowsAction, SIGNAL("triggered()"),
-                     self.delete_marked_rows)
-
-        addRowAction = rowColMenu.addAction("&insert rows")
-        self.connect(addRowAction, SIGNAL("triggered()"),
-                     self.insert_grid_rows)
-        rowColMenu.addSeparator()
-
-        # column options
-        deleteColsAction = rowColMenu.addAction("delete selected &columns")
-        self.connect(deleteColsAction, SIGNAL("triggered()"),
-                     self.delete_marked_columns)
-
-        addColRightAction = rowColMenu.addAction("insert column")
-        self.connect(addColRightAction, SIGNAL("triggered()"),
-                     self.insert_grid_columns)
-        rowColMenu.addSeparator()
-
-        # row repeat actions
-        addRowRepeatAction = rowColMenu.addAction("&add row repeat")
-        self.connect(addRowRepeatAction, SIGNAL("triggered()"),
-                     self.add_row_repeat)
-
-        deleteRowRepeatAction = rowColMenu.addAction("&delete row repeat")
-        self.connect(deleteRowRepeatAction, SIGNAL("triggered()"),
-                     self.delete_row_repeat)
-
-        rowColMenu.exec_(screenPos)
-        rowColMenu.raise_()
-
 
 
     def handle_right_click_on_canvas(self, event, col, row):
@@ -961,11 +924,8 @@ class PatternCanvas(QGraphicsScene):
 
         if textItems:
             self.show_delete_text_item_menu(event.screenPos(), textItems[0])
-        elif clickInGrid:
+        else: 
             self.show_grid_menu(event, col, row)
-        else:
-            self.insert_delete_columns_rows_menu(event.screenPos(),
-                                                 col, row)
 
 
 
@@ -1005,32 +965,12 @@ class PatternCanvas(QGraphicsScene):
         self.connect(symbolAction, SIGNAL("triggered()"),
                      partial(self.select_all_cells_with_same_symbol,
                              scenePos))
+
         gridMenu.addSeparator()
-
-        # add repeat box action
-        addRepeatAction = gridMenu.addAction("&Create Pattern Repeat")
-        self.connect(addRepeatAction, SIGNAL("triggered()"),
-                     self.add_pattern_repeat)
-        if not can_outline_selection(self._selectedCells.values()):
-            addRepeatAction.setEnabled(False)
-
-        # edit repeat box action
-        editRepeatAction = gridMenu.addAction("&Edit Pattern Repeat")
-        if patternRepeats:
-            self.connect(editRepeatAction, SIGNAL("triggered()"),
-                         partial(self.edit_pattern_repeat,
-                                 patternRepeats[0]))
-        else:
-            editRepeatAction.setEnabled(False)
-
-        # delete repeat box action
-        deleteRepeatAction = gridMenu.addAction("&Delete Pattern Repeat")
-        if patternRepeats:
-            self.connect(deleteRepeatAction, SIGNAL("triggered()"),
-                         partial(self.delete_pattern_repeat,
-                                 patternRepeats[0]))
-        else:
-            deleteRepeatAction.setEnabled(False)
+        self.insert_pattern_repeat_menu(gridMenu, patternRepeats)
+        self.insert_delete_columns_menu(gridMenu) 
+        self.insert_delete_rows_menu(gridMenu) 
+        self.insert_row_repeat_menu(gridMenu) 
         gridMenu.addSeparator()
 
         # copy action
@@ -1046,6 +986,98 @@ class PatternCanvas(QGraphicsScene):
                      partial(self.paste_selection, col, row))
 
         gridMenu.exec_(event.screenPos())
+
+
+
+    def insert_pattern_repeat_menu(self, gridMenu, patternRepeats): 
+        """ Show menu for adding/deleting pattern repeats. """
+
+        repeatIcon = QIcon(":/icons/pattern_repeat.png")
+        patternRepeatMenu = gridMenu.addMenu(repeatIcon, "Pattern Repeats")
+
+        # add repeat box action
+        addRepeatAction = \
+                patternRepeatMenu.addAction("&Create Pattern Repeat")
+        self.connect(addRepeatAction, SIGNAL("triggered()"),
+                     self.add_pattern_repeat)
+        if not can_outline_selection(self._selectedCells.values()):
+            addRepeatAction.setEnabled(False)
+
+        # edit repeat box action
+        editRepeatAction = \
+                patternRepeatMenu.addAction("&Edit Pattern Repeat")
+        if patternRepeats:
+            self.connect(editRepeatAction, SIGNAL("triggered()"),
+                         partial(self.edit_pattern_repeat,
+                                 patternRepeats[0]))
+        else:
+            editRepeatAction.setEnabled(False)
+
+        # delete repeat box action
+        deleteRepeatAction = \
+                patternRepeatMenu.addAction("&Delete Pattern Repeat")
+        if patternRepeats:
+            self.connect(deleteRepeatAction, SIGNAL("triggered()"),
+                         partial(self.delete_pattern_repeat,
+                                 patternRepeats[0]))
+        else:
+            deleteRepeatAction.setEnabled(False)
+
+ 
+
+    def insert_delete_columns_menu(self, gridMenu): 
+        """ Show menu for deleting columns. """
+
+        rowColMenu = gridMenu.addMenu("Add/Delete Co&lumns")
+
+        deleteIcon = QIcon(":/icons/delete_column.png")
+        deleteColsAction = rowColMenu.addAction(deleteIcon,
+                "delete selected &columns")
+        self.connect(deleteColsAction, SIGNAL("triggered()"),
+                     self.delete_marked_columns)
+
+        addIcon = QIcon(":/icons/insert_column.png")
+        addColRightAction = rowColMenu.addAction(addIcon, "insert column")
+        self.connect(addColRightAction, SIGNAL("triggered()"),
+                     self.insert_grid_columns)
+        rowColMenu.addSeparator()
+
+
+
+    def insert_delete_rows_menu(self, gridMenu): 
+        """ Show menu for deleting rows. """
+
+        rowColMenu = gridMenu.addMenu("Add/Delete &Rows")
+
+        deleteIcon = QIcon(":/icons/delete_row.png")
+        deleteRowsAction = rowColMenu.addAction(deleteIcon,
+                "delete selected &rows")
+        self.connect(deleteRowsAction, SIGNAL("triggered()"),
+                     self.delete_marked_rows)
+
+        addIcon = QIcon(":/icons/insert_row.png")
+        addRowAction = rowColMenu.addAction(addIcon, "&insert rows")
+        self.connect(addRowAction, SIGNAL("triggered()"),
+                     self.insert_grid_rows)
+        rowColMenu.addSeparator()
+
+
+       
+    def insert_row_repeat_menu(self, gridMenu): 
+        """ Show menu for inserting and deleting row repeats. """
+
+        repeatIcon = QIcon(":/icons/row_repeats.png")
+        rowRepeatMenu = gridMenu.addMenu(repeatIcon, 
+                "Add/Delete R&ow Repeats")
+
+        # row repeat actions
+        addRowRepeatAction = rowRepeatMenu.addAction("&add row repeat")
+        self.connect(addRowRepeatAction, SIGNAL("triggered()"),
+                     self.add_row_repeat)
+
+        deleteRowRepeatAction = rowRepeatMenu.addAction("&delete row repeat")
+        self.connect(deleteRowRepeatAction, SIGNAL("triggered()"),
+                     self.delete_row_repeat)
 
 
 

@@ -2,7 +2,7 @@
 
 # Form implementation generated from sconcho.gui.reading ui file 'ui/main_window.ui'
 #
-# Created: Sat Aug 25 10:35:37 2012
+# Created: Sun Sep  2 11:54:52 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -336,7 +336,7 @@ class Ui_MainWindow(object):
         self.actionInsert_columns.setObjectName(_fromUtf8("actionInsert_columns"))
         self.actionCreate_Row_Repeat = QtGui.QAction(MainWindow)
         icon23 = QtGui.QIcon()
-        icon23.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/togglelegend.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon23.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/row_repeats.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionCreate_Row_Repeat.setIcon(icon23)
         self.actionCreate_Row_Repeat.setObjectName(_fromUtf8("actionCreate_Row_Repeat"))
         self.action_Copy_Rectangular_Selection = QtGui.QAction(MainWindow)
