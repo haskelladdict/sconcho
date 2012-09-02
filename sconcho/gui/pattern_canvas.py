@@ -1978,7 +1978,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def can_delete_grid_columns(self):
+    def can_delete_grid_columns(self, deadColumns):
         """ Checks if the selected columns can be deleted.
 
         The selected columns can only be deleted if the current
@@ -1990,9 +1990,18 @@ class PatternCanvas(QGraphicsScene):
         if not self._selectedCells:
             return
 
-        orderedByColumn = \
-            order_selection_by_columns(self._selectedCells.values())
+        selection = []
+        allItems = extract_patternItems(self.items(), PatternGridItem)
+        for item in allItems:
+            if set(range(item.column, item.column + item.width)) \
+                   & set(deadColumns):
+                selection.append(PatternCanvasEntry(item.column,
+                                                    item.row,
+                                                    item.width,
+                                                    item.color,
+                                                    item.symbol))
 
+        orderedByColumn = order_selection_by_columns(selection)
         colIDs = list(orderedByColumn.keys())
         colIDs.sort()
 
@@ -2033,7 +2042,7 @@ class PatternCanvas(QGraphicsScene):
         # make sure only complete are selected, and we span
         # complete columns
         deadColumns = self.marked_columns()
-        if not deadColumns or not self.can_delete_grid_columns():
+        if not deadColumns or not self.can_delete_grid_columns(deadColumns):
             logger.error(msg.noColDeleteLayoutText)
             QMessageBox.critical(None, msg.noColDeleteLayoutTitle,
                                  msg.noColDeleteLayoutText,

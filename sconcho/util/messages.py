@@ -114,16 +114,13 @@ noColInsertLayoutText = ("Sorry, cannot insert requested columns at the "
 
 
 noColDeleteLayoutTitle = "sconcho: Cannot Delete Columns"
-noColDeleteLayoutText = ("Sorry, cannot delete requested columns. To "
-                         "delete columns, please select complete columns "
-                         "only (i.e. there can be no partially "
-                         "selected ones).")
+noColDeleteLayoutText = ("Sorry, cannot delete requested columns. Please "
+                         "make sure you are not attempting to delete only "
+                         "parts of a multi-stitch symbols.")
 
 
 selectCompleteRowsTitle = "sconcho: Cannot Delete Rows"
-selectCompleteRowsText = ("Sorry, cannot delete rows. To delete rows, "
-                         "please select complete rows only"
-                         "(i.e. there can be no partially selected ones).")
+selectCompleteRowsText = ("Sorry, cannot delete rows.")
 
 
 selectSingleColumnTitle = "sconcho: Cannot Insert Columns"

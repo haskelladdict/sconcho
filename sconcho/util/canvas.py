@@ -545,16 +545,7 @@ def get_marked_columns(selectedCells, numRows):
                         in cellsByColumn.items()])
 
         # all columns are of lenght numRows - good to go
-        #if all([ (x == numRows) for x in entries.values()]):
         return list(cellsByColumn.keys())
-
-        # we also accept a single full column with a complete non-jagged
-        # edge
-        #if len([x for x in entries.values() if x == numRows]) == 1:
-        #    for (col, length) in entries.items():
-        #        if length == numRows:
-        #            if not ((col-1) in entries and (col+1) in entries):
-        #                return [col]
 
     return []
 
