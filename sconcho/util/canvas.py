@@ -515,8 +515,7 @@ def get_marked_rows(selectedCells, numColumns):
     if selectedCells:
         cellsByRow = order_selection_by_rows(selectedCells)
         values = set(num_unitcells(row) for row in cellsByRow.values())
-        if len(values) == 1: # and values.pop() == numColumns:
-            return list(cellsByRow.keys())
+        return list(cellsByRow.keys())
 
     return []
 
