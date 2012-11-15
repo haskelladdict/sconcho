@@ -374,10 +374,11 @@ class SymbolSelectorGridLayout(QGridLayout):
 
         # adjust column width
         self.itemWidths.remove(symbolWidth)
-        self.setColumnMinimumWidth(0, 30 * max(self.itemWidths))
+        if self.itemWidths:
+            self.setColumnMinimumWidth(0, 30 * max(self.itemWidths))
 
         # shift one of the items below one up
-        sortedItems = self.items.values()
+        sortedItems = list(self.items.values())
         sortedItems.sort(key=(lambda x: x[0]))
         (row, symbolItem, textItem) = sortedItems[-1]
         if row > pivot:

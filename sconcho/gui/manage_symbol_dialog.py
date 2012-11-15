@@ -20,17 +20,12 @@
 #######################################################################
 
 import logging
+import re
 from functools import partial
-
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
 
 from PyQt4.QtCore import (QByteArray,
                           QDir,
                           QFileInfo,
-                          QRegExp,
                           Qt,
                           QVariant,
                           SIGNAL)
@@ -197,9 +192,9 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         """ This slot deals with changes to the selected category """
 
         itemText = self.categoryChooser.itemText(index)
-        (itemData, dummy) = self.categoryChooser.itemData(index)
+        itemData = self.categoryChooser.itemData(index)
 
-        if itemText == QString("other...") and itemData == 1:
+        if itemText == "other..." and itemData == 1:
 
             (newCategory, status) = \
                     QInputDialog.getText(self,
@@ -451,7 +446,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
         """ Syncs the dictionary with the just updated data. """
 
         # convert width value from int to string
-        data["width"] = QString("%d" % data["width"])
+        data["width"] = "%d" % data["width"]
         symbolID = data["name"]
         self._symbolDict[symbolID] = data
 
@@ -569,7 +564,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
             data["name"] = name
 
             # since we use this as a file path get rid of whitespace
-            data["svgName"] = sanitize_name(QString(name))
+            data["svgName"] = sanitize_name(name)
 
 
         category = self.categoryChooser.currentText()
@@ -585,7 +580,7 @@ class ManageSymbolDialog(QDialog, Ui_ManageKnittingSymbolDialog):
 
         data["description"]  = self.symbolDescriptionEntry.toPlainText()
         data["width"]        = self.symbolWidthSpinner.value()
-        data["category_pos"] = QString("100000")
+        data["category_pos"] = "100000"
 
         return data
 
@@ -693,9 +688,11 @@ def sanitize_name(name):
     """
 
     # replace all non word characters with underscores
-    name.replace(QRegExp(r"\W"),"_")
+    name = re.sub(r"\W", r"_", name)
 
     # replace consecutive stretches of underscores with a single one
-    name.replace(QRegExp(r"[_]+"),"_")
+    name = re.sub(r"[_]+", r"_", name)
+
+    print(name)
 
     return name

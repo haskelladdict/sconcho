@@ -791,8 +791,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.symbolSelector[categoryName] = widget
 
             self.symbolSelectorWidgets = \
-                dict(self.symbolSelectorWidgets.items() +
-                     wList.items())
+                dict(list(self.symbolSelectorWidgets.items()) +
+                     list(wList.items()))
 
         else:
             message = ("MainWindow: Problem updating symbol dialog\n"
