@@ -693,6 +693,4 @@ def sanitize_name(name):
     # replace consecutive stretches of underscores with a single one
     name = re.sub(r"[_]+", r"_", name)
 
-    print(name)
-
     return name
