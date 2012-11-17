@@ -23,11 +23,6 @@ import logging
 from platform import system
 from functools import partial
 
-try:
-    from PyQt4.QtCore import QString
-except ImportError:
-    QString = str
-
 from PyQt4.QtCore import (QLineF,
                           QPointF,
                           QRectF,
@@ -336,7 +331,7 @@ class PatternCanvas(QGraphicsScene):
                 if not colLabel:
                     continue
 
-                labelText = QString(colLabel)
+                labelText = str(colLabel)
                 textWidth = fontMetric.width(labelText)
                 item = self.columnLabels[col]
                 item.setPlainText(labelText)
@@ -1887,7 +1882,7 @@ class PatternCanvas(QGraphicsScene):
         # first we need to check if we can actually insert num
         # columns given the current configuration
         isExternalColumn = False
-        if mode == QString("left of"):
+        if mode == "left of":
             shift = 0
             if pivot == 0:
                 isExternalColumn = True
@@ -2278,7 +2273,7 @@ class PatternCanvas(QGraphicsScene):
             (legendIsVisible, legendItemPos, legendTextPos, \
                     legendText) = legendInfo
         else:
-            legendText = QString("pattern repeat")
+            legendText = "pattern repeat"
             yCoord = self._get_legend_y_coordinate_for_placement()
             legendItemPos = QPointF(0, yCoord + legendItem.height + 30)
             legendTextPos = QPointF(legendItem.width + 30,
