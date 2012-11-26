@@ -293,21 +293,22 @@ class PatternCanvas(QGraphicsScene):
             rowLabelList = self.rowLabelTracker.get_labels()
             rowLabelList.reverse()
             for (row, rowLabels) in enumerate(rowLabelList):
-                if not rowLabels:
-                    continue
-
-                labelText = str(rowLabels[0])
-                for label in rowLabels[1:]:
-                    labelText += ", " + str(label)
-
                 item = self.rowLabels[row]
-                item.setPlainText(str(labelText))
-                yPos = self.cell_height * row
-                if rowLabels[0] % 2 == 0:
-                    item.setPos(evenXPos(labelText, row), yPos)
-                else:
-                    item.setPos(oddXPos(labelText, row), yPos)
+                
+                if not rowLabels:
+                    labelText = ""
+                else:    
+                    labelText = str(rowLabels[0])
+                    for label in rowLabels[1:]:
+                        labelText += ", " + str(label)
 
+                    yPos = self.cell_height * row
+                    if rowLabels[0] % 2 == 0:
+                        item.setPos(evenXPos(labelText, row), yPos)
+                    else:
+                        item.setPos(oddXPos(labelText, row), yPos)
+
+                item.setPlainText(labelText)
                 item.setFont(labelFont)
         else:
             for (row, item) in self.rowLabels.items():
