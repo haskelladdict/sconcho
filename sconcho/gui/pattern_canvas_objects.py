@@ -1254,7 +1254,6 @@ class ColumnLabelTracker(object):
                     labels.append(columnEntry)
                 else:
                     labels.append(None)
-
         else:
             labels = range(1, numColumns + 1)
 

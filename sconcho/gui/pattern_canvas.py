@@ -330,9 +330,10 @@ class PatternCanvas(QGraphicsScene):
         if self.updateColumnLabels:
             for (col, colLabel) in enumerate(columnLabelList):
                 if not colLabel:
-                    continue
+                    labelText = ""
+                else:
+                    labelText = str(colLabel)
 
-                labelText = str(colLabel)
                 textWidth = fontMetric.width(labelText)
                 item = self.columnLabels[col]
                 item.setPlainText(labelText)

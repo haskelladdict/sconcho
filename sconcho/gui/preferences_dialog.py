@@ -392,11 +392,6 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         elif intervalType == "SHOW_ROWS_WITH_INTERVAL":
             self.showRowsWithIntervalButton.setChecked(True)
 
-        rowLabelStart = self.settings.rowLabelStart.value
-
-        self.rowLabelStartSpinner.setValue(rowLabelStart)
-        self._adjust_row_label_selectors(rowLabelStart)
-
         rowInterval = self.settings.rowLabelsShowInterval.value
         self.rowLabelsIntervalSpinner.blockSignals(True)
         self.rowLabelsIntervalSpinner.setValue(rowInterval)
@@ -430,6 +425,10 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
             self.alignRowLabelsToVisibleChecker.setChecked(False)
         else:
             self.alignRowLabelsToVisibleChecker.setChecked(True)
+
+        rowLabelStart = self.settings.rowLabelStart.value
+        self.rowLabelStartSpinner.setValue(rowLabelStart)
+        self._adjust_row_label_selectors(rowLabelStart)
 
 
 
