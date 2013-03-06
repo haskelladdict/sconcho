@@ -1,3 +1,10 @@
+03-05-2013: Markus Dittrich <haskelladdict@users.sourceforge.net>:
+
+        * Fixed several bugs in row and custom label properties in
+        the preferences dialog. Thanks to Mairlynd@ravelry for 
+        pointing this out.
+
+
 11-27-2012: Markus Dittrich <haskelladdict@users.sourceforge.net>:
 
         * Fixed bug in custom row label intervals. 

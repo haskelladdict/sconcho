@@ -20,8 +20,8 @@
 #######################################################################
 
 # version and release date of current sconcho
-__version__ = "0.2.0_b5"
-__releaseDate__ = "2012-11-2525"
+__version__ = "0.2.0_b6"
+__releaseDate__ = "2013-03-05"
 
 import logging
 import platform, os
