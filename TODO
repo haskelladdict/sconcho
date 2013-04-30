@@ -12,3 +12,4 @@
 - ability to delete legend keys
 - ability for rich text editing in labels, legends (bold, font size)
 - add guides and snap to grid for legend items
+- add custom symbol exporter option to facilitate symbol sharing
