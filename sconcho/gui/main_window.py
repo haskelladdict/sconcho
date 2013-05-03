@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2012 Markus Dittrich
+# (c) 2009-2013 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -20,8 +20,8 @@
 #######################################################################
 
 # version and release date of current sconcho
-__version__ = "0.2.0_b6"
-__releaseDate__ = "2013-03-05"
+__version__ = "0.2.0_b7"
+__releaseDate__ = "2013-05-02"
 
 import logging
 import platform, os

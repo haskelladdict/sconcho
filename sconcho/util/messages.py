@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-# (c) 2009-2012 Markus Dittrich
+# (c) 2009-2013 Markus Dittrich
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public
@@ -27,7 +27,7 @@
 sconchoDescription = (
     "<b>sconcho</b> v. %s"
     "<p>sconcho is a professional tool for designing knitting charts."
-    "<p>Copyright &copy; 2009-2012 Markus Dittrich"
+    "<p>Copyright &copy; 2009-2013 Markus Dittrich"
     "<p>Special thanks go to Susan Dittrich for continued testing, advice, "
     "support, and generation of the SVG knitting symbols. Many thanks "
     "also to all users who have provided feedback, reported problems "
