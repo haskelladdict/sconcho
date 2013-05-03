@@ -73,6 +73,7 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.set_up_column_label_selectors()
         self.set_up_grid_properties()
         self.set_up_personal_symbol_path()
+        self.set_up_misc_selectors()
         self.set_up_logging()
 
 
@@ -177,6 +178,9 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         self.settings.personalSymbolPath.make_settings_default()
         self.settings.loggingPath.make_settings_default()
         self.settings.doLogging.make_settings_default()
+
+        self.settings.numRecentSymbols.make_settings_default() 
+
 
 
 
@@ -769,6 +773,28 @@ class PreferencesDialog(QDialog, Ui_PreferencesDialog):
         for element in elements:
             getattr(element, "setDisabled")(status)
 
+
+    
+    def set_up_misc_selectors(self):
+        """ Sets up the widget for miscelaneous properties """
+
+        numRecentSymbols = self.settings.numRecentSymbols.value
+        self.recentSymbolSpinner.setValue(numRecentSymbols)
+
+        self.connect(self.recentSymbolSpinner,
+                     SIGNAL("valueChanged(int)"),
+                     self.update_num_recent_symbols)
+
+
+
+    def update_num_recent_symbols(self, newNumRecentSymbols):
+        """ Updates the settings with the new value of recent
+        symbols.
+        
+        """
+
+        self.settings.numRecentSymbols.value = newNumRecentSymbols
+        self.emit(SIGNAL("change_num_recent_symbols"), newNumRecentSymbols)
 
 
 

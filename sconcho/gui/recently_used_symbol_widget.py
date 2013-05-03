@@ -37,7 +37,7 @@ from sconcho.gui.symbol_widget import (SymbolSelectorItem,
 
 
 # this is the maximum number of recently used symbols we allow
-MAX_RECENT_SYMBOLS = 5
+#MAX_RECENT_SYMBOLS = 5
 
 
 ###############################################################
@@ -63,6 +63,9 @@ class RecentlyUsedSymbolWidget(QWidget):
 
         self.setMinimumHeight(40)
         self.setMaximumHeight(40)
+
+        # initialize to 0
+        self.num_recent_symbols = 0
 
         labelWidget = QLabel("None");
         self.layout.addWidget(labelWidget, 0, 0, Qt.AlignVCenter)
@@ -116,19 +119,54 @@ class RecentlyUsedSymbolWidget(QWidget):
         else:
             # if we have more than MAX_RECENT_SYMBOLS symbols evict
             # the one with the lowest count
-            if len(self.recentSymbolsDict) > MAX_RECENT_SYMBOLS-1:
-                minKey = min(self.recentSymbolsDict.values())
-                keyDict = self.recentSymbolsDict.copy()
-                for (key, val) in keyDict.items():
-                    if val == minKey:
-                        del self.recentSymbolsDict[key]
-                        break
+            if len(self.recentSymbolsDict) > self.num_recent_symbols-1:
+                self.purge_symbols()
 
             # adding it after evicting a previous one
             # makes sure we always keep the most recent item
             self.recentSymbolsDict[symbol] = 1
 
             self.update_widget(symbol)
+
+
+
+    def purge_symbols(self):
+        """ Purges currently stored symbols so that their
+
+        number agrees with the selected number of recent symbols.
+
+        """
+
+        while len(self.recentSymbolsDict) > self.num_recent_symbols-1:
+            minKey = min(self.recentSymbolsDict.values())
+            keyDict = self.recentSymbolsDict.copy()
+            for (key, val) in keyDict.items():
+                if val == minKey:
+                    del self.recentSymbolsDict[key]
+                    break
+
+
+
+    def update_num_recent_symbols(self, newNum):
+        """ Update the number of recently used symbols to keep
+        in the widget.
+
+        This function is called if the user changes this number
+        in the preferences.
+
+        NOTE: This function is also called initially to properly
+        set up the widget.
+
+        """
+
+        oldNum = self.num_recent_symbols
+        self.num_recent_symbols = newNum
+
+        # if the number of kept symbols was lowered, purge some
+        # of the symbols
+        if (newNum < oldNum):
+            self.purge_symbols()
+            self.update_widget(None)
 
 
 
@@ -152,7 +190,8 @@ class RecentlyUsedSymbolWidget(QWidget):
             self.layout.addWidget(widget, 0, index, Qt.AlignVCenter)
             self.recentSymbols.append(widget)
 
-        self.click_on_a_symbol_widget(symbol)
+        if symbol:
+            self.click_on_a_symbol_widget(symbol)
 
 
 

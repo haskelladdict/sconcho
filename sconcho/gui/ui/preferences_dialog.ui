@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="legendTab">
       <attribute name="title">
@@ -734,6 +734,9 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QSpinBox" name="recentSymbolSpinner">
+           <property name="minimum">
+            <number>1</number>
+           </property>
            <property name="value">
             <number>5</number>
            </property>

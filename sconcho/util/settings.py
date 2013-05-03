@@ -85,6 +85,9 @@ class DefaultSettings(QSettings):
             QDir.homePath() + "/.sconcho_logs")
     DEFAULT_DO_LOGGING = "0"
     DEFAULT_EXPORT_PATH = QDir.homePath()
+    
+    DEFAULT_NUM_RECENT_SYMBOLS = "5"
+
 
 
     def __init__(self, organization, application, parent = None):
@@ -201,6 +204,10 @@ class DefaultSettings(QSettings):
                 DefaultSettings.DEFAULT_DO_LOGGING,
                 "doLogging", "Int")
 
+        self.numRecentSymbols = PreferenceSetting(self, 
+                DefaultSettings.DEFAULT_NUM_RECENT_SYMBOLS,
+                "numRecentSymbols", "Int")
+
 
     @property
     def main_window_size(self):
@@ -263,7 +270,6 @@ class DefaultSettings(QSettings):
         """ Set the state of the symbol selector splitter. """
 
         self.setValue("SymbolSelector/State", state)
-
 
 
 

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Thu May  2 22:42:15 2013
+# Created: Thu May  2 23:42:38 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -352,6 +352,7 @@ class Ui_PreferencesDialog(object):
         spacerItem8 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem8)
         self.recentSymbolSpinner = QtGui.QSpinBox(self.tab_3)
+        self.recentSymbolSpinner.setMinimum(1)
         self.recentSymbolSpinner.setProperty("value", 5)
         self.recentSymbolSpinner.setObjectName(_fromUtf8("recentSymbolSpinner"))
         self.horizontalLayout_3.addWidget(self.recentSymbolSpinner)
@@ -380,7 +381,7 @@ class Ui_PreferencesDialog(object):
         self.label_7.setBuddy(self.highlightRowOpacitySpinner)
 
         self.retranslateUi(PreferencesDialog)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(4)
         QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), PreferencesDialog.hide)
         QtCore.QMetaObject.connectSlotsByName(PreferencesDialog)
 

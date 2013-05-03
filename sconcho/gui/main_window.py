@@ -131,6 +131,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self._restore_window_settings()
 
+        self.recentlyUsedSymbolWidget.update_num_recent_symbols(
+                self.settings.numRecentSymbols.value)
+
         # we set a manual scene rectangle for our view. we
         # should be a little smarter about this in the future
         self.graphicsView.setScene(self.canvas)
@@ -452,6 +455,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      SIGNAL("redraw_highlighted_rows"),
                      self.set_project_dirty)
 
+        self.connect(self.preferencesDialog,
+                    SIGNAL("change_num_recent_symbols"),
+                    self.recentlyUsedSymbolWidget.update_num_recent_symbols)
+    
         self.connect(self,
                      SIGNAL("update_preferences"),
                      self.preferencesDialog.populate_interface)
