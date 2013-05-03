@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Thu May  2 22:27:03 2013
+# Created: Thu May  2 22:42:15 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_PreferencesDialog(object):
     def setupUi(self, PreferencesDialog):
         PreferencesDialog.setObjectName(_fromUtf8("PreferencesDialog"))
-        PreferencesDialog.resize(614, 709)
+        PreferencesDialog.resize(614, 739)
         self.verticalLayout_10 = QtGui.QVBoxLayout(PreferencesDialog)
         self.verticalLayout_10.setObjectName(_fromUtf8("verticalLayout_10"))
         self.tabWidget = QtGui.QTabWidget(PreferencesDialog)
@@ -340,17 +340,38 @@ class Ui_PreferencesDialog(object):
         spacerItem7 = QtGui.QSpacerItem(20, 185, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_6.addItem(spacerItem7)
         self.tabWidget.addTab(self.tab, _fromUtf8(""))
+        self.tab_3 = QtGui.QWidget()
+        self.tab_3.setObjectName(_fromUtf8("tab_3"))
+        self.verticalLayout_11 = QtGui.QVBoxLayout(self.tab_3)
+        self.verticalLayout_11.setObjectName(_fromUtf8("verticalLayout_11"))
+        self.horizontalLayout_3 = QtGui.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
+        self.label_8 = QtGui.QLabel(self.tab_3)
+        self.label_8.setObjectName(_fromUtf8("label_8"))
+        self.horizontalLayout_3.addWidget(self.label_8)
+        spacerItem8 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem8)
+        self.recentSymbolSpinner = QtGui.QSpinBox(self.tab_3)
+        self.recentSymbolSpinner.setProperty("value", 5)
+        self.recentSymbolSpinner.setObjectName(_fromUtf8("recentSymbolSpinner"))
+        self.horizontalLayout_3.addWidget(self.recentSymbolSpinner)
+        spacerItem9 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem9)
+        self.verticalLayout_11.addLayout(self.horizontalLayout_3)
+        spacerItem10 = QtGui.QSpacerItem(20, 593, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_11.addItem(spacerItem10)
+        self.tabWidget.addTab(self.tab_3, _fromUtf8(""))
         self.verticalLayout_10.addWidget(self.tabWidget)
-        spacerItem8 = QtGui.QSpacerItem(20, 29, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout_10.addItem(spacerItem8)
+        spacerItem11 = QtGui.QSpacerItem(20, 29, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_10.addItem(spacerItem11)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.makeDefaultButton = QtGui.QPushButton(PreferencesDialog)
         self.makeDefaultButton.setAutoDefault(False)
         self.makeDefaultButton.setObjectName(_fromUtf8("makeDefaultButton"))
         self.horizontalLayout.addWidget(self.makeDefaultButton)
-        spacerItem9 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem9)
+        spacerItem12 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem12)
         self.pushButton = QtGui.QPushButton(PreferencesDialog)
         self.pushButton.setAutoDefault(False)
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
@@ -415,6 +436,8 @@ class Ui_PreferencesDialog(object):
         self.label_14.setText(_translate("PreferencesDialog", "Logging Path", None))
         self.loggingPathButton.setText(_translate("PreferencesDialog", "&Browse", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("PreferencesDialog", "Custom Symbols && Logging", None))
+        self.label_8.setText(_translate("PreferencesDialog", "number of recent symbols ", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("PreferencesDialog", "Misc", None))
         self.makeDefaultButton.setText(_translate("PreferencesDialog", "Make &Default", None))
         self.pushButton.setText(_translate("PreferencesDialog", "&Close", None))
 
