@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/manage_symbol_dialog.ui'
 #
-# Created: Sun Sep  2 11:54:53 2012
-#      by: PyQt4 UI code generator 4.9.4
+# Created: Thu May  2 22:27:03 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_ManageKnittingSymbolDialog(object):
     def setupUi(self, ManageKnittingSymbolDialog):
@@ -181,33 +190,33 @@ class Ui_ManageKnittingSymbolDialog(object):
         QtCore.QMetaObject.connectSlotsByName(ManageKnittingSymbolDialog)
 
     def retranslateUi(self, ManageKnittingSymbolDialog):
-        ManageKnittingSymbolDialog.setWindowTitle(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "sconcho: Manage Custom Knitting Symbols", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_7.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        ManageKnittingSymbolDialog.setWindowTitle(_translate("ManageKnittingSymbolDialog", "sconcho: Manage Custom Knitting Symbols", None))
+        self.label_7.setText(_translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Available Symbols</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.availableSymbolsWidget.headerItem().setText(0, QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Category/Symbol", None, QtGui.QApplication.UnicodeUTF8))
-        self.addSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "&Add New Symbol", None, QtGui.QApplication.UnicodeUTF8))
-        self.importSymbolsButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Import Symbols", None, QtGui.QApplication.UnicodeUTF8))
-        self.exportSymbolsButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Export Symbols", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Available Symbols</span></p></body></html>", None))
+        self.availableSymbolsWidget.headerItem().setText(0, _translate("ManageKnittingSymbolDialog", "Category/Symbol", None))
+        self.addSymbolButton.setText(_translate("ManageKnittingSymbolDialog", "&Add New Symbol", None))
+        self.importSymbolsButton.setText(_translate("ManageKnittingSymbolDialog", "Import Symbols", None))
+        self.exportSymbolsButton.setText(_translate("ManageKnittingSymbolDialog", "Export Symbols", None))
+        self.label_4.setText(_translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">SVG Image</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.browseSymbolButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_12.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">SVG Image</span></p></body></html>", None))
+        self.browseSymbolButton.setText(_translate("ManageKnittingSymbolDialog", "&Browse", None))
+        self.label_12.setText(_translate("ManageKnittingSymbolDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Description</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.symbolNameLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &name", None, QtGui.QApplication.UnicodeUTF8))
-        self.symbolCategoryLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &category", None, QtGui.QApplication.UnicodeUTF8))
-        self.symbolWidthLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &width", None, QtGui.QApplication.UnicodeUTF8))
-        self.symbolDescriptionLabel.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "symbol &description", None, QtGui.QApplication.UnicodeUTF8))
-        self.cancelOrDeleteButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Cancel", None, QtGui.QApplication.UnicodeUTF8))
-        self.addOrUpdateButton.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Add", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton_4.setText(QtGui.QApplication.translate("ManageKnittingSymbolDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Description</span></p></body></html>", None))
+        self.symbolNameLabel.setText(_translate("ManageKnittingSymbolDialog", "symbol &name", None))
+        self.symbolCategoryLabel.setText(_translate("ManageKnittingSymbolDialog", "symbol &category", None))
+        self.symbolWidthLabel.setText(_translate("ManageKnittingSymbolDialog", "symbol &width", None))
+        self.symbolDescriptionLabel.setText(_translate("ManageKnittingSymbolDialog", "symbol &description", None))
+        self.cancelOrDeleteButton.setText(_translate("ManageKnittingSymbolDialog", "Cancel", None))
+        self.addOrUpdateButton.setText(_translate("ManageKnittingSymbolDialog", "Add", None))
+        self.pushButton_4.setText(_translate("ManageKnittingSymbolDialog", "Close", None))
 
 from PyQt4.QtSvg import QSvgWidget

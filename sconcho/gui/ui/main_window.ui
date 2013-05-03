@@ -473,7 +473,7 @@
      <normaloff>:/icons/fileexport.png</normaloff>:/icons/fileexport.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Export Bitmap...</string>
+    <string>&amp;Export ...</string>
    </property>
    <property name="toolTip">
     <string>Export as image file</string>

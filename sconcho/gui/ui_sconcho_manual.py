@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/sconcho_manual.ui'
 #
-# Created: Sun Sep  2 11:54:53 2012
-#      by: PyQt4 UI code generator 4.9.4
+# Created: Thu May  2 22:27:03 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_SconchoManual(object):
     def setupUi(self, SconchoManual):
@@ -43,6 +52,6 @@ class Ui_SconchoManual(object):
         QtCore.QMetaObject.connectSlotsByName(SconchoManual)
 
     def retranslateUi(self, SconchoManual):
-        SconchoManual.setWindowTitle(QtGui.QApplication.translate("SconchoManual", "Sconcho Manual", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("SconchoManual", "&Close", None, QtGui.QApplication.UnicodeUTF8))
+        SconchoManual.setWindowTitle(_translate("SconchoManual", "Sconcho Manual", None))
+        self.pushButton.setText(_translate("SconchoManual", "&Close", None))
 

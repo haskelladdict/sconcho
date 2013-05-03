@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Sun Sep  2 11:54:53 2012
-#      by: PyQt4 UI code generator 4.9.4
+# Created: Thu May  2 22:27:03 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_PreferencesDialog(object):
     def setupUi(self, PreferencesDialog):
@@ -355,57 +364,57 @@ class Ui_PreferencesDialog(object):
         QtCore.QMetaObject.connectSlotsByName(PreferencesDialog)
 
     def retranslateUi(self, PreferencesDialog):
-        PreferencesDialog.setWindowTitle(QtGui.QApplication.translate("PreferencesDialog", "sconcho: Preferences", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Legend Font", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("PreferencesDialog", "Family", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("PreferencesDialog", "Style", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("PreferencesDialog", "Size", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.legendTab), QtGui.QApplication.translate("PreferencesDialog", "Legend", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelFontGrouper.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Label Font", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_10.setText(QtGui.QApplication.translate("PreferencesDialog", "Family", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_11.setText(QtGui.QApplication.translate("PreferencesDialog", "Style", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_12.setText(QtGui.QApplication.translate("PreferencesDialog", "Size", None, QtGui.QApplication.UnicodeUTF8))
-        self.showRowLabelChecker.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Show Row Labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.customRowLabelsChecker.setText(QtGui.QApplication.translate("PreferencesDialog", "Use custom row labels (disables all automatic updates)", None, QtGui.QApplication.UnicodeUTF8))
-        self.alignRowLabelsToVisibleChecker.setText(QtGui.QApplication.translate("PreferencesDialog", "Align row labels to visible cells", None, QtGui.QApplication.UnicodeUTF8))
-        self.evenRowLabel.setText(QtGui.QApplication.translate("PreferencesDialog", "even row label location", None, QtGui.QApplication.UnicodeUTF8))
-        self.evenRowLabelLocationComboBox.setItemText(0, QtGui.QApplication.translate("PreferencesDialog", "right of chart", None, QtGui.QApplication.UnicodeUTF8))
-        self.evenRowLabelLocationComboBox.setItemText(1, QtGui.QApplication.translate("PreferencesDialog", "left of chart", None, QtGui.QApplication.UnicodeUTF8))
-        self.showRowsWithIntervalButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show only every ", None, QtGui.QApplication.UnicodeUTF8))
-        self.showOddRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show only odd row labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.oddRowLabel.setText(QtGui.QApplication.translate("PreferencesDialog", "odd row label location", None, QtGui.QApplication.UnicodeUTF8))
-        self.oddRowLabelLocationComboBox.setItemText(0, QtGui.QApplication.translate("PreferencesDialog", "right of chart", None, QtGui.QApplication.UnicodeUTF8))
-        self.oddRowLabelLocationComboBox.setItemText(1, QtGui.QApplication.translate("PreferencesDialog", "left of chart", None, QtGui.QApplication.UnicodeUTF8))
-        self.showEvenRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show only even row labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.rowLabelsStartLabel.setText(QtGui.QApplication.translate("PreferencesDialog", "label starting at row", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelAllRowsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show all  row labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.rowLabelStart.setText(QtGui.QApplication.translate("PreferencesDialog", "row labels start with", None, QtGui.QApplication.UnicodeUTF8))
-        self.showColumnLabelChecker.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Show Column Labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.customColumnLabelsChecker.setText(QtGui.QApplication.translate("PreferencesDialog", "Use custom column labels (disables all automatic updates)", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelAllColumnsButton.setText(QtGui.QApplication.translate("PreferencesDialog", "label all columns", None, QtGui.QApplication.UnicodeUTF8))
-        self.showColumnsWithIntervalButton.setText(QtGui.QApplication.translate("PreferencesDialog", "show only every ", None, QtGui.QApplication.UnicodeUTF8))
-        self.columnLabelStart.setText(QtGui.QApplication.translate("PreferencesDialog", "label starting at column", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.labelTab), QtGui.QApplication.translate("PreferencesDialog", "Labels", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("PreferencesDialog", "Grid Cell Width (pixels)", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("PreferencesDialog", "Grid Cell Height (pixels)", None, QtGui.QApplication.UnicodeUTF8))
-        self.rowHighlightChecker.setTitle(QtGui.QApplication.translate("PreferencesDialog", "Highlight Grid Rows", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_7.setText(QtGui.QApplication.translate("PreferencesDialog", "&Opacity (%)", None, QtGui.QApplication.UnicodeUTF8))
-        self.highlightRowColorButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Highlight Color", None, QtGui.QApplication.UnicodeUTF8))
-        self.highlightRowStartComboBox.setItemText(0, QtGui.QApplication.translate("PreferencesDialog", "start at bottom row", None, QtGui.QApplication.UnicodeUTF8))
-        self.highlightRowStartComboBox.setItemText(1, QtGui.QApplication.translate("PreferencesDialog", "start at second row", None, QtGui.QApplication.UnicodeUTF8))
-        self.snapPatternRepeatChecker.setText(QtGui.QApplication.translate("PreferencesDialog", "snap pattern repeats to grid", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("PreferencesDialog", "Grid Properties", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("PreferencesDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        PreferencesDialog.setWindowTitle(_translate("PreferencesDialog", "sconcho: Preferences", None))
+        self.groupBox.setTitle(_translate("PreferencesDialog", "Legend Font", None))
+        self.label.setText(_translate("PreferencesDialog", "Family", None))
+        self.label_2.setText(_translate("PreferencesDialog", "Style", None))
+        self.label_3.setText(_translate("PreferencesDialog", "Size", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.legendTab), _translate("PreferencesDialog", "Legend", None))
+        self.labelFontGrouper.setTitle(_translate("PreferencesDialog", "Label Font", None))
+        self.label_10.setText(_translate("PreferencesDialog", "Family", None))
+        self.label_11.setText(_translate("PreferencesDialog", "Style", None))
+        self.label_12.setText(_translate("PreferencesDialog", "Size", None))
+        self.showRowLabelChecker.setTitle(_translate("PreferencesDialog", "Show Row Labels", None))
+        self.customRowLabelsChecker.setText(_translate("PreferencesDialog", "Use custom row labels (disables all automatic updates)", None))
+        self.alignRowLabelsToVisibleChecker.setText(_translate("PreferencesDialog", "Align row labels to visible cells", None))
+        self.evenRowLabel.setText(_translate("PreferencesDialog", "even row label location", None))
+        self.evenRowLabelLocationComboBox.setItemText(0, _translate("PreferencesDialog", "right of chart", None))
+        self.evenRowLabelLocationComboBox.setItemText(1, _translate("PreferencesDialog", "left of chart", None))
+        self.showRowsWithIntervalButton.setText(_translate("PreferencesDialog", "show only every ", None))
+        self.showOddRowsButton.setText(_translate("PreferencesDialog", "show only odd row labels", None))
+        self.oddRowLabel.setText(_translate("PreferencesDialog", "odd row label location", None))
+        self.oddRowLabelLocationComboBox.setItemText(0, _translate("PreferencesDialog", "right of chart", None))
+        self.oddRowLabelLocationComboBox.setItemText(1, _translate("PreferencesDialog", "left of chart", None))
+        self.showEvenRowsButton.setText(_translate("PreferencesDialog", "show only even row labels", None))
+        self.rowLabelsStartLabel.setText(_translate("PreferencesDialog", "label starting at row", None))
+        self.labelAllRowsButton.setText(_translate("PreferencesDialog", "show all  row labels", None))
+        self.rowLabelStart.setText(_translate("PreferencesDialog", "row labels start with", None))
+        self.showColumnLabelChecker.setTitle(_translate("PreferencesDialog", "Show Column Labels", None))
+        self.customColumnLabelsChecker.setText(_translate("PreferencesDialog", "Use custom column labels (disables all automatic updates)", None))
+        self.labelAllColumnsButton.setText(_translate("PreferencesDialog", "label all columns", None))
+        self.showColumnsWithIntervalButton.setText(_translate("PreferencesDialog", "show only every ", None))
+        self.columnLabelStart.setText(_translate("PreferencesDialog", "label starting at column", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.labelTab), _translate("PreferencesDialog", "Labels", None))
+        self.label_5.setText(_translate("PreferencesDialog", "Grid Cell Width (pixels)", None))
+        self.label_6.setText(_translate("PreferencesDialog", "Grid Cell Height (pixels)", None))
+        self.rowHighlightChecker.setTitle(_translate("PreferencesDialog", "Highlight Grid Rows", None))
+        self.label_7.setText(_translate("PreferencesDialog", "&Opacity (%)", None))
+        self.highlightRowColorButton.setText(_translate("PreferencesDialog", "Highlight Color", None))
+        self.highlightRowStartComboBox.setItemText(0, _translate("PreferencesDialog", "start at bottom row", None))
+        self.highlightRowStartComboBox.setItemText(1, _translate("PreferencesDialog", "start at second row", None))
+        self.snapPatternRepeatChecker.setText(_translate("PreferencesDialog", "snap pattern repeats to grid", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("PreferencesDialog", "Grid Properties", None))
+        self.label_4.setText(_translate("PreferencesDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'DejaVu LGC Sans\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\';\">Path to Custom Knitting Symbols Folder</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.customSymbolPathButton.setText(QtGui.QApplication.translate("PreferencesDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.enableLoggingChecker.setToolTip(QtGui.QApplication.translate("PreferencesDialog", "Enable logging of internal sconcho warnings/errors to file at logging Path. *Note* This setting requires a sconcho restart to take effect.", None, QtGui.QApplication.UnicodeUTF8))
-        self.enableLoggingChecker.setText(QtGui.QApplication.translate("PreferencesDialog", "Enable logging", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_14.setText(QtGui.QApplication.translate("PreferencesDialog", "Logging Path", None, QtGui.QApplication.UnicodeUTF8))
-        self.loggingPathButton.setText(QtGui.QApplication.translate("PreferencesDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("PreferencesDialog", "Custom Symbols && Logging", None, QtGui.QApplication.UnicodeUTF8))
-        self.makeDefaultButton.setText(QtGui.QApplication.translate("PreferencesDialog", "Make &Default", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("PreferencesDialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\';\">Path to Custom Knitting Symbols Folder</span></p></body></html>", None))
+        self.customSymbolPathButton.setText(_translate("PreferencesDialog", "&Browse", None))
+        self.enableLoggingChecker.setToolTip(_translate("PreferencesDialog", "Enable logging of internal sconcho warnings/errors to file at logging Path. *Note* This setting requires a sconcho restart to take effect.", None))
+        self.enableLoggingChecker.setText(_translate("PreferencesDialog", "Enable logging", None))
+        self.label_14.setText(_translate("PreferencesDialog", "Logging Path", None))
+        self.loggingPathButton.setText(_translate("PreferencesDialog", "&Browse", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("PreferencesDialog", "Custom Symbols && Logging", None))
+        self.makeDefaultButton.setText(_translate("PreferencesDialog", "Make &Default", None))
+        self.pushButton.setText(_translate("PreferencesDialog", "&Close", None))
 

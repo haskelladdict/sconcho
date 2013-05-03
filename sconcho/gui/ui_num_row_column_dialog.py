@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/num_row_column_dialog.ui'
 #
-# Created: Sun Sep  2 11:54:53 2012
-#      by: PyQt4 UI code generator 4.9.4
+# Created: Thu May  2 22:27:04 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_NumRowColumnDialog(object):
     def setupUi(self, NumRowColumnDialog):
@@ -55,7 +64,7 @@ class Ui_NumRowColumnDialog(object):
         QtCore.QMetaObject.connectSlotsByName(NumRowColumnDialog)
 
     def retranslateUi(self, NumRowColumnDialog):
-        self.requestLabel.setText(QtGui.QApplication.translate("NumRowColumnDialog", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
-        self.postLocationLabel.setText(QtGui.QApplication.translate("NumRowColumnDialog", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
-        self.preLocationLabel.setText(QtGui.QApplication.translate("NumRowColumnDialog", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
+        self.requestLabel.setText(_translate("NumRowColumnDialog", "TextLabel", None))
+        self.postLocationLabel.setText(_translate("NumRowColumnDialog", "TextLabel", None))
+        self.preLocationLabel.setText(_translate("NumRowColumnDialog", "TextLabel", None))
 

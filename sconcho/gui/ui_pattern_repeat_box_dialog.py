@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/pattern_repeat_box_dialog.ui'
 #
-# Created: Sun Sep  2 11:54:53 2012
-#      by: PyQt4 UI code generator 4.9.4
+# Created: Thu May  2 22:27:03 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_PatternRepeatDialog(object):
     def setupUi(self, PatternRepeatDialog):
@@ -70,11 +79,11 @@ class Ui_PatternRepeatDialog(object):
         QtCore.QMetaObject.connectSlotsByName(PatternRepeatDialog)
 
     def retranslateUi(self, PatternRepeatDialog):
-        PatternRepeatDialog.setWindowTitle(QtGui.QApplication.translate("PatternRepeatDialog", "sconcho: Pattern Repeat Properties", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("PatternRepeatDialog", "Line Properties", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Line &Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Line &Color", None, QtGui.QApplication.UnicodeUTF8))
-        self.legendChecker.setText(QtGui.QApplication.translate("PatternRepeatDialog", "Show in Legend", None, QtGui.QApplication.UnicodeUTF8))
-        self.cancelButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Cancel", None, QtGui.QApplication.UnicodeUTF8))
-        self.acceptButton.setText(QtGui.QApplication.translate("PatternRepeatDialog", "&Apply", None, QtGui.QApplication.UnicodeUTF8))
+        PatternRepeatDialog.setWindowTitle(_translate("PatternRepeatDialog", "sconcho: Pattern Repeat Properties", None))
+        self.groupBox.setTitle(_translate("PatternRepeatDialog", "Line Properties", None))
+        self.label.setText(_translate("PatternRepeatDialog", "Line &Width", None))
+        self.label_2.setText(_translate("PatternRepeatDialog", "Line &Color", None))
+        self.legendChecker.setText(_translate("PatternRepeatDialog", "Show in Legend", None))
+        self.cancelButton.setText(_translate("PatternRepeatDialog", "&Cancel", None))
+        self.acceptButton.setText(_translate("PatternRepeatDialog", "&Apply", None))
 

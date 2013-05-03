@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/export_bitmap_dialog.ui'
 #
-# Created: Sun Sep  2 11:54:53 2012
-#      by: PyQt4 UI code generator 4.9.4
+# Created: Thu May  2 22:27:03 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_ExportBitmapDialog(object):
     def setupUi(self, ExportBitmapDialog):
@@ -147,35 +156,35 @@ class Ui_ExportBitmapDialog(object):
         ExportBitmapDialog.setTabOrder(self.fileNameEdit, self.browseButton)
 
     def retranslateUi(self, ExportBitmapDialog):
-        ExportBitmapDialog.setWindowTitle(QtGui.QApplication.translate("ExportBitmapDialog", "sconcho: Export as Bitmap or Svg", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_10.setText(QtGui.QApplication.translate("ExportBitmapDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        ExportBitmapDialog.setWindowTitle(_translate("ExportBitmapDialog", "sconcho: Export as Bitmap or Svg", None))
+        self.label_10.setText(_translate("ExportBitmapDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'DejaVu Sans\'; font-size:8pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; font-weight:600;\">Image Size</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_11.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_14.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.unitSelector.setItemText(0, QtGui.QApplication.translate("ExportBitmapDialog", "px", None, QtGui.QApplication.UnicodeUTF8))
-        self.unitSelector.setItemText(1, QtGui.QApplication.translate("ExportBitmapDialog", "in", None, QtGui.QApplication.UnicodeUTF8))
-        self.unitSelector.setItemText(2, QtGui.QApplication.translate("ExportBitmapDialog", "cm", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_15.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Units", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("ExportBitmapDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; font-weight:600;\">Image Size</span></p></body></html>", None))
+        self.label_11.setText(_translate("ExportBitmapDialog", "Width", None))
+        self.label_14.setText(_translate("ExportBitmapDialog", "Height", None))
+        self.unitSelector.setItemText(0, _translate("ExportBitmapDialog", "px", None))
+        self.unitSelector.setItemText(1, _translate("ExportBitmapDialog", "in", None))
+        self.unitSelector.setItemText(2, _translate("ExportBitmapDialog", "cm", None))
+        self.label_15.setText(_translate("ExportBitmapDialog", "Units", None))
+        self.label_3.setText(_translate("ExportBitmapDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'DejaVu Sans\'; font-size:8pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; font-weight:600;\">Bitmap Size</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("ExportBitmapDialog", "pixels at", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_9.setText(QtGui.QApplication.translate("ExportBitmapDialog", "dpi", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("ExportBitmapDialog", "pixels at", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("ExportBitmapDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; font-weight:600;\">Bitmap Size</span></p></body></html>", None))
+        self.label.setText(_translate("ExportBitmapDialog", "Width", None))
+        self.label_6.setText(_translate("ExportBitmapDialog", "pixels at", None))
+        self.label_9.setText(_translate("ExportBitmapDialog", "dpi", None))
+        self.label_2.setText(_translate("ExportBitmapDialog", "Height", None))
+        self.label_4.setText(_translate("ExportBitmapDialog", "pixels at", None))
+        self.label_5.setText(_translate("ExportBitmapDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'DejaVu Sans\'; font-size:8pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; font-weight:600;\">File Name </span>(by extension)</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.browseButton.setText(QtGui.QApplication.translate("ExportBitmapDialog", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setText(QtGui.QApplication.translate("ExportBitmapDialog", "Image File Format", None, QtGui.QApplication.UnicodeUTF8))
-        self.cancelButton.setText(QtGui.QApplication.translate("ExportBitmapDialog", "&Cancel", None, QtGui.QApplication.UnicodeUTF8))
-        self.exportButton.setText(QtGui.QApplication.translate("ExportBitmapDialog", "&Export", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; font-weight:600;\">File Name </span>(by extension)</p></body></html>", None))
+        self.browseButton.setText(_translate("ExportBitmapDialog", "&Browse", None))
+        self.label_8.setText(_translate("ExportBitmapDialog", "Image File Format", None))
+        self.cancelButton.setText(_translate("ExportBitmapDialog", "&Cancel", None))
+        self.exportButton.setText(_translate("ExportBitmapDialog", "&Export", None))
 
