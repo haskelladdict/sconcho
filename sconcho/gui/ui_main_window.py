@@ -2,7 +2,7 @@
 
 # Form implementation generated from sconcho.gui.reading ui file 'ui/main_window.ui'
 #
-# Created: Thu May  2 23:42:37 2013
+# Created: Thu May  2 23:53:43 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -565,8 +565,8 @@ class Ui_MainWindow(object):
         self.actionShow_Selected_Cells.setText(_translate("MainWindow", "&Unhide Selected Cells", None))
         self.actionCreate_Chart.setText(_translate("MainWindow", "&Create Chart", None))
 
-from sconcho.gui.active_symbol_widget import ActiveSymbolWidget
 from sconcho.gui.pattern_view import PatternView
 from sconcho.gui.recently_used_symbol_widget import RecentlyUsedSymbolWidget
 from sconcho.gui.color_widget import ColorWidget
+from sconcho.gui.active_symbol_widget import ActiveSymbolWidget
 from . import icons_rc

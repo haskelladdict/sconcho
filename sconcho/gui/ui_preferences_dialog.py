@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/preferences_dialog.ui'
 #
-# Created: Thu May  2 23:42:38 2013
+# Created: Thu May  2 23:53:43 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -381,7 +381,7 @@ class Ui_PreferencesDialog(object):
         self.label_7.setBuddy(self.highlightRowOpacitySpinner)
 
         self.retranslateUi(PreferencesDialog)
-        self.tabWidget.setCurrentIndex(4)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), PreferencesDialog.hide)
         QtCore.QMetaObject.connectSlotsByName(PreferencesDialog)
 
