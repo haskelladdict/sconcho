@@ -213,8 +213,7 @@ class InsertRows(QUndoCommand):
         for row in range(0, self.rowShift):
             self.canvas._create_row(self.pivot + row)
 
-        legendList = list(self.canvas.gridLegend.values()) \
-            + list(self.canvas.repeatLegend.values())
+        legendList = list(self.canvas.gridLegend.values())
         shift_legend_vertically(legendList,
                                 self.rowShift,
                                 self.unitHeight,
@@ -250,8 +249,7 @@ class InsertRows(QUndoCommand):
         rowUpShift = -1 * self.rowShift
 
         # shift first then remove
-        legendList = list(self.canvas.gridLegend.values()) \
-            + list(self.canvas.repeatLegend.values())
+        legendList = list(self.canvas.gridLegend.values())
         shift_legend_vertically(legendList,
                                 rowUpShift,
                                 self.unitHeight,
@@ -519,8 +517,7 @@ class DeleteRows(QUndoCommand):
         for item in selection:
             shift_item_row_wise(item, -rowShift, self.unitHeight)
 
-        legendList = list(self.canvas.gridLegend.values()) \
-            + list(self.canvas.repeatLegend.values())
+        legendList = list(self.canvas.gridLegend.values())
         shift_legend_vertically(legendList,
                                 -rowShift,
                                 self.unitHeight,
@@ -541,8 +538,7 @@ class DeleteRows(QUndoCommand):
         """ Shift elements on canvas back to shifting done in redo. """
 
         # make sure to shift legend and selection first
-        legendList = list(self.canvas.gridLegend.values()) \
-            + list(self.canvas.repeatLegend.values())
+        legendList = list(self.canvas.gridLegend.values())
         shift_legend_vertically(legendList,
                                 rowDownShift,
                                 self.unitHeight,
@@ -675,8 +671,7 @@ class InsertColumns(QUndoCommand):
         for column in range(0, self.columnShift):
             self.canvas._create_column(self.pivot + column)
 
-        legendList = list(self.canvas.gridLegend.values()) \
-            + list(self.canvas.repeatLegend.values())
+        legendList = list(self.canvas.gridLegend.values())
         shift_legend_horizontally(legendList,
                                   self.columnShift,
                                   self.unitWidth,
@@ -709,8 +704,7 @@ class InsertColumns(QUndoCommand):
         columnLeftShift = -1 * self.columnShift
 
         # shift first then remove
-        legendList = list(self.canvas.gridLegend.values()) \
-            + list(self.canvas.repeatLegend.values())
+        legendList = list(self.canvas.gridLegend.values())
         shift_legend_horizontally(legendList,
                                   columnLeftShift,
                                   self.unitWidth,
@@ -922,8 +916,7 @@ class DeleteColumns(QUndoCommand):
         for item in selection:
             shift_item_column_wise(item, -columnShift, self.unitWidth)
 
-        legendList = list(self.canvas.gridLegend.values()) \
-            + list(self.canvas.repeatLegend.values())
+        legendList = list(self.canvas.gridLegend.values())
         shift_legend_horizontally(legendList,
                                   -columnShift,
                                   self.unitWidth,
@@ -943,8 +936,7 @@ class DeleteColumns(QUndoCommand):
         """ Shift elements on canvas back to shifting done in redo. """
 
         # make sure to shift legend and selection first
-        legendList = list(self.canvas.gridLegend.values()) \
-            + list(self.canvas.repeatLegend.values())
+        legendList = list(self.canvas.gridLegend.values())
         shift_legend_horizontally(legendList,
                                   columnRightShift,
                                   self.unitWidth,

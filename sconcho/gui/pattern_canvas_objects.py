@@ -636,9 +636,6 @@ class PatternRepeatItem(QGraphicsPolygonItem):
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
-        # we keep track of some of our legends properties
-        #self.hasLegend = hasLegend
-
         # we use this ID for tracking our legend entry
         self.itemID = uuid.uuid4()
 

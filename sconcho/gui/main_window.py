@@ -1209,7 +1209,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # add newly loaded project
         if not self.canvas.load_previous_pattern(self._knittingSymbols,
                                                  patternGridItems,
-                                                 legendItems,
+                                                 #legendItems,
                                                  patternRepeats,
                                                  repeatLegends,
                                                  rowRepeats,

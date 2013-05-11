@@ -121,7 +121,6 @@ class PatternCanvas(QGraphicsScene):
         self._copySelection = {}
 
         self.gridLegend = {}
-        self.repeatLegend = {}
         self.canvasTextBoxes = {}
         self.patternRepeats = set()
 
@@ -538,8 +537,7 @@ class PatternCanvas(QGraphicsScene):
 
         """
 
-        legendYmax = compute_max_legend_y_coordinate(self.gridLegend,
-                                                     self.repeatLegend)
+        legendYmax = compute_max_legend_y_coordinate(self.gridLegend)
         canvasYmax = (self._numRows + 1) * self.cell_height
         yMax = max(legendYmax, canvasYmax)
         return yMax
@@ -2235,7 +2233,6 @@ class PatternCanvas(QGraphicsScene):
 
         # clear all caches
         self.gridLegend.clear()
-        self.repeatLegend.clear()
         self.canvasTextBoxes.clear()
         self._selectedCells = {}
         self.patternRepeats.clear()
@@ -2264,7 +2261,7 @@ class PatternCanvas(QGraphicsScene):
     @wait_cursor
     def load_previous_pattern(self, knittingSymbols, patternGridItemInfo,
                               legendItemInfo, patternRepeats,
-                              repeatLegends, rowRepeats, textItems,
+                              rowRepeats, textItems,
                               rowLabels, columnLabels):
         """ Clear curent canvas and establishes a new canvas
         based on the passed canvas items. Returns True on success
@@ -2294,10 +2291,6 @@ class PatternCanvas(QGraphicsScene):
 
         allPatternRepeats = load_patternRepeat_items(patternRepeats)
         if allPatternRepeats == None:
-            return False
-
-        allRepeatBoxLegends = load_patternRepeatLegend_items(repeatLegends)
-        if allRepeatBoxLegends == None:
             return False
 
         allTextItems = load_text_items(textItems)
@@ -2386,10 +2379,6 @@ class PatternCanvas(QGraphicsScene):
         repeatItem.setPos(itemPosition)
         self.addItem(repeatItem)
         self.patternRepeats.add(repeatItem)
-
-        # connect repeat box and legend
-        self.repeatLegend[repeatItem.itemID] = \
-            (visible, legendItem, legendTextItem)
 
 
 
@@ -2552,17 +2541,8 @@ class PatternCanvas(QGraphicsScene):
             for item in self.gridLegend.values():
                 legendItem_symbol(item).show()
                 legendItem_text(item).show()
-
-            # only show repeat legends which are visible
-            for item in self.repeatLegend.values():
-                if legendItem_count(item):
-                    legendItem_symbol(item).show()
-                    legendItem_text(item).show()
         else:
             for item in self.gridLegend.values():
-                legendItem_symbol(item).hide()
-                legendItem_text(item).hide()
-            for item in self.repeatLegend.values():
                 legendItem_symbol(item).hide()
                 legendItem_text(item).hide()
 
@@ -2578,9 +2558,7 @@ class PatternCanvas(QGraphicsScene):
         for item in self.gridLegend.values():
             legendItem_text(item).setFont(legendFont)
             legendItem_text(item).adjust_size()
-        for item in self.repeatLegend.values():
-            legendItem_text(item).setFont(legendFont)
-            legendItem_text(item).adjust_size()
+
         for item in self.canvasTextBoxes.values():
             item.setFont(legendFont)
             item.adjust_size()

@@ -259,7 +259,7 @@ def shift_selection_horizontally(selection, pivot, columnShift):
 
 
 
-def compute_max_legend_y_coordinate(gridLegend, repeatLegend):
+def compute_max_legend_y_coordinate(gridLegend):
     """ Given the current list of existing legend items
     figure out the largest y coordinate among them all.
 
@@ -267,10 +267,6 @@ def compute_max_legend_y_coordinate(gridLegend, repeatLegend):
 
     yList = [0]
     for item in gridLegend.values():
-        yList.append(legendItem_symbol(item).scenePos().y())
-        yList.append(legendItem_text(item).scenePos().y())
-
-    for item in repeatLegend.values():
         yList.append(legendItem_symbol(item).scenePos().y())
         yList.append(legendItem_text(item).scenePos().y())
 
