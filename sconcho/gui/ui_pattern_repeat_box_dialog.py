@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/pattern_repeat_box_dialog.ui'
 #
-# Created: Thu May  9 22:35:57 2013
+# Created: Sat May 11 12:28:54 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_PatternRepeatDialog(object):
     def setupUi(self, PatternRepeatDialog):
         PatternRepeatDialog.setObjectName(_fromUtf8("PatternRepeatDialog"))
-        PatternRepeatDialog.resize(279, 196)
+        PatternRepeatDialog.resize(284, 181)
         self.verticalLayout_2 = QtGui.QVBoxLayout(PatternRepeatDialog)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.groupBox = QtGui.QGroupBox(PatternRepeatDialog)
@@ -52,10 +52,6 @@ class Ui_PatternRepeatDialog(object):
         self.label_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
-        self.legendChecker = QtGui.QCheckBox(self.groupBox)
-        self.legendChecker.setChecked(True)
-        self.legendChecker.setObjectName(_fromUtf8("legendChecker"))
-        self.gridLayout.addWidget(self.legendChecker, 2, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.verticalLayout_2.addWidget(self.groupBox)
         spacerItem = QtGui.QSpacerItem(20, 64, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
@@ -83,7 +79,6 @@ class Ui_PatternRepeatDialog(object):
         self.groupBox.setTitle(_translate("PatternRepeatDialog", "Line Properties", None))
         self.label.setText(_translate("PatternRepeatDialog", "Line &Width", None))
         self.label_2.setText(_translate("PatternRepeatDialog", "Line &Color", None))
-        self.legendChecker.setText(_translate("PatternRepeatDialog", "Show in Legend", None))
         self.cancelButton.setText(_translate("PatternRepeatDialog", "&Cancel", None))
         self.acceptButton.setText(_translate("PatternRepeatDialog", "&Apply", None))
 

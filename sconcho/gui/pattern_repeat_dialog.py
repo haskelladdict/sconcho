@@ -41,7 +41,7 @@ from sconcho.gui.ui_pattern_repeat_box_dialog import Ui_PatternRepeatDialog
 class PatternRepeatDialog(QDialog, Ui_PatternRepeatDialog):
 
 
-    def __init__(self, width, color, hasLegend, parent = None):
+    def __init__(self, width, color, parent = None):
         """ Initialize the dialog. """
 
         super(PatternRepeatDialog, self).__init__(parent)
@@ -49,8 +49,6 @@ class PatternRepeatDialog(QDialog, Ui_PatternRepeatDialog):
 
         self.lineWidthSpinner.setValue(width)
         self.width = width
-        self.showInLegend = hasLegend
-        self.legendChecker.setCheckState(hasLegend)
         self.color = color
         self.set_button_color()
 
@@ -60,9 +58,6 @@ class PatternRepeatDialog(QDialog, Ui_PatternRepeatDialog):
                      self.change_color)
         self.connect(self.lineWidthSpinner, SIGNAL("valueChanged(int)"),
                      self.change_width)
-        self.connect(self.legendChecker, SIGNAL("stateChanged(int)"),
-                     self.change_legend_state)
-
 
 
     def set_button_color(self):
@@ -94,13 +89,3 @@ class PatternRepeatDialog(QDialog, Ui_PatternRepeatDialog):
         """
 
         self.width = newWidth
-
-
-
-    def change_legend_state(self, legendState):
-        """ Change the legend state of the repeat box, i.e.
-        if a legend entry is shown or not.
-
-        """
-
-        self.showInLegend = legendState

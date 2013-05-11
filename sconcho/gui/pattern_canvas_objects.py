@@ -637,7 +637,7 @@ class PatternRepeatItem(QGraphicsPolygonItem):
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
         # we keep track of some of our legends properties
-        self.hasLegend = hasLegend
+        #self.hasLegend = hasLegend
 
         # we use this ID for tracking our legend entry
         self.itemID = uuid.uuid4()
@@ -931,7 +931,6 @@ class RepeatLegendItem(QGraphicsRectItem):
         return self.itemWidth
 
 
-
     @property
     def color(self):
         return self.penColor
@@ -944,7 +943,6 @@ class RepeatLegendItem(QGraphicsRectItem):
         self.penColor = newColor
         self._pen.setColor(self.penColor)
         self.setPen(self._pen)
-
 
 
     def hoverEnterEvent(self, event):

@@ -2,7 +2,7 @@
 
 # Form implementation generated from sconcho.gui.reading ui file 'ui/main_window.ui'
 #
-# Created: Thu May  9 22:35:56 2013
+# Created: Sat May 11 12:28:53 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -569,8 +569,8 @@ class Ui_MainWindow(object):
         self.actionCreate_Chart.setText(_translate("MainWindow", "&Create Chart", None))
         self.actionShow_hidden_legend_items.setText(_translate("MainWindow", "&Show all hidden legend items", None))
 
-from sconcho.gui.active_symbol_widget import ActiveSymbolWidget
-from sconcho.gui.color_widget import ColorWidget
 from sconcho.gui.pattern_view import PatternView
+from sconcho.gui.active_symbol_widget import ActiveSymbolWidget
 from sconcho.gui.recently_used_symbol_widget import RecentlyUsedSymbolWidget
+from sconcho.gui.color_widget import ColorWidget
 from . import icons_rc

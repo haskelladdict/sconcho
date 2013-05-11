@@ -413,13 +413,22 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def add_pattern_repeat_to_legend(self, item):
+    def add_pattern_repeat_to_legend(self, patternRepeatItem):
         """ Adds a newly created PatternRepeatItem to the legend
         database and updates the legend if needed.
         
         """
 
-        print("adding pattern repeat item")
+        legendID = patternRepeatItem.itemID
+        if legendID in self.gridLegend:
+            entry = self.gridLegend[legendID]
+            new_entry = change_count(entry, 1)
+            self.gridLegend[legendID] = new_entry
+        else:
+            (item, textItem) = \
+                self._add_pattern_repeat_legend_item(patternRepeatItem, 
+                                                     legendID)
+            self.gridLegend[legendID] = [1, item, textItem, True]
 
 
 
@@ -435,9 +444,10 @@ class PatternCanvas(QGraphicsScene):
             new_entry = change_count(entry, 1)
             self.gridLegend[legendID] = new_entry
         else:
-            (item, textItem) = self._add_legend_item(item.symbol,
-                                                     item.color,
-                                                     legendID)
+            (item, textItem) = \
+                self._add_knitting_symbol_legend_item(item.symbol,
+                                                      item.color,
+                                                      legendID)
             self.gridLegend[legendID] = [1, item, textItem, True]
 
 
@@ -536,10 +546,41 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def _add_legend_item(self, symbol, color, legendID):
-        """ This adds a new legend entry including an PatternLegendItem
-        and a textual description. This function also attemps to be
-        sort of smart about where to put the item.
+    def _add_pattern_repeat_legend_item(self, pathItem, legendID):
+        """ This adds a new legend entry for a patter repeat
+        
+        consisting of a RepeatLegendItem and a textual description. 
+        This function also attemps to be sort of smart about where to 
+        put the item.
+
+        """
+
+        yMax = self._get_legend_y_coordinate_for_placement()
+
+        # add the symbol part of the legend
+        itemLocation = QPointF(0, yMax + self.cell_height + 20)
+        item = RepeatLegendItem(pathItem.color)
+        item.setPos(itemLocation)
+        self.addItem(item)
+
+        # add the description part of the legend
+        textLocation = QPointF(item.width + 30,
+                               yMax + self.cell_height + 10)
+        textItem = PatternLegendText("pattern repeat", legendID)
+        textItem.setPos(textLocation)
+        textItem.setFont(self.settings.legendFont.value)
+        self.addItem(textItem)
+
+        return (item, textItem)
+
+
+
+    def _add_knitting_symbol_legend_item(self, symbol, color, legendID):
+        """ This adds a new legend entry for a knitting symbol 
+        
+        consisting of a PatternLegendItem and a textual description. 
+        This function also attemps to be sort of smart about where to 
+        put the item.
 
         """
 
@@ -566,14 +607,12 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def remove_from_legend(self, item):
+    def remove_from_legend(self, item, legendID):
         """ Removes a PatternGridItem from the legend database
         and updates the legend itself if needed.
 
         """
 
-
-        legendID = generate_legend_id(item.symbol, item.color)
         assert(legendID in self.gridLegend)
 
         entry = self.gridLegend[legendID]
@@ -726,7 +765,11 @@ class PatternCanvas(QGraphicsScene):
         """
 
         if isinstance(item, PatternGridItem):
-            self.remove_from_legend(item)
+            legendID = generate_legend_id(item.symbol, item.color)
+            self.remove_from_legend(item, legendID)
+        elif isinstance(item, PatternRepeatItem):
+            legendID = item.itemID
+            self.remove_from_legend(item, legendID)
 
         super(PatternCanvas,self).removeItem(item)
 
@@ -1210,24 +1253,16 @@ class PatternCanvas(QGraphicsScene):
         repeatPolygon = QPolygonF(points)
         repeatItem = PatternRepeatItem(repeatPolygon)
 
-        self._undoStack.beginMacro("add pattern repeat")
         patternRepeatCommand = AddPatternRepeat(self, repeatItem)
         self._undoStack.push(patternRepeatCommand)
-        patternLegendCommand = AddPatternRepeatLegend(self, repeatItem)
-        self._undoStack.push(patternLegendCommand)
-        self._undoStack.endMacro()
 
 
 
     def delete_pattern_repeat(self, patternRepeat):
         """ Delete the selected pattern repeat. """
 
-        self._undoStack.beginMacro("delete pattern repeat")
         patternRepeatCommand = DeletePatternRepeat(self, patternRepeat)
         self._undoStack.push(patternRepeatCommand)
-        patternLegendCommand = DeletePatternRepeatLegend(self, patternRepeat)
-        self._undoStack.push(patternLegendCommand)
-        self._undoStack.endMacro()
         self.emit(SIGNAL("scene_changed"))
 
 
@@ -1236,24 +1271,21 @@ class PatternCanvas(QGraphicsScene):
         """ Edit the provided pattern repeat item. """
 
         patternRepeat.highlight()
-        if patternRepeat.hasLegend:
-            legendCheckStatus = Qt.Checked
-        else:
-            legendCheckStatus = Qt.Unchecked
 
         dialog = PatternRepeatDialog(patternRepeat.width,
-                                     patternRepeat.color,
-                                     legendCheckStatus)
+                                     patternRepeat.color)
         status = dialog.exec_()
         if status > 0:
+            oldColor = patternRepeat.color
             self._undoStack.beginMacro("edit pattern repeat")
             patternRepeatCommand = EditPatternRepeat(patternRepeat,
                                                      dialog.color,
                                                      dialog.width)
             self._undoStack.push(patternRepeatCommand)
             patternLegendCommand = \
-                    EditPatternRepeatLegend(self, patternRepeat,
-                                            dialog.showInLegend)
+                    EditPatternRepeatLegend(dialog.color,
+                                            self.gridLegend,
+                                            patternRepeat.itemID)
             self._undoStack.push(patternLegendCommand)
             self._undoStack.endMacro()
             self.emit(SIGNAL("scene_changed"))
