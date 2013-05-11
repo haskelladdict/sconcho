@@ -270,7 +270,8 @@ class PatternLegendItem(QGraphicsSvgItem):
 
 
     def __init__(self, unitDim, width, height,
-                 defaultSymbol, defaultColor = QColor(Qt.white),
+                 defaultSymbol, itemID = 0, 
+                 defaultColor = QColor(Qt.white),
                  zValue = 1, parent = None):
 
         super(PatternLegendItem, self).__init__(parent)
@@ -282,6 +283,7 @@ class PatternLegendItem(QGraphicsSvgItem):
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
+        self.itemID = itemID
         self.setZValue(zValue)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
 
@@ -445,7 +447,7 @@ class PatternLegendText(QGraphicsTextItem):
     Type = 70000 + 3
 
 
-    def __init__(self, text, parent = None):
+    def __init__(self, text, itemID = 0, parent = None):
 
         super(PatternLegendText, self).__init__(text, parent)
 
@@ -456,6 +458,7 @@ class PatternLegendText(QGraphicsTextItem):
         else:
             self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
+        self.itemID = itemID
         self.setZValue(1)
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setTextInteractionFlags(Qt.TextEditorInteraction)

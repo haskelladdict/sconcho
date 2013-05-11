@@ -1920,6 +1920,36 @@ class DeleteTextBox(QUndoCommand):
 
 
 
+class HideLegendItem(QUndoCommand):
+    """ This class encapsulateds the hiding of a legend item on
+    the canvas.
+
+    """
+
+    def __init__(self, gridLegendItem, parent = None):
+
+        super(HideLegendItem, self).__init__(parent)
+
+        self.gridLegendItem = gridLegendItem
+        self.legendItem = gridLegendItem[1]
+        self.legendTextItem = gridLegendItem[2]
+
+
+    def redo(self):
+        """ The redo action. """
+
+        self.legendItem.hide()
+        self.legendTextItem.hide()
+        self.gridLegendItem[3] = False
+
+
+    def undo(self):
+        """ The undo action. """
+
+        self.legendItem.show()
+        self.legendTextItem.show()
+        self.gridLegendItem[3] = True
+
 
 
 class HideCells(QUndoCommand):

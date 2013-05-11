@@ -71,8 +71,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>694</width>
-         <height>71</height>
+         <width>696</width>
+         <height>82</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -91,7 +91,7 @@
      <x>0</x>
      <y>0</y>
      <width>1081</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -131,7 +131,6 @@
      <addaction name="actionFit"/>
      <addaction name="action_Normal"/>
     </widget>
-    <addaction name="separator"/>
     <addaction name="menu_Zoom"/>
     <addaction name="separator"/>
     <addaction name="actionShow_pattern_grid"/>
@@ -140,6 +139,8 @@
     <addaction name="actionCreate_Chart"/>
     <addaction name="actionShow_Selected_Cells"/>
     <addaction name="actionHide_Selected_Cells"/>
+    <addaction name="separator"/>
+    <addaction name="actionShow_hidden_legend_items"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -290,7 +291,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>333</width>
+                <width>335</width>
                 <height>120</height>
                </rect>
               </property>
@@ -892,6 +893,11 @@
    </property>
    <property name="text">
     <string>&amp;Create Chart</string>
+   </property>
+  </action>
+  <action name="actionShow_hidden_legend_items">
+   <property name="text">
+    <string>&amp;Show all hidden legend items</string>
    </property>
   </action>
  </widget>

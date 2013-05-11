@@ -2,7 +2,7 @@
 
 # Form implementation generated from sconcho.gui.reading ui file 'ui/main_window.ui'
 #
-# Created: Thu May  2 23:53:43 2013
+# Created: Thu May  9 22:35:56 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -58,7 +58,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 694, 71))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 696, 82))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
@@ -69,7 +69,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.scrollArea)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1081, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1081, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -148,7 +148,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 333, 120))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 335, 120))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -377,6 +377,8 @@ class Ui_MainWindow(object):
         icon28.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/create_cells.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionCreate_Chart.setIcon(icon28)
         self.actionCreate_Chart.setObjectName(_fromUtf8("actionCreate_Chart"))
+        self.actionShow_hidden_legend_items = QtGui.QAction(MainWindow)
+        self.actionShow_hidden_legend_items.setObjectName(_fromUtf8("actionShow_hidden_legend_items"))
         self.menuRecent_Files.addAction(self.action_Clear_Recently_Used_Files)
         self.menuRecent_Files.addSeparator()
         self.menuFile.addAction(self.actionNew)
@@ -395,7 +397,6 @@ class Ui_MainWindow(object):
         self.menu_Zoom.addAction(self.actionZoom_Out)
         self.menu_Zoom.addAction(self.actionFit)
         self.menu_Zoom.addAction(self.action_Normal)
-        self.menuView.addSeparator()
         self.menuView.addAction(self.menu_Zoom.menuAction())
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionShow_pattern_grid)
@@ -404,6 +405,8 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.actionCreate_Chart)
         self.menuView.addAction(self.actionShow_Selected_Cells)
         self.menuView.addAction(self.actionHide_Selected_Cells)
+        self.menuView.addSeparator()
+        self.menuView.addAction(self.actionShow_hidden_legend_items)
         self.menuHelp.addAction(self.actionSconcho_Manual)
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionCheck_for_updates)
@@ -564,9 +567,10 @@ class Ui_MainWindow(object):
         self.actionHide_Selected_Cells.setText(_translate("MainWindow", "&Hide Selected Cells", None))
         self.actionShow_Selected_Cells.setText(_translate("MainWindow", "&Unhide Selected Cells", None))
         self.actionCreate_Chart.setText(_translate("MainWindow", "&Create Chart", None))
+        self.actionShow_hidden_legend_items.setText(_translate("MainWindow", "&Show all hidden legend items", None))
 
+from sconcho.gui.active_symbol_widget import ActiveSymbolWidget
+from sconcho.gui.color_widget import ColorWidget
 from sconcho.gui.pattern_view import PatternView
 from sconcho.gui.recently_used_symbol_widget import RecentlyUsedSymbolWidget
-from sconcho.gui.color_widget import ColorWidget
-from sconcho.gui.active_symbol_widget import ActiveSymbolWidget
 from . import icons_rc

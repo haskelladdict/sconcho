@@ -413,7 +413,17 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def add_to_legend(self, item):
+    def add_pattern_repeat_to_legend(self, item):
+        """ Adds a newly created PatternRepeatItem to the legend
+        database and updates the legend if needed.
+        
+        """
+
+        print("adding pattern repeat item")
+
+
+
+    def add_knitting_symbol_to_legend(self, item):
         """ Adds a newly created PatternGridItem to the legend database
         and updates the legend itself if needed.
 
@@ -426,8 +436,9 @@ class PatternCanvas(QGraphicsScene):
             self.gridLegend[legendID] = new_entry
         else:
             (item, textItem) = self._add_legend_item(item.symbol,
-                                                     item.color)
-            self.gridLegend[legendID] = [1, item, textItem]
+                                                     item.color,
+                                                     legendID)
+            self.gridLegend[legendID] = [1, item, textItem, True]
 
 
 
@@ -525,7 +536,7 @@ class PatternCanvas(QGraphicsScene):
 
 
 
-    def _add_legend_item(self, symbol, color):
+    def _add_legend_item(self, symbol, color, legendID):
         """ This adds a new legend entry including an PatternLegendItem
         and a textual description. This function also attemps to be
         sort of smart about where to put the item.
@@ -539,14 +550,14 @@ class PatternCanvas(QGraphicsScene):
         height = 1
         itemLocation = QPointF(0, yMax + self.cell_height + 10)
         item = PatternLegendItem(self._unitCellDim, width, height, symbol,
-                                 color, 1)
+                                 legendID, color, 1)
         item.setPos(itemLocation)
         self.addItem(item)
 
         # add the description part of the legend
         textLocation = QPointF((width+1) * self.cell_width,
                                 yMax + self.cell_height + 10)
-        textItem = PatternLegendText(symbol["description"])
+        textItem = PatternLegendText(symbol["description"], legendID)
         textItem.setPos(textLocation)
         textItem.setFont(self.settings.legendFont.value)
         self.addItem(textItem)
@@ -699,7 +710,9 @@ class PatternCanvas(QGraphicsScene):
         """
 
         if isinstance(item, PatternGridItem):
-            self.add_to_legend(item)
+            self.add_knitting_symbol_to_legend(item)
+        elif isinstance(item, PatternRepeatItem):
+            self.add_pattern_repeat_to_legend(item)
 
         super(PatternCanvas,self).addItem(item)
 
@@ -901,6 +914,32 @@ class PatternCanvas(QGraphicsScene):
         deleteTextMenu.exec_(screenPos)
 
 
+    
+    def hide_legend_item_menu(self, screenPos, labelItem):
+        """ Menu for hiding existing label items.
+
+        This menu appears when the user right clicks on a 
+        PatternLegendText object.
+
+        NOTE: labelItem can either be a PatternLegendItem or
+        a PatternLegendItem.
+
+        """
+
+        hideLegendItemMenu = QMenu()
+        hideAction = hideLegendItemMenu.addAction("hide legend entry")
+        self.connect(hideAction, SIGNAL("triggered()"),
+                     partial(self.hide_legend_text_item, labelItem));
+        hideLegendItemMenu.exec_(screenPos)
+           
+
+
+    def hide_legend_text_item(self, clickedLegendItem):
+        """ Hides the selected legendTextItem. """
+
+        itemID = clickedLegendItem.itemID
+        hideLegendCommand = HideLegendItem(self.gridLegend[itemID]) 
+        self._undoStack.push(hideLegendCommand)
 
 
 
@@ -916,11 +955,23 @@ class PatternCanvas(QGraphicsScene):
 
         # check if the click was on a text label
         items = self.items(event.scenePos())
-        textItems = \
+        labelTextItems = \
             list(filter(lambda x: isinstance(x, PatternTextItem), items))
+        legendItems = \
+            list(filter(lambda x: isinstance(x, PatternLegendItem), items))
+        legendTextItems = \
+            list(filter(lambda x: isinstance(x, PatternLegendText), items))
 
-        if textItems:
-            self.show_delete_text_item_menu(event.screenPos(), textItems[0])
+
+        if labelTextItems:
+            self.show_delete_text_item_menu(event.screenPos(), 
+                                            labelTextItems[0])
+        elif legendItems:
+            self.hide_legend_item_menu(event.screenPos(), 
+                                       legendItems[0])
+        elif legendTextItems:
+            self.hide_legend_item_menu(event.screenPos(), 
+                                       legendTextItems[0])
         else: 
             self.show_grid_menu(event, col, row)
 
@@ -2445,6 +2496,17 @@ class PatternCanvas(QGraphicsScene):
         for item in self.items():
             if isinstance(item, PatternLabelItem):
                 item.setFont(labelFont)
+
+
+
+
+    def show_hidden_legend_items(self):
+        """ Shows all currently hidden legend items. """
+
+        for item in self.gridLegend.values():
+            legendItem_symbol(item).show()
+            legendItem_text(item).show()
+
 
 
 

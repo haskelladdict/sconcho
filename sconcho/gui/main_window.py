@@ -341,6 +341,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionCreate_Chart, SIGNAL("triggered()"),
                      partial(self.canvas.select_mode, canvas.SELECTION_MODE))
 
+        self.connect(self.actionShow_hidden_legend_items, 
+                     SIGNAL("triggered()"),
+                     self.canvas.show_hidden_legend_items)
+
 
 
     def _set_up_resize_grid_connections(self):
