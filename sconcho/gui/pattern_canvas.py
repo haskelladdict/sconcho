@@ -557,13 +557,13 @@ class PatternCanvas(QGraphicsScene):
 
         # add the symbol part of the legend
         itemLocation = QPointF(0, yMax + self.cell_height + 20)
-        item = RepeatLegendItem(pathItem.color)
+        item = RepeatLegendItem(pathItem.color, legendID)
         item.setPos(itemLocation)
         self.addItem(item)
 
         # add the description part of the legend
         textLocation = QPointF(item.width + 30,
-                               yMax + self.cell_height + 10)
+                               yMax + self.cell_height + 15)
         textItem = PatternLegendText("pattern repeat", legendID)
         textItem.setPos(textLocation)
         textItem.setFont(self.settings.legendFont.value)
@@ -997,12 +997,13 @@ class PatternCanvas(QGraphicsScene):
         # check if the click was on a text label
         items = self.items(event.scenePos())
         labelTextItems = \
-            list(filter(lambda x: isinstance(x, PatternTextItem), items))
+          list(filter(lambda x: isinstance(x, PatternTextItem), items))
         legendItems = \
-            list(filter(lambda x: isinstance(x, PatternLegendItem), items))
+          list(filter(lambda x: isinstance(x, RepeatLegendItem), items))
+        legendRepeatItems = \
+          list(filter(lambda x: isinstance(x, PatternRepeatItem), items))
         legendTextItems = \
-            list(filter(lambda x: isinstance(x, PatternLegendText), items))
-
+          list(filter(lambda x: isinstance(x, PatternLegendText), items))
 
         if labelTextItems:
             self.show_delete_text_item_menu(event.screenPos(), 
@@ -1010,6 +1011,9 @@ class PatternCanvas(QGraphicsScene):
         elif legendItems:
             self.hide_legend_item_menu(event.screenPos(), 
                                        legendItems[0])
+        elif legendRepeatItems:
+            self.hide_legend_item_menu(event.screenPos(),
+                                       legendRepeatItems[0])
         elif legendTextItems:
             self.hide_legend_item_menu(event.screenPos(), 
                                        legendTextItems[0])
@@ -2313,12 +2317,11 @@ class PatternCanvas(QGraphicsScene):
         for (repeatID, entry) in allPatternRepeats.items():
 
             # also retrieve the proper legend
-            if repeatID in allRepeatBoxLegends:
-                self.add_patternRepeatItem(*entry, legendInfo = \
-                                                allRepeatBoxLegends[repeatID])
-            else:
-                self.add_patternRepeatItem(*entry,
-                                            legendInfo = None)
+            #if repeatID in allRepeatBoxLegends:
+            #    self.add_patternRepeatItem(*entry, legendInfo = \
+            #                               allRepeatBoxLegends[repeatID])
+            #else:
+            self.add_patternRepeatItem(*entry, legendInfo = None)
 
         for rowRepeat in rowRepeats:
             self.rowRepeatTracker.add_repeat(*rowRepeat)

@@ -111,15 +111,33 @@ class SaveThread(QThread):
         """
 
         with QWriteLocker(SaveThread.lock):
-            (status, errorMsg) = save_project(self.canvas, self.colors,
-                                              self.activeSymbol,
-                                              self.settings,
-                                              self.saveFileName)
+            (status, errorMsg) = save_project_sqlite(self.canvas, self.colors,
+                                                     self.activeSymbol,
+                                                     self.settings,
+                                                     self.saveFileName)
 
             self.emit(SIGNAL("saving_done"), status, errorMsg,
                       self.saveFileName, self.markProjectClean)
            
     
+
+
+
+# test implementation of new sconcho format using sqlite
+@wait_cursor
+def save_project_sqlite(canvas, colors, activeSymbol, settings, saveFileName):
+    """ Toplevel writer routine. 
+
+    """
+
+    print("saving project ", saveFileName)
+
+    return (True, None)
+
+
+
+
+
 
 
 ###########################################################################

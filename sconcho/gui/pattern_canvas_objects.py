@@ -887,7 +887,7 @@ class RepeatLegendItem(QGraphicsRectItem):
     Type = 70000 + 7
 
 
-    def __init__(self, color, parent = None):
+    def __init__(self, color, itemID = 0, parent = None):
 
         super(RepeatLegendItem, self).__init__(parent)
 
@@ -903,6 +903,7 @@ class RepeatLegendItem(QGraphicsRectItem):
 
         self._position = self.pos()
 
+        self.itemID = itemID
         self.penColor = color
         self.itemHeight = 20
         self.itemWidth = 40
