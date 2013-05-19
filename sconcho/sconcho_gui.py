@@ -30,8 +30,7 @@ try:
 except ImportError:
     QString = str
 
-from PyQt4.QtCore import (QSettings, 
-                          QVariant)
+from PyQt4.QtCore import (QSettings) 
 
 from PyQt4.QtGui import QApplication
 from sconcho.gui.main_window import MainWindow

@@ -1059,7 +1059,6 @@ class HiddenStitchManager(object):
         """
 
         self.isPatternVisible = canvas.isVisible
-        #self.isActive = active
         self.highlightItems = []
         self.hiddenItems = []
         for item in canvas.items():

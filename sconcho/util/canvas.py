@@ -315,6 +315,16 @@ def legendItem_text(item):
 
 
 
+def legendItem_visibility(item):
+    """ Convenience wrapper returning the current visibility
+    for a particular legend item.
+
+    """
+
+    return item[3]
+
+
+
 def generate_legend_id(symbol, color):
     """ Based on a symbol/legend info, generate an id tag. Currently
     this is just based on name and category.
@@ -322,9 +332,8 @@ def generate_legend_id(symbol, color):
     """
 
     name = symbol["name"]
-    category = symbol["category"]
 
-    return (name, color.name())
+    return (name + "::" + color.name())
 
 
 

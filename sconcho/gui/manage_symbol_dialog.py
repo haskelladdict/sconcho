@@ -27,7 +27,6 @@ from PyQt4.QtCore import (QByteArray,
                           QDir,
                           QFileInfo,
                           Qt,
-                          QVariant,
                           SIGNAL)
 
 from PyQt4.QtGui import (QDialog,

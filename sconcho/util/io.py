@@ -40,7 +40,8 @@ from PyQt4.QtCore import (QDataStream,
                           QSize, 
                           Qt, 
                           QTextStream, 
-                          QThread, 
+                          QThread,
+                          QVariant,
                           QWriteLocker, 
                           SIGNAL)
 
@@ -57,6 +58,9 @@ from PyQt4.QtXml import (QDomDocument,
 
 from PyQt4.QtSvg import QSvgGenerator
 
+from PyQt4.QtSql import (QSqlDatabase,
+                         QSqlQuery)
+
 from sconcho.gui.pattern_canvas_objects import (HiddenStitchManager,
                                                 PatternGridItem, 
                                                 PatternLegendItem,
@@ -64,6 +68,7 @@ from sconcho.gui.pattern_canvas_objects import (HiddenStitchManager,
 
 from sconcho.util.canvas import (legendItem_symbol, 
                                  legendItem_text,
+                                 legendItem_visibility,
                                  sort_vertices,
                                  visible_bounding_rect)
 
@@ -77,7 +82,7 @@ logger = logging.getLogger(__name__)
 
 # magic number to specify binary API
 MAGIC_NUMBER = 0xA3D1
-API_VERSION  = 3
+API_VERSION  = 4
 
 
 ###########################################################################
@@ -125,21 +130,182 @@ class SaveThread(QThread):
 
 # test implementation of new sconcho format using sqlite
 @wait_cursor
-def save_project_sqlite(canvas, colors, activeSymbol, settings, saveFileName):
-    """ Toplevel writer routine. 
-
-    """
+def save_project_sqlite(canvas, colors, activeSymbol, settings,
+                        saveFileName):
+    """ Toplevel writer routine. """
 
     print("saving project ", saveFileName)
 
+    patternRepeats = get_patternRepeats(canvas)
+    rowRepeats = canvas.rowRepeatTracker
+    rowLabels = canvas.rowLabels
+    columnLabels = canvas.columnLabels
+    textItems = canvas.canvasTextBoxes
+
+    # delete previous files if the existed
+    try:
+        with open(saveFileName):
+            try:
+                os.remove(saveFileName)
+            except (IOError, OSError) as e:
+                status = "Failed to save: %s " % e
+                return (False, status)
+    except (IOError) as e:
+        pass
+
+
+    db = QSqlDatabase.addDatabase("QSQLITE", saveFileName)
+    db.setDatabaseName(saveFileName)
+
+    if not db.open():
+        error = db.lastError().text()
+        return (False, error)
+
+    query = QSqlQuery(db)
+
+    save_header(db, query)
+    save_patternGridItems(db, query, get_patternGridItems(canvas))
+    save_legendItems(db, query, canvas.gridLegend)
+    save_colors(db, query, colors)
+    save_active_symbol(db, query, activeSymbol)
+        
+
+    db.close()
+    
     return (True, None)
 
 
 
+def save_header(db, query):
+    """ save API version info """
+    
+    query.exec_("""CREATE TABLE sconchoInfo (
+                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                api_version INTEGER NOT NULL)""")
+    query.exec_("INSERT INTO sconchoInfo (api_version) VALUES (%d)" %
+                API_VERSION)
+    
+
+
+def save_patternGridItems(db, query, patternGridItems):
+    """ save pattern grid items """
+    
+    db.transaction()
+    query.exec_("""CREATE TABLE patternGridItems (
+                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                category text,
+                name text,
+                column integer,
+                row integer,
+                width integer,
+                height integer,
+                color text,
+                isHidden integer)""")
+
+    query.prepare("INSERT INTO patternGridItems (category, name,"
+                  "column, row, width, height, color, isHidden) "
+                  "VALUES (:category, :name, :column, :row, :width,"
+                  ":height, :color, :isHidden) ")
+
+    for item in patternGridItems:
+        query.bindValue(":category", item.symbol["category"])
+        query.bindValue(":name", item.symbol["name"])
+        query.bindValue(":column", item.column)
+        query.bindValue(":row", item.row)
+        query.bindValue(":width", item.width)
+        query.bindValue(":height", item.height)
+        query.bindValue(":color", item.color)
+        query.bindValue(":isHidden", 0 if item.isHidden else 1)
+        query.exec_()
+    
+    db.commit()
 
 
 
+def save_legendItems(db, query, legendItems):
+    """ save legend Items """
+    
+    db.transaction()
+    query.exec_("""CREATE TABLE legendItems (
+                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                legendID text,
+                xPosSymbol float,
+                yPosSymbol float,
+                xPosText float,
+                yPosText float,
+                color text,
+                legendString text,
+                isHidden integer)""")
 
+    query.prepare("INSERT INTO legendItems (legendID, xPosSymbol, "
+                  "yPosSymbol, xPosText, yPosText, color, legendString,"
+                  "isHidden) VALUES (:id, :xPosSymbol, :yPosSymbol, "
+                  ":xPosText, :yPosText, :color, :legendString, :isHidden)")
+
+    for key, item in legendItems.items():
+
+        symbolItem = legendItem_symbol(item)
+        textItem = legendItem_text(item)
+        visible = legendItem_visibility(item)
+
+        query.bindValue(":legendID", str(key))
+        query.bindValue(":xPosSymbol", symbolItem.pos().x())
+        query.bindValue(":yPosSymbol", symbolItem.pos().y())
+        query.bindValue(":xPosText", textItem.pos().x())
+        query.bindValue(":yPosText", textItem.pos().y())
+        query.bindValue(":color", symbolItem.color)
+        query.bindValue(":legendString", textItem.toPlainText())
+        query.bindValue(":isHidden", 1 if visible else 0)
+        query.exec_()
+
+    db.commit()
+
+    
+def save_colors(db, query, colors):
+    """ write color info """
+    
+    db.transaction()
+    query.exec_("""CREATE TABLE colors (
+                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                color text,
+                state integer)""")
+
+    query.prepare("INSERT INTO colors (color, state) "
+                  "VALUES (:color, :state)")
+
+    for (color, state) in colors:
+        query.bindValue(":color", color)
+        query.bindValue(":state", state)
+        query.exec_()
+
+    db.commit()
+
+
+
+def save_active_symbol(db, query, activeSymbol):
+    """ write the currently active symbol """
+
+    db.transaction()
+
+    query.exec_("""CREATE TABLE active_symbol (
+                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                category text,
+                name text)""")
+
+    query.prepare("INSERT INTO active_symbol (category, name) "
+                  "VALUES (:category, :name)")
+
+    query.bindValue(":category", activeSymbol["category"] if activeSymbol
+                    else "None")
+    query.bindValue(":name", activeSymbol["name"] if activeSymbol
+                    else "None")
+    query.exec_()
+    db.commit()
+    
+
+
+    
+    
 ###########################################################################
 #
 # routines for writing a project.

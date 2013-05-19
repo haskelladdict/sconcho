@@ -38,7 +38,6 @@ from PyQt4.QtCore import (QDir,
                           Qt,
                           QSize,
                           QTimer,
-                          QVariant,
                           qVersion,
                           PYQT_VERSION_STR,
                           SIGNAL,
@@ -1121,9 +1120,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """ This method is called after the SaveThread is finished. """
 
         if not status:
-            logger.error(errorMsg)
+            logger.error(errorMessage)
             QMessageBox.critical(self, msg.errorSavingProjectTitle,
-                                 errorMsg, QMessageBox.Close)
+                                 errorMessage, QMessageBox.Close)
             return
 
         self.statusBar().showMessage("successfully saved " + \

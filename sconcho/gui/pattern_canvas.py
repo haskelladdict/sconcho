@@ -999,9 +999,9 @@ class PatternCanvas(QGraphicsScene):
         labelTextItems = \
           list(filter(lambda x: isinstance(x, PatternTextItem), items))
         legendItems = \
-          list(filter(lambda x: isinstance(x, RepeatLegendItem), items))
+          list(filter(lambda x: isinstance(x, PatternLegendItem), items))
         legendRepeatItems = \
-          list(filter(lambda x: isinstance(x, PatternRepeatItem), items))
+          list(filter(lambda x: isinstance(x, RepeatLegendItem), items))
         legendTextItems = \
           list(filter(lambda x: isinstance(x, PatternLegendText), items))
 
