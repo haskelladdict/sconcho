@@ -168,6 +168,7 @@ def save_project_sqlite(canvas, colors, activeSymbol, settings,
     save_legendItems(db, query, canvas.gridLegend)
     save_colors(db, query, colors)
     save_active_symbol(db, query, activeSymbol)
+    save_pattern_repeats(db, query, get_patternRepeats(canvas))
         
 
     db.close()
@@ -301,8 +302,58 @@ def save_active_symbol(db, query, activeSymbol):
                     else "None")
     query.exec_()
     db.commit()
-    
 
+
+
+def save_pattern_repeats(db, query, repeats):
+    """ write the pattern repeats """
+
+    db.transaction()
+
+    query.exec_("""CREATE TABLE pattern_repeats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                repeat_name text,
+                position_x float,
+                position_y float,
+                repeat_ID integer,
+                width integer,
+                color text)""")
+    
+    for (count, repeat) in enumerate(repeats):
+
+        name = "repeat_polygon_%d" % count
+
+        # create polygon table
+        query.exec_("""CREATE TABLE %s (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                    coord_x float,
+                    coord_y float)""" % name)
+
+        for point in repeat.polygon():
+
+            query.prepare("INSERT INTO %s (coord_x, coord_y) "
+                            "VALUES (:coord_x, :coord_y)" % name)
+
+            query.bindValue(":coord_x", point.x())
+            query.bindValue(":coord_y", point.y())
+            query.exec_()
+
+        # store repeat info
+        query.prepare("INSERT INTO pattern_repeats (repeat_name, position_x,"
+                      "position_y, repeat_ID, width, color) VALUES ("
+                      ":repeat_name, :position_x, :position_y, :repeat_ID,"
+                      ":width, :color)")
+
+        query.bindValue(":repeat_name", name);
+        query.bindValue(":position_x", repeat.pos().x());
+        query.bindValue(":position_y", repeat.pos().y());
+        query.bindValue(":repeat_ID", repeat.itemID.fields[1])
+        query.bindValue(":width", repeat.width)
+        query.bindValue(":color", repeat.color)
+
+        query.exec_()
+
+    db.commit()
 
     
     
