@@ -31,7 +31,6 @@ from PyQt4.QtGui import (QApplication,
 import sconcho.util.messages as msg
 
 
-
 def wait_cursor(func):
     """ Wrapps a function and makes sure the cursor is shown
     as Qt.WaitCursor for the duration.

@@ -169,7 +169,8 @@ def save_project_sqlite(canvas, colors, activeSymbol, settings,
     save_colors(db, query, colors)
     save_active_symbol(db, query, activeSymbol)
     save_pattern_repeats(db, query, get_patternRepeats(canvas))
-        
+    save_row_repeats(db, query, canvas.rowRepeatTracker)
+    save_text_items(db, query, canvas.canvasTextBoxes)
 
     db.close()
     
@@ -329,15 +330,6 @@ def save_pattern_repeats(db, query, repeats):
                     coord_x float,
                     coord_y float)""" % name)
 
-        for point in repeat.polygon():
-
-            query.prepare("INSERT INTO %s (coord_x, coord_y) "
-                            "VALUES (:coord_x, :coord_y)" % name)
-
-            query.bindValue(":coord_x", point.x())
-            query.bindValue(":coord_y", point.y())
-            query.exec_()
-
         # store repeat info
         query.prepare("INSERT INTO pattern_repeats (repeat_name, position_x,"
                       "position_y, repeat_ID, width, color) VALUES ("
@@ -350,12 +342,79 @@ def save_pattern_repeats(db, query, repeats):
         query.bindValue(":repeat_ID", repeat.itemID.fields[1])
         query.bindValue(":width", repeat.width)
         query.bindValue(":color", repeat.color)
+        query.exec_()
 
+        for point in repeat.polygon():
+
+            query.prepare("INSERT INTO %s (coord_x, coord_y) "
+                            "VALUES (:coord_x, :coord_y)" % name)
+
+            query.bindValue(":coord_x", point.x())
+            query.bindValue(":coord_y", point.y())
+            query.exec_()
+
+    db.commit()
+
+
+
+def save_row_repeats(db, query, rowRepeats):
+    """ save the row repeats """
+
+    db.transaction()   
+
+    # create main row repeat table
+    query.exec_("""CREATE TABLE row_repeats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                name text,
+                multiplicity integer)""")
+
+    # create a separate table per row repeat
+    for (count, (rowList, multiplicity, dummy)) in enumerate(rowRepeats):
+
+        name = "row_repeat_%d" % count
+        
+        query.prepare("INSERT INTO row_repeats (name, multiplicity) "
+                      "VALUES (:name, :multiplicity)")
+        query.bindValue(":name", name)
+        query.bindValue(":multiplicity", multiplicity)
+        query.exec_()
+
+        query.exec_("""CREATE TABLE %s (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                    row integer)""" % name)
+
+        for row in rowList:
+            query.prepare("INSERT INTO %s (row) VALUES (:row)" % name)
+            query.bindValue(":row", row)
+            query.exec_()
+
+    db.commit()
+
+
+
+def save_text_items(db, query, textItems):
+    """ save the text items on canvas """
+
+    db.transaction()
+
+    # create main row repeat table
+    query.exec_("""CREATE TABLE text_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                position_x float,
+                position_y float,
+                content text)""")
+
+    for item in textItems.values():
+        print(item.toPlainText())
+        query.prepare("INSERT INTO text_items (position_x, position_y,"
+                      "content) VALUES (:position_x, :position_y, :content)")
+        query.bindValue(":position_x", item.pos().x())
+        query.bindValue(":position_y", item.pos().y())
+        query.bindValue(":content", item.toPlainText())
         query.exec_()
 
     db.commit()
 
-    
     
 ###########################################################################
 #
