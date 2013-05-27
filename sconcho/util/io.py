@@ -21,6 +21,7 @@
 
 import logging
 import os
+import sqlite3
 import string
 import zipfile
 
@@ -82,7 +83,7 @@ logger = logging.getLogger(__name__)
 
 # magic number to specify binary API
 MAGIC_NUMBER = 0xA3D1
-API_VERSION  = 4
+API_VERSION = 4
 
 
 ###########################################################################
@@ -136,12 +137,6 @@ def save_project_sqlite(canvas, colors, activeSymbol, settings,
 
     print("saving project ", saveFileName)
 
-    patternRepeats = get_patternRepeats(canvas)
-    rowRepeats = canvas.rowRepeatTracker
-    rowLabels = canvas.rowLabels
-    columnLabels = canvas.columnLabels
-    textItems = canvas.canvasTextBoxes
-
     # delete previous files if the existed
     try:
         with open(saveFileName):
@@ -153,267 +148,186 @@ def save_project_sqlite(canvas, colors, activeSymbol, settings,
     except (IOError) as e:
         pass
 
+    # create slite3 database connection
+    db = sqlite3.connect(saveFileName)
+    cursor = db.cursor()
 
-    db = QSqlDatabase.addDatabase("QSQLITE", saveFileName)
-    db.setDatabaseName(saveFileName)
+    save_header(cursor)
+    save_patternGridItems(cursor, get_patternGridItems(canvas))
+    save_legendItems(cursor, canvas.gridLegend)
+    save_colors(cursor, colors)
+    save_active_symbol(cursor, activeSymbol)
+    save_pattern_repeats(cursor, get_patternRepeats(canvas))
+    save_row_repeats(cursor, canvas.rowRepeatTracker)
+    save_text_items(cursor, canvas.canvasTextBoxes)
 
-    if not db.open():
-        error = db.lastError().text()
-        return (False, error)
-
-    query = QSqlQuery(db)
-
-    save_header(db, query)
-    save_patternGridItems(db, query, get_patternGridItems(canvas))
-    save_legendItems(db, query, canvas.gridLegend)
-    save_colors(db, query, colors)
-    save_active_symbol(db, query, activeSymbol)
-    save_pattern_repeats(db, query, get_patternRepeats(canvas))
-    save_row_repeats(db, query, canvas.rowRepeatTracker)
-    save_text_items(db, query, canvas.canvasTextBoxes)
-
-    db.close()
+    db.commit()
     
     return (True, None)
 
 
-
-def save_header(db, query):
+def save_header(cursor):
     """ save API version info """
     
-    query.exec_("""CREATE TABLE sconchoInfo (
-                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                api_version INTEGER NOT NULL)""")
-    query.exec_("INSERT INTO sconchoInfo (api_version) VALUES (%d)" %
-                API_VERSION)
-    
+    cursor.execute("CREATE TABLE sconchoInfo (api_version int)")
+    cursor.execute("INSERT INTO sconchoInfo VALUES (?)", [API_VERSION])
 
 
-def save_patternGridItems(db, query, patternGridItems):
+
+def save_patternGridItems(cursor, patternGridItems):
     """ save pattern grid items """
     
-    db.transaction()
-    query.exec_("""CREATE TABLE patternGridItems (
-                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                category text,
-                name text,
-                column integer,
-                row integer,
-                width integer,
-                height integer,
-                color text,
-                isHidden integer)""")
-
-    query.prepare("INSERT INTO patternGridItems (category, name,"
-                  "column, row, width, height, color, isHidden) "
-                  "VALUES (:category, :name, :column, :row, :width,"
-                  ":height, :color, :isHidden) ")
+    cursor.execute("""CREATE TABLE patternGridItems (
+                   category text,
+                   name text,
+                   column integer,
+                   row integer,
+                   width integer,
+                   height integer,
+                   color text,
+                   isHidden integer)""")
 
     for item in patternGridItems:
-        query.bindValue(":category", item.symbol["category"])
-        query.bindValue(":name", item.symbol["name"])
-        query.bindValue(":column", item.column)
-        query.bindValue(":row", item.row)
-        query.bindValue(":width", item.width)
-        query.bindValue(":height", item.height)
-        query.bindValue(":color", item.color)
-        query.bindValue(":isHidden", 0 if item.isHidden else 1)
-        query.exec_()
-    
-    db.commit()
+        cursor.execute("INSERT INTO patternGridItems "
+                       "VALUES (?,?,?,?,?,?,?,?)",
+                       [item.symbol["category"],
+                       item.symbol["name"],
+                       item.column,
+                       item.row,
+                       item.width,
+                       item.height,
+                       item.color.name(),
+                       0 if item.isHidden else 1])
 
 
 
-def save_legendItems(db, query, legendItems):
+def save_legendItems(cursor, legendItems):
     """ save legend Items """
     
-    db.transaction()
-    query.exec_("""CREATE TABLE legendItems (
-                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                legendID text,
-                xPosSymbol float,
-                yPosSymbol float,
-                xPosText float,
-                yPosText float,
-                color text,
-                legendString text,
-                isHidden integer)""")
-
-    query.prepare("INSERT INTO legendItems (legendID, xPosSymbol, "
-                  "yPosSymbol, xPosText, yPosText, color, legendString,"
-                  "isHidden) VALUES (:id, :xPosSymbol, :yPosSymbol, "
-                  ":xPosText, :yPosText, :color, :legendString, :isHidden)")
+    cursor.execute("""CREATE TABLE legendItems (
+                   legendID text,
+                   xPosSymbol float,
+                   yPosSymbol float,
+                   xPosText float,
+                   yPosText float,
+                   color text,
+                   legendString text,
+                   isHidden integer)""")
 
     for key, item in legendItems.items():
 
         symbolItem = legendItem_symbol(item)
         textItem = legendItem_text(item)
         visible = legendItem_visibility(item)
+        cursor.execute("INSERT INTO legendItems VALUES (?,?,?,?,?,?,?,?)",
+                       [str(key),
+                       symbolItem.pos().x(),
+                       symbolItem.pos().y(),
+                       textItem.pos().x(),
+                       textItem.pos().y(),
+                       symbolItem.color.name(),
+                       textItem.toPlainText(),
+                       1 if visible else 0])
 
-        query.bindValue(":legendID", str(key))
-        query.bindValue(":xPosSymbol", symbolItem.pos().x())
-        query.bindValue(":yPosSymbol", symbolItem.pos().y())
-        query.bindValue(":xPosText", textItem.pos().x())
-        query.bindValue(":yPosText", textItem.pos().y())
-        query.bindValue(":color", symbolItem.color)
-        query.bindValue(":legendString", textItem.toPlainText())
-        query.bindValue(":isHidden", 1 if visible else 0)
-        query.exec_()
 
-    db.commit()
 
-    
-def save_colors(db, query, colors):
+def save_colors(cursor, colors):
     """ write color info """
     
-    db.transaction()
-    query.exec_("""CREATE TABLE colors (
-                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                color text,
-                state integer)""")
-
-    query.prepare("INSERT INTO colors (color, state) "
-                  "VALUES (:color, :state)")
+    cursor.execute("""CREATE TABLE colors (
+                   color text,
+                   state integer)""")
 
     for (color, state) in colors:
-        query.bindValue(":color", color)
-        query.bindValue(":state", state)
-        query.exec_()
-
-    db.commit()
+        cursor.execute("INSERT INTO colors VALUES (?,?)",
+                       [color.name(), state])
 
 
 
-def save_active_symbol(db, query, activeSymbol):
+def save_active_symbol(cursor, activeSymbol):
     """ write the currently active symbol """
 
-    db.transaction()
+    cursor.execute("""CREATE TABLE active_symbol (
+                   category text,
+                   name text)""")
 
-    query.exec_("""CREATE TABLE active_symbol (
-                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                category text,
-                name text)""")
-
-    query.prepare("INSERT INTO active_symbol (category, name) "
-                  "VALUES (:category, :name)")
-
-    query.bindValue(":category", activeSymbol["category"] if activeSymbol
-                    else "None")
-    query.bindValue(":name", activeSymbol["name"] if activeSymbol
-                    else "None")
-    query.exec_()
-    db.commit()
+    cursor.execute("INSERT INTO active_symbol VALUES (?,?)",
+                   [activeSymbol["category"] if activeSymbol else "None",
+                    activeSymbol["name"] if activeSymbol else "None"])
 
 
 
-def save_pattern_repeats(db, query, repeats):
+def save_pattern_repeats(cursor, repeats):
     """ write the pattern repeats """
 
-    db.transaction()
-
-    query.exec_("""CREATE TABLE pattern_repeats (
-                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                repeat_name text,
-                position_x float,
-                position_y float,
-                repeat_ID integer,
-                width integer,
-                color text)""")
+    cursor.execute("""CREATE TABLE pattern_repeats (
+                   repeat_name text,
+                   position_x float,
+                   position_y float,
+                   repeat_ID integer,
+                   width integer,
+                   color text)""")
     
     for (count, repeat) in enumerate(repeats):
 
         name = "repeat_polygon_%d" % count
 
         # create polygon table
-        query.exec_("""CREATE TABLE %s (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                    coord_x float,
-                    coord_y float)""" % name)
+        query = "CREATE TABLE %s (coord_x float, coord_y float)" % name
+        cursor.execute(query)
 
         # store repeat info
-        query.prepare("INSERT INTO pattern_repeats (repeat_name, position_x,"
-                      "position_y, repeat_ID, width, color) VALUES ("
-                      ":repeat_name, :position_x, :position_y, :repeat_ID,"
-                      ":width, :color)")
+        cursor.execute("INSERT INTO pattern_repeats VALUES (?,?,?,?,?,?)",
+                       [name,
+                       repeat.pos().x(),
+                       repeat.pos().y(),
+                       repeat.itemID.fields[1],
+                       repeat.width,
+                       repeat.color.name()])
 
-        query.bindValue(":repeat_name", name);
-        query.bindValue(":position_x", repeat.pos().x());
-        query.bindValue(":position_y", repeat.pos().y());
-        query.bindValue(":repeat_ID", repeat.itemID.fields[1])
-        query.bindValue(":width", repeat.width)
-        query.bindValue(":color", repeat.color)
-        query.exec_()
-
-        for point in repeat.polygon():
-
-            query.prepare("INSERT INTO %s (coord_x, coord_y) "
-                            "VALUES (:coord_x, :coord_y)" % name)
-
-            query.bindValue(":coord_x", point.x())
-            query.bindValue(":coord_y", point.y())
-            query.exec_()
-
-    db.commit()
+        points = [(p.x(), p.y()) for p in repeat.polygon()]
+        query = "INSERT INTO %s VALUES (?,?)" % name
+        cursor.executemany(query, points)
 
 
 
-def save_row_repeats(db, query, rowRepeats):
+def save_row_repeats(cursor, rowRepeats):
     """ save the row repeats """
 
-    db.transaction()   
-
     # create main row repeat table
-    query.exec_("""CREATE TABLE row_repeats (
-                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                name text,
-                multiplicity integer)""")
+    cursor.execute("""CREATE TABLE row_repeats (
+                   name text,
+                   multiplicity integer)""")
 
     # create a separate table per row repeat
     for (count, (rowList, multiplicity, dummy)) in enumerate(rowRepeats):
 
         name = "row_repeat_%d" % count
-        
-        query.prepare("INSERT INTO row_repeats (name, multiplicity) "
-                      "VALUES (:name, :multiplicity)")
-        query.bindValue(":name", name)
-        query.bindValue(":multiplicity", multiplicity)
-        query.exec_()
+        cursor.execute("INSERT INTO row_repeats VALUES (?,?)",
+                       [name, multiplicity])
 
-        query.exec_("""CREATE TABLE %s (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                    row integer)""" % name)
+        query = "CREATE TABLE %s (row integer)" % name
+        cursor.execute(query)
 
-        for row in rowList:
-            query.prepare("INSERT INTO %s (row) VALUES (:row)" % name)
-            query.bindValue(":row", row)
-            query.exec_()
-
-    db.commit()
+        query = "INSERT INTO %s VALUES (?)" % name
+        cursor.executemany(query, [(x,) for x in rowList])
 
 
 
-def save_text_items(db, query, textItems):
+def save_text_items(cursor, textItems):
     """ save the text items on canvas """
 
-    db.transaction()
-
     # create main row repeat table
-    query.exec_("""CREATE TABLE text_items (
-                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                position_x float,
-                position_y float,
-                content text)""")
+    cursor.execute("""CREATE TABLE text_items (
+                   position_x float,
+                   position_y float,
+                   content text)""")
 
-    for item in textItems.values():
-        print(item.toPlainText())
-        query.prepare("INSERT INTO text_items (position_x, position_y,"
-                      "content) VALUES (:position_x, :position_y, :content)")
-        query.bindValue(":position_x", item.pos().x())
-        query.bindValue(":position_y", item.pos().y())
-        query.bindValue(":content", item.toPlainText())
-        query.exec_()
+    items = [(item.pos().x(), item.pos().y(), item.toPlainText()) for
+            item in textItems.values()]
+    cursor.executemany("INSERT INTO text_items VALUES (?,?,?)", items)
 
-    db.commit()
+
 
     
 ###########################################################################
