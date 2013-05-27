@@ -124,8 +124,7 @@ class SaveThread(QThread):
 
             self.emit(SIGNAL("saving_done"), status, errorMsg,
                       self.saveFileName, self.markProjectClean)
-           
-    
+
 
 
 
@@ -160,6 +159,9 @@ def save_project_sqlite(canvas, colors, activeSymbol, settings,
     save_pattern_repeats(cursor, get_patternRepeats(canvas))
     save_row_repeats(cursor, canvas.rowRepeatTracker)
     save_text_items(cursor, canvas.canvasTextBoxes)
+    save_row_labels(cursor, canvas.rowLabels)
+    save_column_labels(cursor, canvas.columnLabels)
+    save_settings(cursor, settings)
 
     db.commit()
     
@@ -326,6 +328,111 @@ def save_text_items(cursor, textItems):
     items = [(item.pos().x(), item.pos().y(), item.toPlainText()) for
             item in textItems.values()]
     cursor.executemany("INSERT INTO text_items VALUES (?,?,?)", items)
+
+
+
+def save_row_labels(cursor, rowLabels):
+    """ Write the labels for rows.
+
+    NOTE: We write the labels irrespective of if the pattern has
+    editable row labels or not.
+
+    """
+
+    cursor.execute("""CREATE TABLE row_labels (
+                   key integer,
+                   label text)""")
+
+    items = [(key, label.toPlainText()) for (key, label) in rowLabels.items()]
+    cursor.executemany("INSERT INTO row_labels VALUES (?,?)", items)
+
+
+
+def save_column_labels(cursor, colLabels):
+    """ Write the labels for columns.
+
+    NOTE: We write the labels irrespective of if the pattern has
+    editable column labels or not.
+
+    """
+
+    cursor.execute("""CREATE TABLE column_labels (
+                   key integer,
+                   label text)""")
+
+    items = [(key, label.toPlainText()) for (key, label) in colLabels.items()]
+    cursor.executemany("INSERT INTO column_labels VALUES (?,?)", items)
+
+
+
+def save_settings(cursor, settings):
+    """ Write all settings such as fonts for labels and legend 
+
+    NOTE: We gather related settings into separate tables
+    instead of just one single settings table to retain
+    the flexibility for adding/removing settings options.
+
+    """
+
+    # label/legend font
+    cursor.execute("""CREATE TABLE label_legend_font (
+                   legend_font text,
+                   label_font text)""")
+    cursor.execute("INSERT INTO label_legend_font VALUES (?,?)",
+                   [settings.legendFont.value.toString(),
+                    settings.labelFont.value.toString()])
+
+    # grid cell dimensions
+    cursor.execute("""CREATE TABLE grid_cell_dimensions (
+                   width int,
+                   height int)""")
+    cursor.execute("INSERT INTO grid_cell_dimensions VALUES (?,?)",
+                   [settings.gridCellWidth.value,
+                   settings.gridCellHeight.value])
+
+    # row label properties
+    cursor.execute("""CREATE TABLE row_label_properties (
+                   interval_mode int,
+                   label_start int,
+                   even_row_label_location int,
+                   odd_row_label_location int,
+                   row_label_show_interval int,
+                   row_label_show_interval_start int,
+                   row_labels_editable int)""")
+    cursor.execute("INSERT INTO row_label_properties VALUES (?,?,?,?,?,?,?)",
+                   [get_row_label_interval(settings.rowLabelMode.value),
+                    settings.rowLabelStart.value,
+                    get_row_label_location(\
+                            settings.evenRowLabelLocation.value),
+                    get_row_label_location(\
+                            settings.oddRowLabelLocation.value),
+                    settings.rowLabelsShowInterval.value,
+                    settings.rowLabelsShowIntervalStart.value,
+                    settings.rowLabelsEditable.value])
+
+    # column label properties
+    cursor.execute("""CREATE TABLE column_label_properties (
+                   interval_mode int,
+                   column_label_show_interval int,
+                   column_label_show_interval_start int,
+                   column_labels_editable int)""")
+    cursor.execute("INSERT INTO column_label_properties VALUES (?,?,?,?)",
+                   [get_column_label_interval(settings.columnLabelMode.value),
+                    settings.columnLabelsShowInterval.value,
+                    settings.columnLabelsShowIntervalStart.value,
+                    settings.columnLabelsEditable.value])
+
+    # row hightlighting information
+    cursor.execute("""CREATE TABLE highlighted_row_properties (
+                   do_highlight int,
+                   opacity int,
+                   start int,
+                   color text)""")
+    cursor.execute("INSERT INTO highlighted_row_properties VALUES (?,?,?,?)",
+                   [settings.highlightRows.value,
+                    settings.highlightRowsOpacity.value,
+                    settings.highlightRowsStart.value,
+                    settings.highlightRowsColor.value])
 
 
 
