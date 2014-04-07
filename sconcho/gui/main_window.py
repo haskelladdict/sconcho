@@ -1029,7 +1029,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # need this check to avoid interpreting an empty entry
         # as an empty filename
-        if len(fileString) == 0:
+        if not fileString:
             files = []
         else:
             files = fileString.split("%")
