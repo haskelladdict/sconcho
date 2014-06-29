@@ -47,7 +47,7 @@ HIDE_MODE = 1
 UNHIDE_MODE = 2
 
 # opacity used for hiding cells
-HIDE_OPACITY = 0.05
+HIDE_OPACITY = 0.00
 
 
 def convert_pos_to_col_row(mousePos, cellWidth, cellHeight):
